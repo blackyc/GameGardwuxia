@@ -1,15 +1,27 @@
-- 引擎包
-winget install Microsoft.DotNet.SDK.10
-godot engine net 
+## 引擎包   
+winget install Microsoft.DotNet.SDK.10    
+godot engine net     
 
-- ai工具openclaw
-qclaw/openclaw - agent接管代码入口
+## ai工具openclaw   
+qclaw - agent接管入口  
+workbuddy   
+deepseek-v4   
 
-- MCP
-godot res://godot-mcp 插件
-项目设置project.godot 插件启用
-调试开启服务器调试
 
-- 语言配置
-vscode godot tool
-gd/c#
+## MCP   
+godot res://godot-mcp 插件    
+项目设置project.godot 插件启用    
+调试开启服务器调试    
+
+## 语言配置   
+vscode godot tool   
+gd/c#   
+
+## MCP
+控制台
+```
+Debug adapter server started on port 6006
+Debugging process started 
+GDScript language server started on port 6005
+Server started on port 9080
+```
