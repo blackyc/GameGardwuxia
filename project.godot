@@ -34,6 +34,7 @@ config/windows_native_icon="res://images/icon.ico"
 
 SentryInit="*res://addons/sentry/SentryInit.gd"
 FmodManager="*res://addons/fmod/FmodManager.gd"
+MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 
 [debug]
 
