@@ -1,4 +1,4 @@
-; Engine configuration file.
+﻿; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
 ; since the parameters that go here are not all obvious.
 ;
@@ -20,7 +20,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Slay the Spire 2"
-run/main_scene="res://scenes/game.tscn"
+run/main_scene="res://scenes/screens/card_library/card_library.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="SlayTheSpire2"
 config/features=PackedStringArray("4.6", "Mobile")
