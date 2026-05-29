@@ -31,7 +31,7 @@ const HOVER_SCALE: float = 1.2
 
 #region 子节点引用
 
-@onready var _card_body: TextureRect = $CardFrame/CardBody
+@onready var _card_body: TextureRect = $CardBody
 @onready var _card_frame: PanelContainer = $CardFrame
 @onready var _cost_label: Label = $CostLabel
 @onready var _cost_bg: ColorRect = $CostBG
@@ -43,6 +43,13 @@ const HOVER_SCALE: float = 1.2
 @onready var _desc_bg: ColorRect = $DescBG
 @onready var _shadow: ColorRect = $Shadow
 
+# 圆形费用标识绘制参数（适配 220×320 卡牌尺寸）
+const COST_ORB_CENTER := Vector2(30, 30)
+const COST_ORB_RADIUS := 26.0
+const COST_ORB_COLOR := Color(0.06, 0.08, 0.12, 0.85)
+const COST_ORB_BORDER_COLOR := Color(0.35, 0.22, 0.08, 0.9)
+const COST_ORB_BORDER_WIDTH := 2.0
+
 #endregion
 
 #region 初始化
@@ -50,6 +57,10 @@ const HOVER_SCALE: float = 1.2
 func _ready() -> void:
     # layout_mode=0 时 offset_* 已生效，size 有值
     pivot_offset = size / 2.0
+
+    # 隐藏旧版丑陋方块 CostBG，改用 _draw() 绘制圆形费用标识
+    if _cost_bg:
+        _cost_bg.visible = false
 
     # 诊断：打印父节点路径（排查 BattleCard 错误嵌套到敌人节点的问题）
     var parent_path := "NULL"
@@ -65,6 +76,25 @@ func _ready() -> void:
         _apply_card_data()
 
     _update_playability()
+
+
+func _draw() -> void:
+    # 绘制圆形费用标识（替代旧版方形 CostBG）
+    if not card_data:
+        return
+
+    var orb_color := COST_ORB_COLOR
+    var border_color := COST_ORB_BORDER_COLOR
+
+    # 不可打出时变红
+    if not BattleManager.can_play_card(card_data):
+        orb_color = Color(0.18, 0.06, 0.06, 0.85)
+        border_color = Color(0.45, 0.12, 0.1, 0.9)
+
+    # 圆形背景
+    draw_circle(COST_ORB_CENTER, COST_ORB_RADIUS, orb_color)
+    # 装饰边框
+    draw_arc(COST_ORB_CENTER, COST_ORB_RADIUS - COST_ORB_BORDER_WIDTH * 0.5, 0.0, TAU, 32, border_color, COST_ORB_BORDER_WIDTH)
 
 
 func set_card_data(data: CardData) -> void:
@@ -109,10 +139,10 @@ func _apply_card_data() -> void:
             CardData.CardType.POWER:
                 _card_body.self_modulate = Color(0.40, 0.15, 0.55, 1.0)  # 紫色调
 
-    # 卡片边框颜色
+    # 卡片边框颜色 - 背景半透明让 CardBody 的贴图透出
     if _card_frame:
         var card_style := StyleBoxFlat.new()
-        card_style.bg_color = Color(0.1, 0.09, 0.07, 1.0)
+        card_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
         card_style.border_width_left = 2
         card_style.border_width_right = 2
         card_style.border_width_top = 2
@@ -297,12 +327,8 @@ func _update_playability() -> void:
         else:
             _cost_label.add_theme_color_override("font_color", Color(0.95, 0.25, 0.2, 1))
 
-    # 费用背景色
-    if _cost_bg:
-        if playable:
-            _cost_bg.color = Color(0.06, 0.18, 0.1, 0.95)
-        else:
-            _cost_bg.color = Color(0.18, 0.06, 0.06, 0.95)
+    # 费用圆形标识重绘（颜色随可玩性变化）
+    queue_redraw()
 
     # 不可打出时的整体暗色提示（只在悬停时）
     if _is_hovered and not playable and not _is_dragging:

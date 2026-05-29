@@ -6,8 +6,8 @@ extends Control
 
 #region 子节点引用
 
-@onready var _hand_area: HandArea = $HandArea
-@onready var _enemy: Enemy = $EnemyArea/Enemy
+@onready var _hand_area: HandArea = null  # 在 _ready() 中延迟修复
+@onready var _enemy: Enemy = null  # 在 _ready() 中延迟查找
 @onready var _card_effect: CardEffect = $CardEffect
 @onready var _draw_pile_panel: PanelContainer = $DrawPilePanel
 @onready var _draw_pile_label: Label = $DrawPilePanel/DrawPileVBox/DrawPileCount
@@ -18,9 +18,107 @@ extends Control
 @onready var _energy_label: Label = $PlayerArea/EnergyContainer/EnergyLabel
 @onready var _player_hp_label: Label = $PlayerArea/HPContainer/HPLabel
 @onready var _player_block_label: Label = $PlayerArea/BlockLabel
-@onready var _end_turn_button: Button = $PlayerArea/EndTurnButton
+@onready var _end_turn_button: Button = $EndTurnButton
 @onready var _turn_label: Label = $TurnLabel
 @onready var _battle_log: RichTextLabel = $BattleLog/Margin/LogText
+
+#endregion
+
+#region 节点查找与修复
+
+## 在树中递归查找节点（按可选条件）
+func _find_node_by_condition(parent: Node, condition: Callable) -> Node:
+    if condition.call(parent):
+        return parent
+    for child: Node in parent.get_children():
+        var found: Node = _find_node_by_condition(child, condition)
+        if found:
+            return found
+    return null
+
+
+## 确保 HandArea 存在于正确位置（解决 Godot 4.4+ TSCN 加载层级错乱 BUG）
+func _ensure_hand_area() -> void:
+    # 策略 1：已在正常位置
+    var ha: HandArea = $HandArea as HandArea
+    if is_instance_valid(ha):
+        _hand_area = ha
+        print("[BattleScene] HandArea 在正常路径找到")
+        return
+
+    # 策略 2：在整棵树中搜索 HandArea 实例（可能被错误加载到别处）
+    var is_hand_area := func(node: Node) -> bool: return is_instance_of(node, HandArea)
+    var misplaced: Node = _find_node_by_condition(self, is_hand_area)
+    if is_instance_valid(misplaced):
+        ha = misplaced as HandArea
+        var current_parent: Node = ha.get_parent()
+        print("[BattleScene] HandArea 在错误位置找到: %s (父=%s)，正在重新挂载..." % [ha.get_path(), current_parent.name if current_parent else "null"])
+
+        if current_parent:
+            current_parent.remove_child(ha)
+        add_child(ha)
+
+        # 恢复锚点和布局（为更大卡牌留足空间）
+        ha.anchor_left = 0.05
+        ha.anchor_top = 0.55
+        ha.anchor_right = 0.90
+        ha.anchor_bottom = 0.55
+        ha.offset_bottom = 420.0
+        ha.grow_horizontal = Control.GROW_DIRECTION_BOTH
+        ha.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+        _hand_area = ha
+        print("[BattleScene] HandArea 已重新挂载: path=%s" % ha.get_path())
+        return
+
+    # 策略 3：完全编程式创建
+    push_warning("[BattleScene] 未找到 HandArea，编程式创建...")
+    ha = HandArea.new()
+    ha.name = "HandArea"
+    ha.anchor_left = 0.05
+    ha.anchor_top = 0.55
+    ha.anchor_right = 0.90
+    ha.anchor_bottom = 0.55
+    ha.offset_bottom = 420.0
+    ha.grow_horizontal = Control.GROW_DIRECTION_BOTH
+    ha.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+    var card_scene: PackedScene = load("res://scenes/cards/battle_card.tscn") as PackedScene
+    if card_scene:
+        ha.card_scene = card_scene
+    ha.fan_angle = 0.45
+    ha.fan_radius = 950.0
+    ha.min_spacing = -20.0
+    ha.max_spread_width = 1600.0
+
+    add_child(ha)
+    _hand_area = ha
+    print("[BattleScene] 已编程式创建 HandArea: path=%s" % ha.get_path())
+
+
+## 确保 Enemy 引用正确
+func _ensure_enemy() -> void:
+    var enemy: Node = get_node_or_null("EnemyArea/Enemy")
+    if is_instance_valid(enemy):
+        _enemy = enemy as Enemy
+        return
+
+    # 扁平化路径查找
+    enemy = get_node_or_null("EnemyArea_Enemy")
+    if is_instance_valid(enemy):
+        _enemy = enemy as Enemy
+        print("[BattleScene] Enemy 通过扁平名称找到")
+        return
+
+    # 按类搜索
+    var is_enemy := func(node: Node) -> bool: return is_instance_of(node, Enemy)
+    enemy = _find_node_by_condition(self, is_enemy)
+    if is_instance_valid(enemy):
+        _enemy = enemy as Enemy
+        print("[BattleScene] Enemy 通过 class 搜索找到: %s" % enemy.get_path())
+        return
+
+    push_error("[BattleScene] 无法找到 Enemy 节点！")
 
 #endregion
 
@@ -35,8 +133,13 @@ var _test_deck: Array[CardData] = []
 #endregion
 
 func _ready() -> void:
+    # 必须最先执行：修复 HandArea 和 Enemy 引用（解决 TSCN 加载 BUG）
+    _ensure_hand_area()
+    _ensure_enemy()
+
     # 诊断：检查关键节点是否正常
     print("[BattleScene] _ready 开始")
+    print("[BattleScene] _hand_area=%s, _enemy=%s" % [_hand_area, _enemy])
 
     if not _enemy:
         push_error("BattleScene: _enemy 为 null！路径 EnemyArea/Enemy 解析失败。")
@@ -121,10 +224,10 @@ func _setup_ui_styles() -> void:
     if battle_log_panel:
         battle_log_panel.add_theme_stylebox_override("panel", log_style)
 
-    # 结束回合按钮样式
+    # 结束回合按钮样式（独立大按钮，右下角）
     if _end_turn_button:
         _end_turn_button.add_theme_color_override("font_color", Color(0.95, 0.92, 0.85, 1))
-        _end_turn_button.add_theme_font_size_override("font_size", 22)
+        _end_turn_button.add_theme_font_size_override("font_size", 26)
         _end_turn_button.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.5))
         _end_turn_button.add_theme_constant_override("outline_size", 2)
 
@@ -135,10 +238,10 @@ func _setup_ui_styles() -> void:
         btn_normal.border_width_top = 2
         btn_normal.border_width_bottom = 2
         btn_normal.border_color = Color(0.7, 0.5, 0.2, 0.9)
-        btn_normal.corner_radius_top_left = 8
-        btn_normal.corner_radius_top_right = 8
-        btn_normal.corner_radius_bottom_left = 8
-        btn_normal.corner_radius_bottom_right = 8
+        btn_normal.corner_radius_top_left = 10
+        btn_normal.corner_radius_top_right = 10
+        btn_normal.corner_radius_bottom_left = 10
+        btn_normal.corner_radius_bottom_right = 10
 
         var btn_hover := btn_normal.duplicate() as StyleBoxFlat
         btn_hover.bg_color = Color(0.25, 0.18, 0.1, 0.95)
