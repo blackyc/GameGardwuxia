@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://b4fg3foea4y6w"]
+
+[ext_resource type="Script" path="res://src/resources/card_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "佛怒唐莲"
+card_name = "佛怒唐莲"
+cost = 2
+card_type = 1
+damage = 0
+block = 12
+description = "获得 {b} 点格挡。"
+texture_path = "res://AllbackupAssets/card-pngs/佛怒唐莲.png"

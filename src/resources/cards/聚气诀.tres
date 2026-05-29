@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://nbperv8lbm7a"]
+
+[ext_resource type="Script" path="res://src/resources/card_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "聚气诀"
+card_name = "聚气诀"
+cost = 1
+card_type = 1
+damage = 0
+block = 4
+description = "获得 {b} 点格挡。"
+texture_path = "res://AllbackupAssets/card-pngs/聚气诀.png"

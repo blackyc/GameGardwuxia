@@ -1,0 +1,339 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/combat/battle_scene.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/combat/hand_area.gd" id="2_hand_area"]
+[ext_resource type="Script" path="res://scenes/combat/enemy.gd" id="3_enemy"]
+[ext_resource type="Script" path="res://src/systems/card_effect.gd" id="4_card_effect"]
+[ext_resource type="PackedScene" path="res://scenes/cards/battle_card.tscn" id="5_card_scene"]
+[ext_resource type="Texture2D" uid="uid://cuwojidxsohct" path="res://images/map/map2.png" id="6_map_bg"]
+
+[node name="BattleScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="MapBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_map_bg")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="MapOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0.06, 0.05, 0.2)
+
+[node name="TurnLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 12.0
+offset_right = 120.0
+offset_bottom = 50.0
+grow_horizontal = 2
+text = "准备中..."
+horizontal_alignment = 1
+vertical_alignment = 1
+add_theme_color_override("font_color", Color(0.95, 0.9, 0.7, 1))
+add_theme_font_size_override("font_size", 22)
+add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.6))
+add_theme_constant_override("outline_size", 4)
+
+[node name="DrawPilePanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -170.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+
+[node name="DrawPileVBox" type="VBoxContainer" parent="DrawPilePanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="DrawPileTitle" type="Label" parent="DrawPilePanel/DrawPileVBox"]
+layout_mode = 2
+text = "抽牌堆"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.6, 0.75, 0.95, 1))
+add_theme_font_size_override("font_size", 14)
+
+[node name="DrawPileIcon" type="Label" parent="DrawPilePanel/DrawPileVBox"]
+layout_mode = 2
+text = "🂠"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.45, 0.65, 0.95, 1))
+add_theme_font_size_override("font_size", 36)
+
+[node name="DrawPileCount" type="Label" parent="DrawPilePanel/DrawPileVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.95, 0.95, 0.9, 1))
+add_theme_font_size_override("font_size", 28)
+
+[node name="DrawHint" type="Label" parent="DrawPilePanel/DrawPileVBox"]
+layout_mode = 2
+text = "点击抽牌"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.7, 0.7, 0.75, 1))
+add_theme_font_size_override("font_size", 12)
+
+[node name="DiscardPilePanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -170.0
+offset_right = 156.0
+offset_bottom = -20.0
+grow_vertical = 0
+mouse_filter = 0
+
+[node name="DiscardPileVBox" type="VBoxContainer" parent="DiscardPilePanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="DiscardPileTitle" type="Label" parent="DiscardPilePanel/DiscardPileVBox"]
+layout_mode = 2
+text = "弃牌堆"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.85, 0.7, 0.5, 1))
+add_theme_font_size_override("font_size", 14)
+
+[node name="DiscardPileIcon" type="Label" parent="DiscardPilePanel/DiscardPileVBox"]
+layout_mode = 2
+text = "♻"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.85, 0.7, 0.45, 1))
+add_theme_font_size_override("font_size", 36)
+
+[node name="DiscardPileCount" type="Label" parent="DiscardPilePanel/DiscardPileVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.95, 0.95, 0.9, 1))
+add_theme_font_size_override("font_size", 28)
+
+[node name="EnemyArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.08
+anchor_right = 0.5
+anchor_bottom = 0.08
+offset_left = -240.0
+offset_top = 0.0
+offset_right = 240.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Enemy" type="Control" parent="EnemyArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_enemy")
+enemy_name = "幽冥刀客"
+max_hp = 40
+
+[node name="EnemyPanel" type="PanelContainer" parent="EnemyArea/Enemy"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBox" type="HBoxContainer" parent="EnemyArea/Enemy/EnemyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="EnemySprite" type="TextureRect" parent="EnemyArea/Enemy/EnemyPanel/HBox"]
+custom_minimum_size = Vector2(160, 240)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VBox" type="VBoxContainer" parent="EnemyArea/Enemy/EnemyPanel/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="EnemyArea/Enemy/EnemyPanel/HBox/VBox"]
+layout_mode = 2
+text = "幽冥刀客"
+horizontal_alignment = 1
+add_theme_color_override("font_color", Color(0.95, 0.8, 0.7, 1))
+add_theme_font_size_override("font_size", 22)
+
+[node name="HPBar" type="ProgressBar" parent="EnemyArea/Enemy/EnemyPanel/HBox/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 40.0
+value = 40.0
+show_percentage = false
+
+[node name="HPContainer" type="HBoxContainer" parent="EnemyArea/Enemy/EnemyPanel/HBox/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HPLabel" type="Label" parent="EnemyArea/Enemy/EnemyPanel/HBox/VBox/HPContainer"]
+layout_mode = 2
+text = "40 / 40"
+add_theme_color_override("font_color", Color(0.9, 0.3, 0.2, 1))
+add_theme_font_size_override("font_size", 16)
+
+[node name="BlockLabel" type="Label" parent="EnemyArea/Enemy/EnemyPanel/HBox/VBox"]
+layout_mode = 2
+text = "格挡: 0"
+visible = false
+add_theme_color_override("font_color", Color(0.4, 0.6, 0.9, 1))
+add_theme_font_size_override("font_size", 14)
+
+[node name="HandArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.08
+anchor_top = 0.50
+anchor_right = 0.85
+anchor_bottom = 0.50
+offset_bottom = 370.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("2_hand_area")
+card_scene = ExtResource("5_card_scene")
+fan_angle = 0.50
+fan_radius = 900.0
+min_spacing = -15.0
+max_spread_width = 1500.0
+
+[node name="PlayerArea" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0
+anchor_top = 0.86
+anchor_right = 1.0
+anchor_bottom = 0.86
+offset_left = 40.0
+offset_right = -40.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_constants/separation = 20
+
+[node name="HPContainer" type="HBoxContainer" parent="PlayerArea"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HPIcon" type="Label" parent="PlayerArea/HPContainer"]
+layout_mode = 2
+text = "♥"
+add_theme_color_override("font_color", Color(0.95, 0.25, 0.25, 1))
+add_theme_font_size_override("font_size", 24)
+vertical_alignment = 1
+
+[node name="HPLabel" type="Label" parent="PlayerArea/HPContainer"]
+layout_mode = 2
+text = "70 / 70"
+add_theme_color_override("font_color", Color(0.95, 0.9, 0.85, 1))
+add_theme_font_size_override("font_size", 22)
+vertical_alignment = 1
+
+[node name="BlockLabel" type="Label" parent="PlayerArea"]
+layout_mode = 2
+text = "格挡: 0"
+visible = false
+add_theme_color_override("font_color", Color(0.4, 0.6, 0.9, 1))
+add_theme_font_size_override("font_size", 18)
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="PlayerArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnergyContainer" type="HBoxContainer" parent="PlayerArea"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="EnergyIcon" type="Label" parent="PlayerArea/EnergyContainer"]
+layout_mode = 2
+text = "⚡"
+add_theme_color_override("font_color", Color(0.95, 0.85, 0.2, 1))
+add_theme_font_size_override("font_size", 24)
+vertical_alignment = 1
+
+[node name="EnergyLabel" type="Label" parent="PlayerArea/EnergyContainer"]
+layout_mode = 2
+text = "3 / 3"
+add_theme_color_override("font_color", Color(0.95, 0.9, 0.85, 1))
+add_theme_font_size_override("font_size", 22)
+vertical_alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="PlayerArea"]
+custom_minimum_size = Vector2(160, 56)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "结束回合"
+
+[node name="CardEffect" type="Node" parent="."]
+script = ExtResource("4_card_effect")
+
+[node name="BattleLog" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0
+anchor_top = 0.92
+anchor_right = 0.0
+anchor_bottom = 0.92
+offset_left = 20.0
+offset_right = 380.0
+offset_bottom = 80.0
+
+[node name="Margin" type="MarginContainer" parent="BattleLog"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 6
+
+[node name="LogText" type="RichTextLabel" parent="BattleLog/Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_following = true
