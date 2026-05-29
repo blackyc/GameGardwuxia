@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>江湖对决 · 战斗场景 V1</title>
+<style>
+:root {
+  --bg: #0a0a0c;
+  --gold: #c8a45c;
+  --gold-dim: #7a6238;
+  --text-primary: #e8e0d5;
+  --text-dim: #8a8070;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #060508;
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  font-family: 'STKaiti', 'KaiTi', '楷体', 'SimKai', 'Microsoft YaHei', serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ============ BACKGROUND ============ */
+.scene {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 50% 55%, #1a1225 0%, #0d0a12 45%, #060508 100%);
+}
+
+.bg-fog {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 60%, rgba(139,30,40,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(20,60,100,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(200,164,92,0.03) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.bg-grain {
+  position: absolute; inset: 0; opacity: 0.04; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* ============ GROUND: Energy Rift ============ */
+.ground {
+  position: absolute; bottom: 18%; left: 5%; right: 5%; height: 22%;
+  border-radius: 4px;
+  overflow: hidden;
+  opacity: 0.85;
+}
+
+/* Base ground texture */
+.ground-base {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(20,15,25,0.95), rgba(10,8,14,0.98)),
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.008) 3px, rgba(255,255,255,0.008) 4px),
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.005) 3px, rgba(255,255,255,0.005) 4px);
+}
+
+/* Diagonal energy rift divide */
+.energy-rift {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,
+    transparent 47%, rgba(200,164,92,0.15) 47.5%,
+    rgba(200,164,92,0.25) 48%, rgba(200,164,92,0.3) 49%,
+    rgba(200,164,92,0.4) 50%,
+    rgba(200,164,92,0.3) 51%, rgba(200,164,92,0.25) 52%,
+    rgba(200,164,92,0.15) 52.5%, transparent 53%);
+}
+
+/* Left energy spread (P1/魔教 - red) */
+.energy-p1 {
+  position: absolute;
+  top: 0; left: 0; bottom: 50%;
+  /* width controlled by JS via CSS custom property */
+  background: linear-gradient(90deg,
+    rgba(200,20,30,0.45), rgba(200,20,30,0.3) 30%,
+    rgba(200,20,30,0.15) 60%, rgba(200,20,30,0.02) 100%);
+  border-right: 2px solid rgba(255,60,60,0.4);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 20px rgba(255,40,40,0.15);
+}
+
+/* Right energy spread (P2/武当 - blue/green) */
+.energy-p2 {
+  position: absolute;
+  bottom: 0; right: 0; top: 50%;
+  background: linear-gradient(270deg,
+    rgba(20,80,180,0.45), rgba(20,80,180,0.3) 30%,
+    rgba(20,80,180,0.15) 60%, rgba(20,80,180,0.02) 100%);
+  border-left: 2px solid rgba(60,140,255,0.4);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 20px rgba(40,100,255,0.15);
+}
+
+/* Rift crack lines */
+.energy-p1::before {
+  content: ''; position: absolute; top: 5px; left: 20%; width: 3px; height: 40%;
+  background: rgba(255,80,60,0.3);
+  transform: rotate(-15deg);
+}
+.energy-p1::after {
+  content: ''; position: absolute; top: 30%; left: 50%; width: 2px; height: 55%;
+  background: rgba(255,60,40,0.2);
+  transform: rotate(-25deg);
+}
+.energy-p2::before {
+  content: ''; position: absolute; bottom: 10px; right: 25%; width: 2px; height: 35%;
+  background: rgba(80,140,255,0.25);
+  transform: rotate(-15deg);
+}
+
+/* Ground edge glow */
+.ground::after {
+  content: ''; position: absolute; inset: 0;
+  box-shadow: inset 0 0 40px rgba(200,164,92,0.06);
+  pointer-events: none;
+}
+
+/* ============ CHARACTERS ============ */
+.char-container {
+  position: absolute;
+  top: 10%; bottom: 50%;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+
+.char-left { left: 8%; right: 52%; }
+.char-right { left: 52%; right: 8%; }
+
+.char {
+  position: relative;
+  width: 180px; height: 320px;
+  display: flex; flex-direction: column; align-items: center;
+  transition: transform 0.3s ease;
+}
+
+/* Character silhouette */
+.char-body {
+  width: 120px; height: 240px;
+  position: relative;
+  border-radius: 60px 60px 20px 20px;
+  background: linear-gradient(180deg,
+    rgba(40,30,30,0.95) 0%, rgba(25,18,18,0.95) 40%,
+    rgba(15,10,10,0.9) 100%);
+  border: 2px solid rgba(200,164,92,0.15);
+  box-shadow: 0 0 40px rgba(200,20,30,0.08), 0 10px 30px rgba(0,0,0,0.5);
+}
+.char-right .char-body {
+  box-shadow: 0 0 40px rgba(20,80,180,0.08), 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Head */
+.char-body::before {
+  content: ''; position: absolute;
+  top: -50px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(50,40,35,0.9), rgba(30,22,18,0.9));
+  border: 2px solid rgba(200,164,92,0.1);
+}
+
+/* Shoulder / arm silhouettes */
+.char-body::after {
+  content: ''; position: absolute;
+  top: 15px; left: -25px; right: -25px; height: 80px;
+  background: linear-gradient(180deg, rgba(40,30,30,0.85), transparent);
+  border-radius: 40px 40px 0 0;
+}
+
+.char-name {
+  margin-top: 16px;
+  font-family: 'STKaiti', 'KaiTi', '楷体', 'Microsoft YaHei', serif;
+  font-size: 22px; color: var(--text-primary);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  letter-spacing: 0.1em;
+}
+
+.char-faction {
+  font-size: 12px; color: rgba(255,80,60,0.7);
+  letter-spacing: 0.15em;
+  margin-top: 2px;
+}
+.char-right .char-faction {
+  color: rgba(80,180,255,0.7);
+}
+
+/* ============ QI RINGS (心息气环) ============ */
+.qi-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid;
+  animation: qi-pulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.qi-ring-1 {
+  width: 160px; height: 80px;
+  bottom: -10px; left: 50%; transform: translateX(-50%);
+  border-color: rgba(255,80,60,0.25);
+  border-top: none;
+  animation-delay: 0s;
+}
+.qi-ring-2 {
+  width: 200px; height: 100px;
+  bottom: -20px; left: 50%; transform: translateX(-50%);
+  border-color: rgba(255,80,60,0.12);
+  border-top: none;
+  animation-delay: 0.5s;
+}
+.qi-ring-3 {
+  width: 120px; height: 60px;
+  bottom: 0px; left: 50%; transform: translateX(-50%);
+  border-color: rgba(255,120,80,0.35);
+  border-top: none;
+  animation-delay: 1.2s;
+}
+
+.char-right .qi-ring-1 { border-color: rgba(80,180,255,0.25); }
+.char-right .qi-ring-2 { border-color: rgba(80,180,255,0.12); }
+.char-right .qi-ring-3 { border-color: rgba(120,200,255,0.35); }
+
+/* Inner power particles rising from qi ring */
+.qi-particles {
+  position: absolute;
+  bottom: -5px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 40px;
+  pointer-events: none;
+}
+.qi-particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(255,100,60,0.6);
+  animation: qi-rise 2s ease-out infinite;
+}
+.char-right .qi-particle {
+  background: rgba(100,180,255,0.6);
+}
+
+@keyframes qi-rise {
+  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+  30% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-120px) translateX(var(--dx)) scale(1.5); }
+}
+@keyframes qi-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ============ HUD ============ */
+.hud {
+  position: absolute; top: 16px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 18px;
+  background: rgba(10,8,14,0.85);
+  border: 1px solid rgba(200,164,92,0.15);
+  border-radius: 8px;
+  z-index: 10;
+  min-width: 240px;
+}
+.hud-left { left: 16px; }
+.hud-right { right: 16px; flex-direction: row-reverse; }
+
+.hud-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(40,25,25,0.9), rgba(20,12,12,0.9));
+  border: 2px solid rgba(200,164,92,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.hud-right .hud-avatar {
+  background: linear-gradient(135deg, rgba(20,35,55,0.9), rgba(12,18,30,0.9));
+}
+.hud-avatar-inner {
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 22px; color: var(--text-primary);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.hud-stats { display: flex; gap: 16px; }
+.hud-stat { text-align: center; }
+.hud-stat-label {
+  font-size: 10px; color: var(--text-dim);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.hud-stat-value {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 0 8px rgba(200,164,92,0.3);
+}
+.hud-stat-value.hp { color: #ef4444; text-shadow: 0 0 8px rgba(239,68,68,0.3); }
+.hud-stat-value.hp-opp { color: #3b82f6; text-shadow: 0 0 8px rgba(59,130,246,0.3); }
+.hud-stat-value.flaw { color: #a855f7; text-shadow: 0 0 8px rgba(168,85,247,0.3); }
+
+/* ============ JUDGMENT ZONE ============ */
+.judgment-zone {
+  position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; gap: 40px; align-items: center;
+  z-index: 5;
+}
+
+.judgment-card {
+  width: 90px; height: 130px;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.judgment-card:hover {
+  transform: translateY(-4px);
+}
+
+.judgment-card-back {
+  width: 100%; height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1a1025, #0d0815);
+  border: 2px solid rgba(200,164,92,0.3);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Card back pattern */
+.judgment-card-back::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border: 1px solid rgba(200,164,92,0.12);
+  border-radius: 4px;
+  background: repeating-linear-gradient(45deg,
+    transparent, transparent 3px,
+    rgba(200,164,92,0.03) 3px, rgba(200,164,92,0.03) 4px);
+}
+
+.judgment-card-back::after {
+  content: '?';
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 42px;
+  color: rgba(200,164,92,0.4);
+  text-shadow: 0 0 20px rgba(200,164,92,0.2);
+}
+
+.judgment-card.p1 .judgment-card-back {
+  border-color: rgba(255,60,60,0.3);
+  box-shadow: 0 4px 20px rgba(200,20,30,0.15);
+}
+.judgment-card.p2 .judgment-card-back {
+  border-color: rgba(60,140,255,0.3);
+  box-shadow: 0 4px 20px rgba(20,80,180,0.15);
+}
+
+.judgment-label {
+  text-align: center;
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin-top: 6px;
+}
+
+/* Revealed judgment card */
+.judgment-card.revealed .judgment-card-back {
+  display: none;
+}
+.judgment-card-reveal {
+  display: none;
+  width: 100%; height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(170deg, #1a1412, #0d0a08);
+  border: 2px solid var(--jc);
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 20px var(--jg);
+}
+.judgment-card.revealed .judgment-card-reveal { display: flex; }
+
+.jc-name {
+  font-size: 13px; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  text-align: center;
+  line-height: 1.3;
+}
+.jc-power {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 32px; font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(200,164,92,0.4);
+}
+.jc-elem {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* ============ POWER INDICATOR ============ */
+.power-display {
+  position: absolute; top: 44%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 16px;
+  z-index: 6;
+}
+
+.power-num {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 48px; font-weight: 900;
+  text-shadow: 0 0 30px rgba(200,164,92,0.4);
+}
+.power-num.p1 { color: #ef4444; text-shadow: 0 0 30px rgba(239,68,68,0.4); }
+.power-num.p2 { color: #3b82f6; text-shadow: 0 0 30px rgba(59,130,246,0.4); }
+.power-num.winning { animation: power-pulse 0.8s ease-in-out infinite; }
+
+.power-vs {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 18px; color: var(--gold-dim);
+}
+
+@keyframes power-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* ============ HAND BAR ============ */
+.hand-bar {
+  position: absolute; bottom: 16px; left: 5%; right: 5%;
+  display: flex; justify-content: center; align-items: flex-end;
+  gap: 8px;
+  z-index: 20;
+  padding: 8px 12px;
+}
+
+/* Mini card in hand */
+.hand-card {
+  width: 100px; height: 150px;
+  border-radius: 8px;
+  background: linear-gradient(170deg, #1a1412, #0d0a08);
+  border: 2px solid var(--hc);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.hand-card:hover {
+  transform: translateY(-16px) scale(1.06);
+  z-index: 30;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 24px var(--hg);
+}
+
+.hand-card-cost {
+  position: absolute; top: 4px; left: 6px;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 16px; font-weight: 900;
+  color: var(--gold);
+  z-index: 2;
+}
+.hand-card-name {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary);
+  text-align: center; line-height: 1.3; padding: 20px 6px 4px;
+}
+.hand-card-type {
+  text-align: center; font-size: 9px; padding: 3px 0;
+  color: var(--text-dim);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.hand-card-power {
+  text-align: center;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 20px; font-weight: 900;
+  color: var(--gold);
+  padding: 2px 0 6px;
+  text-shadow: 0 0 6px rgba(200,164,92,0.3);
+}
+
+/* Dissolving effect */
+.hand-card.dissolving {
+  animation: dissolve 0.7s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes dissolve {
+  0% { opacity: 1; transform: scale(1); filter: blur(0); }
+  40% { opacity: 0.7; transform: scale(0.9) translateY(-10px); filter: blur(1px); }
+  100% { opacity: 0; transform: scale(0.3) translateY(-60px); filter: blur(4px); }
+}
+
+/* ============ PARTICLE CANVAS ============ */
+#particle-canvas {
+  position: fixed; inset: 0;
+  z-index: 25;
+  pointer-events: none;
+}
+
+/* ============ PLAYED CARD POPUP ============ */
+.card-popup {
+  position: fixed;
+  width: 120px; height: 176px;
+  border-radius: 10px;
+  z-index: 30;
+  pointer-events: none;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  background: linear-gradient(170deg, #1a1412, #0d0a08);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 40px rgba(200,164,92,0.3);
+  animation: card-fly 1.2s ease-out forwards;
+  opacity: 0;
+}
+
+.card-popup .popup-name {
+  font-size: 18px; font-weight: 700;
+  color: var(--text-primary);
+}
+.card-popup .popup-power {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 36px; font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 16px rgba(200,164,92,0.5);
+}
+.card-popup .popup-type {
+  font-size: 11px; color: var(--text-dim);
+}
+
+@keyframes card-fly {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  15% { opacity: 1; transform: translateY(-30px) scale(1.15); }
+  30% { opacity: 1; transform: translateY(-60px) scale(1); }
+  100% { opacity: 0; transform: translateY(-200px) scale(0.8); filter: blur(6px); }
+}
+
+/* ============ XINFA QI BURST ============ */
+.qi-burst {
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 15;
+  animation: qi-burst-anim 1.5s ease-out forwards;
+}
+@keyframes qi-burst-anim {
+  0% { opacity: 0.8; transform: scale(0); }
+  50% { opacity: 0.4; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(2.5); }
+}
+
+/* ============ ACTION LOG ============ */
+.action-log {
+  position: absolute; bottom: 22%; left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  text-align: center;
+}
+.action-text {
+  font-family: 'STKaiti', 'KaiTi', '楷体', 'Microsoft YaHei', serif;
+  font-size: 22px; color: var(--text-primary);
+  text-shadow: 0 0 20px rgba(200,164,92,0.3);
+  letter-spacing: 0.08em;
+  animation: log-fade 2s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes log-fade {
+  0% { opacity: 0; transform: translateY(10px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+/* ============ SCREEN SHAKE ============ */
+.screen-shake {
+  animation: shake 0.4s ease-out;
+}
+@keyframes shake {
+  0%, 100% { transform: translate(0); }
+  10% { transform: translate(-6px, 3px); }
+  30% { transform: translate(5px, -4px); }
+  50% { transform: translate(-4px, -2px); }
+  70% { transform: translate(3px, 4px); }
+  90% { transform: translate(-2px, -1px); }
+}
+
+/* ============ PHASE INDICATOR ============ */
+.phase-indicator {
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  padding: 6px 24px;
+  background: rgba(10,8,14,0.85);
+  border: 1px solid rgba(200,164,92,0.2);
+  border-radius: 20px;
+  font-size: 13px; color: var(--gold);
+  letter-spacing: 0.12em;
+  z-index: 11;
+}
+
+/* ============ PLAY BUTTON ============ */
+.play-btn {
+  position: absolute; bottom: 24%; left: 50%; transform: translateX(-50%);
+  z-index: 30;
+  padding: 10px 32px;
+  background: rgba(200,164,92,0.1);
+  border: 1.5px solid rgba(200,164,92,0.3);
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  letter-spacing: 0.12em;
+  transition: all 0.2s;
+}
+.play-btn:hover {
+  background: rgba(200,164,92,0.2);
+  border-color: rgba(200,164,92,0.5);
+  box-shadow: 0 0 20px rgba(200,164,92,0.15);
+}
+</style>
+</head>
+<body>
+
+<div class="scene" id="scene">
+  <div class="bg-fog"></div>
+  <div class="bg-grain"></div>
+
+  <!-- Ground energy rift -->
+  <div class="ground">
+    <div class="ground-base"></div>
+    <div class="energy-rift"></div>
+    <div class="energy-p1" id="energy-p1" style="width:50%"></div>
+    <div class="energy-p2" id="energy-p2" style="width:50%"></div>
+  </div>
+
+  <!-- Phase indicator -->
+  <div class="phase-indicator" id="phase-indicator">⚔ 出 牌 阶 段 ⚔</div>
+
+  <!-- HUD Left (P1) -->
+  <div class="hud hud-left" id="hud-p1">
+    <div class="hud-avatar"><div class="hud-avatar-inner">血</div></div>
+    <div class="hud-stats">
+      <div class="hud-stat">
+        <div class="hud-stat-label">HP</div>
+        <div class="hud-stat-value hp" id="hp-p1">4</div>
+      </div>
+      <div class="hud-stat">
+        <div class="hud-stat-label">内力</div>
+        <div class="hud-stat-value" id="inner-p1">1</div>
+      </div>
+      <div class="hud-stat">
+        <div class="hud-stat-label">破绽</div>
+        <div class="hud-stat-value flaw" id="flaw-p1">\(\cdot\)</div>
+      </div>
+      <div class="hud-stat">
+        <div class="hud-stat-label">毒</div>
+        <div class="hud-stat-value" style="color:#22c55e" id="poison-p1">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD Right (P2) -->
+  <div class="hud hud-right" id="hud-p2">
+    <div class="hud-avatar"><div class="hud-avatar-inner">无</div></div>
+    <div class="hud-stats">
+      <div class="hud-stat">
+        <div class="hud-stat-label">HP</div>
+        <div class="hud-stat-value hp-opp" id="hp-p2">3</div>
+      </div>
+      <div class="hud-stat">
+        <div class="hud-stat-label">内力</div>
+        <div class="hud-stat-value" id="inner-p2">2</div>
+      </div>
+      <div class="hud-stat">
+        <div class="hud-stat-label">破绽</div>
+        <div class="hud-stat-value flaw" id="flaw-p2">1</div>
+      </div>
+      <div class="hud-stat">
+        <div class="hud-stat-label">毒</div>
+        <div class="hud-stat-value" style="color:#22c55e" id="poison-p2">1</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Characters -->
+  <div class="char-container char-left" id="char-left">
+    <div class="char">
+      <div class="char-body"></div>
+      <!-- Qi rings around feet -->
+      <div class="qi-ring qi-ring-1"></div>
+      <div class="qi-ring qi-ring-2"></div>
+      <div class="qi-ring qi-ring-3"></div>
+      <div class="qi-particles" id="qi-particles-left"></div>
+      <div class="char-faction">· 魔 教 ·</div>
+      <div class="char-name">血 刀</div>
+    </div>
+  </div>
+
+  <div class="char-container char-right" id="char-right">
+    <div class="char">
+      <div class="char-body"></div>
+      <div class="qi-ring qi-ring-1"></div>
+      <div class="qi-ring qi-ring-2"></div>
+      <div class="qi-ring qi-ring-3"></div>
+      <div class="qi-particles" id="qi-particles-right"></div>
+      <div class="char-faction">· 武 当 ·</div>
+      <div class="char-name">无极道人</div>
+    </div>
+  </div>
+
+  <!-- Power display -->
+  <div class="power-display">
+    <div class="power-num p1" id="power-p1">0</div>
+    <div class="power-vs">VS</div>
+    <div class="power-num p2" id="power-p2">0</div>
+  </div>
+
+  <!-- Judgment zone -->
+  <div class="judgment-zone" id="judgment-zone">
+    <div>
+      <div class="judgment-card p1" id="jcard-p1">
+        <div class="judgment-card-back"></div>
+        <div class="judgment-card-reveal"></div>
+      </div>
+      <div class="judgment-label">判定区</div>
+    </div>
+    <div>
+      <div class="judgment-card p2" id="jcard-p2">
+        <div class="judgment-card-back"></div>
+        <div class="judgment-card-reveal"></div>
+      </div>
+      <div class="judgment-label">判定区</div>
+    </div>
+  </div>
+
+  <!-- Action log -->
+  <div class="action-log" id="action-log"></div>
+
+  <!-- Hand bar -->
+  <div class="hand-bar" id="hand-bar"></div>
+
+  <!-- Play turn button -->
+  <button class="play-btn" id="play-turn-btn" onclick="playTurn()">⚡ 进入判定</button>
+</div>
+
+<!-- Particle canvas overlay -->
+<canvas id="particle-canvas"></canvas>
+
+<script>
+// ============ GAME STATE ============
+const PARTICLE_COUNT = 200;
+const EM = { deceptive: '诡', domineering: '霸', skillful: '巧', spirit: '灵' };
+const ELEM_COLORS = {
+  deceptive:   { c: '#a78bfa', g: 'rgba(167,139,250,0.25)', p: '#c4b5fd' },
+  domineering: { c: '#ef4444', g: 'rgba(239,68,68,0.25)',   p: '#fca5a5' },
+  skillful:    { c: '#22c55e', g: 'rgba(34,197,94,0.25)',   p: '#86efac' },
+  spirit:      { c: '#ffffff', g: 'rgba(255,255,255,0.22)', p: '#ffffff' },
+};
+
+const state = {
+  p1: { hp: 4, maxHp: 4, inner: 1, flaws: 0, poison: 0, totalPower: 0, hand: [], actionZone: [], judgment: null, faction: 'modeng' },
+  p2: { hp: 3, maxHp: 3, inner: 2, flaws: 1, poison: 1, totalPower: 0, hand: [], actionZone: [], judgment: null, faction: 'wudang' },
+  phase: 'play',
+  turn: 1,
+  playedThisTurn: 0,
+};
+
+// Available cards for hand
+const DECK = [
+  { n: '血刀大法',   t: 'wuji',  f: 'modeng',  c: 2, p: 7,  i: 0, e: 'domineering', d: '', tg: ['震伤'] },
+  { n: '狂骨碎岩拳', t: 'wuji',  f: 'modeng',  c: 1, p: 3,  i: 0, e: 'domineering', d: '', tg: ['震伤'] },
+  { n: '魔门基础心法',t: 'xinfa', f: 'modeng',  c: 0, p: 2,  i: 1, e: 'domineering', d: '', tg: ['心法'] },
+  { n: '修罗饮血功', t: 'xinfa', f: 'modeng',  c: 0, p: 2,  i: 1, e: 'domineering', d: '', tg: ['心法'] },
+  { n: '透骨钉',     t: 'wuji',  f: 'public',  c: 1, p: 2,  i: 0, e: 'deceptive', d: '', tg: ['命中'] },
+  { n: '祭血连环斩', t: 'wuji',  f: 'modeng',  c: 4, p: 10, i: 0, e: 'domineering', d: '', tg: ['刀法'] },
+  { n: '血海魔录',   t: 'wuji',  f: 'modeng',  c: 3, p: 1,  i: 0, e: 'domineering', d: '', tg: ['秘术'] },
+  { n: '聚气诀',     t: 'xinfa', f: 'public',  c: 1, p: 1,  i: 3, e: 'domineering', d: '', tg: ['心法'] },
+  { n: '踏雪无痕',   t: 'wuji',  f: 'public',  c: 0, p: 1,  i: 0, e: 'spirit',     d: '', tg: ['身法'] },
+  { n: '舍身撞',     t: 'wuji',  f: 'public',  c: 2, p: 2,  i: 0, e: 'domineering', d: '', tg: ['拆招'] },
+  { n: '血蛭镖',     t: 'wuji',  f: 'public',  c: 1, p: 4,  i: 0, e: 'deceptive', d: '', tg: ['盖放'] },
+  { n: '阎王帖',     t: 'wuji',  f: 'yintang', c: 0, p: 2,  i: 0, e: 'deceptive', d: '', tg: ['命中'] },
+];
+
+// Opponent hand (武当)
+const OPP_DECK = [
+  { n: '武当基础剑',     t: 'wuji',  f: 'wudang', c: 2, p: 6, i: 0, e: 'skillful', d: '' },
+  { n: '太极掌·绕指柔云',t: 'wuji',  f: 'wudang', c: 3, p: 6, i: 0, e: 'skillful', d: '' },
+  { n: '纯阳心法诀',     t: 'xinfa', f: 'wudang', c: 0, p: 1, i: 1, e: 'skillful', d: '' },
+  { n: '武当基础心法',   t: 'xinfa', f: 'wudang', c: 1, p: 1, i: 2, e: 'skillful', d: '' },
+  { n: '梯云纵',         t: 'wuji',  f: 'wudang', c: 1, p: 1, i: 0, e: 'spirit',   d: '' },
+  { n: '两仪桩功',       t: 'xinfa', f: 'wudang', c: 1, p: 2, i: 1, e: 'skillful', d: '' },
+];
+
+// ============ INIT ============
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initHand() {
+  state.p1.hand = shuffle(DECK).slice(0, 6);
+  state.p2.hand = shuffle(OPP_DECK).slice(0, 4);
+  // Set initial judgment cards
+  state.p1.judgment = { n: '透骨钉', t: 'wuji', e: 'deceptive', p: 2 };
+  state.p2.judgment = { n: '武当基础剑', t: 'wuji', e: 'skillful', p: 6 };
+  recalcPower();
+  renderAll();
+}
+
+// ============ PARTICLES ============
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function spawnParticles(x, y, count, color, spread, type) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 80 + Math.random() * spread;
+    const life = 0.6 + Math.random() * 0.8;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 40,
+      life, maxLife: life,
+      size: 2 + Math.random() * 4,
+      color,
+      type: type || 'default',
+    });
+  }
+}
+
+function spawnQiParticles(x, y, count, color) {
+  for (let i = 0; i < count; i++) {
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+    const speed = 30 + Math.random() * 60;
+    const life = 1 + Math.random() * 2;
+    particles.push({
+      x: x + (Math.random() - 0.5) * 100,
+      y: y - 10,
+      vx: Math.cos(angle) * speed * 0.3,
+      vy: Math.sin(angle) * speed,
+      life, maxLife: life,
+      size: 1.5 + Math.random() * 3,
+      color,
+      type: 'qi',
+    });
+  }
+}
+
+function spawnXinfaBurst(x, y, count, color) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 150 + Math.random() * 300;
+    const life = 1.5 + Math.random() * 1.5;
+    const r = 20 + Math.random() * 60;
+    particles.push({
+      x: x + Math.cos(angle) * r,
+      y: y + Math.sin(angle) * r * 0.5,
+      vx: Math.cos(angle) * speed * 0.5,
+      vy: Math.sin(angle) * speed * 0.3 - 60,
+      life, maxLife: life,
+      size: 3 + Math.random() * 6,
+      color,
+      type: 'xinfa-burst',
+    });
+  }
+}
+
+function updateParticles(dt) {
+  dt = Math.min(dt, 0.1);
+  particles = particles.filter(p => {
+    p.life -= dt;
+    if (p.life <= 0) return false;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    if (p.type === 'qi') p.vy -= 15 * dt; // Float up
+    if (p.type === 'xinfa-burst') p.vx *= 0.98; // Slow drift
+    return true;
+  });
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const p of particles) {
+    const alpha = p.life / p.maxLife;
+    const size = p.size * (0.5 + 0.5 * alpha);
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.9;
+    if (p.type === 'qi') {
+      // Qi particles: soft glow
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 3);
+      grad.addColorStop(0, p.color);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * 3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (p.type === 'xinfa-burst') {
+      // Xinfa burst: larger, softer glow
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 4);
+      grad.addColorStop(0, p.color);
+      grad.addColorStop(0.5, p.color.replace('1)', '0.6)'));
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Default: sharp particles
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = size * 2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function particleLoop(ts) {
+  if (!lastParticleTs) lastParticleTs = ts;
+  const dt = (ts - lastParticleTs) / 1000;
+  lastParticleTs = ts;
+  updateParticles(dt);
+  drawParticles();
+  requestAnimationFrame(particleLoop);
+}
+let lastParticleTs = null;
+requestAnimationFrame(particleLoop);
+
+// ============ RENDER ============
+function getCardBorderColor(card) {
+  if (card.t === 'xinfa' || card.t === 'neigong') return '#0ea5e9';
+  const ec = ELEM_COLORS[card.e];
+  return ec ? ec.c : '#c8a45c';
+}
+
+function getCardGlow(card) {
+  if (card.t === 'xinfa' || card.t === 'neigong') return 'rgba(14,165,233,0.2)';
+  const ec = ELEM_COLORS[card.e];
+  return ec ? ec.g : 'rgba(200,164,92,0.25)';
+}
+
+function renderHand() {
+  const bar = document.getElementById('hand-bar');
+  const cards = state.p1.hand;
+  bar.innerHTML = cards.map((c, i) => {
+    const bc = getCardBorderColor(c);
+    const hg = getCardGlow(c);
+    const typeName = c.t === 'wuji' ? '武技' : c.t === 'xinfa' ? '心法' : '内功';
+    const typeClass = c.t === 'wuji' ? 'type-wuji' : 'type-xinfa';
+    return `<div class="hand-card" style="--hc:${bc};--hg:${hg};animation-delay:${i*0.05}s"
+      onclick="playCard(${i})" title="${c.n} · ${typeName} · 战力${c.p} · 费用${c.c}">
+      <div class="hand-card-cost">${c.c}</div>
+      <div class="hand-card-name">${c.n}</div>
+      <div class="hand-card-type">${typeName} · ${EM[c.e] || '内'}</div>
+      <div class="hand-card-power">${c.p}</div>
+    </div>`;
+  }).join('');
+
+  // Also add opponent "intent" cards
+  if (state.p2.actionZone.length > 0) {
+    // show opponent played cards as small indicators
+  }
+}
+
+function renderJudgment() {
+  // P1 judgment
+  const jc1 = document.getElementById('jcard-p1');
+  const j1 = state.p1.judgment;
+  if (j1) {
+    const ec = ELEM_COLORS[j1.e] || { c: '#c8a45c', g: 'rgba(200,164,92,0.2)' };
+    jc1.classList.add('revealed');
+    const reveal1 = jc1.querySelector('.judgment-card-reveal');
+    reveal1.style.setProperty('--jc', ec.c);
+    reveal1.style.setProperty('--jg', ec.g);
+    reveal1.innerHTML = `
+      <div class="jc-name">${j1.n}</div>
+      <div class="jc-power">${j1.p}</div>
+      <div class="jc-elem" style="color:${ec.c}">${EM[j1.e] || ''}</div>
+    `;
+  } else {
+    jc1.classList.remove('revealed');
+  }
+
+  // P2 judgment
+  const jc2 = document.getElementById('jcard-p2');
+  const j2 = state.p2.judgment;
+  if (j2) {
+    const ec = ELEM_COLORS[j2.e] || { c: '#c8a45c', g: 'rgba(200,164,92,0.2)' };
+    jc2.classList.add('revealed');
+    const reveal2 = jc2.querySelector('.judgment-card-reveal');
+    reveal2.style.setProperty('--jc', ec.c);
+    reveal2.style.setProperty('--jg', ec.g);
+    reveal2.innerHTML = `
+      <div class="jc-name">${j2.n}</div>
+      <div class="jc-power">${j2.p}</div>
+      <div class="jc-elem" style="color:${ec.c}">${EM[j2.e] || ''}</div>
+    `;
+  } else {
+    jc2.classList.remove('revealed');
+  }
+}
+
+function renderHUD() {
+  document.getElementById('hp-p1').textContent = state.p1.hp;
+  document.getElementById('inner-p1').textContent = state.p1.inner;
+  document.getElementById('flaw-p1').textContent = state.p1.flaws || '·';
+  document.getElementById('poison-p1').textContent = state.p1.poison;
+
+  document.getElementById('hp-p2').textContent = state.p2.hp;
+  document.getElementById('inner-p2').textContent = state.p2.inner;
+  document.getElementById('flaw-p2').textContent = state.p2.flaws || '·';
+  document.getElementById('poison-p2').textContent = state.p2.poison;
+
+  // Power display
+  const pp1 = document.getElementById('power-p1');
+  const pp2 = document.getElementById('power-p2');
+  pp1.textContent = state.p1.totalPower;
+  pp2.textContent = state.p2.totalPower;
+  pp1.classList.toggle('winning', state.p1.totalPower > state.p2.totalPower);
+  pp2.classList.toggle('winning', state.p2.totalPower > state.p1.totalPower);
+
+  // Energy rift tug-of-war
+  const totalP = state.p1.totalPower + state.p2.totalPower || 1;
+  const p1Ratio = state.p1.totalPower / totalP;
+  const p2Ratio = 1 - p1Ratio;
+  document.getElementById('energy-p1').style.width = (p1Ratio * 100) + '%';
+  document.getElementById('energy-p2').style.width = (p2Ratio * 100) + '%';
+}
+
+function recalcPower() {
+  let p1p = 0, p2p = 0;
+  if (state.p1.judgment) p1p += state.p1.judgment.p;
+  for (const c of state.p1.actionZone) p1p += c.p;
+  if (state.p2.judgment) p2p += state.p2.judgment.p;
+  for (const c of state.p2.actionZone) p2p += c.p;
+  state.p1.totalPower = p1p;
+  state.p2.totalPower = p2p;
+}
+
+function renderAll() {
+  renderHand();
+  renderJudgment();
+  renderHUD();
+}
+
+function logAction(text) {
+  const el = document.getElementById('action-log');
+  const div = document.createElement('div');
+  div.className = 'action-text';
+  div.textContent = text;
+  el.appendChild(div);
+  setTimeout(() => div.remove(), 2000);
+}
+
+// ============ PLAY CARD ============
+function playCard(index) {
+  if (state.phase !== 'play') return;
+  const card = state.p1.hand[index];
+  if (!card) return;
+
+  // Check inner power cost
+  if (card.c > state.p1.inner) {
+    logAction('内力不足！');
+    shakeElement(document.getElementById('hand-bar').children[index]);
+    return;
+  }
+
+  // Remove from hand with dissolve animation
+  state.p1.hand.splice(index, 1);
+  renderHand();
+
+  // Spend inner power
+  state.p1.inner -= card.c;
+
+  // Add to action zone
+  state.p1.actionZone.push(card);
+
+  // Get card position for particle origin
+  const cardEl = document.querySelectorAll('.hand-card')[index];
+  let originX = window.innerWidth / 2;
+  let originY = window.innerHeight - 120;
+
+  // Determine particle color
+  const ec = ELEM_COLORS[card.e] || { p: '#c8a45c' };
+  const particleColor = ec.p;
+
+  // Spawn dissolve particles from hand position
+  spawnParticles(originX, originY, 40, particleColor, 200, 'default');
+
+  // Card fly-out popup
+  showCardPopup(card, originX, originY);
+
+  const isXinfa = card.t === 'xinfa' || card.t === 'neigong';
+
+  if (isXinfa) {
+    // Xinfa: burst around character
+    const charL = document.getElementById('char-left');
+    const rect = charL.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height * 0.6;
+
+    // Large qi burst around character
+    spawnXinfaBurst(cx, cy, 80, '#38bdf8');
+    // Rise up from qi ring
+    spawnQiParticles(cx, cy + 40, 40, '#7dd3fc');
+
+    // Visual qi burst ring
+    const burst = document.createElement('div');
+    burst.className = 'qi-burst';
+    burst.style.left = (cx - 150) + 'px';
+    burst.style.top = (cy - 150) + 'px';
+    burst.style.background = 'radial-gradient(circle, rgba(14,165,233,0.3), rgba(14,165,233,0.1) 40%, transparent 70%)';
+    burst.style.border = '2px solid rgba(14,165,233,0.3)';
+    document.body.appendChild(burst);
+    setTimeout(() => burst.remove(), 1500);
+
+    logAction('「' + card.n + '」心息流转 · 气环涌动');
+  } else {
+    // Wuji: screen shake + impact particles toward opponent
+    const charR = document.getElementById('char-right');
+    const rect = charR.getBoundingClientRect();
+    const tx = rect.left + rect.width / 2;
+    const ty = rect.top + rect.height * 0.5;
+
+    // Particles flying across screen
+    const charL = document.getElementById('char-left');
+    const lRect = charL.getBoundingClientRect();
+    const sx = lRect.left + lRect.width / 2;
+    const sy = lRect.top + lRect.height * 0.5;
+
+    // Directional particles
+    for (let i = 0; i < 50; i++) {
+      const t = Math.random();
+      const px = sx + (tx - sx) * t;
+      const py = sy + (ty - sy) * t - 40 + Math.random() * 80;
+      particles.push({
+        x: px, y: py,
+        vx: (tx - sx) * 0.2 + (Math.random() - 0.5) * 80,
+        vy: (ty - sy) * 0.2 + (Math.random() - 0.5) * 80,
+        life: 0.4 + Math.random() * 0.3,
+        maxLife: 0.7,
+        size: 2 + Math.random() * 3,
+        color: particleColor,
+        type: 'default',
+      });
+    }
+
+    // Impact particles at target
+    spawnParticles(tx, ty, 30, particleColor, 150, 'default');
+
+    // Screen shake
+    document.getElementById('scene').classList.add('screen-shake');
+    setTimeout(() => document.getElementById('scene').classList.remove('screen-shake'), 400);
+
+    // Opponent hit reaction
+    const charRight = document.getElementById('char-right');
+    charRight.style.transform = 'translateX(8px)';
+    setTimeout(() => charRight.style.transform = '', 150);
+
+    logAction('「' + card.n + '」战力 +' + card.p + ' · ' + EM[card.e] + '属性');
+  }
+
+  recalcPower();
+  renderHUD();
+
+  state.playedThisTurn++;
+  if (state.playedThisTurn >= 2) {
+    document.getElementById('play-turn-btn').style.display = 'block';
+  }
+}
+
+function showCardPopup(card, x, y) {
+  const popup = document.createElement('div');
+  popup.className = 'card-popup';
+  popup.style.left = (x - 60) + 'px';
+  popup.style.top = (y - 88) + 'px';
+  const typeName = card.t === 'wuji' ? '武技' : '心法';
+  popup.innerHTML = `
+    <div class="popup-name">${card.n}</div>
+    <div class="popup-power">${card.p}</div>
+    <div class="popup-type">${typeName} · 费用${card.c}</div>
+  `;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1200);
+}
+
+function shakeElement(el) {
+  if (!el) return;
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'shake 0.3s ease-out';
+  setTimeout(() => el.style.animation = '', 300);
+}
+
+// ============ PLAY TURN: Opponent auto-plays ============
+function playTurn() {
+  if (state.phase !== 'play') return;
+
+  // Opponent plays 1-2 cards
+  const oppCards = [...state.p2.hand];
+  if (oppCards.length === 0) return;
+
+  // Pick 1-2 random cards
+  const count = Math.min(1 + Math.floor(Math.random() * 2), oppCards.length);
+  const pick = shuffle(oppCards).slice(0, count);
+
+  let delay = 0;
+  pick.forEach((card, i) => {
+    delay += 600;
+    setTimeout(() => {
+      // Remove from opponent hand
+      const idx = state.p2.hand.indexOf(card);
+      if (idx >= 0) state.p2.hand.splice(idx, 1);
+
+      // Add to opponent action zone
+      state.p2.actionZone.push(card);
+
+      // Spawn particles from opponent side
+      const charR = document.getElementById('char-right');
+      const rect = charR.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height * 0.5;
+      const ec = ELEM_COLORS[card.e] || { p: '#3b82f6' };
+
+      const isXinfa = card.t === 'xinfa' || card.t === 'neigong';
+      if (isXinfa) {
+        spawnXinfaBurst(cx, cy, 60, '#3b82f6');
+        spawnQiParticles(cx, cy + 40, 30, '#93c5fd');
+        const burst = document.createElement('div');
+        burst.className = 'qi-burst';
+        burst.style.left = (cx - 150) + 'px';
+        burst.style.top = (cy - 150) + 'px';
+        burst.style.background = 'radial-gradient(circle, rgba(59,130,246,0.3), rgba(59,130,246,0.1) 40%, transparent 70%)';
+        burst.style.border = '2px solid rgba(59,130,246,0.3)';
+        document.body.appendChild(burst);
+        setTimeout(() => burst.remove(), 1500);
+      } else {
+        // Wuji impact back at player
+        const charL = document.getElementById('char-left');
+        const lRect = charL.getBoundingClientRect();
+        spawnParticles(lRect.left + lRect.width/2, lRect.top + lRect.height*0.5, 30, ec.p, 150, 'default');
+      }
+
+      recalcPower();
+      renderHUD();
+      logAction('「' + card.n + '」对手出招 · 战力 +' + card.p);
+
+      // Last card: enter judgment
+      if (i === pick.length - 1) {
+        setTimeout(() => enterJudgment(), 800);
+      }
+    }, delay);
+  });
+}
+
+function enterJudgment() {
+  state.phase = 'judgment';
+  document.getElementById('phase-indicator').textContent = '⚖ 判 定 阶 段 ⚖';
+  document.getElementById('play-turn-btn').style.display = 'none';
+
+  // Animate judgment zone
+  const jz = document.getElementById('judgment-zone');
+  jz.style.transform = 'translate(-50%, -50%) scale(1.1)';
+  setTimeout(() => jz.style.transform = 'translate(-50%, -50%) scale(1)', 300);
+
+  const winner = state.p1.totalPower > state.p2.totalPower ? 'p1' :
+                 state.p2.totalPower > state.p1.totalPower ? 'p2' : 'draw';
+
+  if (winner === 'draw') {
+    logAction('平局！势均力敌——双方各获1个破绽');
+  } else if (winner === 'p1') {
+    logAction('血刀战力领先！无极道人获得1个破绽');
+    state.p2.flaws++;
+    // Flash winner power
+    document.getElementById('power-p1').classList.add('winning');
+  } else {
+    logAction('无极道人战力反超！血刀获得1个破绽');
+    state.p1.flaws++;
+    document.getElementById('power-p2').classList.add('winning');
+  }
+
+  renderHUD();
+
+  // After 2.5s, reset for next turn
+  setTimeout(() => {
+    resetTurn();
+  }, 2500);
+}
+
+function resetTurn() {
+  // Clear action zones
+  state.p1.actionZone = [];
+  state.p2.actionZone = [];
+  state.p1.judgment = null;
+  state.p2.judgment = null;
+  state.playedThisTurn = 0;
+  state.turn++;
+
+  // Draw new judgment cards
+  state.p1.judgment = shuffle(DECK)[0];
+  state.p2.judgment = shuffle(OPP_DECK)[0];
+
+  // Replenish hands
+  if (state.p1.hand.length < 4) {
+    const toDraw = 5 - state.p1.hand.length;
+    state.p1.hand.push(...shuffle(DECK).slice(0, toDraw));
+  }
+
+  state.phase = 'play';
+  document.getElementById('phase-indicator').textContent = '⚔ 出 牌 阶 段 ⚔ 第 ' + state.turn + ' 回合';
+  document.getElementById('play-turn-btn').style.display = 'none';
+
+  recalcPower();
+  renderAll();
+
+  logAction('—— 第 ' + state.turn + ' 回合 ——');
+}
+
+// ============ START ============
+initHand();
+</script>
+</body>
+</html>
