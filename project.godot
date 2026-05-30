@@ -21,7 +21,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Slay the Spire 2"
+config/name="GameCard"
 run/main_scene="res://scenes/combat/battle_scene.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="SlayTheSpire2"

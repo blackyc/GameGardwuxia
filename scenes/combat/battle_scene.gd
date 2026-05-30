@@ -9,12 +9,12 @@ extends Control
 @onready var _hand_area: HandArea = null  # 在 _ready() 中延迟修复
 @onready var _enemy: Enemy = null  # 在 _ready() 中延迟查找
 @onready var _card_effect: CardEffect = $CardEffect
-@onready var _draw_pile_panel: PanelContainer = $DrawPilePanel
-@onready var _draw_pile_label: Label = $DrawPilePanel/DrawPileVBox/DrawPileCount
-@onready var _draw_pile_title: Label = $DrawPilePanel/DrawPileVBox/DrawPileTitle
-@onready var _discard_pile_panel: PanelContainer = $DiscardPilePanel
-@onready var _discard_pile_label: Label = $DiscardPilePanel/DiscardPileVBox/DiscardPileCount
-@onready var _discard_pile_title: Label = $DiscardPilePanel/DiscardPileVBox/DiscardPileTitle
+@onready var _draw_pile_panel: Control = $'DrawPilePanel#DrawPileVBox'
+@onready var _draw_pile_label: Label = $'DrawPilePanel#DrawPileVBox/DrawPileCount'
+@onready var _draw_pile_title: Label = $'DrawPilePanel_DrawPileVBox#DrawPileTitle'
+@onready var _discard_pile_panel: Control = $'DiscardPilePanel#DiscardPileVBox'
+@onready var _discard_pile_label: Label = $'DiscardPilePanel_DiscardPileVBox#DiscardPileTitle'
+@onready var _discard_pile_title: Label = $'DiscardPilePanel_DiscardPileVBox#DiscardPileTitle'
 @onready var _energy_label: Label = $PlayerArea/EnergyContainer/EnergyLabel
 @onready var _player_hp_label: Label = $PlayerArea/HPContainer/HPLabel
 @onready var _player_block_label: Label = $PlayerArea/BlockLabel
@@ -137,6 +137,8 @@ func _ready() -> void:
     _ensure_hand_area()
     _ensure_enemy()
 
+    # 地图位置由用户在编辑器中手动对齐，不再强制覆盖
+
     # 诊断：检查关键节点是否正常
     print("[BattleScene] _ready 开始")
     print("[BattleScene] _hand_area=%s, _enemy=%s" % [_hand_area, _enemy])
@@ -207,7 +209,9 @@ func _connect_event_signals() -> void:
     EventBus.battle_lost.connect(_on_battle_lost)
 
 
+
 func _setup_ui_styles() -> void:
+
     # BattleLog 面板样式
     var log_style := StyleBoxFlat.new()
     log_style.bg_color = Color(0.06, 0.07, 0.06, 0.85)
@@ -259,23 +263,67 @@ func _setup_ui_styles() -> void:
         _battle_log.add_theme_color_override("default_color", Color(0.85, 0.82, 0.75, 1))
         _battle_log.add_theme_font_size_override("normal_font_size", 14)
 
-    # 抽牌堆面板样式 — 右下角可点击
+    # 抽牌堆面板 — 使用 Button 类型，与 EndTurnButton 完全一致的宽度和样式
     if _draw_pile_panel:
-        var draw_style := StyleBoxFlat.new()
-        draw_style.bg_color = Color(0.06, 0.10, 0.18, 0.92)
-        draw_style.border_width_left = 2
-        draw_style.border_width_right = 2
-        draw_style.border_width_top = 2
-        draw_style.border_width_bottom = 2
-        draw_style.border_color = Color(0.3, 0.55, 0.85, 0.85)
-        draw_style.corner_radius_top_left = 8
-        draw_style.corner_radius_top_right = 8
-        draw_style.corner_radius_bottom_left = 8
-        draw_style.corner_radius_bottom_right = 8
-        _draw_pile_panel.add_theme_stylebox_override("panel", draw_style)
+        var draw_btn := Button.new()
+        draw_btn.name = "DrawPileVisible"
+        draw_btn.text = "点击抽牌"
+        draw_btn.flat = false
 
-        # 鼠标悬停光标提示
-        _draw_pile_panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+        # === 与 EndTurnButton 完全一致的锚点布局 ===
+        # EndTurnButton: anchor(1, 0.78, 1, 0.78) offset(-200, 0, -20, 70)
+        # DrawPileBtn:    anchor(1, 0.68, 1, 0.68) offset(-200, 0, -20, 40)
+        draw_btn.anchor_left = 1.0
+        draw_btn.anchor_top = 0.68
+        draw_btn.anchor_right = 1.0
+        draw_btn.anchor_bottom = 0.68
+        draw_btn.offset_left = -200.0       # ← 与 EndTurnButton 完全相同
+        draw_btn.offset_top = 0.0
+        draw_btn.offset_right = -20.0       # ← 与 EndTurnButton 完全相同
+        draw_btn.offset_bottom = 40.0
+
+        # 文字样式
+        draw_btn.add_theme_color_override("font_color", Color(0.95, 0.92, 0.85, 1))
+        draw_btn.add_theme_font_size_override("font_size", 16)
+        draw_btn.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.5))
+        draw_btn.add_theme_constant_override("outline_size", 2)
+
+        # 样式盒：与结束回合按钮一致
+        var btn_style := StyleBoxFlat.new()
+        btn_style.bg_color = Color(0.15, 0.12, 0.08, 0.95)
+        btn_style.border_width_left = 2
+        btn_style.border_width_right = 2
+        btn_style.border_width_top = 2
+        btn_style.border_width_bottom = 2
+        btn_style.border_color = Color(0.7, 0.5, 0.2, 0.9)
+        btn_style.corner_radius_top_left = 10
+        btn_style.corner_radius_top_right = 10
+        btn_style.corner_radius_bottom_left = 10
+        btn_style.corner_radius_bottom_right = 10
+        draw_btn.add_theme_stylebox_override("normal", btn_style)
+
+        var btn_hover := btn_style.duplicate() as StyleBoxFlat
+        btn_hover.bg_color = Color(0.25, 0.18, 0.1, 0.95)
+        btn_hover.border_color = Color(0.9, 0.65, 0.25, 1.0)
+        draw_btn.add_theme_stylebox_override("hover", btn_hover)
+
+        var btn_pressed := btn_style.duplicate() as StyleBoxFlat
+        btn_pressed.bg_color = Color(0.08, 0.06, 0.04, 0.95)
+        draw_btn.add_theme_stylebox_override("pressed", btn_pressed)
+
+        add_child(draw_btn)
+
+        # 点击信号
+        draw_btn.pressed.connect(_on_draw_pile_pressed)
+
+        # 隐藏旧容器
+        _draw_pile_panel.visible = false
+        if _draw_pile_title:
+            _draw_pile_title.visible = false
+        _draw_pile_panel = draw_btn
+        _draw_pile_title = null  # 不再有独立标题节点，text 在 button 上
+
+        print("[BattleScene] 抽牌按钮(Button)已创建: anchor=(1,0.68) offset=(-200,0,-20,40)")
 
     # 弃牌堆面板样式
     if _discard_pile_panel:
@@ -439,6 +487,14 @@ func _enemy_action() -> void:
 #endregion
 
 #region 事件响应
+
+## 抽牌按钮(Button)点击回调 — 替代 gui_input 方式
+func _on_draw_pile_pressed() -> void:
+    print("[BattleScene] 抽牌按钮被点击！_battle_over=%s" % _battle_over)
+    if _battle_over:
+        return
+    BattleManager.draw_card()
+
 
 func _on_draw_pile_gui_input(event: InputEvent) -> void:
     if event is InputEventMouseButton:

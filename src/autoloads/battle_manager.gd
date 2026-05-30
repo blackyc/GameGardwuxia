@@ -22,7 +22,7 @@ var exhaust_pile: Array[CardData] = []
 
 var current_energy: int = 3
 var max_energy: int = 3
-var max_hand_size: int = 10
+var max_hand_size: int = 99  # 无限制抽牌
 var draw_per_turn: int = 5
 
 #endregion
