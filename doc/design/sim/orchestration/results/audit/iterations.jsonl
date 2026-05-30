@@ -1,0 +1,30 @@
+{"round":1,"modeng":32.5,"wudang":41.5,"yintang":76,"range":43.5,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":2,"modeng":41.5,"wudang":41,"yintang":67.5,"range":26.5,"changes":[],"aiModified":false}
+{"round":3,"modeng":34.5,"wudang":43,"yintang":72.5,"range":38,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":4,"modeng":32,"wudang":46,"yintang":72,"range":40,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":5,"modeng":33.5,"wudang":42.5,"yintang":74,"range":40.5,"changes":["天魔解体阈值: 12→12","AI代码已更新（第5轮）"],"aiModified":true}
+{"round":6,"modeng":34,"wudang":48,"yintang":68,"range":34,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":7,"modeng":43,"wudang":43,"yintang":64,"range":21,"changes":[],"aiModified":false}
+{"round":8,"modeng":41,"wudang":41,"yintang":68,"range":27,"changes":[],"aiModified":false}
+{"round":9,"modeng":44.5,"wudang":37,"yintang":68.5,"range":31.5,"changes":[],"aiModified":false}
+{"round":10,"modeng":36.5,"wudang":46,"yintang":67.5,"range":31,"changes":["AI代码已更新（第10轮）"],"aiModified":true}
+{"round":11,"modeng":32.5,"wudang":47,"yintang":70.5,"range":38,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":12,"modeng":36,"wudang":44,"yintang":70,"range":34,"changes":[],"aiModified":false}
+{"round":13,"modeng":33.5,"wudang":47.5,"yintang":69,"range":35.5,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":14,"modeng":31.5,"wudang":45.5,"yintang":73,"range":41.5,"changes":["天魔解体阈值: 12→12"],"aiModified":false}
+{"round":15,"modeng":28.499999999999996,"wudang":49,"yintang":72.5,"range":44,"changes":["天魔解体阈值: 12→11","AI代码已更新（第15轮）"],"aiModified":true}
+{"round":16,"modeng":36.5,"wudang":43,"yintang":70.5,"range":34,"changes":[],"aiModified":false}
+{"round":17,"modeng":41,"wudang":39,"yintang":70,"range":31,"changes":[],"aiModified":false}
+{"round":18,"modeng":32.5,"wudang":45,"yintang":72.5,"range":40,"changes":[],"aiModified":false}
+{"round":19,"modeng":39,"wudang":46.5,"yintang":64.5,"range":25.5,"changes":[],"aiModified":false}
+{"round":20,"modeng":42,"wudang":41,"yintang":67,"range":26,"changes":["AI代码已更新（第20轮）"],"aiModified":true}
+{"round":21,"modeng":38,"wudang":39.5,"yintang":72.5,"range":34.5,"changes":[],"aiModified":false}
+{"round":22,"modeng":35,"wudang":42,"yintang":73,"range":38,"changes":[],"aiModified":false}
+{"round":23,"modeng":36.5,"wudang":41.5,"yintang":72,"range":35.5,"changes":[],"aiModified":false}
+{"round":24,"modeng":30,"wudang":49.5,"yintang":70.5,"range":40.5,"changes":[],"aiModified":false}
+{"round":25,"modeng":32.5,"wudang":44.5,"yintang":73,"range":40.5,"changes":["AI代码已更新（第25轮）"],"aiModified":true}
+{"round":26,"modeng":41.5,"wudang":38,"yintang":70.5,"range":32.5,"changes":[],"aiModified":false}
+{"round":27,"modeng":41.5,"wudang":39.5,"yintang":69,"range":29.5,"changes":[],"aiModified":false}
+{"round":28,"modeng":36,"wudang":43,"yintang":71,"range":35,"changes":[],"aiModified":false}
+{"round":29,"modeng":39,"wudang":45,"yintang":66,"range":27,"changes":[],"aiModified":false}
+{"round":30,"modeng":44,"wudang":42,"yintang":64,"range":22,"changes":["AI代码已更新（第30轮）"],"aiModified":true}

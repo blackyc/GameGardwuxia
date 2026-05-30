@@ -1,0 +1,2 @@
+fatal: path 'sim/src/data/decks.json' exists, but not 'src/data/decks.json'
+hint: Did you mean 'HEAD:sim/src/data/decks.json' aka 'HEAD:./src/data/decks.json'?

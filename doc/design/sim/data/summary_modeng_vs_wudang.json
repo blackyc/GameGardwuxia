@@ -1,0 +1,11 @@
+{
+  "matchup": "modeng_vs_wudang",
+  "total": 10000,
+  "wins": {
+    "p1": 2531,
+    "p2": 2469
+  },
+  "errors": 0,
+  "completed": 5000,
+  "bugs": []
+}

@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "project": "江湖对决CCG",
+  "simulatorPath": "D:\\jianghuCCG\\sim",
+
+  "matchups": [
+    { "id": "md_vs_wd", "deck1": "modeng_xuedao", "deck2": "wudang_wuji", "label": "魔教vs武当" },
+    { "id": "md_vs_yt", "deck1": "modeng_xuedao", "deck2": "yintang_yeshura", "label": "魔教vs隐堂" },
+    { "id": "wd_vs_yt", "deck1": "wudang_wuji", "deck2": "yintang_yeshura", "label": "武当vs隐堂" }
+  ],
+
+  "testParams": {
+    "gamesPerMatchup": 500,
+    "maxParallelAgents": 3,
+    "timeoutMinutes": 5
+  },
+
+  "auditParams": {
+    "skills": ["test-audit"],
+    "checks": ["结果验证", "文本歧义检查", "AI策略审查"]
+  },
+
+  "outputDir": "D:\\jianghuCCG\\sim\\orchestration\\results",
+  "rawDir": "D:\\jianghuCCG\\sim\\orchestration\\results\\raw",
+  "auditDir": "D:\\jianghuCCG\\sim\\orchestration\\results\\audit"
+}

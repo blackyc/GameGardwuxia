@@ -1,0 +1,12 @@
+{
+  "name": "jianghu-sim",
+  "version": "1.0.0",
+  "description": "江湖对决 - 平衡模拟器",
+  "main": "src/index.js",
+  "scripts": {
+    "sim": "node src/index.js",
+    "sim:quick": "node src/index.js --games 1000",
+    "sim:full": "node src/index.js --games 10000"
+  },
+  "license": "UNLICENSED"
+}

@@ -24,12 +24,31 @@
 | [characters.tsv](./characters.tsv) | 3个角色（HP/被动/技能） | 3行 |
 | [decks.tsv](./decks.tsv) | 3套初始卡组（主卡组+额外卡组） | 3行 |
 
-## 🔧 参考实现
+## 🔮 规则预言机 — sim/
 
-Node.js 模拟器（可直接运行验证规则行为）：
-- 路径：`D:\jianghuCCG\sim\`
-- 运行：`node jianghu.js` → 选择 PVE 模式
-- 效果系统参考：`src\engine\effectResolver.js`
+`sim/` 是一个完整可运行的 Node.js 模拟器。团队用 C#/Godot 开发，但 **Node.js 版作为"规则预言机"**：
+
+- 写新卡牌效果前 → 跑 sim 验证规则行为是否正确
+- 遇到规则歧义 → sim 是权威参考，跑一把看结果
+- 调平衡数值 → 改 TSV → 跑 sim 批量模拟看胜率
+- 效果系统参考 → `sim/src/engine/effectResolver.js`（注册表模式，C# 可直译）
+
+**快速运行**：
+```bash
+cd sim/
+node jianghu.js          # 选 PVE 模式，人类 vs AI 对战
+node tests/test-harness.js   # 100局自动化模糊测试
+```
+
+**sim/ 目录结构**：
+```
+sim/
+├── src/engine/          ← 核心引擎（effectResolver, ai, engine, combatResolver 等）
+├── src/data/            ← JSON 卡牌/角色/卡组数据
+├── tests/               ← 自动化测试
+├── design/              ← 原始设计文档
+└── jianghu.js           ← 入口
+```
 
 ## ⚡ 快速开始（给 AI vibecoding）
 
@@ -42,7 +61,7 @@ Node.js 模拟器（可直接运行验证规则行为）：
 2. 再读 01-COMBAT-FLOW.md 理解回合流程（这是你要实现的）
 3. 参考 02-EFFECT-SYSTEM.md 了解效果系统
 4. 用 cards.tsv + characters.tsv + decks.tsv 作为数据源
-5. 参考 D:\jianghuCCG\sim\src\engine\ 下的 Node.js 实现
+5. 参考 sim/src/engine/ 下的 Node.js 规则预言机实现
 ```
 
 ## 📐 架构约束

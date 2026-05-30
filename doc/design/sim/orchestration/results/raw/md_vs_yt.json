@@ -1,0 +1,14 @@
+{
+  "matchupId": "md_vs_yt",
+  "label": "modeng xuedao vs yintang yeshura",
+  "deck1": "modeng_xuedao",
+  "deck2": "yintang_yeshura",
+  "totalGames": 100,
+  "p1Wins": 25,
+  "p2Wins": 75,
+  "p1Rate": "25.0",
+  "p2Rate": "75.0",
+  "avgRounds": "4.7",
+  "avgReversals": "0.0",
+  "timestamp": "2026-05-22T17:14:11.360Z"
+}

@@ -1,0 +1,8 @@
+{
+  "winner": 1,
+  "rounds": 7,
+  "reason": "HP depleted",
+  "p1Hp": 3,
+  "p2Hp": 0,
+  "errors": []
+}

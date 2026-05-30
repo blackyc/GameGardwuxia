@@ -1,0 +1,193 @@
+{
+  "modeng_xuedao": {
+    "name": "魔教·血刀",
+    "character": "xuedao",
+    "mainDeck": [
+      {
+        "cardId": "modeng_base_xinfa",
+        "count": 3
+      },
+      {
+        "cardId": "xiuluo_yinxuegong",
+        "count": 3
+      },
+      {
+        "cardId": "juqi_jue",
+        "count": 2
+      },
+      {
+        "cardId": "xuehai_molu",
+        "count": 2
+      },
+      {
+        "cardId": "tougu_ding_public",
+        "count": 3
+      },
+      {
+        "cardId": "xuezhi_biao",
+        "count": 2
+      },
+      {
+        "cardId": "xuedao_dafa",
+        "count": 3
+      },
+      {
+        "cardId": "jixue_lianhuanzhan",
+        "count": 3
+      },
+      {
+        "cardId": "kuanggu_suiyanquan",
+        "count": 2
+      },
+      {
+        "cardId": "sheshen_zhuang",
+        "count": 2
+      }
+    ],
+    "extraDeck": [
+      {
+        "cardId": "modao_qixue"
+      },
+      {
+        "cardId": "modao_qixue"
+      },
+      {
+        "cardId": "tianmo_jieti"
+      },
+      {
+        "cardId": "tianmo_jieti"
+      },
+      {
+        "cardId": "xiuluo_huaxuezhen"
+      }
+    ]
+  },
+  "wudang_wuji": {
+    "name": "武当·无极道人",
+    "character": "wuji",
+    "mainDeck": [
+      {
+        "cardId": "canfeng_yinlu",
+        "count": 3
+      },
+      {
+        "cardId": "chunyang_xinfa",
+        "count": 3
+      },
+      {
+        "cardId": "wudang_base_xinfa",
+        "count": 3
+      },
+      {
+        "cardId": "liangyi_zhuanggong",
+        "count": 3
+      },
+      {
+        "cardId": "taijijian_sanhuan",
+        "count": 3
+      },
+      {
+        "cardId": "taijizhang_raozhi",
+        "count": 3
+      },
+      {
+        "cardId": "wudang_base_sword",
+        "count": 3
+      },
+      {
+        "cardId": "tiyunzong",
+        "count": 2
+      },
+      {
+        "cardId": "zhenwu_milu",
+        "count": 2
+      }
+    ],
+    "extraDeck": [
+      {
+        "cardId": "zhenwu_qijiejian",
+        "count": 1
+      },
+      {
+        "cardId": "chunyang_wuji_sword",
+        "count": 2
+      },
+      {
+        "cardId": "jiuyang_shengong",
+        "count": 1
+      },
+      {
+        "cardId": "yangguang_puzhao_wd",
+        "count": 1
+      }
+    ]
+  },
+  "yintang_yeshura": {
+    "name": "隐堂·夜修罗",
+    "character": "yeshura",
+    "mainDeck": [
+      {
+        "cardId": "yintang_base_neigong",
+        "count": 3
+      },
+      {
+        "cardId": "duzhang_gong",
+        "count": 3
+      },
+      {
+        "cardId": "qianji_tupu",
+        "count": 2
+      },
+      {
+        "cardId": "guiying_mizong",
+        "count": 2
+      },
+      {
+        "cardId": "taxue_wuhen",
+        "count": 2
+      },
+      {
+        "cardId": "yanwang_tie",
+        "count": 2
+      },
+      {
+        "cardId": "tougu_ding_yintang",
+        "count": 2
+      },
+      {
+        "cardId": "hansha_sheying",
+        "count": 2
+      },
+      {
+        "cardId": "wuying_dusha",
+        "count": 2
+      },
+      {
+        "cardId": "zimu_zhuihundan",
+        "count": 2
+      },
+      {
+        "cardId": "xuedizi",
+        "count": 3
+      }
+    ],
+    "extraDeck": [
+      {
+        "cardId": "baoyu_lihuazhen",
+        "count": 2
+      },
+      {
+        "cardId": "fonu_tanglian",
+        "count": 1
+      },
+      {
+        "cardId": "wangu_shixin",
+        "count": 1
+      },
+      {
+        "cardId": "yangguang_puzhao_yt",
+        "count": 1
+      }
+    ]
+  }
+}

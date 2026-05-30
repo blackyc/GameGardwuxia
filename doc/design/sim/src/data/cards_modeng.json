@@ -1,0 +1,223 @@
+[
+  {
+    "id": "modeng_base_xinfa",
+    "name": "魔门基础心法",
+    "faction": "modeng",
+    "type": "xinfa",
+    "element": "domineering",
+    "cost": 0,
+    "innerPower": 1,
+    "power": 2,
+    "tags": [
+      "魔教",
+      "心法"
+    ],
+    "effectType": "persistInDiscard"
+  },
+  {
+    "id": "xiuluo_yinxuegong",
+    "name": "修罗饮血功",
+    "faction": "modeng",
+    "type": "xinfa",
+    "element": "domineering",
+    "cost": 0,
+    "innerPower": 1,
+    "power": 2,
+    "tags": [
+      "魔教",
+      "心法"
+    ],
+    "effectType": "selfFlawGivesInner"
+  },
+  {
+    "id": "juqi_jue",
+    "name": "聚气诀",
+    "faction": "public",
+    "type": "xinfa",
+    "element": "domineering",
+    "cost": 1,
+    "innerPower": 3,
+    "power": 1,
+    "tags": [
+      "公共",
+      "心法"
+    ],
+    "effectType": "delayedDantian"
+  },
+  {
+    "id": "xuehai_molu",
+    "name": "血海魔录",
+    "faction": "modeng",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 3,
+    "power": 1,
+    "tags": [
+      "魔教",
+      "秘术"
+    ],
+    "effectType": "searchExtra",
+    "searchFaction": "魔教",
+    "exileCount": 2,
+    "sources": [
+      "discardPile",
+      "actionZone"
+    ],
+    "bonusDraw": 1
+  },
+  {
+    "id": "tougu_ding_public",
+    "name": "透骨钉",
+    "faction": "public",
+    "type": "wuji",
+    "element": "deceptive",
+    "cost": 1,
+    "power": 2,
+    "tags": [
+      "公共",
+      "暗器",
+      "命中"
+    ],
+    "effectType": "conditionalPower_flaw_plus3",
+    "flawPowerBonus": 3,
+    "hasHit": true
+  },
+  {
+    "id": "xuezhi_biao",
+    "name": "血蛭镖",
+    "faction": "public",
+    "type": "wuji",
+    "element": "deceptive",
+    "cost": 1,
+    "power": 4,
+    "tags": [
+      "公共",
+      "暗器",
+      "盖放"
+    ],
+    "effectType": "faceDown_flaw_nerfSelf_drainEnemy",
+    "flawPowerPenalty": 2
+  },
+  {
+    "id": "xuedao_dafa",
+    "name": "血刀大法",
+    "faction": "modeng",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 2,
+    "power": 7,
+    "tags": [
+      "魔教",
+      "刀法",
+      "震伤"
+    ],
+    "effectType": "zhengshang",
+    "counterJudgmentBonus": 2,
+    "counterJudgmentElements": [
+      "skillful",
+      "deceptive"
+    ]
+  },
+  {
+    "id": "jixue_lianhuanzhan",
+    "name": "祭血连环斩",
+    "faction": "modeng",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 4,
+    "power": 10,
+    "tags": [
+      "魔教",
+      "刀法"
+    ],
+    "effectType": "flawDiscount",
+    "flawCostReduce": 2,
+    "flawPowerReduce": 3,
+    "flawDraw": 1
+  },
+  {
+    "id": "kuanggu_suiyanquan",
+    "name": "狂骨碎岩拳",
+    "faction": "modeng",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 1,
+    "power": 3,
+    "tags": [
+      "魔教",
+      "拳法",
+      "震伤"
+    ],
+    "effectType": "zhengshang",
+    "flawPowerBuff": 3
+  },
+  {
+    "id": "sheshen_zhuang",
+    "name": "舍身撞",
+    "faction": "public",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 2,
+    "power": 2,
+    "tags": [
+      "公共",
+      "外功",
+      "拆招"
+    ],
+    "effectType": "chaizhao_killDantian",
+    "dantianKillCount": 2
+  },
+  {
+    "id": "modao_qixue",
+    "name": "魔刀·泣血",
+    "faction": "modeng",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 4,
+    "power": 14,
+    "tags": [
+      "魔教",
+      "刀法",
+      "震伤"
+    ],
+    "effectType": "zhengshang",
+    "immuneToEffects": true,
+    "discardCostPower": true,
+    "lowHpZhengshangBuff": true,
+    "isExtra": true
+  },
+  {
+    "id": "tianmo_jieti",
+    "name": "天魔解体",
+    "faction": "modeng",
+    "type": "wuji",
+    "element": "domineering",
+    "cost": 4,
+    "power": 10,
+    "tags": [
+      "魔教",
+      "外功"
+    ],
+    "effectType": "forcedResolution",
+    "selfDamage": 1,
+    "nextTurnFreePlay": true,
+    "bonusDraw": 2,
+    "isExtra": true
+  },
+  {
+    "id": "xiuluo_huaxuezhen",
+    "name": "修罗化血阵",
+    "faction": "modeng",
+    "type": "xinfa",
+    "element": "domineering",
+    "cost": 3,
+    "innerPower": 4,
+    "power": 3,
+    "tags": [
+      "魔教",
+      "心法"
+    ],
+    "effectType": "zhengshangDrain",
+    "isExtra": true
+  }
+]

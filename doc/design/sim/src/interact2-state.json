@@ -1,0 +1,644 @@
+{
+  "round": 1,
+  "phase": "action",
+  "isGameOver": false,
+  "winner": null,
+  "log": [
+    "=== Game Start ===",
+    "P1(血刀) HP=5 | P2(无极道人) HP=4",
+    "\n--- Round 1 ---",
+    "AI places 1 JZ card",
+    "You place 魔门基础心法",
+    "战力 P1=2 vs P2=6",
+    "Disadvantaged: You"
+  ],
+  "p1": {
+    "hp": 5,
+    "innerPower": 0,
+    "baseInnerPower": 0,
+    "flaws": 1,
+    "_flawShield": 0,
+    "poisonStacks": 0,
+    "hasDrawnFirstFlaw": true,
+    "roundCardsPlayed": 0,
+    "hasUsedPassiveThisRound": false,
+    "_bloodWarfareUsed": false,
+    "_bloodWarfareMode": null,
+    "hasTriggeredSunshine": false,
+    "_skillfulDiscount": false,
+    "roundFlaws": 0,
+    "_actionDepth": 0,
+    "cardsMovedThisTurn": false,
+    "hand": [
+      {
+        "id": "juqi_jue",
+        "_data": {
+          "id": "juqi_jue",
+          "name": "聚气诀",
+          "faction": "public",
+          "type": "xinfa",
+          "element": "domineering",
+          "cost": 1,
+          "innerPower": 3,
+          "power": 1,
+          "tags": [
+            "公共",
+            "心法"
+          ],
+          "effectType": "delayedDantian"
+        },
+        "name": "聚气诀",
+        "type": "xinfa",
+        "element": "domineering",
+        "cost": 1,
+        "power": 1,
+        "innerPower": 3,
+        "tags": [
+          "公共",
+          "心法"
+        ],
+        "isExtra": false,
+        "effectType": "delayedDantian"
+      },
+      {
+        "id": "kuanggu_suiyanquan",
+        "_data": {
+          "id": "kuanggu_suiyanquan",
+          "name": "狂骨碎岩拳",
+          "faction": "modeng",
+          "type": "wuji",
+          "element": "domineering",
+          "cost": 1,
+          "power": 3,
+          "tags": [
+            "魔教",
+            "拳法",
+            "震伤"
+          ],
+          "effectType": "zhengshang",
+          "flawPowerBuff": 3
+        },
+        "name": "狂骨碎岩拳",
+        "type": "wuji",
+        "element": "domineering",
+        "cost": 1,
+        "power": 3,
+        "innerPower": 0,
+        "tags": [
+          "魔教",
+          "拳法",
+          "震伤"
+        ],
+        "isExtra": false,
+        "effectType": "zhengshang"
+      },
+      {
+        "id": "sheshen_zhuang",
+        "_data": {
+          "id": "sheshen_zhuang",
+          "name": "舍身撞",
+          "faction": "public",
+          "type": "wuji",
+          "element": "domineering",
+          "cost": 2,
+          "power": 2,
+          "tags": [
+            "公共",
+            "外功",
+            "拆招"
+          ],
+          "effectType": "chaizhao_killDantian",
+          "dantianKillCount": 2
+        },
+        "name": "舍身撞",
+        "type": "wuji",
+        "element": "domineering",
+        "cost": 2,
+        "power": 2,
+        "innerPower": 0,
+        "tags": [
+          "公共",
+          "外功",
+          "拆招"
+        ],
+        "isExtra": false,
+        "effectType": "chaizhao_killDantian"
+      },
+      {
+        "id": "xuedao_dafa",
+        "_data": {
+          "id": "xuedao_dafa",
+          "name": "血刀大法",
+          "faction": "modeng",
+          "type": "wuji",
+          "element": "domineering",
+          "cost": 2,
+          "power": 8,
+          "tags": [
+            "魔教",
+            "刀法",
+            "震伤"
+          ],
+          "effectType": "zhengshang",
+          "counterJudgmentBonus": 2,
+          "counterJudgmentElements": [
+            "skillful",
+            "deceptive"
+          ]
+        },
+        "name": "血刀大法",
+        "type": "wuji",
+        "element": "domineering",
+        "cost": 2,
+        "power": 8,
+        "innerPower": 0,
+        "tags": [
+          "魔教",
+          "刀法",
+          "震伤"
+        ],
+        "isExtra": false,
+        "effectType": "zhengshang"
+      },
+      {
+        "id": "modeng_base_xinfa",
+        "_data": {
+          "id": "modeng_base_xinfa",
+          "name": "魔门基础心法",
+          "faction": "modeng",
+          "type": "xinfa",
+          "element": "domineering",
+          "cost": 0,
+          "innerPower": 1,
+          "power": 2,
+          "tags": [
+            "魔教",
+            "心法"
+          ],
+          "effectType": "persistInDiscard"
+        },
+        "name": "魔门基础心法",
+        "type": "xinfa",
+        "element": "domineering",
+        "cost": 0,
+        "power": 2,
+        "innerPower": 1,
+        "tags": [
+          "魔教",
+          "心法"
+        ],
+        "isExtra": false,
+        "effectType": "persistInDiscard"
+      }
+    ],
+    "dantian": [],
+    "discardPile": [],
+    "extraDeck": [
+      {
+        "id": "modao_qixue",
+        "_data": {
+          "id": "modao_qixue",
+          "name": "魔刀·泣血",
+          "faction": "modeng",
+          "type": "wuji",
+          "element": "domineering",
+          "cost": 4,
+          "power": 14,
+          "tags": [
+            "魔教",
+            "刀法",
+            "震伤"
+          ],
+          "effectType": "zhengshang",
+          "immuneToEffects": true,
+          "discardCostPower": true,
+          "lowHpZhengshangBuff": true,
+          "isExtra": true
+        },
+        "name": "魔刀·泣血",
+        "type": "wuji",
+        "element": "domineering",
+        "cost": 4,
+        "power": 14,
+        "innerPower": 0,
+        "tags": [
+          "魔教",
+          "刀法",
+          "震伤"
+        ],
+        "isExtra": true,
+        "effectType": "zhengshang"
+      },
+      {
+        "id": "tianmo_jieti",
+        "_data": {
+          "id": "tianmo_jieti",
+          "name": "天魔解体",
+          "faction": "modeng",
+          "type": "wuji",
+          "element": "domineering",
+          "cost": 4,
+          "power": 10,
+          "tags": [
+            "魔教",
+            "外功"
+          ],
+          "effectType": "forcedResolution",
+          "selfDamage": 1,
+          "nextTurnFreePlay": true,
+          "bonusDraw": 2,
+          "isExtra": true
+        },
+        "name": "天魔解体",
+        "type": "wuji",
+        "element": "domineering",
+        "cost": 4,
+        "power": 10,
+        "innerPower": 0,
+        "tags": [
+          "魔教",
+          "外功"
+        ],
+        "isExtra": true,
+        "effectType": "forcedResolution"
+      },
+      {
+        "id": "xiuluo_huaxuezhen",
+        "_data": {
+          "id": "xiuluo_huaxuezhen",
+          "name": "修罗化血阵",
+          "faction": "modeng",
+          "type": "xinfa",
+          "element": "domineering",
+          "cost": 3,
+          "innerPower": 4,
+          "power": 3,
+          "tags": [
+            "魔教",
+            "心法"
+          ],
+          "effectType": "zhengshangDrain",
+          "isExtra": true
+        },
+        "name": "修罗化血阵",
+        "type": "xinfa",
+        "element": "domineering",
+        "cost": 3,
+        "power": 3,
+        "innerPower": 4,
+        "tags": [
+          "魔教",
+          "心法"
+        ],
+        "isExtra": true,
+        "effectType": "zhengshangDrain"
+      }
+    ],
+    "actionZone": [],
+    "judgmentZone": {
+      "id": "modeng_base_xinfa",
+      "_data": {
+        "id": "modeng_base_xinfa",
+        "name": "魔门基础心法",
+        "faction": "modeng",
+        "type": "xinfa",
+        "element": "domineering",
+        "cost": 0,
+        "innerPower": 1,
+        "power": 2,
+        "tags": [
+          "魔教",
+          "心法"
+        ],
+        "effectType": "persistInDiscard"
+      },
+      "name": "魔门基础心法",
+      "type": "xinfa",
+      "element": "domineering",
+      "cost": 0,
+      "power": 2,
+      "innerPower": 1,
+      "tags": [
+        "魔教",
+        "心法"
+      ],
+      "isExtra": false,
+      "effectType": "persistInDiscard",
+      "_effectivePower": 2
+    },
+    "freePlayDiscount": 0,
+    "freePlayNextTurn": false,
+    "_moveDiscountUsed": false,
+    "totalPower": 2,
+    "_cardsPlayedThisTurn": []
+  },
+  "p2": {
+    "hp": 4,
+    "innerPower": 0,
+    "baseInnerPower": 0,
+    "flaws": 0,
+    "_flawShield": 1,
+    "poisonStacks": 0,
+    "hasDrawnFirstFlaw": false,
+    "roundCardsPlayed": 0,
+    "hasUsedPassiveThisRound": false,
+    "_bloodWarfareUsed": false,
+    "_bloodWarfareMode": null,
+    "hasTriggeredSunshine": false,
+    "_skillfulDiscount": false,
+    "roundFlaws": 0,
+    "_actionDepth": 0,
+    "cardsMovedThisTurn": false,
+    "hand": [
+      {
+        "id": "canfeng_yinlu",
+        "_data": {
+          "id": "canfeng_yinlu",
+          "name": "餐风饮露功",
+          "faction": "public",
+          "type": "xinfa",
+          "element": "skillful",
+          "cost": 0,
+          "innerPower": 1,
+          "power": 0,
+          "tags": [
+            "公共",
+            "心法"
+          ],
+          "effectType": "discardInnerBonus"
+        },
+        "name": "餐风饮露功",
+        "type": "xinfa",
+        "element": "skillful",
+        "cost": 0,
+        "power": 0,
+        "innerPower": 1,
+        "tags": [
+          "公共",
+          "心法"
+        ],
+        "isExtra": false,
+        "effectType": "discardInnerBonus"
+      },
+      {
+        "id": "wudang_base_xinfa",
+        "_data": {
+          "id": "wudang_base_xinfa",
+          "name": "武当基础心法",
+          "faction": "wudang",
+          "type": "xinfa",
+          "element": "skillful",
+          "cost": 1,
+          "innerPower": 2,
+          "power": 1,
+          "tags": [
+            "武当",
+            "心法"
+          ],
+          "effectType": "altEntryDantianDraw"
+        },
+        "name": "武当基础心法",
+        "type": "xinfa",
+        "element": "skillful",
+        "cost": 1,
+        "power": 1,
+        "innerPower": 2,
+        "tags": [
+          "武当",
+          "心法"
+        ],
+        "isExtra": false,
+        "effectType": "altEntryDantianDraw"
+      },
+      {
+        "id": "chunyang_xinfa",
+        "_data": {
+          "id": "chunyang_xinfa",
+          "name": "纯阳心法诀",
+          "faction": "wudang",
+          "type": "xinfa",
+          "element": "skillful",
+          "cost": 0,
+          "innerPower": 1,
+          "power": 1,
+          "tags": [
+            "武当",
+            "心法"
+          ],
+          "effectType": "dantianInnerBonus",
+          "dantianThreshold": 2,
+          "innerThreshold": 6,
+          "canSacrificeForDraw": true
+        },
+        "name": "纯阳心法诀",
+        "type": "xinfa",
+        "element": "skillful",
+        "cost": 0,
+        "power": 1,
+        "innerPower": 1,
+        "tags": [
+          "武当",
+          "心法"
+        ],
+        "isExtra": false,
+        "effectType": "dantianInnerBonus"
+      },
+      {
+        "id": "liangyi_zhuanggong",
+        "_data": {
+          "id": "liangyi_zhuanggong",
+          "name": "两仪桩功",
+          "faction": "wudang",
+          "type": "xinfa",
+          "element": "skillful",
+          "cost": 1,
+          "innerPower": 1,
+          "power": 2,
+          "tags": [
+            "武当",
+            "心法"
+          ],
+          "effectType": "moveCostReducer"
+        },
+        "name": "两仪桩功",
+        "type": "xinfa",
+        "element": "skillful",
+        "cost": 1,
+        "power": 2,
+        "innerPower": 1,
+        "tags": [
+          "武当",
+          "心法"
+        ],
+        "isExtra": false,
+        "effectType": "moveCostReducer"
+      }
+    ],
+    "dantian": [],
+    "discardPile": [],
+    "extraDeck": [
+      {
+        "id": "zhenwu_qijiejian",
+        "_data": {
+          "id": "zhenwu_qijiejian",
+          "name": "真武七截剑",
+          "faction": "wudang",
+          "type": "wuji",
+          "element": "skillful",
+          "cost": 6,
+          "power": 13,
+          "tags": [
+            "武当",
+            "剑法"
+          ],
+          "effectType": "innerPowerToPower",
+          "innerToPowerBoost": 2,
+          "permanentBuff": true,
+          "isExtra": true
+        },
+        "name": "真武七截剑",
+        "type": "wuji",
+        "element": "skillful",
+        "cost": 6,
+        "power": 13,
+        "innerPower": 0,
+        "tags": [
+          "武当",
+          "剑法"
+        ],
+        "isExtra": true,
+        "effectType": "innerPowerToPower"
+      },
+      {
+        "id": "chunyang_wuji_sword",
+        "_data": {
+          "id": "chunyang_wuji_sword",
+          "name": "纯阳无极剑",
+          "faction": "wudang",
+          "type": "wuji",
+          "element": "skillful",
+          "cost": 5,
+          "power": 16,
+          "tags": [
+            "武当",
+            "剑法"
+          ],
+          "effectType": "flawHeal",
+          "immuneToChaiZhao": true,
+          "isExtra": true
+        },
+        "name": "纯阳无极剑",
+        "type": "wuji",
+        "element": "skillful",
+        "cost": 5,
+        "power": 16,
+        "innerPower": 0,
+        "tags": [
+          "武当",
+          "剑法"
+        ],
+        "isExtra": true,
+        "effectType": "flawHeal"
+      },
+      {
+        "id": "jiuyang_shengong",
+        "_data": {
+          "id": "jiuyang_shengong",
+          "name": "九阳神功",
+          "faction": "wudang",
+          "type": "xinfa",
+          "element": "skillful",
+          "cost": 4,
+          "innerPower": 6,
+          "power": 8,
+          "tags": [
+            "武当",
+            "心法"
+          ],
+          "effectType": "innerToPowerBuff",
+          "isExtra": true
+        },
+        "name": "九阳神功",
+        "type": "xinfa",
+        "element": "skillful",
+        "cost": 4,
+        "power": 8,
+        "innerPower": 6,
+        "tags": [
+          "武当",
+          "心法"
+        ],
+        "isExtra": true,
+        "effectType": "innerToPowerBuff"
+      },
+      {
+        "id": "yangguang_puzhao_wd",
+        "_data": {
+          "id": "yangguang_puzhao_wd",
+          "name": "阳光普照",
+          "faction": "public",
+          "type": "xinfa",
+          "element": "skillful",
+          "cost": 0,
+          "innerPower": 3,
+          "power": 4,
+          "tags": [
+            "公共",
+            "心法"
+          ],
+          "effectType": "lowHpSearch",
+          "isExtra": true
+        },
+        "name": "阳光普照",
+        "type": "xinfa",
+        "element": "skillful",
+        "cost": 0,
+        "power": 4,
+        "innerPower": 3,
+        "tags": [
+          "公共",
+          "心法"
+        ],
+        "isExtra": true,
+        "effectType": "lowHpSearch"
+      }
+    ],
+    "actionZone": [],
+    "judgmentZone": {
+      "id": "taijizhang_raozhi",
+      "_data": {
+        "id": "taijizhang_raozhi",
+        "name": "太极掌·绕指柔云",
+        "faction": "wudang",
+        "type": "wuji",
+        "element": "skillful",
+        "cost": 3,
+        "power": 6,
+        "tags": [
+          "武当",
+          "掌法"
+        ],
+        "effectType": "movePowerBuff",
+        "movePowerBuffAmount": 3
+      },
+      "name": "太极掌·绕指柔云",
+      "type": "wuji",
+      "element": "skillful",
+      "cost": 3,
+      "power": 6,
+      "innerPower": 0,
+      "tags": [
+        "武当",
+        "掌法"
+      ],
+      "isExtra": false,
+      "effectType": "movePowerBuff",
+      "_effectivePower": 6
+    },
+    "freePlayDiscount": 0,
+    "freePlayNextTurn": false,
+    "_moveDiscountUsed": false,
+    "totalPower": 6,
+    "_cardsPlayedThisTurn": []
+  }
+}
