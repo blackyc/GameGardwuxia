@@ -11,6 +11,7 @@
 | ✨ 实现卡牌效果系统 | [02-EFFECT-SYSTEM.md](./02-EFFECT-SYSTEM.md) |
 | 👤 理解3个角色的属性和被动 | [03-CHARACTERS.md](./03-CHARACTERS.md) |
 | 📊 解析 TSV 数据文件格式 | [04-DATA-FORMAT.md](./04-DATA-FORMAT.md) |
+| 🎬 战斗动画与表现规格 | [05-COMBAT-ANIMATION.md](./05-COMBAT-ANIMATION.md) |
 | 📖 完整游戏规则（详细参考） | [核心规则.md](./核心规则.md) |
 | 🃏 魔教·血刀卡组详解 | [卡组-魔教.md](./卡组-魔教.md) |
 | 🃏 武当·无极道人卡组详解 | [卡组-武当.md](./卡组-武当.md) |
@@ -60,8 +61,9 @@ sim/
 1. 先读 00-GAME-OVERVIEW.md 理解全局
 2. 再读 01-COMBAT-FLOW.md 理解回合流程（这是你要实现的）
 3. 参考 02-EFFECT-SYSTEM.md 了解效果系统
-4. 用 cards.tsv + characters.tsv + decks.tsv 作为数据源
-5. 参考 sim/src/engine/ 下的 Node.js 规则预言机实现
+4. 参考 05-COMBAT-ANIMATION.md 了解战斗动画规格（Hit Stop、镜头、Juice）
+5. 用 cards.tsv + characters.tsv + decks.tsv 作为数据源
+6. 参考 sim/src/engine/ 下的 Node.js 规则预言机实现
 ```
 
 ## 📐 架构约束
