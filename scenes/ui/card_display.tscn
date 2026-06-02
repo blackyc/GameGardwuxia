@@ -1,0 +1,87 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcard_display"]
+
+[ext_resource type="Script" path="res://src/ui/card_display.gd" id="1_script"]
+
+[sub_resource type="GDScript" id="GDScript_1"]
+script/source = ""
+
+[node name="CardDisplay" type="Panel"]
+custom_minimum_size = Vector2(120, 180)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("GDScript_1")
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(100, 160)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4
+offset_top = 4
+offset_right = -4
+offset_bottom = -4
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopHBox" type="HBoxContainer" parent="VBox"]
+custom_minimum_size = Vector2(0, 30)
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="CostLabel" type="Label" parent="VBox/TopHBox"]
+custom_minimum_size = Vector2(40, 30)
+size_flags_horizontal = 0
+size_flags_vertical = 1
+text = "0"
+horizontal_alignment = 1
+
+[node name="NameLabel" type="Label" parent="VBox"]
+custom_minimum_size = Vector2(0, 40)
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Card Name"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="TypeLabel" type="Label" parent="VBox"]
+custom_minimum_size = Vector2(0, 20)
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Type"
+horizontal_alignment = 1
+
+[node name="PowerLabel" type="Label" parent="VBox"]
+custom_minimum_size = Vector2(0, 30)
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "0"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="VBox"]
+custom_minimum_size = Vector2(0, 40)
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Description"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="CardTextureRect" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(100, 140)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 20
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch_mode = 6
+```
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

@@ -17,6 +17,7 @@ enum CardType {
 
 @export var damage: int = 0
 @export var block: int = 0
+@export var power: int = 0  ## 战力值（江湖对决特有）
 
 ## 描述文本，支持 {d} = damage, {b} = block 占位符
 @export_multiline var description: String = ""

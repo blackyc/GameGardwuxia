@@ -22,7 +22,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="GameCard"
-run/main_scene="res://scenes/combat/battle_scene.tscn"
+run/main_scene="uid://bp73qj5pu5uqa"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="SlayTheSpire2"
 config/features=PackedStringArray("4.6", "Mobile")
@@ -38,7 +38,6 @@ SentryInit="*res://addons/sentry/SentryInit.gd"
 FmodManager="*res://addons/fmod/FmodManager.gd"
 EventBus="*res://src/autoloads/event_bus.gd"
 BattleManager="*res://src/autoloads/battle_manager.gd"
-MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 
 [debug]
 

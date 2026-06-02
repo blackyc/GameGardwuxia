@@ -50,11 +50,17 @@ const COST_ORB_COLOR := Color(0.06, 0.08, 0.12, 0.85)
 const COST_ORB_BORDER_COLOR := Color(0.35, 0.22, 0.08, 0.9)
 const COST_ORB_BORDER_WIDTH := 2.0
 
+# Autoload 引用
+var BM: Node
+
 #endregion
 
 #region 初始化
 
 func _ready() -> void:
+    # 初始化 Autoload 引用
+    BM = get_node_or_null("/root/BattleManager")
+    
     # layout_mode=0 时 offset_* 已生效，size 有值
     pivot_offset = size / 2.0
 
@@ -87,7 +93,7 @@ func _draw() -> void:
     var border_color := COST_ORB_BORDER_COLOR
 
     # 不可打出时变红
-    if not BattleManager.can_play_card(card_data):
+    if not BM.can_play_card(card_data):
         orb_color = Color(0.18, 0.06, 0.06, 0.85)
         border_color = Color(0.45, 0.12, 0.1, 0.9)
 
@@ -311,14 +317,14 @@ func _end_drag() -> void:
 #region 可玩性
 
 func _can_play() -> bool:
-    return card_data != null and BattleManager.can_play_card(card_data)
+    return card_data != null and BM.can_play_card(card_data)
 
 
 func _update_playability() -> void:
     if not card_data:
         return
 
-    var playable: bool = BattleManager.can_play_card(card_data)
+    var playable: bool = BM.can_play_card(card_data)
 
     # 费用文字颜色
     if _cost_label:

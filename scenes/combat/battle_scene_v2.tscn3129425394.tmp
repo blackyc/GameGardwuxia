@@ -1,0 +1,278 @@
+[gd_scene format=3 uid="uid://33e3cg0qbu04"]
+
+[ext_resource type="Script" uid="uid://dppjro6qq4tmt" path="res://scenes/combat/battle_scene_v2.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bsu2jjdadl522" path="res://images/map/map3.png" id="2_texture"]
+[ext_resource type="Script" uid="uid://bjj6c7b8j1l4h" path="res://scenes/combat/enemy.gd" id="3_hand_area"]
+[ext_resource type="Texture2D" uid="uid://dwwlfsjpm3r4k" path="res://images/characters/Sprite 2.png" id="4_player"]
+
+[node name="BattleSceneV2" type="Control" unique_id=427516981]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="." unique_id=743461120]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_texture")
+stretch_mode = 6
+
+[node name="MapOverlay" type="ColorRect" parent="." unique_id=1636040412]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.3)
+
+[node name="TurnLabel" type="Label" parent="." unique_id=337963401]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 20.0
+offset_right = 150.0
+offset_bottom = 70.0
+grow_vertical = 0
+text = "Turn 1 - Player Turn"
+horizontal_alignment = 1
+
+[node name="PlayerArea" type="Control" parent="." unique_id=2042340926]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -400.0
+offset_right = 460.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="PlayerSprite" type="TextureRect" parent="PlayerArea" unique_id=832572521]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -250.0
+offset_right = 80.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("4_player")
+stretch_mode = 6
+
+[node name="PlayerHP" type="Label" parent="PlayerArea" unique_id=481485788]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.0
+offset_top = 20.0
+offset_right = 75.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "HP: 72/72"
+horizontal_alignment = 1
+
+[node name="PlayerBlock" type="Label" parent="PlayerArea" unique_id=832016992]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.0
+offset_top = 70.0
+offset_right = 75.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Block: 0"
+horizontal_alignment = 1
+
+[node name="PlayerEnergy" type="Label" parent="PlayerArea" unique_id=176784764]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.0
+offset_top = 120.0
+offset_right = 75.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Energy: 3/3"
+horizontal_alignment = 1
+
+[node name="EnemyArea" type="Control" parent="." unique_id=1098515683]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1460.0
+offset_top = -400.0
+offset_right = 1900.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="EnemySprite" type="TextureRect" parent="EnemyArea" unique_id=777575368]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -250.0
+offset_right = 80.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("4_player")
+stretch_mode = 6
+
+[node name="EnemyHP" type="Label" parent="EnemyArea" unique_id=576962145]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.0
+offset_top = 20.0
+offset_right = 75.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "HP: 72/72"
+horizontal_alignment = 1
+
+[node name="EnemyBlock" type="Label" parent="EnemyArea" unique_id=245134903]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.0
+offset_top = 70.0
+offset_right = 75.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Block: 0"
+horizontal_alignment = 1
+
+[node name="HandArea" type="Control" parent="." unique_id=429363414]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -280.0
+offset_right = 1920.0
+offset_bottom = 20.0
+grow_vertical = 0
+script = ExtResource("3_hand_area")
+
+[node name="DrawPilePanel" type="Panel" parent="." unique_id=658925803]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -200.0
+offset_right = 120.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="DrawPileButton" type="Button" parent="DrawPilePanel" unique_id=473919062]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Draw Pile
+(0)"
+
+[node name="DiscardPilePanel" type="Panel" parent="." unique_id=229848422]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 130.0
+offset_top = -200.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="DiscardPileButton" type="Button" parent="DiscardPilePanel" unique_id=1597969974]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Discard
+(0)"
+
+[node name="EndTurnButton" type="Button" parent="." unique_id=1546378800]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -170.0
+offset_top = -80.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "End Turn"
+
+[node name="BattleLog" type="Panel" parent="." unique_id=1235028857]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="LogText" type="RichTextLabel" parent="BattleLog" unique_id=223079199]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "[color=white]Battle started![/color]"
