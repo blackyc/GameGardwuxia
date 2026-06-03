@@ -1,4 +1,4 @@
-# HandArea.gd - Hand Area (Fixed Godot 4.4+ Loading Bug)
+﻿# HandArea.gd - Hand Area (Fixed Godot 4.4+ Loading Bug)
 # Features: Display hand cards, card layout, mouse interaction
 # Fix: Godot 4.4+ TSCN hierarchy bug causing HandArea load failure
 # Author: Game Designer (OpenClaw Agent)

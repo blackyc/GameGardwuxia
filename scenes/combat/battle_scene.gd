@@ -1,4 +1,4 @@
-## BattleScene — 战斗主场景
+﻿## BattleScene — 战斗主场景
 ## 聚合所有战斗子系统：手牌区、敌人、玩家状态、牌堆信息
 ## 管理回合流程：抽牌 → 等待操作 → 结束回合 → 弃牌
 class_name BattleScene
@@ -21,6 +21,8 @@ extends Control
 @onready var _end_turn_button: Button = $EndTurnButton
 @onready var _turn_label: Label = $TurnLabel
 @onready var _battle_log: RichTextLabel = $BattleLog/Margin/LogText
+@onready var BM = get_node_or_null("/root/BattleManager")
+@onready var EB = get_node_or_null("/root/EventBus")
 
 #endregion
 
@@ -181,7 +183,7 @@ func _ready() -> void:
     # 初始化牌组
     _init_test_deck()
     print("[BattleScene] 测试牌组: %d 张" % _test_deck.size())
-    BattleManager.init_deck(_test_deck)
+    BM.init_deck(_test_deck)
 
     # 等 HandArea 完成其 await process_frame 后再开始，避免竞态
     await get_tree().process_frame
@@ -425,14 +427,14 @@ func set_deck(deck: Array[CardData]) -> void:
 func _start_battle() -> void:
     _log("=== 战斗开始 ===")
     _turn_count = 0
-    BattleManager.player_current_hp = BattleManager.player_max_hp
-    BattleManager.player_block = 0
+    BM.player_current_hp = BM.player_max_hp
+    BM.player_block = 0
     _update_player_display()
 
     # 诊断牌组状态
-    var draw_count := BattleManager.get_draw_pile_count()
-    var hand_count := BattleManager.get_hand_count()
-    var discard_count := BattleManager.get_discard_pile_count()
+    var draw_count: int = BM.get_draw_pile_count()
+    var hand_count: int = BM.get_hand_count()
+    var discard_count: int = BM.get_discard_pile_count()
     print("[BattleScene] === 初始牌组状态: 抽牌堆=%d, 手牌=%d, 弃牌堆=%d ===" % [draw_count, hand_count, discard_count])
     if draw_count == 0:
         push_error("[BattleScene] 抽牌堆为空！牌组初始化可能失败")
@@ -450,10 +452,10 @@ func _start_next_turn() -> void:
     # 清空格挡
     if _enemy:
         _enemy.clear_block()
-    BattleManager.clear_player_block()
+    BM.clear_player_block()
     _update_player_display()
 
-    BattleManager.start_turn()
+    BM.start_turn()
     _update_pile_display()
 
 
@@ -469,7 +471,7 @@ func _on_end_turn_pressed() -> void:
     if _battle_over:
         return
 
-    BattleManager.end_turn()
+    BM.end_turn()
     _start_next_turn()
 
 
@@ -481,7 +483,7 @@ func _enemy_action() -> void:
 
     # 短暂延迟
     await get_tree().create_timer(0.6).timeout
-    BattleManager.player_take_damage(intent_damage)
+    BM.player_take_damage(intent_damage)
     _update_player_display()
 
 #endregion
@@ -493,7 +495,7 @@ func _on_draw_pile_pressed() -> void:
     print("[BattleScene] 抽牌按钮被点击！_battle_over=%s" % _battle_over)
     if _battle_over:
         return
-    BattleManager.draw_card()
+    BM.draw_card()
 
 
 func _on_draw_pile_gui_input(event: InputEvent) -> void:
@@ -504,11 +506,11 @@ func _on_draw_pile_gui_input(event: InputEvent) -> void:
             if _battle_over:
                 print("[BattleScene] 战斗已结束，忽略点击")
                 return
-            print("[BattleScene] 调用 BattleManager.draw_card()，当前抽牌堆: %d 张，手牌: %d 张" % [
-                BattleManager.get_draw_pile_count(),
-                BattleManager.get_hand_count(),
+            print("[BattleScene] 调用 BM.draw_card()，当前抽牌堆: %d 张，手牌: %d 张" % [
+                BM.get_draw_pile_count(),
+                BM.get_hand_count(),
             ])
-            var success: bool = BattleManager.draw_card()
+            var success: bool = BM.draw_card()
             if success:
                 _log("手动抽牌")
                 print("[BattleScene] draw_card() 成功")
@@ -519,9 +521,9 @@ func _on_draw_pile_gui_input(event: InputEvent) -> void:
             else:
                 _log("抽牌堆已空！")
                 print("[BattleScene] draw_card() 失败！抽牌堆: %d, 手牌: %d/%d" % [
-                    BattleManager.get_draw_pile_count(),
-                    BattleManager.get_hand_count(),
-                    BattleManager.max_hand_size,
+                    BM.get_draw_pile_count(),
+                    BM.get_hand_count(),
+                    BM.max_hand_size,
                 ])
 
 
@@ -618,8 +620,8 @@ func _show_battle_result(text: String, color: Color) -> void:
 #region UI 更新
 
 func _update_pile_display() -> void:
-    var draw_count: int = BattleManager.get_draw_pile_count()
-    var discard_count: int = BattleManager.get_discard_pile_count()
+    var draw_count: int = BM.get_draw_pile_count()
+    var discard_count: int = BM.get_discard_pile_count()
 
     if _draw_pile_label:
         _draw_pile_label.text = str(draw_count)
@@ -650,8 +652,8 @@ func _update_pile_empty_style(draw_count: int, discard_count: int) -> void:
 
 func _update_player_display() -> void:
     if _player_hp_label:
-        _player_hp_label.text = "%d / %d" % [BattleManager.player_current_hp, BattleManager.player_max_hp]
-        var hp_ratio: float = float(BattleManager.player_current_hp) / float(BattleManager.player_max_hp)
+        _player_hp_label.text = "%d / %d" % [BM.player_current_hp, BM.player_max_hp]
+        var hp_ratio: float = float(BM.player_current_hp) / float(BM.player_max_hp)
         if hp_ratio > 0.5:
             _player_hp_label.add_theme_color_override("font_color", Color(0.3, 0.9, 0.35))
         elif hp_ratio > 0.25:
@@ -660,9 +662,9 @@ func _update_player_display() -> void:
             _player_hp_label.add_theme_color_override("font_color", Color(0.95, 0.3, 0.25))
 
     if _player_block_label:
-        if BattleManager.player_block > 0:
+        if BM.player_block > 0:
             _player_block_label.visible = true
-            _player_block_label.text = "格挡: %d" % BattleManager.player_block
+            _player_block_label.text = "格挡: %d" % BM.player_block
         else:
             _player_block_label.visible = false
 

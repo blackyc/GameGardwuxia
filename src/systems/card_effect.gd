@@ -1,8 +1,11 @@
-## CardEffect — 卡牌效果执行器
+﻿## CardEffect — 卡牌效果执行器
 ## 连接到 BattleScene，响应 card_played 信号
 ## 根据 CardData 的 card_type 执行不同的效果
 class_name CardEffect
 extends Node
+
+## BattleManager 单例引用
+var BM = get_node_or_null("/root/BattleManager")
 
 ## 对敌人执行攻击伤害
 func execute_attack(card: CardData, enemy: Enemy) -> void:
@@ -22,7 +25,7 @@ func execute_attack(card: CardData, enemy: Enemy) -> void:
 
 ## 对玩家执行格挡
 func execute_skill(card: CardData) -> void:
-    BattleManager.player_add_block(card.block)
+    BM.player_add_block(card.block)
 
 
 ## 执行能力牌（TODO: 需要一个 buff 系统）

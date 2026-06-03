@@ -1,11 +1,11 @@
-## BattleSceneV2 — 江湖对决四阶段战斗场景
+﻿## BattleSceneV2 — 江湖对决四阶段战斗场景
 ## 架构: BattleManager (autoload) 管理牌堆, HandArea 显示手牌, EventBus 驱动 UI 更新
 ## 四阶段: PREPARATION(准备) → JUDGMENT(判定) → ACTION(出牌拔河) → RESOLUTION(结算)
 extends Control
 
 #region Autoload 引用（解决 Godot 解析器无法识别 Autoload 的问题）
-var BM: Node ## BattleManager 单例引用
-var EB: Node ## EventBus 单例引用
+var BM ## BattleManager 单例引用（动态类型，避免静态类型检查误判）
+var EB ## EventBus 单例引用（动态类型，避免静态类型检查误判）
 #endregion
 
 #region 信号（与旧 API 兼容）
@@ -532,11 +532,15 @@ func _build_test_deck() -> Array[CardData]:
 
 func _make_card_data(cfg: Dictionary) -> CardData:
     var card: CardData = CardData.new()
-    card.id = cfg.name
     card.card_name = cfg.name
     card.cost = cfg.cost
     card.card_type = cfg.type
     card.power = cfg.power
+    # 根据类型设置 damage / block（battle_card.gd 显示用）
+    if cfg.type == CardData.CardType.ATTACK:
+        card.damage = cfg.power
+    elif cfg.type == CardData.CardType.SKILL:
+        card.block = cfg.power
     if cfg.tex:
         card.texture_path = cfg.tex
     return card
