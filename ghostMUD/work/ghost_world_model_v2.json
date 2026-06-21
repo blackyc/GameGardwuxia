@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "project": "Ghost MUD v2.0 — 聊斋仙途",
+    "version": "2.0.0",
+    "generated": "2026-06-21",
+    "description": "鬼修MUD世界模型，金庸的皮+聊斋的骨+克苏鲁的血。修炼不是进化，是靠近祂的过程。",
+    "style_ratio": "聊斋志怪60% + 认知侵蚀30% + 不可名状10%",
+    "based_on": [
+      "docs/worldview.md",
+      "docs/faction_rebrand.md",
+      "docs/cultivation_system.md",
+      "docs/bestiary_design.md",
+      "docs/style_anchor.md",
+      "docs/terminology_map.md",
+      "work/rebuild_enemies_items_realms.js",
+      "work/rebuild_rooms_city.js",
+      "work/rebuild_rooms_wild.js",
+      "work/rebuild_dungeon_rooms.js",
+      "work/rebuild_atmosphere.js",
+      "work/rebuild_skill_descriptions_1.js",
+      "work/rebuild_skill_descriptions_2.js",
+      "work/integration_v2.js"
+    ]
+  },
+
+  "world_structure": {
+    "layers": {
+      "surface": {
+        "name": "表层——凡人眼中",
+        "description": "正常世界。村镇县城，炊烟袅袅，集市喧嚷。凡人对仙人敬而远之。低阶修士在此行走。一切都正常——但已有不对劲的细节：老槐树滴血、死去的小妾在后花园浇花、城隍庙神像面朝墙壁。"
+      },
+      "interstice": {
+        "name": "夹层——修炼者开始'看见'",
+        "description": "筑基后期起可感知。月光下的影子不再完全跟随主人。功法文字按另一种顺序排列。镜子里的倒影做出你没做的表情。有些地方'比较薄'：荒村废宅、古战场、枯井、老树根下、废弃祠堂。凡人偶尔闯入——民间叫'撞客''鬼打墙''中邪''走了魂'。"
+      },
+      "deep": {
+        "name": "深层——只有彻底异化者才能触及",
+        "description": "祂所在的层次。不是神，不是魔，不是可理解的存在。祂是一个频率，一个方向，是所有修炼者最终会'对焦'的终点。修炼越深越接近祂的频率，越容易被祂发现，被看见后结构开始改变。彻底同化者不再是人类形态，成为祂在世间的一只'眼睛'或一只'手'。"
+      }
+    }
+  },
+
+  "him": {
+    "definition": "祂——不可名状的存在",
+    "nature": "不是你可以对话的对象。不是你可以击败的敌人。不是'邪恶'——没有善恶，只是'存在'。不是神——神需要信徒，祂不需要，甚至不知道你在拜祂。",
+    "faction_names": {
+      "忘尘宗": "「真」——世间皆伪，唯祂为真",
+      "赤霞峰": "「霞主」——霞光不是太阳照的，是祂的血在渗出",
+      "锈剑冢": "「最后一次磨剑的人」——所有的剑都在等祂回来",
+      "丝狱": "「织网者」——世界是一张网，祂在网上行走",
+      "焚身道": "「火源」——万物皆薪，唯祂是火",
+      "逍遥驿": "「没出现的那位客人」——驿站的空房是留给谁的",
+      "药王谷": "「不治之症」——最可怕的病不是死，是被祂看见",
+      "血禅寺": "「镜中之血」——不是你的血，是祂的",
+      "镜阁": "「镜中人」——你照镜子时祂也在看你",
+      "归墟": "「入口」——不是墓，深处通往祂",
+      "青囊庐": "「终极病理」——在祂面前，治病和制毒是一回事",
+      "傀坊": "「待填之空」——傀儡是容器，在等祂住进来"
+    },
+    "rules": {
+      "灵气不守恒": "灵气总量不守恒。祂的信息持续渗入世界——灵气在增加。远古稀薄，近世越来越浓。世界正在被祂慢慢填满。",
+      "看见即被看见": "当你感知到祂的痕迹时，那个痕迹也感知到了你。感知是双向的——看即被看，听即被听。",
+      "名字是钩子": "不要给祂起名字。每一次命名都是一次呼唤，每一次呼唤都让祂的注意力多停留一瞬。一瞬够了。",
+      "镜与影是通道": "镜子不反射——镜子是另一个方向。影子不是你——影子是你在世界上的背面，是祂看进来的角度。",
+      "遗忘是防御": "忘掉自己，祂就找不到你。但忘到哪一步？忘到祂也忘了你的时候——你也不在了。"
+    }
+  },
+
+  "factions": {
+    "count": 12,
+    "comment": "源自赛博大明12帮派的风格化迁移",
+    "mapping": {
+      "梵网寺→忘尘宗": { "philosophy": "忘掉自己，祂就看不见你——但你还在么", "territory": "忘尘峰", "trial": "读完《忘尘经》第一卷，三天内不做长老指定的那个梦" },
+      "紫霞山→赤霞峰": { "philosophy": "霞为血，山为骨。赤霞峰是祂留在地上的一截指骨", "territory": "赤霞峰+三十六洞", "trial": "在血池边打坐一夜，描述看到的东西" },
+      "剑巢→锈剑冢": { "philosophy": "剑是容器。每一把剑里封着一个修士的最后一念", "territory": "锈剑丘", "trial": "选一把剑滴血，剑鸣则过" },
+      "蚁网→丝狱": { "philosophy": "世界是一张网，蛛丝连着祂到过的地方", "territory": "丝谷", "trial": "沿一根银丝走到尽头，回来" },
+      "焰心教→焚身道": { "philosophy": "万物皆薪，唯祂是火。烧了自己，看见火里的东西", "territory": "焰墟", "trial": "右手探入火中数到七，手不燃则过" },
+      "逍遥驿→逍遥驿": { "philosophy": "逍遥不是自由，是不知身在局中。最逍遥的人离祂最近", "territory": "逍遥原", "trial": "在驿站住一晚，第二天描述来敲门的客人" },
+      "毒巢→药王谷": { "philosophy": "丹方不是药方，是食谱。高级丹药炼制过程中会爬出东西", "territory": "药王谷环形山", "trial": "炼一枚引气丹，采集血苔时听到哭声不理则过" },
+      "血镰→血禅寺": { "philosophy": "血是镜子。用别人的血可以看见那个人看见过的一切——包括祂", "territory": "血禅山", "trial": "滴血到黑镜上，说出看到的" },
+      "斗转阁→镜阁": { "philosophy": "倒影不是你的。是祂在看你的角度。用镜子偷别人被祂侵蚀的痕迹", "territory": "镜湖湖心岛", "trial": "在归真镜前照一次，看到自己的死法不说出来" },
+      "影墓→归墟": { "philosophy": "不是墓，是入口。死亡是两边之间的缝隙", "territory": "墟渊", "trial": "在墓中独处一夜不带灯，第二天从出口走出来" },
+      "药王谷(原)→青囊庐": { "philosophy": "病和药、毒和活——在祂面前没有区别。消除祂的标注", "territory": "青囊山", "trial": "医好一个被标注的病人，看到连在病人身上的灰线" },
+      "机巧岛→傀坊": { "philosophy": "傀儡是容器。空容器在等祂住进来", "territory": "千机城", "trial": "制作一具傀儡，注入执念。傀儡动了则过" }
+    },
+    "relations": {
+      "opposition": {
+        "忘尘宗↔镜阁": "躲祂 vs 利用祂",
+        "血禅寺↔青囊庐": "用血见祂 vs 抹除祂的痕迹",
+        "焚身道↔归墟": "燃烧自己接近祂 vs 死后窥视祂",
+        "药王谷↔赤霞峰": "丹炉爬出 vs 血池浮出——都种出了不该有的",
+        "逍遥驿↔丝狱": "等祂来 vs 寻祂去"
+      },
+      "alliance": {
+        "丝狱→忘尘宗": "共享《忘尘经》残卷",
+        "血禅寺→赤霞峰": "血镜与血池同源",
+        "归墟↔血禅寺": "守墓人和血镜禅师能对视",
+        "镜阁↔傀坊": "镜法验证傀儡内容",
+        "青囊庐↔药王谷": "治人与种药供应链"
+      }
+    }
+  },
+
+  "realms": {
+    "count": 8,
+    "comment": "修炼不是进化，是靠近祂。每破一境，道心减一分。",
+    "array": [
+      { "index": 0, "name": "凡人", "lifeSpanYears": "+0", "hp": 120, "atk": 6, "def": 3, "daoxinThreshold": 0, "cultivationCost": 0, "hisAwareness": "0% ——祂不知道你" },
+      { "index": 1, "name": "炼气", "lifeSpanYears": "+30", "hp": 180, "atk": 12, "def": 5, "daoxinThreshold": 90, "cultivationCost": 180, "hisAwareness": "<1% ——祂没注意你", "sign": "开始做重复的梦，梦中总是同一个场景" },
+      { "index": 2, "name": "筑基", "lifeSpanYears": "+60", "hp": 250, "atk": 20, "def": 8, "daoxinThreshold": 80, "cultivationCost": 420, "hisAwareness": "~3% ——余光扫过", "sign": "影子偶尔不跟同步；铜镜倒影迟半瞬转头。此为双描述系统切换阈值" },
+      { "index": 3, "name": "金丹", "lifeSpanYears": "+150", "hp": 350, "atk": 32, "def": 12, "daoxinThreshold": 65, "cultivationCost": 900, "hisAwareness": "~10% ——注意到你", "sign": "镜中倒影偶做你没做的表情；安静时能听到体内的'回声'" },
+      { "index": 4, "name": "元婴", "lifeSpanYears": "+300", "hp": 460, "atk": 48, "def": 19, "daoxinThreshold": 50, "cultivationCost": 1800, "hisAwareness": "~25% ——祂在看你", "sign": "肉身开始渗出叫不出颜色的液体；说话偶尔夹杂不属于人类的声音" },
+      { "index": 5, "name": "化神", "lifeSpanYears": "+500", "hp": 600, "atk": 68, "def": 26, "daoxinThreshold": 35, "cultivationCost": 3200, "hisAwareness": ">50% ——对视", "sign": "不是天雷劈你，是祂在看你，很深地看" },
+      { "index": 6, "name": "合体", "lifeSpanYears": "+800", "hp": 780, "atk": 90, "def": 35, "daoxinThreshold": 25, "cultivationCost": 5000, "hisAwareness": ">70% ——结构重组", "sign": "分不清哪些是自己哪些是祂的碎片。影子不是影子——是一个方向" },
+      { "index": 7, "name": "渡劫", "lifeSpanYears": "——", "hp": 1000, "atk": 120, "def": 50, "daoxinThreshold": 10, "cultivationCost": 1000000, "hisAwareness": "100% ——对视完成", "sign": "跨过去还是回头？跨过=被同化=游戏结束" }
+    ],
+    "breakthroughMechanics": {
+      "baseProbability": { "清明80-100": 0.7, "迟疑50-79": 0.5, "恍惚30-49": 0.3, "散乱15-29": 0.15, "崩解<15": "不开放" },
+      "modifiers": { "功法完整": "+10%", "悟道丹(每颗)": "+5%(max3)", "有人护法": "+10%" },
+      "failureCosts": {
+        "1st": "道心-5",
+        "2nd": "道心-10，随机技能降1级",
+        "3rd": "道心-20，触发异化事件：获得永久侵术，道心上限-10",
+        "4th+": "道心-30，异化事件升级：记忆替换/名字改变/宗派认知偏移"
+      }
+    }
+  },
+
+  "bestiary": {
+    "categories": {
+      "鬼": { "source": "人死后意志碎屑沾染灵气", "intelligence": "中", "hostility": "不定", "communicable": "部分可", "difficulty": "低-中", "tiers": ["游魂", "怨魂", "凶灵", "噬心鬼", "古魂"] },
+      "怪": { "source": "非人之物被灵气长期浸润", "intelligence": "低-中", "hostility": "多数无主动敌意", "communicable": "少数可", "difficulty": "中-高", "subtypes": { "木属": "老槐精/藤妖/柳娘子", "土属": "石人/土俑/泥魇", "水属": "溺妖/潭中物", "火属": "磷火/鬼灯", "器物怪": "旧梳/铜镜/古琴" }, "tiers": ["灵物", "成怪", "老怪", "地缚", "祂的容器"] },
+      "精": { "source": "高浓度灵气凝聚的自主能量体", "intelligence": "高", "hostility": "不定", "communicable": "危险但可", "difficulty": "高", "tiers": ["浮精", "凝精", "尘龄", "无名", "祂的碎片"] },
+      "堕修": { "source": "修士侵蚀过度，卡在不是人也不是祂的中间态", "intelligence": "高-残", "hostility": "极高", "communicable": "极少能", "difficulty": "极高", "tiers": ["走火(筑基异化)", "入魔(金丹崩溃)", "非我(元婴被标记)", "祂的信(化神主动接纳)", "前世的自己(不讨论)"] }
+    },
+    "hisTraces": {
+      "comment": "以下不是敌人类型，是事件类型。极少出现，出现时不是战斗，是决定。",
+      "forms": [
+        "渗出的墙——墙壁渗出暗色液体",
+        "多余的门/窗——一扇今天之前不在那里的门",
+        "没有来源的声音——叫的是你忘记了的乳名",
+        "多出来的倒影——镜子里多一个人站在你背后",
+        "字在变化——功法文字蠕动重组为不该被阅读的句子",
+        "渗液的墙壁——高侵蚀区域墙壁渗出暗色液体",
+        "自己打开的窗户——二层窗外是地面",
+        "不该响的钟——钟响时是祂听见的时候"
+      ]
+    }
+  },
+
+  "locations": {
+    "totalRooms": 166,
+    "breakdown": {
+      "city": { "file": "rebuild_rooms_city.js", "outer": 66, "nestedSubrooms": 21, "region": "应天府市井区" },
+      "wildAndTemple": { "file": "rebuild_rooms_wild.js", "outer": 35, "nestedSubrooms": 8, "region": "寺庙道观+荒野+郊外" },
+      "dungeons": { "file": "rebuild_dungeon_rooms.js", "rooms": 28, "region": "多个副本" },
+      "suburbs": { "file": "integration_v2.js inline", "rooms": 7, "names": ["东郊","东北郊","西北郊","东南郊","西南郊","北郊","南郊"] }
+    },
+    "mapSystem": {
+      "autoLayout": "integration_v2.js自动BFS布局算法",
+      "MAP_POS": "166个坐标分为4列8行网格",
+      "MAP_CONN": "126条双向连接",
+      "ROOM_SEARCH": "166间全文搜索",
+      "roomNesting": {
+        "maxDepth": 2,
+        "maxSubroomsPerParent": 3,
+        "conditionTypes": ["skill", "realm", "daoxin", "item", "quest", "faction", "time", "composite"]
+      }
+    }
+  },
+
+  "items": {
+    "totalGameItems": 199,
+    "breakdown": {
+      "standardItems": { "count": 120, "file": "rebuild_enemies_items_realms.js", "types": ["丹药","法器","护甲","材料","特殊","功法残卷","任务物品"] },
+      "atmosphereItems": { "count": 79, "file": "rebuild_atmosphere.js", "types": ["氛围物品","探索触发","剧情物品"] }
+    },
+    "lootTables": {
+      "count": 60,
+      "file": "rebuild_enemies_items_realms.js → LOOT_TABLES",
+      "structure": "每个敌人名→[3个物品名列表]"
+    }
+  },
+
+  "skills": {
+    "totalSkills": 146,
+    "split": {
+      "file1": { "file": "rebuild_skill_descriptions_1.js", "factions": 7, "skills": 75 },
+      "file2": { "file": "rebuild_skill_descriptions_2.js", "factions": 7, "skills": 71 }
+    },
+    "factionsBySkill": {
+      "忘尘宗": "忘尘经三卷体系：忘尘/忘我/见真",
+      "赤霞峰": "血池炼神法系",
+      "锈剑冢": "锈剑谱系：锈蚀/藏锋/碎剑",
+      "丝狱": "银丝法系：走丝/织网/断丝",
+      "焚身道": "焰骨淬体系列",
+      "逍遥驿": "逍遥诀：待客/送客/驿站密法",
+      "药王谷": "丹方系列：引气/聚元/化神丹道",
+      "血禅寺": "血镜法系：血引/血镜/血漫",
+      "镜阁": "镜法系列：倒转/镜渊/万镜",
+      "归墟": "墟葬法系：守墓/归墟/渡厄",
+      "青囊庐": "医经系列：望诊/药方/标注",
+      "傀坊": "傀术谱系：空壳/真灵丝/执念注入",
+      "散修": "通用功法，不属任何宗派"
+    }
+  },
+
+  "sysMappings": {
+    "themeBinding": {
+      "daoxin": "道心 = 你还'是你'的程度。越低越接近祂。侵蚀 = 道心下降。道心归零 = 角色永久丢失但世界内留下痕迹。",
+      "combat": "战斗灵力消耗 = 你在用祂的碎片做别的事——祂在看你用。",
+      "cultivation": "每突破一个境界 = 做一个检测——检测体内祂的碎片比例。过高 = 突破失败+异化事件。",
+      "encounters": "奇遇 = 夹层裂缝的随机开启——你走运是因为踩在祂视线经过的地方。",
+      "death": "死≠消失。死=你不再维持自己形态，碎片归还给祂。HP归零：道心≥30可回魂(安全点复活/道心减半)，道心<30=永远死去。"
+    },
+    "styleConventions": {
+      "roomDesc": "2+1结构（2-3句环境+1句不对劲细节+0句解释）。40-100字/间，3-6个逗号分隔单元。",
+      "enemyDesc": "1+1+1结构（1句视觉+1句反常点+1句行为暗示）。",
+      "itemDesc": "1+1结构（1句外观+1句异常属性/代价）。",
+      "narrative": "近距离第三人称。你和主角一起发现，不是你告诉主角。白描>解释。描写但不命定。不说'恐惧''诡异'——让人自己感到。"
+    }
+  }
+}

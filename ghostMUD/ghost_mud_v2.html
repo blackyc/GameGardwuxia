@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>聊斋仙途·文字MUD</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#08060c;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.6;color:#b8a090;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-size:256px;opacity:.6}
+body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 30%,transparent 40%,rgba(6,4,10,.5) 65%,rgba(4,2,8,.85) 100%),radial-gradient(ellipse at 30% 70%,rgba(60,15,20,.06) 0%,transparent 40%),radial-gradient(ellipse at 70% 20%,rgba(80,40,20,.04) 0%,transparent 35%)}
+#noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px;opacity:.7;mix-blend-mode:overlay}
+
+#app{max-width:440px;margin:0 auto;position:relative;z-index:2;min-height:100vh;padding:0 0 80px;display:flex;flex-direction:column;gap:8px;animation:flicker 10s infinite}
+@keyframes flicker{0%,100%{opacity:1}93%{opacity:1}94%{opacity:.92}95%{opacity:.97}96%{opacity:1}98%{opacity:.95}99%{opacity:1}}
+
+#header{background:linear-gradient(180deg,rgba(20,10,18,.95),rgba(28,16,24,.9));text-align:center;padding:14px 12px;position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(50,20,30,.4);box-shadow:0 2px 24px rgba(0,0,0,.6),0 0 30px rgba(100,30,40,.08)}
+#header .title{font-size:20px;font-weight:bold;letter-spacing:8px;color:#c4a090;text-shadow:0 0 15px rgba(180,120,80,.4),0 0 30px rgba(160,80,60,.2)}
+#header .subtitle{font-size:11px;color:#6a4a40;letter-spacing:4px;margin-top:2px;text-shadow:0 0 6px rgba(120,80,60,.2)}
+
+#tab-bar{position:sticky;top:68px;z-index:19;display:flex;margin:0 10px;gap:0;background:rgba(16,10,18,.95);border:1px solid rgba(50,20,30,.4);border-radius:6px 6px 0 0;overflow:hidden;backdrop-filter:blur(4px)}
+.tab-btn{flex:1;background:rgba(22,14,24,.8);border:none;color:#7a5a50;font-family:inherit;font-size:13px;padding:10px 0;cursor:pointer;letter-spacing:2px;transition:all .15s;text-shadow:0 0 4px rgba(120,80,60,.2)}
+.tab-btn+.tab-btn{border-left:1px solid rgba(50,20,30,.3)}
+.tab-btn.active{background:rgba(25,14,20,.9);color:#c4a090;text-shadow:0 0 8px rgba(180,120,80,.4);box-shadow:inset 0 -2px 0 rgba(140,60,50,.5)}
+
+.tab-panel{display:none;margin:0 10px;background:rgba(20,14,24,.9);border:1px solid rgba(50,20,30,.4);border-top:none;border-radius:0 0 6px 6px;box-shadow:0 2px 16px rgba(0,0,0,.5),0 0 20px rgba(120,40,50,.08)}
+.tab-panel.visible{display:block}
+.panel-body{padding:10px 14px;max-height:300px;overflow-y:auto}
+
+.stat-row{display:flex;justify-content:space-between;padding:5px 0;font-size:14px}
+.stat-row+.stat-row{border-top:1px solid rgba(50,30,40,.25)}
+.stat-label{color:#6e5c50}
+.stat-value{color:#c4b0a0;font-weight:bold;text-shadow:0 0 6px rgba(180,140,100,.25)}
+.stat-value.highlight{color:#b8443a;text-shadow:0 0 10px rgba(180,60,50,.4)}
+.stat-value.danger{color:#e04848;text-shadow:0 0 8px rgba(220,60,60,.5)}
+.stat-value.quest{color:#c4886a;text-shadow:0 0 8px rgba(200,120,80,.4)}
+
+.card{background:rgba(20,14,24,.9);border:1px solid rgba(60,30,40,.4);border-radius:6px;margin:0 10px;box-shadow:0 2px 16px rgba(0,0,0,.5),0 0 20px rgba(120,40,50,.1);overflow:hidden}
+.card-header{background:linear-gradient(180deg,rgba(25,16,28,.9),rgba(20,12,22,.9));padding:9px 14px;font-size:13px;font-weight:bold;color:#9a7a68;border-bottom:1px solid rgba(50,20,30,.4);letter-spacing:3px;display:flex;align-items:center;gap:6px;text-shadow:0 0 4px rgba(140,100,80,.3)}
+.card-header .dot{width:5px;height:5px;background:#b8443a;border-radius:50%;box-shadow:0 0 8px #b8443a}
+.card-body{padding:10px 14px}
+
+.progress-wrap{padding:6px 0}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#6e5c50;margin-bottom:4px;text-shadow:0 0 3px rgba(120,80,60,.2)}
+.progress-bar{width:100%;height:8px;background:rgba(15,8,14,.8);border-radius:4px;border:1px solid rgba(40,22,30,.5);overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#5a2a30,#883840,#a84448);transition:width .5s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 10px rgba(180,50,50,.35)}
+.progress-fill.daoxin{background:linear-gradient(90deg,#1a0a2a,#3a1a4a,#5a2860);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 8px rgba(90,40,96,.3)}
+
+#idle-status{text-align:center;font-size:12px;color:#6e5c50;padding:4px 0;text-shadow:0 0 3px rgba(120,80,60,.15)}
+#idle-status .pulse{display:inline-block;width:5px;height:5px;background:#b8443a;border-radius:50%;margin-right:4px;animation:pulse 1.8s ease infinite;box-shadow:0 0 8px #b8443a}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+#idle-status.resting .pulse{background:#5a8068;box-shadow:0 0 8px #5a8068}
+
+#location-bar{display:flex;align-items:flex-start;gap:8px;padding:4px 0}
+#location-icon{font-size:18px}
+#location-name{font-weight:bold;font-size:15px;color:#c4b0a0;letter-spacing:2px;text-shadow:0 0 6px rgba(180,140,100,.3)}
+#location-desc{color:#6e5c50;font-size:12px;margin-top:2px}
+.connections{display:flex;gap:6px;flex-wrap:wrap;padding:6px 0 0}
+.conn-tag{background:rgba(25,16,28,.8);border:1px solid rgba(50,28,38,.5);border-radius:10px;padding:2px 10px;font-size:11px;color:#6e5c50}
+
+#map-card{display:none}
+#map-card.visible{display:block}
+#map-container{position:relative;width:100%;height:450px;overflow:auto;border:1px solid rgba(50,20,30,.3);border-radius:4px;background:rgba(8,4,12,.6)}
+#map-canvas{position:relative;width:1000px;height:1000px}
+.map-node{position:absolute;transform:translate(-50%,-50%);text-align:center;z-index:3;cursor:pointer}
+.map-node .dot{width:8px;height:8px;background:#5a3a30;border-radius:50%;margin:0 auto 2px;box-shadow:0 0 6px rgba(140,60,40,.4);transition:all .2s}
+.map-node .label{font-size:9px;color:#8a7060;letter-spacing:1px;white-space:nowrap;text-shadow:0 0 3px rgba(120,80,60,.2);max-width:80px;overflow:hidden;text-overflow:ellipsis}
+.map-node.current .dot{width:12px;height:12px;background:#b8443a;box-shadow:0 0 14px rgba(180,60,50,.6);animation:mapPulse 2s ease infinite}
+.map-node.current .label{color:#c4886a;font-size:10px;text-shadow:0 0 8px rgba(200,120,80,.4)}
+.map-node.explored .dot{background:#8a6040}
+.map-node.unexplored .dot{background:#2a1a20}
+.map-node.unexplored .label{color:#3a2030}
+.map-node:hover .label{color:#c4a090}
+@keyframes mapPulse{0%,100%{box-shadow:0 0 14px rgba(180,60,50,.6)}50%{box-shadow:0 0 22px rgba(200,80,60,.8)}}
+.map-line{position:absolute;z-index:1;transform-origin:0 50%;height:1px}
+.map-line.explored{background:rgba(120,60,40,.3);box-shadow:0 0 3px rgba(140,60,40,.15)}
+.map-line.unexplored{background:rgba(30,15,20,.3)}
+#map-legend{display:flex;gap:16px;justify-content:center;padding:4px 0;font-size:11px;color:#6e5c50}
+#map-legend span{display:flex;align-items:center;gap:4px}
+#map-legend .ldot{width:6px;height:6px;border-radius:50%}
+#map-legend .ldot.current{background:#b8443a;box-shadow:0 0 6px #b8443a}
+#map-legend .ldot.explored{background:#8a6040}
+#map-legend .ldot.unexplored{background:#2a1a20}
+
+.action-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px}
+.action-btn{background:rgba(22,14,24,.8);border:1px solid rgba(40,24,34,.5);border-radius:6px;padding:11px 2px;font-family:inherit;font-size:12px;color:#9a8070;cursor:pointer;transition:all .15s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;text-shadow:0 0 3px rgba(140,100,70,.2)}
+.action-btn .icon{font-size:18px}
+.action-btn:active{background:rgba(30,18,24,.9);border-color:rgba(100,40,50,.6);transform:scale(.97);color:#c4a090;text-shadow:0 0 8px rgba(180,120,80,.4)}
+.action-btn.dir-btn{background:linear-gradient(180deg,rgba(22,14,24,.8),rgba(18,10,18,.8));border-color:rgba(35,20,30,.5)}
+.action-btn.map-btn{border-color:rgba(40,30,50,.5);color:#8a78a0}
+
+#log-area{max-height:280px;overflow-y:auto;font-size:13px;line-height:1.7;padding:0}
+#log-area::-webkit-scrollbar{width:3px}
+#log-area::-webkit-scrollbar-track{background:transparent}
+#log-area::-webkit-scrollbar-thumb{background:rgba(50,28,38,.5);border-radius:2px}
+.log-entry{padding:5px 0;border-bottom:1px solid rgba(50,30,40,.25);animation:fadeIn .3s ease;text-shadow:0 0 3px rgba(160,120,80,.15)}
+.log-entry:last-child{border-bottom:none}
+.log-entry.system{color:#6e5c50;font-size:12px;font-style:italic}
+.log-entry.event{color:#c4886a;text-shadow:0 0 8px rgba(200,120,80,.3)}
+.log-entry.combat{color:#d05555;text-shadow:0 0 8px rgba(200,70,70,.35)}
+.log-entry.item{color:#a06840;text-shadow:0 0 6px rgba(160,90,50,.3)}
+.log-entry.info{color:#5a8068;text-shadow:0 0 6px rgba(80,120,90,.25)}
+.log-entry.special{color:#7a4a90;text-shadow:0 0 10px rgba(120,70,140,.35)}
+.log-entry.breakthrough{color:#c4886a;font-size:15px;font-weight:bold;text-align:center;padding:8px 0;text-shadow:0 0 15px rgba(200,120,80,.5),0 0 30px rgba(180,100,60,.25)}
+.log-entry.npc{color:#6a9a78;text-shadow:0 0 6px rgba(80,140,100,.3)}
+.log-entry.quest{color:#c49a38;text-shadow:0 0 10px rgba(200,150,50,.35)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+#input-wrap{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:440px;width:100%;background:rgba(16,10,18,.95);border-top:1px solid rgba(50,20,30,.4);padding:8px 10px;display:flex;gap:8px;align-items:center;z-index:50;box-shadow:0 -2px 20px rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+#input-prompt{color:#7a5a50;font-weight:bold;white-space:nowrap;font-size:14px;text-shadow:0 0 4px rgba(120,80,60,.3)}
+#cmd-input{flex:1;background:rgba(20,12,20,.8);border:1px solid rgba(40,24,34,.5);border-radius:18px;color:#c4b0a0;font-family:inherit;font-size:14px;padding:8px 16px;outline:none;text-shadow:0 0 4px rgba(180,140,100,.2)}
+#cmd-input:focus{border-color:rgba(100,40,50,.6);box-shadow:0 0 12px rgba(120,40,50,.15)}
+#cmd-input::placeholder{color:#4a3040}
+
+.inv-item{display:flex;align-items:center;gap:6px;padding:7px 0;font-size:13px;cursor:pointer;border-bottom:1px solid rgba(50,30,40,.25)}
+.inv-item:last-child{border-bottom:none}
+.inv-item:active{opacity:.7}
+.inv-item .inv-icon{font-size:15px}
+.inv-item .inv-name{flex:1;text-shadow:0 0 3px rgba(160,120,80,.2)}
+.inv-item .inv-desc{font-size:11px;color:#6e5c50}
+.inv-empty{text-align:center;color:#6e5c50;padding:12px 0;font-size:13px}
+
+.quest-item{padding:8px 0;border-bottom:1px solid rgba(50,30,40,.25);cursor:pointer}
+.quest-item:active{opacity:.7}
+.quest-item:last-child{border-bottom:none}
+.quest-name{font-size:14px;color:#c49a38;font-weight:bold;text-shadow:0 0 6px rgba(200,150,50,.3)}
+.quest-stage{font-size:12px;color:#6e5c50;margin-top:2px}
+.quest-reward{font-size:11px;color:#5a8068}
+.quest-active{font-size:12px;color:#c4886a}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(4,2,8,.88);z-index:100;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal-box{background:rgba(20,12,20,.97);border:2px solid rgba(80,28,36,.5);border-radius:8px;padding:24px;max-width:380px;width:90%;box-shadow:0 0 40px rgba(100,20,30,.2);max-height:85vh;overflow-y:auto}
+.modal-box h3{color:#c05555;text-align:center;font-size:17px;margin-bottom:12px;letter-spacing:5px;text-shadow:0 0 15px rgba(180,60,60,.5)}
+.modal-box h3.npc-title{color:#6a9a78;text-shadow:0 0 15px rgba(80,140,100,.5)}
+.modal-desc{color:#b0a098;font-size:14px;line-height:1.8;margin-bottom:16px;text-shadow:0 0 3px rgba(160,120,80,.15)}
+.modal-choices{display:flex;flex-direction:column;gap:8px}
+.modal-choice{background:linear-gradient(180deg,rgba(30,16,20,.9),rgba(24,12,16,.9));border:1px solid rgba(60,28,36,.5);border-radius:6px;padding:12px 14px;font-family:inherit;font-size:14px;color:#c4a090;cursor:pointer;text-align:left;transition:all .15s;text-shadow:0 0 4px rgba(180,120,80,.2)}
+.modal-choice:active{background:rgba(40,18,22,.95);border-color:rgba(100,40,50,.6);transform:scale(.98)}
+.modal-close{margin-top:14px;background:rgba(25,15,24,.8);border:1px solid rgba(40,24,34,.5);border-radius:6px;padding:8px;font-family:inherit;font-size:14px;color:#6e5c50;cursor:pointer;width:100%;text-shadow:0 0 3px rgba(120,80,60,.15)}
+.modal-close:active{background:rgba(35,20,30,.9);color:#8a7060}
+
+.combat-vs{display:flex;align-items:center;justify-content:space-between;padding:8px 0;gap:10px}
+.combat-vs .side{flex:1;text-align:center}
+.combat-vs .side .name{font-size:14px;font-weight:bold;color:#c4b0a0;text-shadow:0 0 6px rgba(180,140,100,.3)}
+.combat-vs .side .desc{font-size:11px;color:#6e5c50;margin-top:2px}
+.combat-vs .vs-text{font-size:14px;color:#883838;font-weight:bold;text-shadow:0 0 8px rgba(120,40,40,.4)}
+.combat-hp-bar{width:100%;height:5px;background:rgba(15,8,14,.8);border-radius:3px;margin:4px 0;overflow:hidden}
+.combat-hp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#882828,#b83838);transition:width .3s;box-shadow:0 0 8px rgba(180,50,50,.4)}
+.combat-hp-text{font-size:10px;color:#6e5c50}
+.combat-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.combat-btn{background:linear-gradient(180deg,rgba(30,16,20,.9),rgba(24,12,16,.9));border:1px solid rgba(80,28,36,.5);border-radius:6px;padding:10px;font-family:inherit;font-size:14px;color:#c07070;cursor:pointer;transition:all .15s;text-shadow:0 0 6px rgba(180,80,80,.3)}
+.combat-btn:active{background:rgba(40,18,22,.95);border-color:rgba(120,40,50,.7);transform:scale(.97)}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,1,5,.92);display:flex;align-items:center;justify-content:center;z-index:200}
+.modal-overlay .modal-box{max-width:350px;text-align:center}
+.modal-box h2{color:#c05555;font-size:19px;margin-bottom:12px;letter-spacing:4px;text-shadow:0 0 15px rgba(180,60,60,.5)}
+.modal-box p{margin:6px 0;font-size:14px;line-height:1.8;color:#b0a098;text-shadow:0 0 3px rgba(160,120,80,.15)}
+.btn-restart{margin-top:16px;background:rgba(60,20,28,.9);color:#c4a098;border:1px solid rgba(100,30,40,.5);border-radius:18px;padding:10px 28px;font-family:inherit;font-size:15px;cursor:pointer;letter-spacing:3px;text-shadow:0 0 6px rgba(180,120,80,.3)}
+.btn-restart:active{background:rgba(80,25,35,.95)}
+
+/* === Faction Selection === */
+.faction-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:45vh;overflow-y:auto}
+.faction-card{background:rgba(22,14,24,.8);border:1px solid rgba(40,24,34,.5);border-radius:6px;padding:10px;cursor:pointer;transition:all .15s;text-align:left}
+.faction-card:active,.faction-card:hover{background:rgba(30,18,24,.9);border-color:rgba(100,40,50,.6)}
+.faction-card .fname{font-size:14px;font-weight:bold;color:#c4a090;letter-spacing:2px;text-shadow:0 0 6px rgba(180,120,80,.3)}
+.faction-card .fdesc{font-size:11px;color:#6e5c50;margin-top:3px;line-height:1.5}
+.faction-card.rogue{border-color:rgba(80,80,80,.4)}
+.faction-card.rogue .fname{color:#8a8a8a;text-shadow:0 0 6px rgba(150,150,150,.2)}
+
+/* === Skill Tree Panel === */
+.skill-section{margin-bottom:8px}
+.skill-section-header{display:flex;justify-content:space-between;align-items:center;padding:6px 0;cursor:pointer;font-size:13px;font-weight:bold;color:#9a7a68;letter-spacing:2px;text-shadow:0 0 3px rgba(140,100,80,.3);border-bottom:1px solid rgba(50,30,40,.25)}
+.skill-section-header .arrow{transition:transform .2s;font-size:10px}
+.skill-section-header.open .arrow{transform:rotate(90deg)}
+.skill-list{display:none}
+.skill-list.open{display:block}
+.skill-item{display:flex;align-items:center;gap:6px;padding:6px 0 6px 8px;border-bottom:1px solid rgba(50,30,40,.15);font-size:12px;cursor:pointer}
+.skill-item:active{opacity:.7}
+.skill-item.learned{color:#c4a090}
+.skill-item.unlearned{color:#4a3040}
+.skill-item .skill-icon{font-size:13px}
+.skill-item .skill-name{flex:1}
+.skill-item .skill-level{color:#a06840;font-size:10px;min-width:36px;text-align:right}
+.skill-performs{font-size:10px;color:#6a5a7a;margin-top:2px;padding-left:20px}
+.skill-performs span{display:inline-block;background:rgba(60,30,60,.4);border-radius:8px;padding:1px 6px;margin:1px 2px}
+
+/* === Teacher Card === */
+.teacher-card{background:rgba(20,14,24,.9);border:1px solid rgba(50,30,40,.4);border-radius:6px;padding:8px;margin:4px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.teacher-card .tinfo{flex:1}
+.teacher-card .tname{font-size:13px;font-weight:bold;color:#6a9a78;text-shadow:0 0 6px rgba(80,140,100,.3)}
+.teacher-card .ttitle{font-size:10px;color:#6e5c50}
+.teacher-card .teaches{font-size:10px;color:#5a4a68;margin-top:2px}
+.teacher-btn{background:rgba(30,20,30,.8);border:1px solid rgba(60,40,50,.5);border-radius:12px;padding:4px 10px;font-family:inherit;font-size:11px;color:#9a8a78;cursor:pointer;white-space:nowrap}
+.teacher-btn:active{background:rgba(40,28,38,.9);color:#c4a090}
+
+/* === Practice Modal === */
+.practice-info{padding:8px 0;font-size:13px;color:#b0a098}
+.practice-info .highlight{color:#c49a38;text-shadow:0 0 6px rgba(200,150,50,.3)}
+.practice-cost{font-size:12px;color:#6e5c50;padding:6px 0;border-top:1px solid rgba(50,30,40,.25)}
+
+/* === Combat Performs === */
+.perform-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
+.perform-item{background:rgba(22,14,24,.8);border:1px solid rgba(50,30,40,.4);border-radius:6px;padding:8px 10px;cursor:pointer;transition:all .15s}
+.perform-item:active{background:rgba(30,18,24,.9);border-color:rgba(100,40,50,.6)}
+.perform-item .pname{font-size:13px;font-weight:bold;color:#c4886a;letter-spacing:1px}
+.perform-item .pdesc{font-size:11px;color:#6e5c50;margin-top:2px}
+.perform-item .pcost{font-size:10px;color:#884040;margin-top:2px}
+.perform-item.on-cd{opacity:.35;pointer-events:none}
+
+/* === Faction Badge === */
+.faction-badge{background:rgba(25,16,28,.9);border:1px solid rgba(60,30,40,.4);border-radius:6px;padding:6px 8px;margin-bottom:6px;text-align:center}
+.faction-badge .fname{font-size:13px;font-weight:bold;color:#c49a38;letter-spacing:2px;text-shadow:0 0 8px rgba(200,150,50,.35)}
+.faction-badge .fdesc{font-size:10px;color:#6e5c50;margin-top:2px}
+
+@media(max-width:440px){#app{max-width:100%}#input-wrap{max-width:100%;left:0;transform:none}}
+</style>
+</head>
+<body>
+<div id="noise-overlay"></div>
+
+<div id="app">
+<div id="header">
+  <div class="title">诡 仙 录</div>
+  <div class="subtitle">真假难辩 · 本心如烛</div>
+</div>
+
+<div id="tab-bar">
+  <button class="tab-btn" onclick="game.switchTab('char')">人物</button>
+  <button class="tab-btn" onclick="game.switchTab('bag')">包裹</button>
+  <button class="tab-btn" onclick="game.switchTab('wuxue')">武学</button>
+  <button class="tab-btn" onclick="game.switchTab('quest')">任务</button>
+  <button class="tab-btn" onclick="game.switchTab('status')">境况</button>
+</div>
+
+<div class="tab-panel" id="panel-char">
+  <div class="panel-body">
+    <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value highlight" id="stat-realm">原生体</span></div>
+    <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="stat-cultivation">0 / 100</span></div>
+    <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="stat-daoxin">100 / 100</span></div>
+    <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="stat-lifespan">80 年</span></div>
+    <div class="stat-row"><span class="stat-label">灵石</span><span class="stat-value" id="stat-stones">0</span></div>
+    <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="stat-techniques">无</span></div>
+    <div class="stat-row"><span class="stat-label">任务数</span><span class="stat-value quest" id="stat-quests">0</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-bag">
+  <div class="panel-body" id="inv-body"><div class="inv-empty">空空如也</div></div>
+</div>
+
+<div class="tab-panel" id="panel-wuxue">
+  <div class="panel-body" id="wuxue-body" style="max-height:400px">
+    <div class="faction-badge" id="faction-badge" style="display:none">
+      <div class="fname" id="fb-name"></div>
+      <div class="fdesc" id="fb-desc"></div>
+    </div>
+    <div id="wuxue-content">
+      <div class="inv-empty">尚未拜入帮派</div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-quest">
+  <div class="panel-body" id="quest-body"><div class="inv-empty">暂无任务</div></div>
+</div>
+
+<div class="tab-panel" id="panel-status">
+  <div class="panel-body" id="status-body">
+    <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value" id="s-realm">原生体</span></div>
+    <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="s-cult">0 / 100</span></div>
+    <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="s-daoxin">100 / 100</span></div>
+    <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="s-life">80 年</span></div>
+    <div class="stat-row"><span class="stat-label">生命</span><span class="stat-value" id="s-hp">100 / 100</span></div>
+    <div class="stat-row"><span class="stat-label">灵石</span><span class="stat-value" id="s-stones">0</span></div>
+    <div class="stat-row"><span class="stat-label">攻击</span><span class="stat-value" id="s-atk">5</span></div>
+    <div class="stat-row"><span class="stat-label">防御</span><span class="stat-value" id="s-def">2</span></div>
+    <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="s-tech">无</span></div>
+    <div class="stat-row"><span class="stat-label">所在</span><span class="stat-value" id="s-loc">应天暗巷</span></div>
+    <div class="stat-row"><span class="stat-label">斩杀</span><span class="stat-value" id="s-kill">0</span></div>
+    <div class="stat-row" id="s-faction-row" style="display:none"><span class="stat-label">帮派</span><span class="stat-value" id="s-faction" style="color:#c49a38">无</span></div>
+    <div class="stat-row" id="s-skills-row" style="display:none"><span class="stat-label">武学</span><span class="stat-value" id="s-skills" style="font-size:11px">无</span></div>
+    <div class="stat-row" id="s-rep-row" style="display:none"><span class="stat-label">门忠</span><span class="stat-value" id="s-rep">0</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="dot"></span>修 炼 进 度</div>
+  <div class="card-body">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>修为积累</span><span id="cultivation-text">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="cultivation-bar" style="width:0%"></div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>道心</span><span id="daoxin-text">100%</span></div>
+      <div class="progress-bar"><div class="progress-fill daoxin" id="daoxin-bar" style="width:100%"></div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>生命</span><span id="hp-text">100%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="hp-bar" style="width:100%;background:linear-gradient(90deg,#682828,#983838,#b84444);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(180,50,50,.3)"></div></div>
+    </div>
+    <div id="idle-status"><span class="pulse"></span>挂机修炼中 · 每 3 秒获取修为</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="dot"></span>所 在 之 地</div>
+  <div class="card-body">
+    <div id="location-bar">
+      <span id="location-icon"></span>
+      <div>
+        <div id="location-name">应天暗巷</div>
+        <div id="location-desc"></div>
+      </div>
+    </div>
+    <div class="connections" id="connections"></div>
+  </div>
+</div>
+
+<div class="card" id="map-card">
+  <div class="card-header"><span class="dot"></span>天 下 舆 图</div>
+  <div class="card-body">
+    <div id="map-container"><div id="map-canvas"></div></div>
+    <div id="map-legend">
+      <span><span class="ldot current"></span>当前位置</span>
+      <span><span class="ldot explored"></span>已探明</span>
+      <span><span class="ldot unexplored"></span>未探明</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="dot"></span>行 动</div>
+  <div class="card-body">
+    <div class="action-grid" style="margin-bottom:7px">
+      <button class="action-btn dir-btn" onclick="game.explore('north')"><span class="icon">⬆</span>北</button>
+      <button class="action-btn dir-btn" onclick="game.explore('south')"><span class="icon">⬇</span>南</button>
+      <button class="action-btn dir-btn" onclick="game.explore('east')"><span class="icon">➡</span>东</button>
+      <button class="action-btn dir-btn" onclick="game.explore('west')"><span class="icon">⬅</span>西</button>
+      <button class="action-btn dir-btn" onclick="game.explore('up')"><span class="icon">🔼</span>上</button>
+      <button class="action-btn dir-btn" onclick="game.explore('down')"><span class="icon">🔽</span>下</button>
+    </div>
+    <div class="action-grid" style="margin-bottom:7px">
+      <button class="action-btn" onclick="game.meditate()"><span class="icon">🧘</span>打坐</button>
+      <button class="action-btn" onclick="game.rest()"><span class="icon">💤</span>休憩</button>
+      <button class="action-btn" onclick="game.searchArea()"><span class="icon">🔍</span>搜索</button>
+      <button class="action-btn" onclick="game.talk()"><span class="icon">💬</span>交谈</button>
+    </div>
+    <div class="action-grid">
+      <button class="action-btn map-btn" onclick="game.toggleMap()"><span class="icon">🗺</span>地图</button>
+      <button class="action-btn" onclick="game.askAround()"><span class="icon">👂</span>打听</button>
+      <button class="action-btn" onclick="game.pushup()"><span class="icon">💪</span>练功</button>
+      <button class="action-btn" onclick="game.peek()"><span class="icon">👀</span>窥探</button>
+    </div>
+    <div class="action-grid" style="margin-top:7px">
+      <button class="action-btn" onclick="game.practiceMenu()"><span class="icon">📖</span>练武</button>
+      <button class="action-btn" onclick="game.switchTab('wuxue')"><span class="icon">🏯</span>武学</button>
+      <button class="action-btn" onclick="game.switchTab('status')"><span class="icon">📋</span>境况</button>
+      <button class="action-btn" onclick="game.askTeacher()"><span class="icon">🙇</span>拜师</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="dot"></span>江 湖 录</div>
+  <div class="card-body" id="log-area">
+  </div>
+</div>
+</div>
+
+<div id="input-wrap">
+  <span id="input-prompt">▸</span>
+  <input type="text" id="cmd-input" placeholder="输入命令…" autocomplete="off">
+</div>
+
+<!-- NPC Encounter Modal -->
+<div class="modal" id="npc-modal">
+  <div class="modal-box">
+    <h3 class="npc-title" id="npc-title">奇遇</h3>
+    <div class="modal-desc" id="npc-desc"></div>
+    <div class="modal-choices" id="npc-choices"></div>
+    <button class="modal-close" onclick="game.closeNPC()">走开</button>
+  </div>
+</div>
+
+<!-- Combat Modal -->
+<div class="modal" id="combat-modal">
+  <div class="modal-box">
+    <h3>⚔ 交 锋 ⚔</h3>
+    <div class="combat-vs">
+      <div class="side"><div class="name" id="combat-player-name">你</div><div class="desc">我方</div><div class="combat-hp-bar"><div class="combat-hp-fill" id="combat-player-hp" style="width:100%"></div></div><div class="combat-hp-text" id="combat-player-hp-text">100/100</div></div>
+      <div class="vs-text">VS</div>
+      <div class="side"><div class="name" style="color:#c05555" id="combat-enemy-name">?</div><div class="desc" id="combat-enemy-type">?</div><div class="combat-hp-bar"><div class="combat-hp-fill" id="combat-enemy-hp" style="width:100%"></div></div><div class="combat-hp-text" id="combat-enemy-hp-text">100/100</div></div>
+    </div>
+    <div class="combat-actions">
+      <button class="combat-btn" onclick="game.combatAction('attack')">⚔ 攻击</button>
+      <button class="combat-btn" onclick="game.combatAction('skill')">🔥 绝招</button>
+      <button class="combat-btn" onclick="game.combatAction('defend')">🛡 守势</button>
+      <button class="combat-btn" onclick="game.combatAction('flee')">🏃 遁走</button>
+    </div>
+    <div id="perform-area" style="display:none;margin-top:10px">
+      <div style="color:#c4886a;font-size:12px;letter-spacing:2px;margin-bottom:6px;text-align:center">▾ 选择绝招 ▾</div>
+      <div class="perform-list" id="perform-list"></div>
+      <button class="modal-close" style="margin-top:6px" onclick="game.hidePerforms()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ghost MUD v2.0 · 重建数据层 -->
+<script src="work/rebuild_enemies_items_realms.js"></script>
+<script src="work/rebuild_atmosphere.js"></script>
+<script src="work/rebuild_rooms_city.js"></script>
+<script src="work/rebuild_rooms_wild.js"></script>
+<script src="work/rebuild_dungeon_rooms.js"></script>
+<script src="work/rebuild_skill_descriptions_1.js"></script>
+<script src="work/rebuild_skill_descriptions_2.js"></script>
+<script src="work/integration_v2.js"></script>
+<script>
+// Build enemy pools by danger tier
+const enemyNames = Object.keys(ENEMIES);
+const enemyTiers = {};
+enemyNames.forEach(name => {
+  const e = ENEMIES[name];
+  const tier = e.boss ? 5 : (e.exp > 40 ? 4 : e.exp > 25 ? 3 : e.exp > 15 ? 2 : 1);
+  if (!enemyTiers[tier]) enemyTiers[tier] = [];
+  enemyTiers[tier].push(name);
+});
+
+function pickEnemy(danger) {
+  let pool = [];
+  for (let tier = danger; tier >= 0; tier--) {
+    if (enemyTiers[tier] && enemyTiers[tier].length > 0) {
+      pool = pool.concat(enemyTiers[tier]);
+      if (pool.length >= 5) break;
+    }
+  }
+  if (pool.length === 0) pool = enemyNames.slice(0, 5);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+class Game {
+  constructor() {
+    window.game = this;
+    var r0 = REALMS[0];
+    this.state = {
+      realm: 0,
+      cultivation: 0,
+      daoxin: 100, maxDaoXin: 100,
+      hp: r0.hp, maxHp: r0.hp,
+      lifespan: 80,
+      spiritStones: 0,
+      attack: r0.atk, defense: r0.def,
+      location: '应天府·十字街口',
+      inventory: [],
+      equipment: { weapon: null, armor: null },
+      techniques: [],
+      killCount: 0,
+      totalCultivation: 0,
+      isResting: false,
+      gameStart: Date.now(),
+      combat: null,
+      npcEncounter: null,
+      explored: ['应天府·十字街口'],
+      activeQuests: [],
+      completedQuests: [],
+      questStages: {},  // questId -> current stage index
+      // === 帮派/技能系统 ===
+      faction: '散修',         // 帮派名，开局即为散修（无门无派），通过遭遇帮派NPC可拜师
+      skills: {},              // { skillId: { level: 1, exp: 0 } }
+      equippedSkill: null,     // 装配的技能ID（攻击加成用）
+      factionRep: 0,           // 门忠
+      performCooldowns: {},    // { performId: lastUsedRound }
+      roundCount: 0            // 战斗回合计数
+    };
+    this.currentTab = null;
+    this.mapOpen = false;
+    this.init();
+  }
+
+  init() {
+    // 开局即为散修，无需选择帮派
+    this.renderMap();
+    this.setupInput();
+    this.startGameAsRogue();
+  }
+
+  startGameAsRogue() {
+    var s = this.state;
+    // 自动习得散修入门技能
+    if (typeof ROGUE_SKILLS !== 'undefined' && ROGUE_SKILLS.skills) {
+      var starterSkills = ROGUE_SKILLS.skills.filter(function(sk) { return sk.minLevel === 0; });
+      if (starterSkills.length > 0) {
+        this.addLog('📖 自行研习基础功法：', 'special');
+        starterSkills.forEach(function(sk) {
+          if (!(s.skills[sk.id])) {
+            s.skills[sk.id] = { level: 1, exp: 0 };
+            this.addLog('   「' + sk.name + '」Lv.1', 'info');
+          }
+        }.bind(this));
+      }
+    }
+    this.startGameAfterStartup();
+  }
+
+  startGameAfterStartup() {
+    this.renderMap();
+    this.startIdle();
+    this.updateLocationIcon();
+    this.addLog('正德年间，世有修行之人。吐纳灵气，参悟大道。然修炼一途，每破一境便近祂一分——世人却未必知晓这是在敲谁的门。', 'system');
+    this.addLog('你从顺天府暗巷醒来——脑中残留着经文与经络的碎片。你是谁？不重要。重要的是：你还活着。', 'system');
+    this.addLog('🕯 挂机已启动。前路莫测，望君保重。', 'system');
+    this.addLog('💡 城中探索将遇奇遇，野外险地方有敌袭。搜索可得金银器物。输入「帮助」查看命令。', 'system');
+    this.addLog('⚡ 你尚未拜入任何帮派——在不同的城区探索，可能遇到各帮派的接引人。', 'system');
+    this.updateUI();
+  }
+
+  startIdle() {
+    this.idleInterval = setInterval(() => this.idleTick(), 3000);
+    this.daoxinInterval = setInterval(() => this.daoxinTick(), 15000);
+  }
+
+  idleTick() {
+    if (this.state.combat || this.state.npcEncounter) return;
+    const s = this.state;
+    if (s.isResting) {
+      s.hp = Math.min(s.maxHp, s.hp + 3);
+      s.daoxin = Math.min(s.maxDaoXin, s.daoxin + 1);
+      s.cultivation += 1;
+    } else {
+      const base = 2 + s.realm * 1.5;
+      const equipBonus = s.equipment.weapon ? 0.5 : 0;
+      const techBonus = s.techniques.length * 0.3;
+      s.cultivation += Math.floor(base + equipBonus + techBonus);
+      s.totalCultivation += Math.floor(base + equipBonus + techBonus);
+    }
+    if (Math.random() < 0.05 && !s.isResting) this.triggerIdleEvent();
+    this.checkBreakthrough();
+    this.updateUI();
+  }
+
+  daoxinTick() {
+    if (this.state.combat || this.state.npcEncounter || this.state.isResting) return;
+    const s = this.state;
+    const loc = LOCATIONS[s.location];
+    const d = (loc ? loc.danger : 1) * 2 + (Math.random() > 0.7 ? 1 : 0);
+    s.daoxin = Math.max(0, s.daoxin - d);
+    if (s.daoxin < 20 && Math.random() < 0.3) {
+      this.addLog('😰 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
+      s.cultivation += 10;
+    }
+    if (s.daoxin <= 0) {
+      s.daoxin = 0;
+      this.gameOver('道心崩坏——你不再是你自己了。最后的念头散成无数碎片，其中一片还记得你的名字。只是一片。');
+    }
+    this.updateUI();
+  }
+
+  triggerIdleEvent() {
+    const ev = [
+      { text: '🌑 暮色忽然沉了三寸。不是天黑——是有什么东西在半空中张开了。你数不出那是什么。', effect: () => { this.state.daoxin -= 5; }},
+      { text: '🌀 丹田内忽然翻涌——不是真气。是一小口苦味。你想吐出来，但喉咙里什么都没有。', effect: () => { this.state.cultivation += 20; }},
+      { text: '👁 有人在看你。不是错觉——你后颈的皮肤知道。你猛地转身，只有一面旧墙，墙上的裂纹恰好排成一张脸的轮廓。', effect: () => { this.state.daoxin -= 3; }},
+      { text: '📜 一行经文从你读过的那本残卷里浮上心头。你明明记得下一句是什么——但此刻读出来的，不是那个字。', effect: () => { this.state.cultivation += 15; this.state.daoxin -= 2; }},
+      { text: '🕳 忘尘宗的真意在脑中一闪：忘我，忘尘，忘一切——包括自己正在忘。等你回过神来，已经过了一炷香——还是半个时辰？你看不清日晷。', effect: () => {
+        if (!this.state.techniques.includes('忘尘经')) {
+          this.state.techniques.push('忘尘经');
+          this.addLog('🧠 你领悟了忘尘宗的皮毛。获得功法：忘尘经', 'special');
+        }
+        this.state.cultivation += 25; this.state.daoxin -= 8;
+      }},
+      { text: '💀 路过一口枯井时你停住了——不是因为井里有东西。是因为你在井壁上看到了自己的倒影。它在对你笑。你没在笑。', effect: () => { this.state.daoxin -= 5; this.state.cultivation += 30; }},
+      { text: '🔥 远方山上亮起一盏灯——你已经走了一夜，那个方向不该有人家。灯亮着。亮了一盏。又亮了一盏。一共七盏。然后一盏接一盏灭了。', effect: () => { this.state.daoxin -= 4; this.state.cultivation += 10; }},
+    ];
+    const e = ev[Math.floor(Math.random() * ev.length)];
+    this.addLog(e.text, 'event');
+    e.effect();
+  }
+
+  checkBreakthrough() {
+    const s = this.state;
+    if (s.realm >= REALMS.length - 1) return;
+    const n = REALMS[s.realm + 1];
+    if (s.cultivation >= n.cost) {
+      const ch = Math.min(0.95, 0.7 - s.realm * 0.08 + (s.daoxin / s.maxDaoXin) * 0.2);
+      if (Math.random() < ch) {
+        s.realm++;
+        s.cultivation = 0;
+        const r = REALMS[s.realm];
+        s.attack = r.atk;
+        s.defense = r.def;
+        s.maxHp = r.hp;
+        s.hp = r.hp;
+        s.maxDaoXin += 20;
+        s.daoxin = s.maxDaoXin;
+        s.lifespan += 20;
+        this.updateLocationIcon();
+        this.addLog('🌟 突破！你已踏入 <b>' + r.name + '</b> 之境！', 'breakthrough');
+        if (r.desc) this.addLog('   ' + r.desc, 'event');
+      } else {
+        s.cultivation = Math.floor(n.cost * 0.6);
+        s.daoxin -= 15;
+        this.addLog('💥 冲关失败！修为震荡，道心遭受重创…', 'combat');
+        if (s.daoxin <= 0) this.gameOver('冲关失败，道心崩裂');
+      }
+    }
+  }
+
+  // ---- MOVEMENT ----
+  explore(dir) {
+    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法移动！请先结束当前互动。', 'combat'); return; }
+    const s = this.state;
+    const loc = LOCATIONS[s.location];
+    if (!loc) { this.addLog('此处地脉紊乱，感知不到方位…', 'system'); return; }
+    // 数据层（rebuild_rooms_*）一律使用中文方向键（北/南/东/西/上/下/入/出），
+    // UI 按钮传入英文方向，故先归一化到中文再查 connections。
+    const DIR_CN = { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出' };
+    const cnDir = DIR_CN[dir] || dir;
+    const target = loc.connections[cnDir] || loc.connections[dir];
+    if (!target) { this.addLog('前方的路不见了。也许从来就没有过。', 'system'); return; }
+    if (!LOCATIONS[target]) { this.addLog('那个地方……你记不起是哪里了。明明刚刚还记得。', 'system'); return; }
+    s.location = target;
+    if (!s.explored.includes(target)) s.explored.push(target);
+    const nl = LOCATIONS[target];
+    this.addLog('🚶 向' + this.dirName(dir) + '方行去…', 'info');
+    this.addLog('📍 抵达 <b>' + target + '</b> —— ' + getDesc(nl), 'info');
+    // Room events
+    if (nl.events && nl.events.length > 0 && Math.random() < 0.5) {
+      this.addLog(nl.events[Math.floor(Math.random() * nl.events.length)], 'event');
+    }
+    // Encounter system: cities → NPCs, wilderness/dungeon → combat
+    if (nl.danger <= 2) {
+      // City/town: NPC encounters
+      if (Math.random() < 0.35) this.triggerNPCEncounter(false);
+    } else if (nl.danger >= 5) {
+      // Dungeon: combat encounters
+      if (Math.random() < nl.danger * 0.15) this.triggerEncounter(nl);
+    } else {
+      // Mixed (danger 3-4): 50/50 NPC or combat
+      if (Math.random() < 0.2) {
+        Math.random() < 0.5 ? this.triggerNPCEncounter(false) : this.triggerEncounter(nl);
+      }
+    }
+    if (nl.boss && Math.random() < 0.3) this.addLog('⚠ 此地弥漫着危险的气息——强敌就在附近…', 'combat');
+    this.updateLocationIcon();
+    this.renderMap();
+    this.checkQuestProgress('go', target);
+    this.updateUI();
+  }
+
+  dirName(d) {
+    return { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出',
+             '北':'北', '南':'南', '东':'东', '西':'西', '上':'上', '下':'下', '入':'入', '出':'出' }[d] || d;
+  }
+
+  // ---- NPC ENCOUNTERS ----
+  triggerNPCEncounter(active) {
+    var room = this.state.location;
+    var pool = NPC_ENCOUNTERS[room];
+    
+    // 也检查帮派招募NPC
+    var factionPool = (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined') ? FACTION_RECRUITER_ENCOUNTERS[room] : null;
+    
+    // 如果没有常规NPC但有帮派招募NPC，且玩家是散修，30%概率触发招募遭遇
+    if ((!pool || pool.length === 0) && factionPool && factionPool.length > 0 && this.state.faction === '散修' && Math.random() < 0.4) {
+      pool = factionPool;
+    } else if (!pool || pool.length === 0) {
+      if (active) this.addLog('此处荒无人烟，你环顾四周却不见半个人影。换个热闹的地方试试？', 'system');
+      return;
+    }
+    
+    var enc = pool[Math.floor(Math.random() * pool.length)];
+    this.state.npcEncounter = enc;
+    
+    // Show NPC modal
+    document.getElementById('npc-title').textContent = '👥 ' + enc.title;
+    document.getElementById('npc-desc').textContent = getDesc(enc);
+    var choicesDiv = document.getElementById('npc-choices');
+    choicesDiv.innerHTML = enc.results.map(function(r, i) {
+      return '<button class="modal-choice" onclick="game.npcChoice(' + i + ')">' + r.choice + '</button>';
+    }).join('');
+    document.getElementById('npc-modal').classList.add('active');
+  }
+
+  npcChoice(index) {
+    var enc = this.state.npcEncounter;
+    if (!enc) return;
+    var result = enc.results[index];
+    if (!result) return;
+    
+    var s = this.state;
+    
+    // 帮派招募NPC特殊处理
+    if (enc.npc_type === 'faction_recruiter' && enc.faction) {
+      // 招募者：如果拒绝了就关闭，如果接受了就发起任务
+      if (result.questStart) {
+        this.startQuest(result.questStart);
+      }
+      if (result.log) {
+        this.addLog(result.log, 'npc');
+      }
+      this.closeNPC();
+      return;
+    }
+    
+    // Process effects
+    if (result.effect) {
+      const parts = result.effect.split(';');
+      for (const part of parts) {
+        const [key, val] = part.split(':');
+        if (key === 'spend_gold') s.spiritStones -= parseInt(val);
+        else if (key === 'lose_gold') s.spiritStones = Math.max(0, s.spiritStones - parseInt(val));
+        else if (key === 'check_atk') {
+          if (s.attack >= parseInt(val)) {
+            this.addLog(result.successLog || '成功！', 'npc');
+            if (result.successReward) this.applyReward(result.successReward);
+          } else {
+            this.addLog(result.failLog || '失败…', 'npc');
+          }
+        }
+        else if (key === 'check_agility') {
+          if (Math.random() < 0.6) {
+            this.addLog(result.successLog || '成功！', 'npc');
+            if (result.successReward) this.applyReward(result.successReward);
+          } else {
+            this.addLog(result.failLog || '失败…', 'npc');
+            if (result.effect.includes('lose_gold')) {} // already handled
+          }
+        }
+        // 通用增益类 effect（适配层 integration_v2.js 生成的 heal/daoxin 等）→ 复用 applyReward
+        else if (['heal','hp','daoxin','gain_gold','gain_cultivation','random_item','random_technique'].indexOf(key) >= 0) {
+          this.applyReward(part);
+        }
+      }
+    }
+    
+    // Process reward
+    if (result.reward) this.applyReward(result.reward);
+    if (result.failReward) this.applyReward(result.failReward);
+    
+    // Process log
+    const logText = result.log || result.successLog || '';
+    if (logText && !logText.startsWith('成功') && !logText.startsWith('失败')) {
+      this.addLog(logText, 'npc');
+    }
+    
+    // Quest trigger
+    if (result.questStart || enc.questTrigger) {
+      this.startQuest(result.questStart || enc.questTrigger);
+    }
+    
+    this.closeNPC();
+  }
+
+  closeNPC() {
+    this.state.npcEncounter = null;
+    document.getElementById('npc-modal').classList.remove('active');
+    this.updateUI();
+  }
+
+  // ============ 帮派拜师系统（遭遇式） ============
+  joinFaction(name) {
+    var s = this.state;
+    var oldFaction = s.faction;
+    s.faction = name;
+    s.skills = {};
+    s.factionRep = 0;
+
+    // 入帮仪式文字
+    var ceremonies = {
+      '忘尘宗': '🙏 「忘尘即是归宗。从今日起，你即忘尘宗弟子。忘我，忘尘，忘一切——连自己正在忘也一并忘记。入我忘尘，心即是空。」',
+      '赤霞峰': '☯ 「赤霞峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
+      '锈剑冢': '⚔ 「锈剑冢中万剑沉寂。从今日起，你手持的是败剑——败在他人手中，锈在自己手上。败剑不折，因为已经折过一次了。」',
+      '丝狱': '🐜 「丝狱之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
+      '焚身道': '🔥 「焚身道的圣火已在你丹田种下。从今日起，你的血是流动的焰——烧自己，也烧敌人。圣火不灭，焚身证道。」',
+      '逍遥驿': '🎨 「逍遥驿不收弟子，只收过客。从今日起，天下之大，唯自由不可拘。他日你若想回头，驿门永远开着。」',
+      '药王谷': '☠ 「药王谷的丹房为你敞开。从今日起，万毒皆你可控之物。剂量定生死——毒即是药，药即是毒。只是偶尔，毒会自己加一味。」',
+      '血禅寺': '🩸 「血禅寺的戒刀在你掌心划了一道。从今日起，你的血与禅合而为一。猎头的路，只进不退——除非你不再是你。」',
+      '镜阁': '🔱 「镜阁之中，万镜同照。从今日起，对手的手段皆可映回。只是照得越久，镜中之人越不像是你。」',
+      '归墟': '🌑 「归墟——世界的尽头，亦是始处。从今日起，你行走在生与死的边界。归墟不收活人——但你也不是全然活着。」',
+      '青囊庐': '💚 「青囊庐悬壶济世。从今日起，你的手即是救人之手。只是救回来的人，偶尔会说自己不该醒来。」',
+      '傀坊': '🤖 「傀坊的机关为你转了起来。从今日起，108具傀儡任你驱使。只是其中一具，你造的时候不记得给它写了什么——但它动了。」',
+      '散修': '⚡ 「你重新踏上了散修的路。天下之大，无拘无束。但无人告诉你——散修看得最多，也最容易看见不该看见的东西。」'
+    };
+    var msg = ceremonies[name] || ('⚡ 「你已加入' + name + '。前路漫漫，江湖险恶，望君保重。」');
+    if (oldFaction !== '散修' && oldFaction !== name) {
+      this.addLog('⚠ 你脱离了' + oldFaction + '，加入了' + name + '。', 'system');
+    }
+    this.addLog(msg, 'breakthrough');
+
+    // 非散修：自动获取入门技能
+    if (name !== '散修') {
+      var faction = FACTIONS[name];
+      if (faction && faction.skills) {
+        var starterSkills = faction.skills.filter(function(sk) { return sk.minLevel === 0; });
+        if (starterSkills.length > 0) {
+          this.addLog('📖 拜入' + name + '，习得入门武学：', 'special');
+          starterSkills.forEach(function(sk) {
+            if (!(s.skills[sk.id])) {
+              s.skills[sk.id] = { level: 1, exp: 0 };
+              this.addLog('   「' + sk.name + '」Lv.1', 'info');
+            }
+          }.bind(this));
+        }
+      }
+    } else {
+      // 散修起始技能
+      if (typeof ROGUE_SKILLS !== 'undefined' && ROGUE_SKILLS.skills) {
+        var rSkills = ROGUE_SKILLS.skills.filter(function(sk) { return sk.minLevel === 0; });
+        if (rSkills.length > 0) {
+          this.addLog('📖 自行研习基础功法：', 'special');
+          rSkills.forEach(function(sk) {
+            if (!(s.skills[sk.id])) {
+              s.skills[sk.id] = { level: 1, exp: 0 };
+              this.addLog('   「' + sk.name + '」Lv.1', 'info');
+            }
+          }.bind(this));
+        }
+      }
+    }
+
+    this.updateUI();
+    if (this.currentTab === 'wuxue') this.renderWuxue();
+  }
+
+  // ============ 武学面板 ============
+  renderWuxue() {
+    const s = this.state;
+    const body = document.getElementById('wuxue-body');
+    const badge = document.getElementById('faction-badge');
+    const content = document.getElementById('wuxue-content');
+
+    // Show faction badge (always, since player starts as 散修 and can switch)
+    badge.style.display = 'block';
+    document.getElementById('fb-name').textContent = '⚡ ' + s.faction;
+    const factionData = s.faction === '散修' ? ROGUE_SKILLS : FACTIONS[s.faction];
+    document.getElementById('fb-desc').textContent = factionData ? (factionData.description || '').substring(0, 50) : '';
+
+    // Show skill tree
+    if (!factionData || !factionData.skills) {
+      content.innerHTML = '<div class="inv-empty">武学典籍缺失</div>';
+      return;
+    }
+
+    const typeNames = { force:'内功', dodge:'轻功', sword:'剑法', blade:'刀法', cuff:'拳法', strike:'掌法', finger:'指法', hand:'手法', claw:'爪法', staff:'杖法', whip:'鞭法', throwing:'暗器', special:'特殊', knowledge:'心法', parry:'招架', leg:'腿法', poison:'毒技', hammer:'锤法', spear:'枪法' };
+    const typeOrder = ['force','dodge','sword','blade','cuff','strike','finger','hand','claw','staff','whip','throwing','special','knowledge','parry','leg','poison','hammer','spear'];
+
+    let html = '<div style="font-size:11px;color:#6e5c50;margin-bottom:4px">已学 ' + Object.keys(s.skills).length + ' / ' + factionData.skills.length + ' 项武学</div>';
+    html += '<div id="equipped-skill-display" style="font-size:11px;color:#c49a38;margin-bottom:6px">⚔ 装配：' + (s.equippedSkill && s.skills[s.equippedSkill] ? this.getSkillName(s.equippedSkill) + ' Lv.' + s.skills[s.equippedSkill].level : '未装配') + ' <button class="teacher-btn" onclick="game.unequipSkill()" style="font-size:10px">卸下</button></div>';
+
+    // Group by type
+    typeOrder.forEach(type => {
+      const typeSkills = factionData.skills.filter(sk => sk.type === type);
+      if (typeSkills.length === 0) return;
+      html += '<div class="skill-section"><div class="skill-section-header" onclick="this.classList.toggle(\'open\');this.nextElementSibling.classList.toggle(\'open\')"><span>' + (typeNames[type] || type) + ' (' + typeSkills.length + ')</span><span class="arrow">▶</span></div>';
+      html += '<div class="skill-list">';
+      typeSkills.forEach(sk => {
+        const learned = s.skills[sk.id];
+        const lvl = learned ? learned.level : 0;
+        const cls = learned ? 'learned' : 'unlearned';
+        html += '<div class="skill-item ' + cls + '" onclick="game.skillDetail(\'' + sk.id + '\')"><span class="skill-icon">' + (cls === 'learned' ? '✅' : '🔒') + '</span><span class="skill-name">' + sk.name + '</span><span class="skill-level">' + (lvl > 0 ? 'Lv.' + lvl : '未学') + '</span></div>';
+        if (learned && sk.performs && sk.performs.length > 0) {
+          html += '<div class="skill-performs">绝招：' + sk.performs.map(p => '<span title="' + (p.description||'') + '">' + p.name + '</span>').join('') + '</div>';
+        }
+      });
+      html += '</div></div>';
+    });
+
+    // Show teachers at this location
+    if (s.faction !== '散修') {
+      const locConnections = LOCATIONS[s.location];
+      html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(50,30,40,.25)"><div style="font-size:12px;color:#6a9a78;letter-spacing:2px;margin-bottom:4px">🏫 可拜师</div>';
+      const teachers = factionData.teachers || [];
+      const here = this.isAtFactionHQ(s.location, s.faction);
+      if (here && teachers.length > 0) {
+        teachers.forEach(t => {
+          html += '<div class="teacher-card"><div class="tinfo"><div class="tname">' + t.name + '</div><div class="ttitle">' + (t.title || '') + '</div><div class="teaches">授：' + (Array.isArray(t.teaches) ? t.teaches.map(id => this.getSkillName(id) || id).join('、') : '多项武学') + '</div></div><button class="teacher-btn" onclick="game.learnFromTeacher(\'' + t.name + '\')">拜师</button></div>';
+        });
+      } else {
+        html += '<div style="font-size:11px;color:#4a3040">此处非本帮据点，无法拜师</div>';
+      }
+      html += '</div>';
+    }
+
+    content.innerHTML = html;
+  }
+
+  getSkillName(skillId) {
+    const allFactions = { ...FACTIONS };
+    if (ROGUE_SKILLS) allFactions['散修'] = ROGUE_SKILLS;
+    for (const [fname, fdata] of Object.entries(allFactions)) {
+      if (!fdata.skills) continue;
+      const sk = fdata.skills.find(s => s.id === skillId);
+      if (sk) return sk.name;
+    }
+    return skillId;
+  }
+
+  getSkillData(skillId) {
+    const allFactions = { ...FACTIONS };
+    if (ROGUE_SKILLS) allFactions['散修'] = ROGUE_SKILLS;
+    for (const [fname, fdata] of Object.entries(allFactions)) {
+      if (!fdata.skills) continue;
+      const sk = fdata.skills.find(s => s.id === skillId);
+      if (sk) return sk;
+    }
+    return null;
+  }
+
+  skillDetail(skillId) {
+    const sk = this.getSkillData(skillId);
+    const s = this.state;
+    if (!sk) { this.addLog('武学典籍缺失。', 'system'); return; }
+    const learned = s.skills[skillId];
+    this.addLog('━━ 「' + sk.name + '」 ━━', 'special');
+    this.addLog('类型：' + sk.type + ' | ' + (learned ? '已学 Lv.' + learned.level + ' EXP:' + Math.floor(learned.exp) : '未解锁'), 'info');
+    if (sk.description) this.addLog(sk.description, 'event');
+    if (sk.performs && sk.performs.length > 0) {
+      this.addLog('绝招：', 'special');
+      sk.performs.forEach(p => {
+        this.addLog('  「' + p.name + '」—— ' + (p.description || ''), 'info');
+      });
+    }
+    if (learned) {
+      this.addLog('💡 点击下方按钮修炼此武学，消耗灵石与道心。', 'info');
+    }
+    this.switchTab('wuxue');
+  }
+
+  practiceSkill(skillId) {
+    const s = this.state;
+    const sk = this.getSkillData(skillId);
+    if (!sk) return;
+    if (!s.skills[skillId]) {
+      this.addLog('你尚未习得此武学。', 'system');
+      return;
+    }
+    const cost = 10 + s.skills[skillId].level * 3;
+    if (s.spiritStones < cost) {
+      this.addLog('灵石不足！修炼需要 ' + cost + ' 灵石。', 'combat');
+      return;
+    }
+    if (s.daoxin < 5) {
+      this.addLog('道心涣散，无法专注修炼。', 'combat');
+      return;
+    }
+    s.spiritStones -= cost;
+    s.daoxin = Math.max(0, s.daoxin - 5);
+    const expGain = 10 + Math.floor(Math.random() * 20);
+    s.skills[skillId].exp += expGain;
+    const needExp = s.skills[skillId].level * 50;
+    if (s.skills[skillId].exp >= needExp) {
+      s.skills[skillId].exp -= needExp;
+      s.skills[skillId].level++;
+      this.addLog('🌟 「' + sk.name + '」突破至 Lv.' + s.skills[skillId].level + '！', 'breakthrough');
+    } else {
+      this.addLog('🧘 修炼「' + sk.name + '」EXP+' + expGain + '（' + Math.floor(s.skills[skillId].exp) + '/' + needExp + '）消耗 ' + cost + ' 灵石', 'info');
+    }
+    // Auto-equip as weapon skill if it's a weapon type
+    if (['sword','blade','cuff','strike','finger','staff','whip','claw','spear','hammer'].includes(sk.type)) {
+      s.equippedSkill = skillId;
+    }
+    this.updateUI();
+  }
+
+  equipSkill(skillId) {
+    const s = this.state;
+    if (!s.skills[skillId]) { this.addLog('尚未习得此武学。', 'system'); return; }
+    s.equippedSkill = skillId;
+    this.addLog('⚔ 装配「' + this.getSkillName(skillId) + '」为战斗主修武学。', 'info');
+    this.updateUI();
+  }
+
+  unequipSkill() {
+    this.state.equippedSkill = null;
+    this.addLog('卸下装配武学。', 'info');
+    this.updateUI();
+  }
+
+  // ============ 拜师系统 ============
+  isAtFactionHQ(locationName, factionName) {
+    const hqMap = {
+      '梵网寺': ['忘尘峰'],
+      '紫霞山': ['赤霞峰·观星台'],
+      '剑巢': ['锈剑冢·地窟'],
+      '蚁网': ['丝狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
+      '焰心教': ['光明顶·焰心殿'],
+      '逍遥驿': ['逍遥驿·车马院'],
+      '毒巢': ['鼓楼西·地下丹房'],
+      '血镰': ['血禅寺'],
+      '斗转阁': ['镜阁·万镜堂', '樊楼·镜室'],
+      '影墓': ['归墟洞', '大明宫废墟'],
+      '药王谷': ['青囊庐', '紫禁城旧药房'],
+      '机巧岛': ['鼓楼望气塔', '紫禁城实验室']  // 技术据点
+    };
+    const hqs = hqMap[factionName] || [];
+    return hqs.includes(locationName);
+  }
+
+  learnFromTeacher(teacherName) {
+    const s = this.state;
+    if (s.faction === '散修') { this.addLog('散修无师自通，自行研习即可。', 'system'); return; }
+    if (!s.faction) { this.addLog('尚未加入帮派。', 'system'); return; }
+    const faction = FACTIONS[s.faction];
+    if (!faction) return;
+    const teacher = (faction.teachers || []).find(t => t.name === teacherName);
+    if (!teacher) { this.addLog('此人不在本帮。', 'system'); return; }
+
+    // Check requirements
+    const teaches = Array.isArray(teacher.teaches) ? teacher.teaches : [];
+    const teachableSkills = [];
+    teaches.forEach(skillNameId => {
+      // teacher.teaches contains skill names (strings), need to match to skill IDs
+      const allSkills = faction.skills;
+      const sk = allSkills.find(sk => sk.name === skillNameId);
+      if (sk && !s.skills[sk.id]) teachableSkills.push(sk);
+    });
+
+    if (teachableSkills.length === 0) {
+      this.addLog(teacherName + '：「你所会已不在我之下，去找更高层的师傅吧。」', 'npc');
+      return;
+    }
+
+    // Calculate cost based on teacher tier
+    const teacherTier = faction.teachers.indexOf(teacher);
+    const costs = [20, 80, 200]; // entry, mid, high
+    const cost = costs[Math.min(teacherTier, 2)] || 80;
+
+    if (s.spiritStones < cost) {
+      this.addLog(teacherName + '：「束脩不足。' + cost + '灵石，这是规矩。」', 'npc');
+      return;
+    }
+
+    s.spiritStones -= cost;
+    s.factionRep += 10;
+
+    // Learn all teachable skills
+    teachableSkills.forEach(sk => {
+      s.skills[sk.id] = { level: 1, exp: 0 };
+      this.addLog('📖 向' + teacherName + '习得「' + sk.name + '」！', 'special');
+    });
+    this.addLog('💰 支付束脩 ' + cost + ' 灵石。', 'item');
+    this.updateUI();
+  }
+
+  // ============ 战斗系统升级 ============
+  showPerforms() {
+    const s = this.state;
+    const c = s.combat;
+    if (!c) return;
+    const list = document.getElementById('perform-list');
+    if (!list) return;
+
+    // Collect all available performs from learned skills
+    const available = [];
+    const allFactions = { ...FACTIONS };
+    if (ROGUE_SKILLS) allFactions['散修'] = ROGUE_SKILLS;
+
+    for (const [skillId, skillState] of Object.entries(s.skills)) {
+      const sk = this.getSkillData(skillId);
+      if (!sk || !sk.performs) continue;
+      sk.performs.forEach(p => {
+        const minLvl = p.requirements ? parseInt((String(p.requirements).match(/(\d+)/) || ['0'])[0]) || 0 : 0;
+        if (skillState.level >= minLvl) {
+          available.push({ perform: p, skillName: sk.name, skillId: skillId, level: skillState.level });
+        }
+      });
+    }
+
+    if (available.length === 0) {
+      list.innerHTML = '<div style="color:#6e5c50;text-align:center;padding:8px">尚无可用绝招。修炼武学以解锁绝招。</div>';
+    } else {
+      const morale = Math.floor(s.daoxin / 2);
+      let html = '<div style="font-size:10px;color:#6e5c50;margin-bottom:4px">气势：' + morale + '（道心）| 回合：' + (s.roundCount || 1) + '</div>';
+      available.forEach(({perform, skillName, skillId, level}) => {
+        const cd = s.performCooldowns[perform.id];
+        const cdLeft = cd ? Math.max(0, perform.cooldown - (s.roundCount - cd)) : 0;
+        const onCd = cdLeft > 0;
+        const moraleCost = perform.moraleCost || perform.qiCost || 25;
+        html += '<div class="perform-item' + (onCd ? ' on-cd' : '') + '" onclick="' + (onCd ? '' : 'game.usePerform(\'' + perform.id + '\')') + '"><div class="pname">' + perform.name + ' <span style="font-size:10px;color:#5a4a68">(' + skillName + ' Lv.' + level + ')</span></div><div class="pdesc">' + (perform.description || '').substring(0, 60) + '</div><div class="pcost">气势 ' + moraleCost + ' | CD ' + perform.cooldown + '回合' + (onCd ? ' | ⏳冷却中(' + cdLeft + '回合)' : '') + '</div></div>';
+      });
+      list.innerHTML = html;
+    }
+
+    // Show perform area, hide combat actions
+    document.getElementById('perform-area').style.display = 'block';
+    document.querySelector('#combat-modal .combat-actions').style.display = 'none';
+  }
+
+  hidePerforms() {
+    document.getElementById('perform-area').style.display = 'none';
+    document.querySelector('#combat-modal .combat-actions').style.display = 'grid';
+  }
+
+  usePerform(performId) {
+    if (!this.state.combat) return;
+    const s = this.state, c = s.combat;
+
+    // Find the perform data
+    const allFactions = { ...FACTIONS };
+    if (ROGUE_SKILLS) allFactions['散修'] = ROGUE_SKILLS;
+    let performData = null, skillData = null;
+    for (const [fname, fdata] of Object.entries(allFactions)) {
+      if (!fdata.skills) continue;
+      for (const sk of fdata.skills) {
+        if (!sk.performs) continue;
+        const p = sk.performs.find(p => p.id === performId);
+        if (p) { performData = p; skillData = sk; break; }
+      }
+      if (performData) break;
+    }
+    if (!performData) return;
+
+    // Check morale (道心)
+    const moraleCost = performData.moraleCost || performData.qiCost || 25;
+    const morale = Math.floor(s.daoxin / 2);
+    if (morale < moraleCost) {
+      this.addLog('气势不足！（需要 ' + moraleCost + '，当前 ' + morale + '）', 'combat');
+      return;
+    }
+
+    // Check cooldown
+    const lastUsed = s.performCooldowns[performId];
+    if (lastUsed && s.roundCount - lastUsed < (performData.cooldown || 4)) {
+      this.addLog('绝招冷却中…', 'combat');
+      return;
+    }
+
+    // Deduct morale and set cooldown
+    s.performCooldowns[performId] = s.roundCount;
+    s.daoxin = Math.max(0, s.daoxin - Math.floor(moraleCost / 2));
+
+    // Calculate damage
+    const skillLvl = s.skills[skillData.id] ? s.skills[skillData.id].level : 1;
+    const baseDmg = s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0) + skillLvl * 2;
+    const dmgMultiplier = 1.2 + skillLvl * 0.02;
+    const dmg = Math.max(1, Math.floor(baseDmg * dmgMultiplier) + Math.floor(Math.random() * 20) + s.realm * 3 - c.enemyDef);
+    c.enemyHp -= dmg;
+
+    this.addLog('🔥 施展「' + performData.name + '」！造成 ' + dmg + ' 点伤害！', 'combat');
+    if (performData.effects) {
+      this.addLog('   ' + performData.effects, 'event');
+    }
+
+    // Check kill
+    if (c.enemyHp <= 0) {
+      s.roundCount++;
+      const exp = c.enemyData.exp + (c.enemyData.boss ? 50 : 0);
+      const gold = c.enemyData.gold;
+      s.cultivation += exp;
+      s.spiritStones += gold;
+      s.killCount++;
+      this.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
+      this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
+      this.checkQuestProgress('kill', c.enemyName);
+      this.endCombat(true);
+      return;
+    }
+
+    // Enemy counter-attack
+    this.enemyTurn();
+    this.hidePerforms();
+    this.updateCombatUI();
+  }
+
+  enemyTurn() {
+    const s = this.state, c = s.combat;
+    if (!c) return;
+    const eDmg = Math.max(1, c.enemyAtk + Math.floor(Math.random() * 8) - s.defense - (s.equipment.armor ? s.equipment.armor.def : 0));
+    s.hp -= eDmg;
+    s.roundCount++;
+    this.addLog('👊 ' + c.enemyName + ' 反击，造成 ' + eDmg + ' 点伤害！', 'combat');
+    if (s.hp <= 0) { s.hp = 0; this.gameOver('力战不敌，殒命于此'); return; }
+  }
+
+  applyReward(rewardStr) {
+    const s = this.state;
+    const parts = rewardStr.split(';');
+    for (const part of parts) {
+      const [key, val] = part.split(':');
+      if (key === 'gain_gold') s.spiritStones += parseInt(val);
+      else if (key === 'gain_cultivation') s.cultivation += parseInt(val);
+      else if (key === 'daoxin') s.daoxin = Math.min(s.maxDaoXin, s.daoxin + parseInt(val));
+      else if (key === 'heal' || key === 'hp') s.hp = Math.min(s.maxHp, s.hp + (parseInt(val) || 30));
+      else if (key === 'random_item') {
+        const it = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+        s.inventory.push({ ...it });
+        this.addLog('📦 获得：<b>' + it.name + '</b>', 'item');
+      }
+      else if (key === 'random_technique') {
+        const techItems = ITEMS.filter(it => it.type === 'technique');
+        if (techItems.length > 0) {
+          const ti = techItems[Math.floor(Math.random() * techItems.length)];
+          s.inventory.push({ ...ti });
+          this.addLog('📖 获得功法：<b>' + ti.name + '</b>', 'special');
+        }
+      }
+    }
+  }
+
+  // ---- COMBAT ----
+  triggerEncounter(loc) {
+    const name = pickEnemy(loc.danger);
+    const data = ENEMIES[name];
+    if (!data) return;
+    const dl = data.desc.length > 80 ? data.desc.substring(0, 80) + '…' : data.desc;
+    this.addLog('⚔ 遭遇 <b style="color:#c05555;">' + name + '</b> —— ' + dl, 'combat');
+    this.startCombat(name, data);
+  }
+
+  startCombat(name, data) {
+    this.state.roundCount = 0;
+    this.state.performCooldowns = {};
+    this.state.combat = {
+      enemyName: name, enemyHp: data.hp, enemyMaxHp: data.hp,
+      enemyAtk: data.atk, enemyDef: data.def, enemyData: data
+    };
+    document.getElementById('combat-modal').classList.add('active');
+    this.updateCombatUI();
+  }
+
+  combatAction(action) {
+    if (!this.state.combat) return;
+    const c = this.state.combat, s = this.state;
+    switch (action) {
+      case 'attack': {
+        // 基础攻击 + 装配技能加成
+        let skillBonus = 0;
+        if (s.equippedSkill && s.skills[s.equippedSkill]) {
+          skillBonus = s.skills[s.equippedSkill].level * 2;
+        }
+        const dmg = Math.max(1, s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0) + skillBonus + Math.floor(Math.random() * 10) + s.realm * 2 - c.enemyDef);
+        c.enemyHp -= dmg;
+        this.addLog('⚔ 你挥出一击，造成 ' + dmg + ' 点伤害！' + (skillBonus > 0 ? '（武学加成+' + skillBonus + '）' : ''), 'combat');
+        break;
+      }
+      case 'skill': {
+        // Show perform selection
+        this.showPerforms();
+        return; // Don't do enemy turn yet - wait for perform selection
+      }
+      case 'defend': {
+        // 守势 + 装配武学防御加成
+        let defBonus = 0;
+        if (s.equippedSkill && s.skills[s.equippedSkill]) {
+          const skData = this.getSkillData(s.equippedSkill);
+          if (skData && skData.defenseBonus) defBonus = Math.floor(skData.defenseBonus * s.skills[s.equippedSkill].level / 100);
+        }
+        s.hp = Math.min(s.maxHp, s.hp + Math.floor(s.maxHp * 0.1) + defBonus);
+        this.addLog('🛡 凝神守势，稳固体魄，恢复少量生命。' + (defBonus > 0 ? '（武学防御+' + defBonus + '）' : ''), 'combat');
+        break;
+      }
+      case 'flee': {
+        // 轻功增加逃跑成功率
+        let dodgeBonus = 0;
+        for (const [skId, skState] of Object.entries(s.skills)) {
+          const skData = this.getSkillData(skId);
+          if (skData && skData.type === 'dodge') {
+            dodgeBonus = Math.max(dodgeBonus, skState.level * 0.03);
+          }
+        }
+        if (Math.random() < 0.4 + s.realm * 0.05 + dodgeBonus) {
+          this.addLog('🏃 抓住间隙，成功脱身！' + (dodgeBonus > 0 ? '（轻功+成）' : ''), 'info');
+          this.endCombat(false);
+          return;
+        } else {
+          this.addLog('🏃 遁走失败！', 'combat');
+        }
+        break;
+      }
+    }
+    if (c.enemyHp <= 0) {
+      s.roundCount++;
+      const exp = c.enemyData.exp + (c.enemyData.boss ? 50 : 0);
+      const gold = c.enemyData.gold;
+      s.cultivation += exp;
+      s.spiritStones += gold;
+      s.killCount++;
+      this.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
+      this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
+      if (c.enemyData.boss && c.enemyData.special) {
+        this.addLog('🏆 ' + c.enemyData.special, 'special');
+      }
+      this.checkQuestProgress('kill', c.enemyName);
+      this.endCombat(true);
+      return;
+    }
+    s.roundCount++;
+    const eDmg = Math.max(1, c.enemyAtk + Math.floor(Math.random() * 8) - s.defense - (s.equipment.armor ? s.equipment.armor.def : 0));
+    s.hp -= eDmg;
+    this.addLog('👊 ' + c.enemyName + ' 反击，造成 ' + eDmg + ' 点伤害！', 'combat');
+    if (s.hp <= 0) { s.hp = 0; this.gameOver('力战不敌，殒命于此'); return; }
+    this.updateCombatUI();
+  }
+
+  endCombat(victory) {
+    this.state.combat = null;
+    document.getElementById('combat-modal').classList.remove('active');
+    this.updateUI();
+    if (victory) this.checkBreakthrough();
+  }
+
+  updateCombatUI() {
+    const c = this.state.combat;
+    if (!c) return;
+    const s = this.state;
+    document.getElementById('combat-player-name').textContent = REALMS[s.realm].name;
+    document.getElementById('combat-player-hp').style.width = (s.hp / s.maxHp * 100) + '%';
+    document.getElementById('combat-player-hp-text').textContent = s.hp + '/' + s.maxHp;
+    document.getElementById('combat-enemy-name').textContent = c.enemyName;
+    document.getElementById('combat-enemy-type').textContent = (c.enemyData.desc || '').substring(0, 60);
+    document.getElementById('combat-enemy-hp').style.width = (c.enemyHp / c.enemyMaxHp * 100) + '%';
+    document.getElementById('combat-enemy-hp-text').textContent = c.enemyHp + '/' + c.enemyMaxHp;
+  }
+
+  // ---- CONTEXTUAL SEARCH ----
+  searchArea() {
+    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法搜寻！', 'system'); return; }
+    const room = this.state.location;
+    const data = ROOM_SEARCH[room];
+    if (!data) { this.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system'); return; }
+    
+    if (Math.random() > data.searchChance) {
+      this.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system');
+      this.updateUI();
+      return;
+    }
+    
+    // Weighted random pick (except the fallback "nothing" which always has chance 1.0)
+    const pool = data.results.filter(r => r.chance < 1.0 || r.type === 'nothing');
+    const totalWeight = pool.reduce((s, r) => s + (r.chance || 1), 0);
+    let rand = Math.random() * totalWeight;
+    let picked = pool[pool.length - 1]; // default to last
+    
+    for (const r of pool) {
+      rand -= (r.chance || 1);
+      if (rand <= 0) { picked = r; break; }
+    }
+    
+    const s = this.state;
+    
+    if (picked.type === 'money') {
+      const [min, max] = picked.amount.split('-').map(Number);
+      const amt = min + Math.floor(Math.random() * (max - min + 1));
+      s.spiritStones += amt;
+      this.addLog('💰 ' + picked.desc + '（+' + amt + ' 灵石）', 'item');
+    } else if (picked.type === 'daoxin') {
+      s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (picked.amount || 10));
+      this.addLog('🧘 ' + picked.desc, 'info');
+    } else if (picked.type === 'hp') {
+      s.hp = Math.min(s.maxHp, s.hp + (picked.amount || 15));
+      this.addLog('💊 ' + picked.desc, 'item');
+    } else if (picked.type === 'cultivation') {
+      s.cultivation += (picked.amount || 10);
+      this.addLog('✨ ' + picked.desc, 'info');
+    } else if (picked.type === 'find_type') {
+      const it = this.pickItemByType(picked.itemType);
+      if (it) {
+        s.inventory.push({ ...it });
+        this.addLog('📦 ' + picked.desc.replace('了点东西', '：<b>' + it.name + '</b>').replace('了', '了：<b>' + it.name + '</b>'), 'item');
+      } else {
+        this.addLog('🔍 ' + picked.desc, 'system');
+      }
+    } else {
+      this.addLog('🔍 ' + picked.desc, 'system');
+    }
+    
+    this.checkQuestProgress('find', null);
+    this.updateUI();
+  }
+
+  pickItemByType(type) {
+    if (type === 'random') return ITEMS[Math.floor(Math.random() * ITEMS.length)];
+    const pool = ITEMS.filter(i => i.type === type);
+    if (pool.length === 0) return ITEMS[Math.floor(Math.random() * ITEMS.length)];
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  // ---- QUEST SYSTEM ----
+  startQuest(questId) {
+    const s = this.state;
+    if (s.activeQuests.includes(questId) || s.completedQuests.includes(questId)) return;
+    s.activeQuests.push(questId);
+    s.questStages[questId] = 0;
+    const q = QUESTS.find(q => q.id === questId);
+    if (q) {
+      this.addLog('📜 接受任务：<b>' + q.name + '</b>', 'quest');
+      this.addLog('   ' + q.desc, 'quest');
+      this.addLog('   阶段 1/' + q.stages.length + '：' + q.stages[0].desc, 'quest');
+    }
+    this.updateUI();
+  }
+
+  checkQuestProgress(type, target) {
+    const s = this.state;
+    for (const qId of s.activeQuests) {
+      const q = QUESTS.find(q => q.id === qId);
+      if (!q) continue;
+      const stage = s.questStages[qId] || 0;
+      if (stage >= q.stages.length) continue;
+      const curStage = q.stages[stage];
+      
+      let advance = false;
+      if (curStage.type === 'go' && type === 'go') advance = true;
+      else if (curStage.type === 'kill' && type === 'kill') advance = true;
+      else if (curStage.type === 'encounter' && type === 'kill') advance = true;
+      else if (curStage.type === 'find' && type === 'find') advance = true;
+      else if (curStage.type === 'collect' && type === 'find') advance = true;
+      else if (curStage.type === 'investigate' && type === 'go') advance = true;
+      else if (curStage.type === 'return' && type === 'go') advance = true;
+      else if (curStage.type === 'talk' && type === 'go') advance = true;
+      // 新类型: dialogue/deliver/find_clue — 到达目标地点时自动推进
+      else if ((curStage.type === 'dialogue' || curStage.type === 'deliver' || curStage.type === 'find_clue') && type === 'go') advance = true;
+      // choice 类型 — 通过NPC对话推进
+      else if (curStage.type === 'choice' && type === 'go') advance = true;
+      // escort 类型 — 到达目标时推进
+      else if (curStage.type === 'escort' && type === 'go') advance = true;
+      
+      if (advance || (curStage.repeat && type === 'kill')) {
+        s.questStages[qId] = stage + 1;
+        if (stage + 1 < q.stages.length) {
+          this.addLog('📜 任务「' + q.name + '」更新：' + q.stages[stage + 1].desc, 'quest');
+        } else {
+          this.completeQuest(qId);
+        }
+      }
+    }
+  }
+
+  completeQuest(questId) {
+    const s = this.state;
+    const q = QUESTS.find(q => q.id === questId);
+    if (!q) return;
+    
+    this.addLog('🏆 任务完成：<b>' + q.name + '</b>！', 'breakthrough');
+    
+    // Apply rewards
+    if (q.rewards.spiritStones) {
+      s.spiritStones += q.rewards.spiritStones;
+      this.addLog('   获得 ' + q.rewards.spiritStones + ' 灵石', 'item');
+    }
+    if (q.rewards.cultivation) {
+      s.cultivation += q.rewards.cultivation;
+      this.addLog('   获得 ' + q.rewards.cultivation + ' 修为', 'item');
+    }
+    if (q.rewards.technique) {
+      if (!s.techniques.includes(q.rewards.technique)) {
+        s.techniques.push(q.rewards.technique);
+        this.addLog('   习得功法：' + q.rewards.technique, 'special');
+      }
+    }
+    if (q.rewards.equipment) {
+      // Add as inventory item with equipment type
+      s.inventory.push({ name: q.rewards.equipment, type: 'equipment', desc: '任务奖励', slot: 'weapon', atk: 10 });
+      this.addLog('   获得装备：' + q.rewards.equipment, 'special');
+    }
+    if (q.rewards.item) {
+      s.inventory.push({ name: q.rewards.item, type: 'special', desc: '任务奖励' });
+      this.addLog('   获得：' + q.rewards.item, 'item');
+    }
+    if (q.rewards.faction) {
+      this.joinFaction(q.rewards.faction);
+    }
+    if (q.rewards.factionRep) {
+      s.factionRep += q.rewards.factionRep;
+      this.addLog('   门忠 +' + q.rewards.factionRep, 'info');
+    }
+    
+    s.activeQuests = s.activeQuests.filter(id => id !== questId);
+    s.completedQuests.push(questId);
+    this.checkBreakthrough();
+    this.updateUI();
+  }
+
+  // ---- MAP ----
+  toggleMap() {
+    this.mapOpen = !this.mapOpen;
+    const mc = document.getElementById('map-card');
+    if (this.mapOpen) {
+      mc.classList.add('visible');
+      this.renderMap();
+      setTimeout(() => {
+        const pos = MAP_POS[this.state.location];
+        if (pos) {
+          const cont = document.getElementById('map-container');
+          cont.scrollLeft = pos.x * 10 - cont.clientWidth / 2;
+          cont.scrollTop = pos.y * 10 - cont.clientHeight / 2;
+        }
+      }, 100);
+    } else {
+      mc.classList.remove('visible');
+    }
+  }
+
+  renderMap() {
+    const canvas = document.getElementById('map-canvas');
+    const s = this.state;
+    canvas.innerHTML = '';
+    MAP_CONN.forEach(([a, b]) => {
+      const p1 = MAP_POS[a], p2 = MAP_POS[b];
+      if (!p1 || !p2) return;
+      const dx = p2.x - p1.x, dy = p2.y - p1.y;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      const bothExplored = s.explored.includes(a) && s.explored.includes(b);
+      const line = document.createElement('div');
+      line.className = 'map-line' + (bothExplored ? ' explored' : ' unexplored');
+      line.style.cssText = 'left:' + p1.x + 'px;top:' + p1.y + 'px;width:' + len + 'px;transform:rotate(' + angle + 'deg)';
+      canvas.appendChild(line);
+    });
+    Object.entries(MAP_POS).forEach(([name, pos]) => {
+      const node = document.createElement('div');
+      node.className = 'map-node';
+      if (name === s.location) node.classList.add('current');
+      else if (s.explored.includes(name)) node.classList.add('explored');
+      else node.classList.add('unexplored');
+      node.style.cssText = 'left:' + pos.x + 'px;top:' + pos.y + 'px';
+      node.innerHTML = '<div class="dot"></div><div class="label">' + (s.explored.includes(name) ? name : '???') + '</div>';
+      canvas.appendChild(node);
+    });
+  }
+
+  // ---- ACTIONS ----
+  switchTab(tab) {
+    this.currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('visible'));
+    const idx = { char: 0, bag: 1, wuxue: 2, quest: 3, status: 4 }[tab] || 0;
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('visible');
+    if (tab === 'bag') this.renderInventory();
+    if (tab === 'quest') this.renderQuests();
+    if (tab === 'wuxue') this.renderWuxue();
+  }
+
+  meditate() {
+    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法打坐！', 'combat'); return; }
+    const s = this.state;
+    const base = 10 + s.realm * 3;
+    s.cultivation += base;
+    s.daoxin = Math.min(s.maxDaoXin, s.daoxin + 3);
+    this.addLog('🧘 静心打坐，获得 ' + base + ' 点修为，道心稍安。', 'info');
+    this.checkBreakthrough();
+    this.updateUI();
+  }
+
+  rest(){if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法休憩！','combat');return}const s=this.state;s.isResting=!s.isResting;this.addLog(s.isResting?'💤 你寻了一处角落蜷起身子…':'🔔 休憩结束，继续前行。','info');this.updateUI()}
+  talk(){if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法与人交谈！','combat');return}const s=this.state;const loc=LOCATIONS[s.location];if(loc.danger>=5){this.addLog('此地凶险万分，不是闲谈之所。趁未被发觉，速离为妙。','system');return}this.addLog('💬 你环顾四周，上前搭话…','info');this.triggerNPCEncounter(true)}
+  askAround(){if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法打听！','combat');return}const s=this.state;const room=s.location;const loc=LOCATIONS[room];if(!loc)return;if(loc.danger>=5){this.addLog('此地无人可问，只有死亡的寂静。','system');return}const nearby=loc.connections?Object.entries(loc.connections).filter(function(e){return LOCATIONS[e[1]]}).map(function(e){return{dir:e[0],name:e[1],loc:LOCATIONS[e[1]]}}):[];const rumors=[];if(nearby.length>0){var n1=nearby[Math.floor(Math.random()*nearby.length)];rumors.push('「往'+this.dirName(n1.dir)+'走，能到<b>'+n1.name+'</b>。」一个路人给你指了指路。');if(n1.loc.danger>=5)rumors.push('「'+n1.name+'那边最近不太平，听说了没？好几个江湖客进去就没回来。」路人压低声音说道。')}if(s.activeQuests.length>0){var q=QUESTS.find(function(q){return q.id===s.activeQuests[0]});if(q){var stage=s.questStages[q.id]||0;if(stage<q.stages.length)rumors.push('你在打听中想起了手头的任务：<b>'+q.name+'</b>——'+q.stages[Math.min(stage,q.stages.length-1)].desc)}}rumors.push('「听说顺天府鬼市里有个卦师，什么消息都能算出来——只要出得起价。」');rumors.push('「忘尘宗的山门就在城外的某座山上。但没人找得到——据说要道心足够稳才能看见。」');rumors.push('「最近城里的灵脉波动很不对劲。路边的野猫都跑了。晚上别走小巷。」');rumors.push('「城外废墟里埋着不少好东西。但也在那些东西的视线里。别独自去。」');rumors.push('「血禅寺和丝狱最近在抢地盘。暗街一带最好绕道走——那不是给人走的街。」');var encPool=NPC_ENCOUNTERS[room];if(encPool&&encPool.length>0){var questEnc=encPool.filter(function(e){return e.questTrigger||(e.results&&e.results.some(function(r){return r.questStart}))});if(questEnc.length>0)rumors.push('「此地似乎有人能给你些活计。跟人<b>交谈</b>看看？」')}var rumor=rumors[Math.floor(Math.random()*rumors.length)];this.addLog('👂 '+rumor,'info');this.updateUI()}
+  pushup(){if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法练功！','combat');return}var s=this.state;var gain=Math.max(1,Math.floor(5+s.realm*1.5));s.cultivation+=gain;s.daoxin=Math.max(0,s.daoxin-2);this.addLog('💪 你寻了一处空地站桩练功，浑身发热。修为+'+gain+'（道心-2）','info');s.hp=Math.max(0,s.hp-3);if(s.hp<=0){s.hp=0;this.gameOver('练功走火入魔，力竭而亡')}this.checkBreakthrough();this.updateUI()}
+  peek(){if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法窥探！','combat');return}var s=this.state;var room=s.location;var loc=LOCATIONS[room];if(!loc){this.addLog('眼前一片虚无…','system');return}var obs=[];var dangerDesc=loc.danger<=1?'街巷安宁，偶有路人经过。':loc.danger<=2?'隐约有些江湖人在街边低声交谈。':loc.danger<=3?'暗处有几双眼睛在打量你。':loc.danger<=4?'空气凝重，远处传来不寻常的动静。':'此地杀气弥漫，处处危机。';obs.push(dangerDesc);if(loc.connections){var dirs=Object.entries(loc.connections);if(dirs.length>0)obs.push('可见通路：'+dirs.map(function(d){return'<b>'+d[1]+'</b>（'+this.dirName(d[0])+'）'},this).join('、'))}if(loc.boss)obs.push('⚠ 远处强大的气息…有一名高手盘踞此地。');if(ROOM_SEARCH[room])obs.push('搜索此处约有<b>'+Math.floor(ROOM_SEARCH[room].searchChance*100)+'%</b>概率有所发现。');if(NPC_ENCOUNTERS[room]&&NPC_ENCOUNTERS[room].length>0)obs.push('附近有<b>'+NPC_ENCOUNTERS[room].length+'</b>种可能的奇遇。输入「交谈」试试。');if(s.faction&&s.faction!=='散修'&&this.isAtFactionHQ(room,s.faction))obs.push('🏫 你正在本帮据点——可向师傅<b>拜师</b>学习新武学！');this.addLog('👀 你凝神观察四周…','system');obs.forEach(function(o){this.addLog('   '+o,'info')},this);this.updateUI()}
+
+  practiceMenu(){
+    if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法练武！','combat');return}
+    var s=this.state;
+    var learned=Object.keys(s.skills);
+    if(learned.length===0){this.addLog('你尚未掌握任何武学。先拜入帮派习得入门武学吧。','system');return}
+    this.addLog('📖 可修炼武学：','info');
+    learned.forEach(function(sid){
+      var sn=this.getSkillName(sid);
+      var lv=s.skills[sid].level;
+      var exp=s.skills[sid].exp;
+      var need=lv*50;
+      var cost=10+lv*3;
+      this.addLog('  「'+sn+'」Lv.'+lv+' EXP:'+Math.floor(exp)+'/'+need+' 修炼消耗:'+cost+'灵石','info');
+    },this);
+    this.addLog('💡 在「武学」面板中点击技能进行修炼。','system');
+  }
+
+  askTeacher(){
+    if(this.state.combat||this.state.npcEncounter){this.addLog('当前无法拜师！','combat');return}
+    var s=this.state;
+    if(!s.faction){this.addLog('你尚未加入帮派。','system');return}
+    if(s.faction==='散修'){this.addLog('散修无师自通——自行研习便是。','system');return}
+    var room=s.location;
+    if(!this.isAtFactionHQ(room,s.faction)){this.addLog('此处非本帮据点，无法拜师。去帮派总部看看吧。','system');return}
+    var faction=FACTIONS[s.faction];
+    if(!faction||!faction.teachers){this.addLog('宗派名录异常。','system');return}
+    this.addLog('🏫 '+s.faction+'师傅列表：','info');
+    faction.teachers.forEach(function(t){
+      var teaches=Array.isArray(t.teaches)?t.teaches.length+'项武学':'多项';
+      this.addLog('  「'+t.name+'」—— '+t.title+' （授'+teaches+'）', 'info');
+    },this);
+    this.addLog('💡 在「武学」面板中点击师傅名字旁的「拜师」按钮。','system');
+    this.switchTab('wuxue');
+  }
+  useItem(index) {
+    const s = this.state;
+    if (s.combat) { this.addLog('交战中无法使用物品！', 'combat'); return; }
+    if (index >= s.inventory.length) return;
+    const item = s.inventory[index];
+    if (item.type === 'consumable') {
+      if (item.effect === 'daoxin') { s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (item.value || 20)); }
+      else if (item.effect === 'hp') { s.hp = Math.min(s.maxHp, s.hp + (item.value || 30)); }
+      else if (item.effect === 'cultivation') { s.cultivation += (item.value || 30); }
+      else if (item.effect === 'breakthrough') { s.cultivation += REALMS[Math.min(s.realm + 1, REALMS.length - 1)].cost * 0.4; }
+      else { s.hp = Math.min(s.maxHp, s.hp + 20); }
+      this.addLog('💊 使用 ' + item.name + '。', 'item');
+      s.inventory.splice(index, 1);
+    } else if (item.type === 'equip' || item.type === 'equipment') {
+      if (item.slot === 'weapon') {
+        if (s.equipment.weapon) s.inventory.push(s.equipment.weapon);
+        s.equipment.weapon = item;
+      } else if (item.slot === 'armor') {
+        if (s.equipment.armor) s.inventory.push(s.equipment.armor);
+        s.equipment.armor = item;
+      }
+      s.inventory.splice(index, 1);
+      this.addLog('⚡ 装备 ' + item.name + '！', 'special');
+    } else if (item.type === 'technique') {
+      if (!s.techniques.includes(item.name)) {
+        s.techniques.push(item.name);
+        this.addLog('📖 研习 ' + item.name + '！', 'special');
+      }
+      s.inventory.splice(index, 1);
+    } else if (item.type === 'stone') {
+      s.spiritStones += (item.value || 5);
+      s.inventory.splice(index, 1);
+      this.addLog('💰 汲取 ' + item.name + '，获得 ' + (item.value || 5) + ' 灵石。', 'item');
+    } else if (item.type === 'special') {
+      this.addLog('📿 ' + item.name + '——一件特殊之物，尚不知其用途。', 'special');
+    }
+    this.updateUI();
+    this.checkBreakthrough();
+  }
+
+  gameOver(reason) {
+    clearInterval(this.idleInterval);
+    clearInterval(this.daoxinInterval);
+    this.state.combat = null;
+    this.state.npcEncounter = null;
+    document.getElementById('combat-modal').classList.remove('active');
+    document.getElementById('npc-modal').classList.remove('active');
+    const s = this.state;
+    const t = Math.floor((Date.now() - s.gameStart) / 1000);
+    const mins = Math.floor(t / 60), secs = t % 60;
+    const ov = document.createElement('div');
+    ov.className = 'modal-overlay';
+    ov.innerHTML = '<div class="modal-box"><h2>💀 ' + reason + '</h2>' +
+      '<p>最终境界：' + REALMS[s.realm].name + '</p>' +
+      '<p>斩杀：' + s.killCount + ' | 灵石：' + s.spiritStones + '</p>' +
+      '<p>任务完成：' + s.completedQuests.length + '</p>' +
+      '<p>所学：' + (s.techniques.length > 0 ? s.techniques.join('、') : '无') + '</p>' +
+      '<p>修行时长：' + mins + '分' + secs + '秒 | 总修为：' + s.totalCultivation + '</p>' +
+      '<p>探索区域：' + s.explored.length + ' / ' + Object.keys(LOCATIONS).length + '</p>' +
+      '<button class="btn-restart" onclick="location.reload()">再入江湖</button></div>';
+    document.body.appendChild(ov);
+    this.updateUI();
+  }
+
+  // ---- UI ----
+  updateLocationIcon() {
+    const name = this.state.location;
+    const ico = document.getElementById('location-icon');
+    if (name.includes('鬼市') || name.includes('暗') || name.includes('黑')) ico.textContent = '🕸';
+    else if (name.includes('酒馆') || name.includes('酒') || name.includes('樊楼')) ico.textContent = '🏮';
+    else if (name.includes('废墟') || name.includes('废弃') || name.includes('废')) ico.textContent = '🏚';
+    else if (name.includes('寺') || name.includes('庙') || name.includes('观') || name.includes('经')) ico.textContent = '🛕';
+    else if (name.includes('市场') || name.includes('街') || name.includes('坊') || name.includes('市')) ico.textContent = '🏪';
+    else if (name.includes('山谷') || name.includes('谷') || name.includes('山')) ico.textContent = '⛰';
+    else if (name.includes('河') || name.includes('湖') || name.includes('池') || name.includes('渠')) ico.textContent = '🌊';
+    else if (name.includes('门') || name.includes('城') || name.includes('关')) ico.textContent = '🏯';
+    else if (name.includes('塔') || name.includes('钟') || name.includes('鼓')) ico.textContent = '🗼';
+    else if (name.includes('宫') || name.includes('殿')) ico.textContent = '🏛';
+    else if (name.includes('陵') || name.includes('墓')) ico.textContent = '⚰';
+    else if (name.includes('药') || name.includes('医')) ico.textContent = '💊';
+    else if (name.includes('铁') || name.includes('机')) ico.textContent = '⚙';
+    else ico.textContent = '📍';
+  }
+
+  renderInventory() {
+    const body = document.getElementById('inv-body');
+    if (this.state.inventory.length === 0) {
+      body.innerHTML = '<div class="inv-empty">空空如也</div>';
+      return;
+    }
+    body.innerHTML = this.state.inventory.map((item, i) => {
+      let color = '#a06840';
+      if (item.type === 'technique') color = '#7a4a90';
+      if (item.type === 'equip' || item.type === 'equipment') color = '#c4b0a0';
+      if (item.type === 'special') color = '#c4886a';
+      return '<div class="inv-item" onclick="game.useItem(' + i + ')" style="color:' + color + '"><span class="inv-icon">📦</span><span class="inv-name">' + item.name + '</span><span class="inv-desc">' + (getDesc(item) || '') + '</span></div>';
+    }).join('');
+  }
+
+  renderQuests() {
+    const body = document.getElementById('quest-body');
+    const s = this.state;
+    if (s.activeQuests.length === 0 && s.completedQuests.length === 0) {
+      body.innerHTML = '<div class="inv-empty">暂无任务</div>';
+      return;
+    }
+    let html = '';
+    if (s.activeQuests.length > 0) {
+      html += '<div style="color:#c49a38;font-size:12px;letter-spacing:2px;margin-bottom:6px;">进行中</div>';
+      for (const qId of s.activeQuests) {
+        const q = QUESTS.find(q => q.id === qId);
+        if (!q) continue;
+        const stage = s.questStages[qId] || 0;
+        html += '<div class="quest-item"><div class="quest-name">' + q.name + '</div>';
+        html += '<div class="quest-stage">阶段 ' + (stage + 1) + '/' + q.stages.length + '：' + (q.stages[Math.min(stage, q.stages.length - 1)].desc) + '</div>';
+        html += '<div class="quest-reward">奖励：' + Object.entries(q.rewards).filter(([k,v]) => k !== 'faction' && k !== 'access').map(([k,v]) => (k==='spiritStones'?v+'灵石':k==='cultivation'?v+'修为':'获得'+v)).join('、') + '</div></div>';
+      }
+    }
+    if (s.completedQuests.length > 0) {
+      html += '<div style="color:#5a8068;font-size:12px;letter-spacing:2px;margin:8px 0 6px;">已完成</div>';
+      for (const qId of s.completedQuests) {
+        const q = QUESTS.find(q => q.id === qId);
+        if (!q) continue;
+        html += '<div class="quest-item" style="opacity:0.6"><div class="quest-name" style="color:#5a8068">✓ ' + q.name + '</div></div>';
+      }
+    }
+    body.innerHTML = html;
+  }
+
+  updateUI() {
+    const s = this.state;
+    const next = s.realm < REALMS.length - 1 ? REALMS[s.realm + 1] : null;
+    document.getElementById('stat-realm').textContent = REALMS[s.realm].name;
+    document.getElementById('stat-cultivation').textContent = next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满';
+    document.getElementById('stat-daoxin').textContent = s.daoxin + ' / ' + s.maxDaoXin;
+    document.getElementById('stat-lifespan').textContent = s.lifespan + ' 年';
+    document.getElementById('stat-stones').textContent = s.spiritStones;
+    document.getElementById('stat-techniques').textContent = s.techniques.length > 0 ? s.techniques.join('、') : '无';
+    document.getElementById('stat-quests').textContent = s.activeQuests.length + ' / ' + (s.activeQuests.length + s.completedQuests.length);
+    const se = document.getElementById('stat-daoxin');
+    se.className = 'stat-value' + (s.daoxin < 20 ? ' danger' : s.daoxin < 50 ? ' highlight' : '');
+
+    document.getElementById('s-realm').textContent = REALMS[s.realm].name;
+    document.getElementById('s-cult').textContent = next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满';
+    document.getElementById('s-daoxin').textContent = s.daoxin + ' / ' + s.maxDaoXin;
+    document.getElementById('s-life').textContent = s.lifespan + ' 年';
+    document.getElementById('s-hp').textContent = s.hp + ' / ' + s.maxHp;
+    document.getElementById('s-stones').textContent = s.spiritStones;
+    document.getElementById('s-atk').textContent = s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0);
+    document.getElementById('s-def').textContent = s.defense + (s.equipment.armor ? s.equipment.armor.def : 0);
+    document.getElementById('s-tech').textContent = s.techniques.length > 0 ? s.techniques.join('、') : '无';
+    document.getElementById('s-loc').textContent = s.location;
+    document.getElementById('s-kill').textContent = s.killCount;
+    // Faction info
+    if (s.faction) {
+      document.getElementById('s-faction-row').style.display = 'flex';
+      document.getElementById('s-faction').textContent = s.faction;
+      document.getElementById('s-skills-row').style.display = 'flex';
+      const learnedCount = Object.keys(s.skills).length;
+      document.getElementById('s-skills').textContent = learnedCount + '项';
+      document.getElementById('s-rep-row').style.display = 'flex';
+      document.getElementById('s-rep').textContent = s.factionRep;
+    }
+
+    if (next) {
+      const pct = Math.min(100, (s.cultivation / next.cost) * 100);
+      document.getElementById('cultivation-bar').style.width = pct + '%';
+      document.getElementById('cultivation-text').textContent = Math.floor(pct) + '%';
+    } else {
+      document.getElementById('cultivation-bar').style.width = '100%';
+      document.getElementById('cultivation-text').textContent = '圆满';
+    }
+    document.getElementById('daoxin-bar').style.width = (s.daoxin / s.maxDaoXin * 100) + '%';
+    document.getElementById('daoxin-text').textContent = Math.floor(s.daoxin / s.maxDaoXin * 100) + '%';
+    document.getElementById('hp-bar').style.width = (s.hp / s.maxHp * 100) + '%';
+    document.getElementById('hp-text').textContent = Math.floor(s.hp / s.maxHp * 100) + '%';
+
+    document.getElementById('location-name').textContent = s.location;
+    const loc = LOCATIONS[s.location];
+    document.getElementById('location-desc').textContent = loc ? getDesc(loc) : '未知之地';
+    document.getElementById('connections').innerHTML = loc && loc.connections
+      ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.dirName(d) + ' → ' + l + '</span>').join('')
+      : '';
+
+    const stEl = document.getElementById('idle-status');
+    if (s.isResting) {
+      stEl.className = 'resting';
+      stEl.innerHTML = '<span class="pulse"></span>休憩中 · 气血/道心恢复';
+    } else {
+      stEl.className = '';
+      stEl.innerHTML = '<span class="pulse"></span>挂机修炼中 · 每 3 秒获取修为';
+    }
+
+    if (this.currentTab === 'bag') this.renderInventory();
+    if (this.currentTab === 'quest') this.renderQuests();
+    if (this.currentTab === 'wuxue') this.renderWuxue();
+    if (this.mapOpen) this.renderMap();
+    if (s.combat) this.updateCombatUI();
+  }
+
+  addLog(text, type) {
+    const area = document.getElementById('log-area');
+    const el = document.createElement('div');
+    el.className = 'log-entry ' + (type || '');
+    el.innerHTML = text;
+    area.appendChild(el);
+    area.scrollTop = area.scrollHeight;
+    while (area.children.length > 100) area.removeChild(area.firstChild);
+  }
+
+  setupInput() {
+    const input = document.getElementById('cmd-input');
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const cmd = input.value.trim();
+        input.value = '';
+        if (cmd) this.processCommand(cmd);
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') input.focus();
+    });
+  }
+
+  processCommand(cmd) {
+    if (['北', 'north', 'n', '向北'].includes(cmd)) this.explore('north');
+    else if (['南', 'south', 's', '向南'].includes(cmd)) this.explore('south');
+    else if (['东', 'east', 'e', '向东'].includes(cmd)) this.explore('east');
+    else if (['西', 'west', 'w', '向西'].includes(cmd)) this.explore('west');
+    else if (['打坐', '修炼', 'meditate'].includes(cmd)) this.meditate();
+    else if (['搜寻', '搜索', 'search', '探索'].includes(cmd)) this.searchArea();
+    else if (['休憩', '休息', 'rest'].includes(cmd)) this.rest();
+    else if (['交谈', '谈话', 'talk', '聊聊', '聊天', '搭话'].includes(cmd)) this.talk();
+    else if (['打听', '问询', 'ask', '消息', '问路'].includes(cmd)) this.askAround();
+    else if (['练功', '锻炼', 'pushup', '站桩'].includes(cmd)) this.pushup();
+    else if (['观察', '窥探', 'peek', '瞭望', 'look', '看'].includes(cmd)) this.peek();
+    else if (['练武', '修炼武学', 'practice'].includes(cmd)) this.practiceMenu();
+    else if (['拜师', 'teacher'].includes(cmd)) this.askTeacher();
+    else if (['地图', 'map'].includes(cmd)) this.toggleMap();
+    else if (['境况', '状态', 'status', 'stats'].includes(cmd)) this.switchTab('status');
+    else if (['行囊', '背包', '包裹', 'inventory', 'inv', 'bag'].includes(cmd)) this.switchTab('bag');
+    else if (['任务', 'quest', 'quests', 'mission'].includes(cmd)) this.switchTab('quest');
+    else if (['人物', 'char'].includes(cmd)) this.switchTab('char');
+    else if (['位置', 'location', 'loc'].includes(cmd)) {
+      const loc = LOCATIONS[this.state.location];
+      this.addLog('📍 当前位置：<b>' + this.state.location + '</b>', 'info');
+      if (loc) { this.addLog('   ' + getDesc(loc), 'info'); this.addLog('   危险：' + '★'.repeat(loc.danger || 0), 'info'); }
+    } else if (['帮助', 'help', '?', '？', 'h'].includes(cmd)) {
+      this.addLog('┏━━ 江 湖 须 知 ━━┓', 'system');
+      this.addLog('┃ 🧭 移动：北/南/东/西', 'system');
+      this.addLog('┃ 🧘 打坐 · 🔍 搜索 · 💤 休憩', 'system');
+      this.addLog('┃ 💬 交谈 · 👂 打听 · 💪 练功 · 👀 窥探', 'system');
+      this.addLog('┃ 🙇 拜师 · 📖 练武 · 🏯 武学', 'system');
+      this.addLog('┃ 🗺 地图 · 📋 境况 · 📦 包裹', 'system');
+      this.addLog('┃ 👤 人物 · 📜 任务：查看修为/任务', 'system');
+      this.addLog('┃ 📖 探索：' + this.state.explored.length + '/' + Object.keys(LOCATIONS).length + ' 间', 'system');
+      this.addLog('┃ 💡 在城里「交谈」遇奇遇、「打听」得情报', 'system');
+      this.addLog('┃ 💡 「搜索」有概率得金银器物', 'system');
+      this.addLog('┗━━━━━━━━━━━━━━━━┛', 'system');
+    } else {
+      this.addLog('不明指令：' + cmd + '。输入"帮助"查看可用命令。', 'system');
+    }
+    this.updateUI();
+  }
+}
+
+const game = new Game();
+document.getElementById('cmd-input').focus();
+</script>
+</body>
+</html>

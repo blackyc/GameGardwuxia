@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "project": "Ghost MUD v2.0 — 聊斋仙途·系统设计文档",
+    "version": "2.0.0",
+    "generated": "2026-06-21",
+    "description": "从7个rebuild数据文件和HTML引擎中抽取的完整系统机械设计。数据驱动，JSON化，可直接用于新引擎实现。",
+    "sources": [
+      "work/integration_v2.js — 双描述系统、数据合并、MAP_POS/MAP_CONN布局",
+      "work/rebuild_enemies_items_realms.js — REALMS/ENEMIES/ITEMS/LOOT_TABLES/PREREQ_TYPES",
+      "work/rebuild_rooms_city.js / rebuild_rooms_wild.js / rebuild_dungeon_rooms.js — LOCATIONS",
+      "work/rebuild_atmosphere.js — ATMOSPHERE_ITEMS",
+      "work/rebuild_skill_descriptions_1.js / rebuild_skill_descriptions_2.js — FACTIONS + ROGUE_SKILLS",
+      "work/dual_desc_constraint.md — 双描述转化规则与标记库",
+      "ghost_mud_v2.html — Game class 完整引擎逻辑",
+      "docs/cultivation_system.md — 道心/突破机制",
+      "docs/bestiary_design.md — 四类敌人战斗道心消耗"
+    ]
+  },
+
+  "gameStateSchema": {
+    "state": {
+      "realm": { "type": "integer", "min": 0, "max": 7, "default": 0, "description": "境界索引。0=凡人, 7=渡劫" },
+      "cultivation": { "type": "integer", "default": 0, "description": "当前境界累积修为值" },
+      "daoxin": { "type": "integer", "min": 0, "max": 100, "default": 100, "description": "道心——你还是'你'的程度" },
+      "maxDaoXin": { "type": "integer", "default": 100, "description": "道心上限（随境界突破+20）" },
+      "hp": { "type": "integer", "default": 120, "description": "当前气血" },
+      "maxHp": { "type": "integer", "default": 120, "description": "气血上限（随境界同步REALMS[realm].hp）" },
+      "lifespan": { "type": "integer", "default": 80, "description": "寿元（年）" },
+      "spiritStones": { "type": "integer", "default": 0, "description": "灵石（货币）" },
+      "attack": { "type": "integer", "default": 6, "description": "当前攻击力" },
+      "defense": { "type": "integer", "default": 3, "description": "当前防御力" },
+      "location": { "type": "string", "default": "应天府·十字街口", "description": "当前房间名" },
+      "inventory": { "type": "array", "default": [], "description": "背包（物品对象数组）" },
+      "equipment": {
+        "weapon": { "type": "object|null" },
+        "armor": { "type": "object|null" }
+      },
+      "techniques": { "type": "array", "default": [], "description": "已掌握功法名列表" },
+      "killCount": { "type": "integer", "default": 0 },
+      "totalCultivation": { "type": "integer", "default": 0, "description": "累积总修为" },
+      "isResting": { "type": "boolean", "default": false },
+      "combat": { "type": "object|null", "description": "战斗上下文：{ enemyName, enemyHp, enemyMaxHp, enemyAtk, enemyDef, enemyData }" },
+      "npcEncounter": { "type": "object|null", "description": "当前NPC遭遇数据" },
+      "explored": { "type": "array", "default": ["应天府·十字街口"], "description": "已探索房间名列表" },
+      "activeQuests": { "type": "array", "default": [] },
+      "completedQuests": { "type": "array", "default": [] },
+      "questStages": { "type": "object", "default": {} },
+      "faction": { "type": "string", "default": "散修", "description": "当前宗派" },
+      "skills": { "type": "object", "default": {}, "description": "{ skillId: { level, exp } }" },
+      "equippedSkill": { "type": "string|null", "default": null, "description": "装配的战斗武学ID" },
+      "factionRep": { "type": "integer", "default": 0, "description": "门忠" },
+      "performCooldowns": { "type": "object", "default": {} },
+      "roundCount": { "type": "integer", "default": 0 }
+    }
+  },
+
+  "combatSystem": {
+    "damageFormula": {
+      "playerDamage": "max(1, state.attack + weaponAtk + skillBonus + random(0,9) + realm*2 - enemyDef)",
+      "enemyDamage": "max(1, enemyAtk + random(0,7) - state.defense - armorDef)",
+      "skillBonus": "equippedSkill.level * 2",
+      "defenseBonusFromSkill": "skillData.defenseBonus * skillLevel / 100"
+    },
+    "combatActions": {
+      "attack": { "description": "普攻，触发技能加成" },
+      "skill": { "description": "展示当前可用的绝招列表，选择后执行perform" },
+      "defend": { "description": "守势：恢复 maxHp*10% + 武学防御加成生命" },
+      "flee": { "description": "基础成功率40%+境界*5%+轻功等级加成。失败则承受敌人一回合反击" }
+    },
+    "endCombat": {
+      "victory": "获得 enemyData.exp + (boss?50:0)修为，enemyData.gold灵石。boss掉落special。触发kill quest进度与突破检测。",
+      "flee": "直接结束战斗，无奖励",
+      "bossSpecialDrop": "仅boss敌人有special字段"
+    },
+    "combatDaoxinCost": {
+      "鬼·游魂/怨魂": { "perRound": 0 },
+      "鬼·凶灵": { "perRound": -1 },
+      "鬼·噬心鬼": { "perRound": -2, "note": "道心检定不通过则持续恐惧" },
+      "怪·灵物/成怪": { "perRound": 0 },
+      "怪·老怪/地缚": { "perRound": -1 },
+      "精·浮精/凝精": { "perRound": -2 },
+      "精·尘龄": { "perRound": -5, "note": "领域压制" },
+      "堕修·走火/入魔": { "perRound": -1 },
+      "堕修·非我": { "perRound": -3 },
+      "祂的痕迹": { "perRound": -10, "note": "不要战斗。走。" }
+    }
+  },
+
+  "daoxinMechanics": {
+    "comment": "侵蚀就是道心下降。道心越低越不是自己。归零=角色永久丢失。",
+    "initial": 100,
+    "naturalDecay": { "rate": -0.1, "unit": "perDay" },
+    "idleDecay": {
+      "interval": "15秒",
+      "formula": "location.danger * 2 + (random>0.7 ? 1 : 0)",
+      "note": "战斗/npc遭遇/休憩期间暂停"
+    },
+    "stressSources": {
+      "combat": { "perBattle": "–1 ~ –3", "note": "取决于战斗强度和对手位阶" },
+      "highTierSkill": { "perUse": "–2 ~ –5" },
+      "highLingArea": { "perMinute": "–0.5 ~ –2" },
+      "nearDeath": { "hpBelow10%": "–10 ~ –20" },
+      "breakthrough": { "perBreak": "–5 ~ –10" },
+      "breakthroughFail": { "perFail": "–10 ~ –20" },
+      "markedByHim": { "perEvent": "–10 ~ –20" },
+      "usingInvasionSkill": { "perUse": "–2 ~ –5" }
+    },
+    "recoverySources": {
+      "meditate": { "gain": "+1", "unit": "per时辰", "condition": "安全区域" },
+      "questGood": { "gain": "+3 ~ +5", "limit": "单次" },
+      "daoxinPill": { "gain": "+5 ~ +10", "cooldown": "12时辰，递减" },
+      "anchoredByNPC": { "gain": "+2", "condition": "特定NPC事件" },
+      "crossingRuins": { "gain": "+15", "condition": "归墟秘法·渡厄，极稀有，代价未知" },
+      "resting": { "gain": "+1", "unit": "perIdleTick(3秒)", "note": "休憩状态" }
+    },
+    "stages": {
+      "清明_100-80": { "display": "完全正常" },
+      "迟疑_79-50": { "display": "偶尔看到描述中多出不该有的句子", "npcEffect": "NPC对话中出现模糊低语" },
+      "恍惚_49-30": { "display": "镜中倒影不对。某些区域描述'不对'", "textEffect": "正常文本夹杂一两句不属于这个世界的描述" },
+      "散乱_29-15": { "display": "影子不跟你同步。能听见NPC没说出口的话", "skillEffect": "功法文本在变化" },
+      "崩解_14-5": { "display": "你不确定自己是谁。战斗时可能攻击错误目标", "nameEffect": "你的名字在文本中偶尔被替换" },
+      "破碎_4-1": { "display": "祂的手已经在你身后了", "textEffect": "游戏文本大面积扭曲" },
+      "归零_0": { "result": "你不是你了。游戏结束。最终描述取决于你最后一次做的决定。" }
+    }
+  },
+
+  "breakthroughMechanics": {
+    "comment": "每境修炼值积累到REALMS[n].cost触发自动检测",
+    "formula": "min(0.95, 0.7 - realm*0.08 + (daoxin/maxDaoXin)*0.2)",
+    "daoxinBands": {
+      "清明_80-100": { "baseRate": 0.7 },
+      "迟疑_50-79": { "baseRate": 0.5 },
+      "恍惚_30-49": { "baseRate": 0.3 },
+      "散乱_15-29": { "baseRate": 0.15 },
+      "崩解_below15": { "baseRate": "不开放突破" }
+    },
+    "modifiers": {
+      "completeSkill": "+10%",
+      "enlightenmentPill": "+5% per pill, max +15% (3 pills)",
+      "guardianPresent": "+10%"
+    },
+    "success": {
+      "realmIncrement": "+1",
+      "cultivationReset": 0,
+      "statSync": "attack/defense/maxHp/hp = REALMS[newRealm]",
+      "maxDaoXinBoost": "+20",
+      "daoxinReset": "daoxin = maxDaoXin",
+      "lifespanBoost": "+20"
+    },
+    "failureCosts": {
+      "1st": "道心-5（轻微反噬）",
+      "2nd": "道心-10，随机技能降1级",
+      "3rd": "道心-20。异化事件：获得永久侵术，道心上限-10",
+      "4thPlus": "道心-30。异化事件升级：记忆替换/名字改变/宗派认知偏移"
+    }
+  },
+
+  "dualDescriptionSystem": {
+    "comment": "每个数据对象的desc字段拆分为desc（筑基前模糊版）和desc_awakened（筑基后确定版）。引擎层getDesc()按state.realm >= 2选择。",
+    "threshold": "realm >= 2（筑基及以上）",
+    "functionCode": "function getDesc(obj) { if(!obj) return ''; if(game.state.realm >= 2 && obj.desc_awakened) return obj.desc_awakened; return obj.desc || ''; }",
+    "rules": {
+      "R1_eliminateNotXButY": "所有'不是X而是Y'句式改为低境界模糊版+高境界确定版。低境界用主观推测标记包装Y。",
+      "R2_subjectiveMarkers": "60+条主观不确定标记随机选用，禁止连续使用同一标记类型",
+      "R3_noHisMention": "desc_awakened文本中祂不在描述中出现，偶尔在'空白'中出现",
+      "R4_styleConformance": "40-100字/描述，3-6个逗号分隔单元，句长4-54字",
+      "R5_forbiddenWords": "禁用: 不禁/不由得/下意识地/空气中弥漫着/你能感到/与此同时/不知为何/似乎在说/温柔地/轻轻地/深深地",
+      "R6_emotionalLabelLimit": "情绪词(恐惧/害怕/诡异/恐怖)占比 > 1个/200字 = 退回"
+    },
+    "markerTypes": {
+      "visualGuess_10entries": "似乎是/远远望去像是/乍一看像是/隐隐约约像是/定睛细看仿佛是/恍惚间像是/眼角余光瞥见/走近了再看好像/透过雾气看去仿佛是/在烛火摇曳中看着像是",
+      "hearsayNamed_16entries": "听人说/住在这条巷子的老人说/有打更人曾在子时看见/附近几家铺子的伙计都说/挑担子走街串巷的货郎讲过/庙里的老僧说/有官兵巡夜时曾见过/街角算命的说/茶肆里的说书人提过/渡口撑船的艄公说/有旅人路过时见过/山里采药的老翁说/几个小孩都说他们看见过/衙门里的仵作私下说/骡马市的牙人跟人提起过/城门口蹲着的乞丐说",
+      "hearsayConsensus_8entries": "坊间流传/自古相传/不少居民都听见/市井间有个说法/老辈人留下的话是/赶考举子之间传着一件事/几个镖局都提过同一件事/几个药铺的坐堂郎中都私下说过",
+      "inference_12entries": "多半是/或许是/大概是/说不定/很难说/谁知道/说不准/也许/莫非/要不就是/该不会是/怕不是",
+      "selfDoubt_8entries": "…也许只是错觉/…也可能看花了眼/…不知道是不是真的/…说不上来/…记不清了/…也许本来就如此/…谁知道呢/…也可能是别的什么",
+      "sensoryHesitation_6entries": "定神再听/屏息细闻/伸手摸去/鼻端似有若无/静心谛听/睁眼再辨"
+    }
+  },
+
+  "roomNestingSystem": {
+    "comment": "父房间包含observable.sub_rooms数组，引擎在LOCATIONS展开时将子房间提升为顶层，建立双向连接",
+    "maxDepth": 2,
+    "maxSubroomsPerParent": 3,
+    "conditionTypes": {
+      "skill": { "description": "检查state.skills中是否有特定技能" },
+      "realm": { "description": "检查state.realm是否≥指定值" },
+      "daoxin": { "description": "检查state.daoxin是否在指定范围" },
+      "item": { "description": "检查背包是否含特定物品" },
+      "quest": { "description": "检查quest进度状态" },
+      "faction": { "description": "检查是否属于特定宗派" },
+      "time": { "description": "检查游戏内时间/现实时间" },
+      "composite": { "description": "以上条件的AND/OR组合" }
+    }
+  },
+
+  "movementSystem": {
+    "directionMap": { "north": "北", "south": "南", "east": "东", "west": "西", "up": "上", "down": "下", "in": "入", "out": "出" },
+    "onMoveEffects": {
+      "addToExplored": "如果新房间不在explored数组中则添加",
+      "displayDesc": "显示抵达地点名+getDesc(房间)",
+      "roomEvent50": "50%概率触发房间内置random事件",
+      "encounterLogic": {
+        "danger_1-2_city": "35% NPC遭遇(无主动交互则用ACTIVE=false), 不触发战斗",
+        "danger_3-4_mixed": "20%遭遇, 50/50 NPC vs 战斗",
+        "danger_5plus_dungeon": "danger*15%概率战斗",
+        "bossRoom": "30%概率出现boss预示文字"
+      },
+      "questCheck": "执行checkQuestProgress('go', target)"
+    }
+  },
+
+  "cultivationEconomy": {
+    "idleRate": {
+      "baseRate": "1 point per 3 seconds (base)",
+      "restingRate": "1 point per tick",
+      "formula": "floor(2 + realm*1.5 + weaponBonus(0.5) + techniqueBonus(0.3*count))",
+      "eventBonus": "idleEvent触发修为奖励",
+      "combatReward": "敌人exp值 = 5-50点（按阶位）",
+      "questReward": "20-200点",
+      "pillBonus": "10-100点",
+      "encounterBonus": "50-500点",
+      "skillComprehension": "100-1000点"
+    },
+    "cultivationThresholds": {
+      "凡人→炼气": 0,
+      "炼气→筑基": 180,
+      "筑基→金丹": 420,
+      "金丹→元婴": 900,
+      "元婴→化神": 1800,
+      "化神→合体": 3200,
+      "合体→渡劫": 5000,
+      "渡劫→飞升": 1000000
+    }
+  },
+
+  "skillSystem": {
+    "comment": "14个宗派技能树（12宗派+散修）。每宗派skills数组含 {id, name, type, minLevel, maxLevel, performs{name,description,damageMultiplier,cost}, defenseBonus}",
+    "typeCategories": ["force","dodge","sword","blade","cuff","strike","finger","hand","claw","staff","whip","throwing","special","knowledge","parry","leg","poison","hammer","spear"],
+    "skillTraining": {
+      "cost": "10 + level*3 灵石",
+      "daoxinCost": -5,
+      "expGain": "10 + random(0,19)",
+      "levelUpThreshold": "level * 50",
+      "minDaoxinRequired": 5
+    },
+    "equipLogic": {
+      "autoEquip": "武器类技能(type∈{sword,blade,cuff,strike,finger,staff,whip,claw,spear,hammer})自动装配",
+      "manualEquip": "其他类型需手动装配",
+      "equipUI": "显示当前装配技能名+等级+卸下按钮"
+    },
+    "teacherSystem": {
+      "locationRequirement": "必须在宗派HQ据点的指定房间内",
+      "cost": [20, 80, 200],
+      "costIndex": "teacher在faction.teachers数组中的索引（0=入门, 1=中级, 2=高级）",
+      "factionRepGain": 10,
+      "learnAllTeachable": "师傅可授的所有未学技能一次性习得"
+    },
+    "hqLocationMap": {
+      "忘尘宗": ["忘尘峰"],
+      "赤霞峰": ["赤霞峰·观星台"],
+      "锈剑冢": ["锈剑冢·地窟"],
+      "丝狱": ["丝狱·盘丝窟","汴河地下暗渠","樊楼后院","御街古井"],
+      "焚身道": ["光明顶·焰心殿"],
+      "逍遥驿": ["逍遥驿·车马院"],
+      "药王谷": ["鼓楼西·地下丹房"],
+      "血禅寺": ["血禅寺"],
+      "镜阁": ["镜阁·万镜堂","樊楼·镜室"],
+      "归墟": ["归墟洞","大明宫废墟"],
+      "青囊庐": ["青囊庐","紫禁城旧药房"],
+      "傀坊": ["鼓楼望气塔","紫禁城实验室"]
+    }
+  },
+
+  "npcEncounterSystem": {
+    "encounterData": "NPC_ENCOUNTERS[roomName] = Array of { title, desc, results[{ choice, log, questStart, effect, reward }] }",
+    "factionRecruiters": "FACTION_RECRUITER_ENCOUNTERS[roomName]为各帮派招募NPC",
+    "triggerConditions": {
+      "cityRooms": "35%基础概率（仅city，danger≤2）",
+      "rogueSeekingFaction": "30%帮派招募，仅散修+30%概率",
+      "talkActive": "主动交谈强制触发NPC遭遇（danger<5时）"
+    }
+  },
+
+  "roomSearchSystem": {
+    "dataSource": "ROOM_SEARCH[roomName] = { searchChance, results[{ type, amount, desc }] }",
+    "resultTypes": {
+      "money": "获得amount范围的灵石",
+      "daoxin": "直接恢复道心",
+      "hp": "直接恢复气血",
+      "cultivation": "直接增加修为",
+      "find_type": "按itemType分类随机获取物品",
+      "nothing": "无特别发现"
+    }
+  },
+
+  "idleEventSystem": {
+    "triggerChance": "5% per idle tick",
+    "conditions": "不在战斗、不在NPC遭遇、不休憩",
+    "events": [
+      { "text": "暮色忽然沉了三寸。不是天黑——是有什么东西在半空中张开了。", "daoxinChange": -5 },
+      { "text": "丹田内忽然翻涌——不是真气。是一小口苦味。", "cultivationChange": 20 },
+      { "text": "有人在看你。不是错觉——你后颈的皮肤知道。", "daoxinChange": -3 },
+      { "text": "一行经文从你读过的那本残卷里浮上心头。下一句不是那个字。", "cultivationChange": 15, "daoxinChange": -2 },
+      { "text": "忘尘宗的真意在脑中一闪——忘我，忘尘，忘一切。", "special": "习得忘尘经（如尚未习得）", "cultivationChange": 25, "daoxinChange": -8 },
+      { "text": "路过一口枯井——井壁倒影在对你笑。你没在笑。", "daoxinChange": -5, "cultivationChange": 30 },
+      { "text": "远方山上亮起一盏灯。一共七盏。然后一盏接一盏灭了。", "daoxinChange": -4, "cultivationChange": 10 }
+    ]
+  },
+
+  "gameOverSystem": {
+    "types": {
+      "hpZero": { "result": "肉身死亡。道心≥30可回魂至最近安全点复活，道心减半。道心<30=永远死去。" },
+      "daoxinZero": { "result": "道心崩坏。你不再是你。角色永久丢失。世界内留下痕迹——某个NPC会记得你，用错误的方式。" }
+    },
+    "summaryScreen": "最终境界+斩杀数+灵石+任务完成数+所学功法+修行时长+总修为+探索区域数+再入江湖按钮"
+  },
+
+  "questSystem": {
+    "dataSource": "QUESTS = [{ id, name, desc, stages[{ desc, type, target, count }], rewards }]",
+    "activeQuests": "state.activeQuests数组，state.questStages存储每任务当前阶段索引",
+    "progressCheck": "每次移动/战斗胜利/搜索调用checkQuestProgress(type, target)。type∈{'go','kill','find'}",
+    "stageAdvance": "条件满足则stage+1，进入下一阶段或完成任务"
+  },
+
+  "performSystem": {
+    "comment": "绝招为技能的perform数组，每perform含 name, description, damageMultiplier, cost",
+    "trigger": "战斗中点击'技能'按钮呈现可用的绝招列表",
+    "cooldown": "state.performCooldowns跟踪每个绝招最后使用的回合数",
+    "daoxinCost": "使用绝招=道心-5，对敌人额外精神恐惧",
+    "invasionSkill": "侵术：借祂之力，道心-2~-5/次"
+  }
+}
