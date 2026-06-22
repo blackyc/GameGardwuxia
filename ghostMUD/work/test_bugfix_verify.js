@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // BUG 修复回归测试 · 2026-06-21
 // 验证：
 //   BUG-1: explore() 方向键中英文归一化后能找到 target
@@ -71,8 +71,8 @@ if (sampleRoom) {
   else bad('移动失败：' + sampleRoom + ' / ' + dirEng);
 }
 
-// ============ BUG-2: NPC 数据契约 ============
-console.log('\n[BUG-2] NPC 遭遇数据契约 (title / results[*].choice)');
+// ============ BUG-2: NPC 卷宗契约 ============
+console.log('\n[BUG-2] NPC 遭遇卷宗契约 (title / results[*].choice)');
 let npcRooms = 0, npcTotal = 0, missingTitle = 0, missingChoice = 0, missingLog = 0;
 for (const rn of Object.keys(NPC_ENCOUNTERS)) {
   const list = NPC_ENCOUNTERS[rn];
@@ -97,6 +97,6 @@ else bad(missingLog + ' 个 result 无 log/effect');
 
 // ============ 结果 ============
 console.log('\n──────────────────────────────');
-console.log('PASS: ' + pass + '   FAIL: ' + fail);
+console.log('PASS: ' + pass + '   F器灵L: ' + fail);
 console.log(fail === 0 ? '🎉 全部通过' : '⚠ 存在失败项');
 process.exit(fail === 0 ? 0 : 1);

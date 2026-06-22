@@ -1,4 +1,4 @@
-/**
+﻿/**
  * renderer.js — UI 渲染器
  * 参考猫国建设器 game.js 的 render() 方法
  * 负责所有 DOM 更新，从 Game 类中分离
@@ -184,7 +184,7 @@ export class Renderer {
     // 渲染技能树
     const factionData = data.FACTIONS[s.faction];
     if (!factionData || !factionData.skills) {
-      content.innerHTML = '<div class="inv-empty">该帮派武学数据缺失</div>';
+      content.innerHTML = '<div class="inv-empty">该帮派武学卷宗缺失</div>';
       return;
     }
 

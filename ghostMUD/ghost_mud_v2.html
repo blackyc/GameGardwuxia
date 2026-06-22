@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -242,6 +242,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
     <div class="stat-row"><span class="stat-label">灵石</span><span class="stat-value" id="stat-stones">0</span></div>
     <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="stat-techniques">无</span></div>
     <div class="stat-row"><span class="stat-label">任务数</span><span class="stat-value quest" id="stat-quests">0</span></div>
+    <div class="stat-row"><span class="stat-label">路径</span><span class="stat-value" id="stat-path">武修</span></div>
+    <div class="stat-row"><span class="stat-label">盘缠</span><span class="stat-value" id="stat-coins">0金0银0铜</span></div>
   </div>
 </div>
 
@@ -281,6 +283,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
     <div class="stat-row" id="s-faction-row" style="display:none"><span class="stat-label">帮派</span><span class="stat-value" id="s-faction" style="color:#c49a38">无</span></div>
     <div class="stat-row" id="s-skills-row" style="display:none"><span class="stat-label">武学</span><span class="stat-value" id="s-skills" style="font-size:11px">无</span></div>
     <div class="stat-row" id="s-rep-row" style="display:none"><span class="stat-label">门忠</span><span class="stat-value" id="s-rep">0</span></div>
+    <div class="stat-row"><span class="stat-label">路径</span><span class="stat-value" id="s-path">武修</span></div>
+    <div class="stat-row"><span class="stat-label">盘缠</span><span class="stat-value" id="s-coins">0金0银0铜</span></div>
   </div>
 </div>
 
@@ -414,6 +418,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
 <script src="work/rebuild_dungeon_rooms.js"></script>
 <script src="work/rebuild_skill_descriptions_1.js"></script>
 <script src="work/rebuild_skill_descriptions_2.js"></script>
+<script src="work/rebuild_skill_descriptions_ling.js"></script>
+<script src="work/corruption_system.js"></script>
+<script src="work/cross_path_quests.js"></script>
+<script src="work/jianghu_events.js"></script>
 <script src="work/integration_v2.js"></script>
 <script>
 // Build enemy pools by danger tier
@@ -441,7 +449,7 @@ function pickEnemy(danger) {
 class Game {
   constructor() {
     window.game = this;
-    var r0 = REALMS[0];
+    var r0 = (typeof WU_REALMS !== 'undefined') ? WU_REALMS[0] : REALMS[0];
     this.state = {
       realm: 0,
       cultivation: 0,
@@ -464,6 +472,15 @@ class Game {
       activeQuests: [],
       completedQuests: [],
       questStages: {},  // questId -> current stage index
+      // === Phase 8 双修体系 ===
+      path: 'wu',              // 'wu' | 'ling' — 修炼路径（默认武修）
+      factionType: 'wu',       // 'wu' | 'ling' — 宗门类型
+      daoxinDecay: 0,          // 道心自然跌落累积tick（灵修专用）
+      corruptionTier: 0,       // 0-5 畸变等级（灵修专用）
+      // === 经济双轨 ===
+      gold: 0,                 // 金（1金=100银）
+      silver: 0,               // 银（1银=100铜）
+      copper: 0,               // 铜
       // === 帮派/技能系统 ===
       faction: '散修',         // 帮派名，开局即为散修（无门无派），通过遭遇帮派NPC可拜师
       skills: {},              // { skillId: { level: 1, exp: 0 } }
@@ -476,6 +493,80 @@ class Game {
     this.mapOpen = false;
     this.init();
   }
+
+  // ===== Phase 8 引擎方法 =====
+
+  // 按path返回对应境界数组（兼容：无WU_REALMS/LING_REALMS时降级为REALMS）
+  getRealms() {
+    var s = this.state;
+    if (s.path === 'ling' && typeof LING_REALMS !== 'undefined') return LING_REALMS;
+    if (typeof WU_REALMS !== 'undefined') return WU_REALMS;
+    return (typeof REALMS !== 'undefined') ? REALMS : [{idx:0,name:'凡人',cost:0,atk:6,def:3,hp:120,tier:'无察觉'}];
+  },
+
+  // 返回当前境界对象（带边界保护）
+  getRealm() {
+    var realms = this.getRealms();
+    return realms[Math.min(this.state.realm, realms.length - 1)];
+  },
+
+  // 按path+realm返回多层描述 — 灵修1级以上取desc_awakened，武修3级以上取desc_percept，否则取desc_vague，再降级desc
+  getDesc(obj) {
+    if (!obj) return '';
+    var s = this.state;
+    if (s.path === 'ling' && s.realm >= 1 && obj.desc_awakened) return obj.desc_awakened;
+    if (s.path === 'wu' && s.realm >= 3 && obj.desc_percept) return obj.desc_percept;
+    if (obj.desc_vague) return obj.desc_vague;
+    return obj.desc || '';
+  },
+
+  // 去灵化——把灵修文本中的修真术语替换为武修的自然语言描述
+  deLingify(text) {
+    if (!text || typeof text !== 'string') return text;
+    var replacements = {
+      '灵气':'一种说不清的存在感','灵脉':'经络','灵力':'内力',
+      '灵视':'隐约的直觉','神识':'感知','界隙':'裂缝',
+      '道基':'根基','术法':'招式','心法':'内功',
+      '剑诀':'剑法','身法':'轻功','修炼':'练武',
+      '修士':'武者','灵石':'金银','灵修':'修行者',
+      '畸变':'异样','畸': '异'
+    };
+    var result = text;
+    for (var k in replacements) {
+      if (replacements.hasOwnProperty(k)) {
+        result = result.split(k).join(replacements[k]);
+      }
+    }
+    return result;
+  },
+
+  // 术语字典
+  term(key) {
+    var map = {
+      wu: {power:'内力',energy:'真气',action:'招式',defense:'内功',attack:'剑法',move:'轻功',body:'经脉',train:'练武',identity:'武者',money:'金银铜'},
+      ling:{power:'灵力',energy:'灵气',action:'术法',defense:'心法',attack:'剑诀',move:'身法',body:'灵脉',train:'修炼',identity:'修士',money:'灵石'}
+    };
+    return (map[this.state.path] && map[this.state.path][key]) || (map.wu[key] || key);
+  },
+
+  // 经济：累积铜→银→金自动进位
+  normalizeCoins() {
+    var s = this.state;
+    if (s.copper >= 100) { s.silver += Math.floor(s.copper / 100); s.copper = s.copper % 100; }
+    if (s.silver >= 100) { s.gold += Math.floor(s.silver / 100); s.silver = s.silver % 100; }
+    if (s.copper < 0) { var d = Math.ceil(Math.abs(s.copper) / 100); s.silver -= d; s.copper += d * 100; }
+    if (s.silver < 0) { var d = Math.ceil(Math.abs(s.silver) / 100); s.gold -= d; s.silver += d * 100; }
+    if (s.gold < 0) { s.gold = 0; s.silver = 0; s.copper = 0; }
+    if (s.copper < 0) s.copper = 0;
+    if (s.silver < 0) s.silver = 0;
+  },
+
+  // 武修金钱格式化（金银铜合算等价灵石以兼容现有spiritStones系统）
+  formatWuCoins() {
+    var s = this.state;
+    var total = s.gold * 10000 + s.silver * 100 + s.copper;
+    return total;
+  },
 
   init() {
     // 开局即为散修，无需选择帮派
@@ -539,18 +630,33 @@ class Game {
   }
 
   daoxinTick() {
-    if (this.state.combat || this.state.npcEncounter || this.state.isResting) return;
-    const s = this.state;
-    const loc = LOCATIONS[s.location];
-    const d = (loc ? loc.danger : 1) * 2 + (Math.random() > 0.7 ? 1 : 0);
-    s.daoxin = Math.max(0, s.daoxin - d);
-    if (s.daoxin < 20 && Math.random() < 0.3) {
-      this.addLog('😰 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
-      s.cultivation += 10;
-    }
-    if (s.daoxin <= 0) {
-      s.daoxin = 0;
-      this.gameOver('道心崩坏——你不再是你自己了。最后的念头散成无数碎片，其中一片还记得你的名字。只是一片。');
+    var s = this.state;
+    // 武修：仅在事件中扣道心，不自然跌落
+    if (s.path === 'wu') return;
+    // 灵修：根据境界扣道心
+    if (s.path === 'ling') {
+      if (s.isResting) return;
+      if (s.realm >= 1) {
+        s.daoxinDecay += 1;
+        // 每15s一次decay tick（daoxinInterval=15s，所以每tick执行一次）
+        if (s.realm >= 3) {
+          // 金丹(realm≥3)后加速扣2-5
+          var decay = 2 + Math.floor(Math.random() * 4);
+          s.daoxin = Math.max(0, s.daoxin - decay);
+        } else {
+          // 炼气(realm≥1)起每tick扣1-3
+          var decay = 1 + Math.floor(Math.random() * 3);
+          s.daoxin = Math.max(0, s.daoxin - decay);
+        }
+      }
+      if (s.daoxin < 20 && Math.random() < 0.3) {
+        this.addLog('😰 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
+        s.cultivation += 10;
+      }
+      if (s.daoxin <= 0) {
+        s.daoxin = 0;
+        this.gameOver('道心崩坏——你不再是你自己了。最后的念头散成无数碎片，其中一片还记得你的名字。只是一片。');
+      }
     }
     this.updateUI();
   }
@@ -578,14 +684,14 @@ class Game {
 
   checkBreakthrough() {
     const s = this.state;
-    if (s.realm >= REALMS.length - 1) return;
-    const n = REALMS[s.realm + 1];
+    if (s.realm >= this.getRealms().length - 1) return;
+    var n = this.getRealms()[s.realm + 1];
     if (s.cultivation >= n.cost) {
       const ch = Math.min(0.95, 0.7 - s.realm * 0.08 + (s.daoxin / s.maxDaoXin) * 0.2);
       if (Math.random() < ch) {
         s.realm++;
         s.cultivation = 0;
-        const r = REALMS[s.realm];
+        var r = this.getRealm();
         s.attack = r.atk;
         s.defense = r.def;
         s.maxHp = r.hp;
@@ -622,7 +728,7 @@ class Game {
     if (!s.explored.includes(target)) s.explored.push(target);
     const nl = LOCATIONS[target];
     this.addLog('🚶 向' + this.dirName(dir) + '方行去…', 'info');
-    this.addLog('📍 抵达 <b>' + target + '</b> —— ' + getDesc(nl), 'info');
+    this.addLog('📍 抵达 <b>' + target + '</b> —— ' + this.getDesc(nl), 'info');
     // Room events
     if (nl.events && nl.events.length > 0 && Math.random() < 0.5) {
       this.addLog(nl.events[Math.floor(Math.random() * nl.events.length)], 'event');
@@ -673,7 +779,7 @@ class Game {
     
     // Show NPC modal
     document.getElementById('npc-title').textContent = '👥 ' + enc.title;
-    document.getElementById('npc-desc').textContent = getDesc(enc);
+    document.getElementById('npc-desc').textContent = this.getDesc(enc);
     var choicesDiv = document.getElementById('npc-choices');
     choicesDiv.innerHTML = enc.results.map(function(r, i) {
       return '<button class="modal-choice" onclick="game.npcChoice(' + i + ')">' + r.choice + '</button>';
@@ -768,7 +874,7 @@ class Game {
     // 入帮仪式文字
     var ceremonies = {
       '忘尘宗': '🙏 「忘尘即是归宗。从今日起，你即忘尘宗弟子。忘我，忘尘，忘一切——连自己正在忘也一并忘记。入我忘尘，心即是空。」',
-      '赤霞峰': '☯ 「赤霞峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
+      '问剑峰': '☯ 「问剑峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
       '锈剑冢': '⚔ 「锈剑冢中万剑沉寂。从今日起，你手持的是败剑——败在他人手中，锈在自己手上。败剑不折，因为已经折过一次了。」',
       '丝狱': '🐜 「丝狱之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
       '焚身道': '🔥 「焚身道的圣火已在你丹田种下。从今日起，你的血是流动的焰——烧自己，也烧敌人。圣火不灭，焚身证道。」',
@@ -980,7 +1086,7 @@ class Game {
   isAtFactionHQ(locationName, factionName) {
     const hqMap = {
       '梵网寺': ['忘尘峰'],
-      '紫霞山': ['赤霞峰·观星台'],
+      '紫霞山': ['问剑峰·观星台'],
       '剑巢': ['锈剑冢·地窟'],
       '蚁网': ['丝狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
       '焰心教': ['光明顶·焰心殿'],
@@ -1303,7 +1409,7 @@ class Game {
     const c = this.state.combat;
     if (!c) return;
     const s = this.state;
-    document.getElementById('combat-player-name').textContent = REALMS[s.realm].name;
+    document.getElementById('combat-player-name').textContent = this.getRealm().name;
     document.getElementById('combat-player-hp').style.width = (s.hp / s.maxHp * 100) + '%';
     document.getElementById('combat-player-hp-text').textContent = s.hp + '/' + s.maxHp;
     document.getElementById('combat-enemy-name').textContent = c.enemyName;
@@ -1341,8 +1447,9 @@ class Game {
     if (picked.type === 'money') {
       const [min, max] = picked.amount.split('-').map(Number);
       const amt = min + Math.floor(Math.random() * (max - min + 1));
-      s.spiritStones += amt;
-      this.addLog('💰 ' + picked.desc + '（+' + amt + ' 灵石）', 'item');
+      s.copper += amt;
+      this.normalizeCoins();
+      this.addLog('💰 ' + picked.desc + '（+' + amt + ' 铜板）', 'item');
     } else if (picked.type === 'daoxin') {
       s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (picked.amount || 10));
       this.addLog('🧘 ' + picked.desc, 'info');
@@ -1592,7 +1699,7 @@ class Game {
       if (item.effect === 'daoxin') { s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (item.value || 20)); }
       else if (item.effect === 'hp') { s.hp = Math.min(s.maxHp, s.hp + (item.value || 30)); }
       else if (item.effect === 'cultivation') { s.cultivation += (item.value || 30); }
-      else if (item.effect === 'breakthrough') { s.cultivation += REALMS[Math.min(s.realm + 1, REALMS.length - 1)].cost * 0.4; }
+      else if (item.effect === 'breakthrough') { s.cultivation += this.getRealms()[Math.min(s.realm + 1, this.getRealms().length - 1)].cost * 0.4; }
       else { s.hp = Math.min(s.maxHp, s.hp + 20); }
       this.addLog('💊 使用 ' + item.name + '。', 'item');
       s.inventory.splice(index, 1);
@@ -1636,7 +1743,7 @@ class Game {
     const ov = document.createElement('div');
     ov.className = 'modal-overlay';
     ov.innerHTML = '<div class="modal-box"><h2>💀 ' + reason + '</h2>' +
-      '<p>最终境界：' + REALMS[s.realm].name + '</p>' +
+      '<p>最终境界：' + this.getRealm().name + '</p>' +
       '<p>斩杀：' + s.killCount + ' | 灵石：' + s.spiritStones + '</p>' +
       '<p>任务完成：' + s.completedQuests.length + '</p>' +
       '<p>所学：' + (s.techniques.length > 0 ? s.techniques.join('、') : '无') + '</p>' +
@@ -1678,7 +1785,7 @@ class Game {
       if (item.type === 'technique') color = '#7a4a90';
       if (item.type === 'equip' || item.type === 'equipment') color = '#c4b0a0';
       if (item.type === 'special') color = '#c4886a';
-      return '<div class="inv-item" onclick="game.useItem(' + i + ')" style="color:' + color + '"><span class="inv-icon">📦</span><span class="inv-name">' + item.name + '</span><span class="inv-desc">' + (getDesc(item) || '') + '</span></div>';
+      return '<div class="inv-item" onclick="game.useItem(' + i + ')" style="color:' + color + '"><span class="inv-icon">📦</span><span class="inv-name">' + item.name + '</span><span class="inv-desc">' + (this.getDesc(item) || '') + '</span></div>';
     }).join('');
   }
 
@@ -1714,8 +1821,8 @@ class Game {
 
   updateUI() {
     const s = this.state;
-    const next = s.realm < REALMS.length - 1 ? REALMS[s.realm + 1] : null;
-    document.getElementById('stat-realm').textContent = REALMS[s.realm].name;
+    var next = s.realm < this.getRealms().length - 1 ? this.getRealms()[s.realm + 1] : null;
+    document.getElementById('stat-realm').textContent = this.getRealm().name;
     document.getElementById('stat-cultivation').textContent = next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满';
     document.getElementById('stat-daoxin').textContent = s.daoxin + ' / ' + s.maxDaoXin;
     document.getElementById('stat-lifespan').textContent = s.lifespan + ' 年';
@@ -1725,7 +1832,7 @@ class Game {
     const se = document.getElementById('stat-daoxin');
     se.className = 'stat-value' + (s.daoxin < 20 ? ' danger' : s.daoxin < 50 ? ' highlight' : '');
 
-    document.getElementById('s-realm').textContent = REALMS[s.realm].name;
+    document.getElementById('s-realm').textContent = this.getRealm().name;
     document.getElementById('s-cult').textContent = next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满';
     document.getElementById('s-daoxin').textContent = s.daoxin + ' / ' + s.maxDaoXin;
     document.getElementById('s-life').textContent = s.lifespan + ' 年';
@@ -1736,6 +1843,11 @@ class Game {
     document.getElementById('s-tech').textContent = s.techniques.length > 0 ? s.techniques.join('、') : '无';
     document.getElementById('s-loc').textContent = s.location;
     document.getElementById('s-kill').textContent = s.killCount;
+    // Phase 8: path and coins
+    document.getElementById('stat-path').textContent = s.path === 'ling' ? '灵修' : '武修';
+    document.getElementById('stat-coins').textContent = s.gold + '金' + s.silver + '银' + s.copper + '铜';
+    document.getElementById('s-path').textContent = s.path === 'ling' ? '灵修' : '武修';
+    document.getElementById('s-coins').textContent = s.gold + '金' + s.silver + '银' + s.copper + '铜';
     // Faction info
     if (s.faction) {
       document.getElementById('s-faction-row').style.display = 'flex';
@@ -1762,7 +1874,7 @@ class Game {
 
     document.getElementById('location-name').textContent = s.location;
     const loc = LOCATIONS[s.location];
-    document.getElementById('location-desc').textContent = loc ? getDesc(loc) : '未知之地';
+    document.getElementById('location-desc').textContent = loc ? this.getDesc(loc) : '未知之地';
     document.getElementById('connections').innerHTML = loc && loc.connections
       ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.dirName(d) + ' → ' + l + '</span>').join('')
       : '';
@@ -1829,7 +1941,7 @@ class Game {
     else if (['位置', 'location', 'loc'].includes(cmd)) {
       const loc = LOCATIONS[this.state.location];
       this.addLog('📍 当前位置：<b>' + this.state.location + '</b>', 'info');
-      if (loc) { this.addLog('   ' + getDesc(loc), 'info'); this.addLog('   危险：' + '★'.repeat(loc.danger || 0), 'info'); }
+      if (loc) { this.addLog('   ' + this.getDesc(loc), 'info'); this.addLog('   危险：' + '★'.repeat(loc.danger || 0), 'info'); }
     } else if (['帮助', 'help', '?', '？', 'h'].includes(cmd)) {
       this.addLog('┏━━ 江 湖 须 知 ━━┓', 'system');
       this.addLog('┃ 🧭 移动：北/南/东/西', 'system');
@@ -1846,6 +1958,34 @@ class Game {
       this.addLog('不明指令：' + cmd + '。输入"帮助"查看可用命令。', 'system');
     }
     this.updateUI();
+  }
+
+  applyCorruption() {
+    if (this.state.path !== 'ling') return;
+    if (typeof CORRUPTION_DATA === 'undefined') return;
+    var data = CORRUPTION_DATA[this.state.faction];
+    if (!data) return;
+    var newTier = Math.min(5, Math.max(0, this.state.realm));
+    if (newTier > this.state.corruptionTier) {
+      this.state.corruptionTier = newTier;
+      var ti = data.tiers[newTier];
+      if (ti) this.addLog('\u26a0\ufe0f \u7578\u53d8\u52a0\u5267\u2014\u2014' + ti.name + '\uff1a' + ti.desc, 'event');
+    }
+  },
+
+  applyWuDaoXin(amount) {
+    var s = this.state;
+    if (s.path !== 'wu') return;
+    s.daoxin = Math.max(0, s.daoxin + (amount || 0));
+    if (s.daoxin <= 0) { s.daoxin = 0; this.gameOver('\u4f60\u4e0d\u518d\u51fa\u95e8\u4e86\u3002\u5899\u4e0a\u7684\u5f71\u5b50\u8d8a\u6765\u8d8a\u591a\u2014\u2014\u6700\u5f00\u59cb\u53ea\u662f\u7a97\u5916\u95ea\u8fc7\u7684\u6697\u5f71\uff0c\u540e\u6765\u5b83\u4eec\u7ad9\u5230\u4e86\u5899\u89d2\u3001\u5e8a\u8fb9\u3001\u684c\u4e0a\u3002\u4f60\u7684\u6b66\u529f\u8fd8\u5728\uff0c\u4f46\u4f60\u60f3\u4e0d\u8d77\u6765\u4e3a\u4ec0\u4e48\u8981\u7ec3\u6b66\u4e86\u3002\u67d0\u5929\u65e9\u6668\u90bb\u5c45\u53d1\u73b0\u4f60\u7684\u95e8\u5f00\u7740\u3002\u91cc\u9762\u6ca1\u6709\u4eba\u3002\u5899\u4e0a\u7684\u5f71\u5b50\u8fd8\u5728\u2014\u2014\u6bd4\u4e4b\u524d\u591a\u3002'); }
+  },
+
+  applyLingDaoXin(amount) {
+    var s = this.state;
+    if (s.path !== 'ling') return;
+    s.daoxin = Math.max(0, Math.min(s.maxDaoXin, s.daoxin + (amount || 0)));
+    if (s.daoxin < 30) this.applyCorruption();
+    if (s.daoxin <= 0) { s.daoxin = 0; this.gameOver('\u9053\u5fc3\u5d29\u788e\u7684\u90a3\u4e00\u523b\u2014\u2014\u4f60\u611f\u53d7\u5230\u4e86\u6ce8\u89c6\u3002\u4e0d\u662f\u4eba\u7684\u76ee\u5149\u3002\u662f\u4e00\u80a1\u4e0d\u53ef\u6297\u62d2\u7684\u3001\u6765\u81ea\u5929\u7a79\u4e4b\u4e0a\u7684\u529b\u2014\u2014\u5b83\u5728\u62c9\u4f60\u3002\u4f60\u7684\u795e\u8bc6\u88ab\u626f\u79bb\u4f53\u5185\u3002\u4f60\u5411\u4e0a\u98de\u2014\u2014\u98de\u5230\u4e0d\u8be5\u5230\u8fbe\u7684\u9ad8\u5ea6\u3002\u4f60\u770b\u89c1\u4e86\u5929\u9053\u3002\u5929\u9053\u4e0d\u662f\u7a7a\u7684\u3002\u5929\u9053\u91cc\u6709\u4e1c\u897f\u4e5f\u5728\u770b\u4f60\u3002\u7136\u540e\u4f60\u5c31\u4e0d\u5728\u4e86\u2014\u2014\u4e0d\u662f\u6b7b\u4e86\uff0c\u662f\u4ece\u6765\u6ca1\u6709\u5b58\u5728\u8fc7\u3002\u4f60\u7684\u540d\u5b57\u548c\u8bb0\u5fc6\u4ece\u4e16\u95f4\u6d88\u5931\u4e86\uff0c\u50cf\u88ab\u4e00\u53ea\u624b\u4ece\u7eb8\u4e0a\u62b9\u6389\u7684\u58a8\u8ff9\u3002'); }
   }
 }
 

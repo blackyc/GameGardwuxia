@@ -1,7 +1,7 @@
 ﻿// NPC Encounter System - Auto-generated for Cyber Ming MUD
 // Each room maps to an array of possible NPC encounters
 var NPC_ENCOUNTERS = {
-  "应天暗巷": [
+  "城南旧巷": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -54,7 +54,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -73,14 +75,16 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "秦淮灵河": [
+  "秦淮西岸": [
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -94,12 +98,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -113,12 +119,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -132,14 +140,16 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "鼓楼望气塔": [
+  "鼓楼": [
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -153,7 +163,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -172,7 +184,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -191,10 +205,12 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "聚宝门": [
+  "城西聚宝街": [
     {
       "type": "npc_talk",
       "title": "唱曲的",
@@ -212,7 +228,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -231,7 +249,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -250,12 +270,14 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -269,14 +291,16 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "鼓楼西鬼市": [
+  "鼓楼": [
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -290,7 +314,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -309,7 +335,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -328,12 +356,14 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -347,12 +377,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -366,10 +398,12 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "樊楼灵酒馆": [
+  "城东工匠坊": [
     {
       "type": "quest_intro",
       "title": "神秘委托",
@@ -387,7 +421,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -406,7 +442,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -425,12 +463,14 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -444,10 +484,12 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "城南坊市·废符区": [
+  "城南旧巷": [
     {
       "type": "npc_talk",
       "title": "唱曲的",
@@ -465,7 +507,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -484,7 +528,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -503,7 +549,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -522,7 +570,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -541,10 +591,12 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "贡院·道纹试场": [
+  "贡院": [
     {
       "type": "quest_intro",
       "title": "神秘委托",
@@ -562,7 +614,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -581,12 +635,14 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -600,7 +656,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -619,7 +677,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -638,10 +698,12 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "钟鼓楼·时辰报更塔": [
+  "钟鼓楼": [
     {
       "type": "npc_talk",
       "title": "唱曲的",
@@ -659,7 +721,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -678,12 +742,14 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -697,7 +763,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -716,7 +784,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -735,7 +805,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "开封驿站": [
@@ -756,12 +828,14 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -775,12 +849,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -794,7 +870,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -813,7 +891,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -832,10 +912,12 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "繁塔·废弃灵息墓园": [
+  "繁塔": [
     {
       "type": "npc_talk",
       "title": "唱曲的",
@@ -853,7 +935,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -872,12 +956,14 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -891,7 +977,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -910,7 +998,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -929,10 +1019,12 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "开封鼓楼·暗市钟声": [
+  "开封鼓楼": [
     {
       "type": "quest_intro",
       "title": "神秘委托",
@@ -950,7 +1042,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -969,7 +1063,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -988,12 +1084,14 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1007,12 +1105,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1026,14 +1126,16 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "开封北门·暗市哨卡": [
+  "开封北门": [
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1047,7 +1149,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1066,7 +1170,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1085,7 +1191,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1104,7 +1212,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1123,14 +1233,16 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "清明上河·迷魂幻境": [
+  "清明上河": [
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1144,12 +1256,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1163,7 +1277,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1182,14 +1298,16 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "钟楼·破损传音站": [
+  "钟楼": [
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1203,7 +1321,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1222,7 +1342,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1241,7 +1363,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1260,10 +1384,12 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "鼓楼·封灵中继站": [
+  "鼓楼": [
     {
       "type": "quest_intro",
       "title": "神秘委托",
@@ -1281,7 +1407,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1300,12 +1428,14 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1319,7 +1449,9 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "长安驿站": [
@@ -1340,7 +1472,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1359,12 +1493,14 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1378,12 +1514,14 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "酒馆奇遇",
-      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一台老旧的旧阵盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
+      "desc": "一个穿旧道袍的中年人坐在角落里自斟自饮，桌上摆着一块磨得发亮的旧罗盘。他见你看过来，举起杯子：「小友，过来喝一杯？」",
       "results": [
         {
           "choice": "过去坐下",
@@ -1397,10 +1535,12 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "丝狱·灵息交易所": [
+  "蚁网": [
     {
       "type": "quest_intro",
       "title": "神秘委托",
@@ -1418,7 +1558,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1437,7 +1579,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1456,7 +1600,9 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1475,7 +1621,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1494,10 +1642,12 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "镜阁·姑苏窥天院": [
+  "斗转阁": [
     {
       "type": "quest_intro",
       "title": "神秘委托",
@@ -1515,7 +1665,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1534,7 +1686,9 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "quest_intro",
@@ -1553,10 +1707,12 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip"
+      "questTrigger": "lost_chip",
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "玄武暗市港": [
+  "秦淮西岸": [
     {
       "type": "find_item",
       "title": "拾获",
@@ -1569,7 +1725,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1627,10 +1785,12 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "地坛拾遗坊": [
+  "地坛": [
     {
       "type": "npc_talk",
       "title": "卖药的老头",
@@ -1648,7 +1808,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1667,7 +1829,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -1681,7 +1845,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "应天南门": [
@@ -1697,7 +1863,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1716,7 +1884,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -1730,10 +1900,12 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "秦淮西岸·废弃法器堆场": [
+  "秦淮西岸": [
     {
       "type": "npc_talk",
       "title": "算命的",
@@ -1750,7 +1922,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1769,7 +1943,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -1783,7 +1959,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1802,10 +1980,12 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "金陵机巧局旧地": [
+  "金陵机器局旧地": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -1843,7 +2023,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1861,7 +2043,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1880,7 +2064,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1899,10 +2085,12 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "汴河暗渠北口·灵息泄洪道": [
+  "汴河暗渠": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -1939,7 +2127,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1958,7 +2148,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -1976,10 +2168,12 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "阿房宫废土·拾荒者营地": [
+  "阿房宫废土": [
     {
       "type": "npc_talk",
       "title": "迷路的孩童",
@@ -1997,7 +2191,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -2011,7 +2207,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -2030,7 +2228,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "长安西门": [
@@ -2051,7 +2251,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -2110,10 +2312,12 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "长安北门·荒原入口": [
+  "长安北门": [
     {
       "type": "find_item",
       "title": "拾获",
@@ -2126,7 +2330,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -2145,7 +2351,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -2163,7 +2371,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -2181,7 +2391,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -2204,7 +2416,7 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "逍遥驿·易器工坊": [
+  "逍遥驿": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -2221,1566 +2433,6 @@ var NPC_ENCOUNTERS = {
           "choice": "算了，自认倒霉",
           "effect": "lose_gold:10",
           "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "鸡鸣寺幽冥观": [
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "午门": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "天坛易筋营": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "赤霞幽冥观": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "文华殿·巡察司": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "明孝陵·前朝遗迹": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "清凉寺·旧世避难窟": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "中和殿·灵息仲裁庭": [
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "保和殿·渡劫晋升所": [
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "国子监·儒序书院": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "龙亭·地下暗市交易所": [
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "包公祠·灵息审判所": [
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "延庆观·识海修复院": [
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "华清池·法体温泉疗养": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "未央宫遗迹·旧世灵息坟场": [
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "终南山·荒废索道站": [
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "扫地僧",
-      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
-      "results": [
-        {
-          "choice": "请教他清理之法",
-          "effect": null,
-          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
-          "reward": "daoxin:+20"
-        },
-        {
-          "choice": "道谢离去",
-          "effect": null,
-          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "香客",
-      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
-      "results": [
-        {
-          "choice": "答应帮她打听",
-          "effect": null,
-          "questStart": "missing_son",
-          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的追踪器——虽然已经离线三天了，但也许能帮上忙。」已接受任务：失踪的儿子。"
-        },
-        {
-          "choice": "表示无能为力",
-          "effect": null,
-          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "论道",
-      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
-      "results": [
-        {
-          "choice": "支持以外物锻体",
-          "effect": null,
-          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，机巧飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "支持道法自然",
-          "effect": null,
-          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
-          "reward": "gain_cultivation:15"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "奉天殿": [
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "紫禁城丹房": [
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "锈剑冢暗市关窍": [
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
       "questTrigger": null
@@ -3842,27 +2494,1342 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "血禅谷": [
+  "清凉寺": [
     {
       "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
       "results": [
         {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
         },
         {
-          "choice": "无视他，继续赶路",
+          "choice": "道谢离去",
           "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
         }
       ],
       "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "应天南门": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "天坛": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "紫霞山": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "文华殿": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "明孝陵": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "清凉寺": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "中和殿": [
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "保和殿": [
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "国子监": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "龙亭": [
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "包公祠": [
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "延庆观": [
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "华清池": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "未央宫遗迹": [
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "终南山": [
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "扫地僧",
+      "desc": "老僧在庭院中扫地。扫得很慢。扫帚碰到落叶时，叶片碎成灵光散去——不是扫碎的，是叶片自己散的，像等了很久终于可以走了。他停帚看你：「施主，经脉里有杂念。若不清理……」他顿了顿，「……也不是什么大事，只是你以后做的梦，不是自己的。」",
+      "results": [
+        {
+          "choice": "请教他清理之法",
+          "effect": null,
+          "log": "老僧微微一笑：「盘膝坐下，闭眼。听我念一段清心咒。」他念的咒语——竟是二进制道纹的变体，用梵音念出。你感到体内的微尘流在咒语的作用下逐渐平复。",
+          "reward": "daoxin:+20"
+        },
+        {
+          "choice": "道谢离去",
+          "effect": null,
+          "log": "老僧继续扫地。你不经意间注意到——他扫过的地方，青砖上多了几行若隐若现的道纹。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "香客",
+      "desc": "中年妇人在佛前跪拜，口中念念有词——但念的不是经文，像是反反复复只念一个人的名字。起身看见你：「你是外乡来的吧？求求你——我儿子上次出城就没消息了，他说去{N_room}淘二手法器身。求你帮我去看一眼？」她的手攥着你的袖子，你发现她的指甲是黑的——不是涂的。",
+      "results": [
+        {
+          "choice": "答应帮她打听",
+          "effect": null,
+          "questStart": "missing_son",
+          "log": "她感激地连连作揖，塞给你她儿子的一枚灵息牌：「这是他身上带的觅踪符——虽然已经沉寂三日了，但也许能帮上忙。」已接受任务：失踪的儿子。"
+        },
+        {
+          "choice": "表示无能为力",
+          "effect": null,
+          "log": "她的眼神暗淡下去：「不怪你…这年月，失踪一个人算什么。」她转身继续在佛前祈祷。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "论道",
+      "desc": "两个道士在路边争论。一个靴子上全是泥，一个道袍破了三个洞。争论的题目很大——要不要用外物替代肉身——但他们的声音很轻，像怕被什么东西听见。看到你过来，两人同时闭嘴。然后同时开口：「你来评评。」",
+      "results": [
+        {
+          "choice": "支持以外物锻体",
+          "effect": null,
+          "log": "支持法器身的道士得意扬扬：「听见没？群众的眼睛是雪亮的！血肉苦弱，傀坊飞升！」对面的道士冷哼一声：「总有一天你会后悔的——等你失去了经络的感知，就会变成一具没有魂魄的躯壳。」你从辩论中获得了一些启发。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "支持道法自然",
+          "effect": null,
+          "log": "主张道法自然的道士朝你点点头：「道心不假外求。」另一个道士张了张嘴，想反驳——嘴张开了，话没出来。他的嘴唇动了好几下，最后只说了一个字：「……你看。」他指着地面——刚才主张锻体的道士站过的地方，泥地上有两个脚印，但脚印比他的靴子大了一倍。你从这场辩论中悟到了一些东西。",
+          "reward": "gain_cultivation:15"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "太和殿": [
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -3881,7 +3848,51 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -3899,8 +3910,12 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
-    },
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "太和殿": [
     {
       "type": "npc_talk",
       "title": "街头表演",
@@ -3937,10 +3952,89 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
       "questTrigger": null
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "光明顶微尘阵列": [
+  "剑巢": [
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
+      "questTrigger": null
+    },
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -3978,7 +4072,31 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "血镰": [
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -3997,24 +4115,30 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
       "results": [
         {
-          "choice": "打开包裹",
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
           "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
-    }
-  ],
-  "武英殿·兵部卫所": [
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
     {
       "type": "npc_talk",
       "title": "街头表演",
@@ -4031,20 +4155,6 @@ var NPC_ENCOUNTERS = {
           "choice": "摆摆手婉拒",
           "effect": null,
           "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
         }
       ],
       "questTrigger": null
@@ -4065,461 +4175,12 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "乾清宫·灵网寝殿": [
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "太和殿·中枢灵殿": [
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "天坛·识海重铸场": [
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "德胜门·出城关隘": [
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "大明宫废墟·野市法器行": [
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "忘尘宗·幽冥藏经阁": [
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "锈剑冢·暗杀令台": [
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
+  "光明顶": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -4557,45 +4218,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
-    }
-  ],
-  "血禅寺·悬赏交割所": [
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -4614,10 +4239,64 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "光明顶·圣火母鼎室": [
+  "武英殿": [
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
     {
       "type": "npc_talk",
       "title": "算命的",
@@ -4634,26 +4313,67 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "乾清宫": [
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
       "questTrigger": null
     },
     {
       "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
       "results": [
         {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
         },
         {
-          "choice": "告诉他你也是外地人",
+          "choice": "摆摆手婉拒",
           "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
         }
       ],
       "questTrigger": null
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -4670,6 +4390,158 @@ var NPC_ENCOUNTERS = {
           "choice": "摇头拒绝",
           "effect": null,
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "太和殿": [
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "天坛": [
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
         }
       ],
       "questTrigger": null
@@ -4695,247 +4567,7 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "丝狱·地底丝巢核心": [
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "药王谷·星宿毒沼": [
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "药王谷·炼毒工坊": [
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "镜阁·还施水阁": [
+  "德胜门": [
     {
       "type": "npc_talk",
       "title": "街头表演",
@@ -4957,40 +4589,20 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     },
     {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
       "results": [
         {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
+          "choice": "打开包裹",
           "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
         }
       ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5009,23 +4621,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
-    }
-  ],
-  "归墟·终南地下迷宫": [
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5044,48 +4642,12 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "归墟·寂静之殿": [
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
+  "大明宫废墟·瓦市": [
     {
       "type": "find_item",
       "title": "拾获",
@@ -5096,6 +4658,48 @@ var NPC_ENCOUNTERS = {
           "effect": null,
           "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
           "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
         }
       ],
       "questTrigger": null
@@ -5116,7 +4720,43 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "梵网寺": [
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5139,7 +4779,27 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "傀坊·蜂群操偶殿": [
+  "剑巢": [
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
+      "questTrigger": null
+    },
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -5177,7 +4837,241 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "血镰": [
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "光明顶": [
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
       "questTrigger": null
+    }
+  ],
+  "蚁网": [
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -5189,6 +5083,417 @@ var NPC_ENCOUNTERS = {
           "effect": null,
           "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
           "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "毒巢": [
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "毒巢": [
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "斗转阁": [
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "影墓": [
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "影墓·寂静殿": [
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "机巧岛": [
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
         }
       ],
       "questTrigger": null
@@ -5210,10 +5515,49 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "逍遥驿车队": [
+  "逍遥驿": [
     {
       "type": "npc_talk",
       "title": "法器身商贩",
@@ -5227,7 +5571,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5238,9 +5582,9 @@ var NPC_ENCOUNTERS = {
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5248,7 +5592,9 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5263,7 +5609,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5280,14 +5626,16 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "御花园·灵息生态区": [
+  "御花园": [
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5306,7 +5654,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5325,7 +5673,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5353,19 +5701,21 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "城东匠师坊·万象法器街": [
+  "城东工匠坊": [
     {
       "type": "npc_talk",
       "title": "卦师",
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5373,7 +5723,9 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5381,9 +5733,9 @@ var NPC_ENCOUNTERS = {
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5391,7 +5743,9 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5406,7 +5760,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5423,12 +5777,14 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5445,11 +5801,11 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "城西商贾区·聚宝灵石街": [
+  "城西聚宝街": [
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5468,7 +5824,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5496,7 +5852,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5511,7 +5869,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5528,7 +5886,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "应天东门": [
@@ -5544,7 +5904,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -5558,7 +5920,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5566,9 +5930,9 @@ var NPC_ENCOUNTERS = {
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5576,7 +5940,9 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5584,9 +5950,9 @@ var NPC_ENCOUNTERS = {
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5594,12 +5960,14 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5616,16 +5984,16 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "日坛·日精采集阵": [
+  "日坛": [
     {
       "type": "npc_talk",
       "title": "卦师",
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5633,12 +6001,14 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5666,12 +6036,14 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5688,7 +6060,7 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "琉璃厂·古董符修街": [
+  "琉璃厂": [
     {
       "type": "find_item",
       "title": "地摊淘宝",
@@ -5699,6 +6071,62 @@ var NPC_ENCOUNTERS = {
           "effect": null,
           "log": "你在一堆杂物里找到了一样有意思的东西……",
           "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卦师",
+      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "results": [
+        {
+          "choice": "打听鬼市的消息（10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
+        },
+        {
+          "choice": "转身离开",
+          "effect": null,
+          "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "地摊淘宝",
+      "desc": "杂货摊上堆满稀奇物件：旧书、破损灵石、生锈法器、叫不出名字的兽骨。摊主在打瞌睡——但每次有人拿起东西看，他的鼾声就停一瞬。有一根骨头，你拿起来的时候它弯了一下。活的。",
+      "results": [
+        {
+          "choice": "仔细翻找",
+          "effect": null,
+          "log": "你在一堆杂物里找到了一样有意思的东西……",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "法器身商贩",
+      "desc": "满脸横肉的男人在摊位前摆弄一排法器部件——手指关节、眼球、一整条前臂，上面爬满精细纹路。那些纹路在光线暗处会自己挪动。「客官看看货？都是回收站里淘来的好成色，价钱公道——」他压低了声音，「——但这只眼睛，我劝你别碰。它还在看东西。」",
+      "results": [
+        {
+          "choice": "看看有什么好东西",
+          "effect": null,
+          "log": "他向你展示了一件件法器身：幽冥加速指节、夜视虹膜、强化腕关节……但每件都带着微妙的血迹或焦痕。「二手嘛，就是这个样子。生命有保障？——这个嘛…大概七成吧。」"
+        },
+        {
+          "choice": "打听消息",
+          "effect": null,
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5709,9 +6137,9 @@ var NPC_ENCOUNTERS = {
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5719,18 +6147,27 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
-    },
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "王府井": [
     {
-      "type": "find_item",
-      "title": "地摊淘宝",
-      "desc": "杂货摊上堆满稀奇物件：旧书、破损灵石、生锈法器、叫不出名字的兽骨。摊主在打瞌睡——但每次有人拿起东西看，他的鼾声就停一瞬。有一根骨头，你拿起来的时候它弯了一下。活的。",
+      "type": "npc_talk",
+      "title": "说书先生",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
-          "choice": "仔细翻找",
+          "choice": "坐下听故事",
           "effect": null,
-          "log": "你在一堆杂物里找到了一样有意思的东西……",
-          "reward": "random_item"
+          "log": "说书人绘声绘色地讲了一段古老的传说——关于最初的反祂的网联盟如何在泰山布下上古阵法，用经络能量击溃了第一代幽冥军团。你听得入神，不知不觉中获得了一些领悟。",
+          "reward": "gain_cultivation:15"
+        },
+        {
+          "choice": "继续赶路",
+          "effect": null,
+          "log": "说书人也不多留，继续对听众讲他的故事。"
         }
       ],
       "questTrigger": null
@@ -5748,64 +6185,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
-      "results": [
-        {
-          "choice": "打听暗市的消息（10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
-        },
-        {
-          "choice": "转身离开",
-          "effect": null,
-          "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "王府井·法器珍品街": [
-    {
-      "type": "npc_talk",
-      "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
-      "results": [
-        {
-          "choice": "坐下听故事",
-          "effect": null,
-          "log": "说书人绘声绘色地讲了一段古老的传说——关于最初的反祂的网联盟如何在泰山布下上古阵法，用经络能量击溃了第一代幽冥军团。你听得入神，不知不觉中获得了一些领悟。",
-          "reward": "gain_cultivation:15"
-        },
-        {
-          "choice": "继续赶路",
-          "effect": null,
-          "log": "说书人也不多留，继续对听众讲他的故事。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "法器身商贩",
-      "desc": "满脸横肉的男人在摊位前摆弄一排法器部件——手指关节、眼球、一整条前臂，上面爬满精细纹路。那些纹路在光线暗处会自己挪动。「客官看看货？都是回收站里淘来的好成色，价钱公道——」他压低了声音，「——但这只眼睛，我劝你别碰。它还在看东西。」",
-      "results": [
-        {
-          "choice": "看看有什么好东西",
-          "effect": null,
-          "log": "他向你展示了一件件法器身：幽冥加速指节、夜视虹膜、强化腕关节……但每件都带着微妙的血迹或焦痕。「二手嘛，就是这个样子。生命有保障？——这个嘛…大概七成吧。」"
-        },
-        {
-          "choice": "打听消息",
-          "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5813,7 +6193,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "说书先生",
-      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与机巧军团大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
+      "desc": "一个穿旧绸衫的中年人坐在高凳上，手里端着一壶茶，周围聚了一圈听众。「上回说到——三百年前，祂的网初成，天下修士齐聚泰山，与傀坊众大战七日七夜……」他忽然停顿，目光扫向你：「新来的？坐下听段故事，不收你钱。」",
       "results": [
         {
           "choice": "坐下听故事",
@@ -5841,10 +6221,12 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "州桥·月下暗渠渡口": [
+  "州桥": [
     {
       "type": "find_item",
       "title": "地摊淘宝",
@@ -5857,7 +6239,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5872,7 +6256,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5883,9 +6267,9 @@ var NPC_ENCOUNTERS = {
       "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
-          "choice": "打听暗市的消息（10灵石）",
+          "choice": "打听鬼市的消息（10灵石）",
           "effect": "spend_gold:10",
-          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（丝狱帮）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于暗市——」他压低了声音：「大相国寺下面有个离线关窍，去那儿能躲开祂的网监控。但进去需要门路。」"
+          "log": "他咧嘴一笑，露出几颗金属牙：「最近蚂蚁（织狱）在招人，开价不错。血禅寺在追查一批被劫的货，悬赏很高。至于鬼市——」他压低了声音：「大相国寺下面有个沉寂关窍，去那儿能躲开祂的网查察。但进去需要门路。」"
         },
         {
           "choice": "转身离开",
@@ -5893,7 +6277,9 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5908,7 +6294,7 @@ var NPC_ENCOUNTERS = {
         {
           "choice": "打听消息",
           "effect": null,
-          "log": "他压低声音：「听说最近祂的网在扫荡暗市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
+          "log": "他压低声音：「听说最近祂的网在扫荡鬼市关窍。你要是有什么见不得人的货，最好赶紧出手——或者藏深点。对了，城北有个叫\"老鬼\"的家伙在收二手灵息碎片，价格不错。」"
         }
       ],
       "questTrigger": null
@@ -5927,7 +6313,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5945,7 +6333,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5964,7 +6354,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -5983,7 +6375,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "应天西门": [
@@ -6004,7 +6398,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6018,7 +6414,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6041,7 +6439,7 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "雨花台·灵波墓地": [
+  "雨花台": [
     {
       "type": "npc_talk",
       "title": "算命的",
@@ -6056,6 +6454,366 @@ var NPC_ENCOUNTERS = {
           "choice": "无视他，继续赶路",
           "effect": null,
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "莫愁湖": [
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "算命的",
+      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
+      "results": [
+        {
+          "choice": "请他算一卦（花费10灵石）",
+          "effect": "spend_gold:10",
+          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
+        },
+        {
+          "choice": "无视他，继续赶路",
+          "effect": null,
+          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "燕子矶": [
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
+      "questTrigger": null
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "小偷",
+      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
+      "results": [
+        {
+          "choice": "追上去！",
+          "effect": "check_agility",
+          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
+          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
+          "successReward": "gain_gold:20"
+        },
+        {
+          "choice": "算了，自认倒霉",
+          "effect": "lose_gold:10",
+          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
+        }
+      ],
+      "questTrigger": null
+    }
+  ],
+  "什刹海": [
+    {
+      "type": "npc_talk",
+      "title": "卖药的老头",
+      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
+      "results": [
+        {
+          "choice": "买一剂（20灵石）",
+          "effect": "spend_gold:20",
+          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
+          "reward": "gain_cultivation:30,sanity:-8"
+        },
+        {
+          "choice": "摇头拒绝",
+          "effect": null,
+          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "npc_talk",
+      "title": "迷路的孩童",
+      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
+      "results": [
+        {
+          "choice": "带他去附近找人问路",
+          "effect": null,
+          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
+          "reward": "gain_gold:15"
+        },
+        {
+          "choice": "告诉他你也是外地人",
+          "effect": null,
+          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    },
+    {
+      "type": "find_item",
+      "title": "拾获",
+      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
+      "results": [
+        {
+          "choice": "打开包裹",
+          "effect": null,
+          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
+          "reward": "random_item"
+        }
+      ],
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
+    }
+  ],
+  "小雁塔": [
+    {
+      "type": "npc_talk",
+      "title": "街头表演",
+      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
+      "results": [
+        {
+          "choice": "接过砖头，试试手",
+          "effect": "check_atk:20",
+          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
+          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
+          "successReward": "gain_cultivation:10"
+        },
+        {
+          "choice": "摆摆手婉拒",
+          "effect": null,
+          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
         }
       ],
       "questTrigger": null
@@ -6077,339 +6835,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "莫愁湖·迷心幻境": [
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "算命的",
-      "desc": "街角坐着个穿灰布长袍的卦师，面前摊一块破布，上面画的八卦缺了一角。他抬头看你时，目光在你周身停了一下——不是看法器身，是看你身后。「阁下命格……」他斟酌了一下，「……不全。命盘上压着东西。要算么？」",
-      "results": [
-        {
-          "choice": "请他算一卦（花费10灵石）",
-          "effect": "spend_gold:10",
-          "log": "他端详着你的手掌，又看了看你的虹膜投影，叹了口气：「你的前路有三道门——一道写着\"忘我\"、一道写着\"道纹洪流\"、一道写着\"人间烟火\"。选哪道，何时选，无人能替你作答。」"
-        },
-        {
-          "choice": "无视他，继续赶路",
-          "effect": null,
-          "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "燕子矶·暗市灵波灯塔": [
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "小偷",
-      "desc": "腰间一轻。一个瘦小影子贴着墙根溜过去——你低头，钱袋没了。那影子的脚好像不沾地。",
-      "results": [
-        {
-          "choice": "追上去！",
-          "effect": "check_agility",
-          "successLog": "三步追上，反手扣腕。那孩子——原来是个十二三岁的乞儿——浑身发抖，「大爷饶命！东西都还你！」他把怀里的零碎全抖落出来，其中几样不是你的。他说不记得这些是哪来的了。",
-          "failLog": "手刚搭上去，他像抹了油一样滑脱了。巷子尽头，他的背影晃了一下就没了——你注意到他不是跑进去的，是巷子把他\"吞\"进去的。",
-          "successReward": "gain_gold:20"
-        },
-        {
-          "choice": "算了，自认倒霉",
-          "effect": "lose_gold:10",
-          "log": "叹气。这世道，丢只钱袋算不得什么。只是那孩子回头看你的眼神——不像是怕。像是在等你认出他来。"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "什刹海·冰封灵息湖": [
-    {
-      "type": "npc_talk",
-      "title": "卖药的老头",
-      "desc": "一个白发老翁蹲在路边，面前摆着几个陶罐，罐子里飘出奇异的药味。「年轻人，要不要来一剂\"幽冥丹\"？能让你的法器身与经络更契合——当然，副作用嘛……偶尔会看到不存在的东西。」",
-      "results": [
-        {
-          "choice": "买一剂（20灵石）",
-          "effect": "spend_gold:20",
-          "log": "丹丸入喉，泛幽蓝荧光。腹中温热——不是暖，是一种什么东西在动的感觉，像有只很小的手在你的经脉里摸来摸去。然后它停了。它停的地方不是你的丹田。",
-          "reward": "gain_cultivation:30,sanity:-8"
-        },
-        {
-          "choice": "摇头拒绝",
-          "effect": null,
-          "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "find_item",
-      "title": "拾获",
-      "desc": "路边一个包袱，灰尘积了半指厚。裹布是上好的绸子——不该被丢在这里的东西。你蹲下来时，包袱自己往旁边挪了一寸。",
-      "results": [
-        {
-          "choice": "打开包裹",
-          "effect": null,
-          "log": "里面有几块残破的灵石碎片、一包干粮和一本皱巴巴的手抄功法残卷。",
-          "reward": "random_item"
-        }
-      ],
-      "questTrigger": null
-    }
-  ],
-  "小雁塔·备用藏经阁": [
-    {
-      "type": "npc_talk",
-      "title": "街头表演",
-      "desc": "一个赤膊大汉正在街头表演硬气功——一掌劈断了三块青砖。围观者纷纷叫好。他忽然转向你：「这位，我看你体内有微尘流的气息。来试试？一掌劈砖，劈开了我请你喝酒！」",
-      "results": [
-        {
-          "choice": "接过砖头，试试手",
-          "effect": "check_atk:20",
-          "successLog": "你凝神运气，一掌劈下——砖块应声而碎！大汉哈哈大笑，递给你一壶酒：「好身手！」",
-          "failLog": "你运气出掌——砖块纹丝不动，手掌倒是红了。围观者发出一阵善意的哄笑。",
-          "successReward": "gain_cultivation:10"
-        },
-        {
-          "choice": "摆摆手婉拒",
-          "effect": null,
-          "log": "大汉也不强求：「改日再来！」继续去劈他的砖了。"
-        }
-      ],
-      "questTrigger": null
-    },
-    {
-      "type": "npc_talk",
-      "title": "迷路的孩童",
-      "desc": "路中央站着个小男孩，眼泪汪汪地看着四周：「我找不到家了……我家在……」他想了想，「……在一个庙旁边。」他拽住你的衣角。手很凉——不是天冷的那种凉，是东西搁久了的那种凉。",
-      "results": [
-        {
-          "choice": "带他去附近找人问路",
-          "effect": null,
-          "log": "你牵着他在坊市间转了几圈，最后在一扇你从没见过的门前停下——他不哭了。门开了，一个女人站在门里，脸上没有表情。她朝你点了点头，塞给你几块灵石。门关上的时候，你没听见脚步声——他们俩都没有。",
-          "reward": "gain_gold:15"
-        },
-        {
-          "choice": "告诉他你也是外地人",
-          "effect": null,
-          "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
-        }
-      ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6452,7 +6880,7 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "碑林·灵息铭文馆": [
+  "碑林": [
     {
       "type": "npc_talk",
       "title": "卖药的老头",
@@ -6470,7 +6898,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6484,7 +6914,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6502,7 +6934,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6516,7 +6950,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6535,10 +6971,12 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "青囊庐·微尘手术中心": [
+  "药王谷": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -6576,7 +7014,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6590,7 +7030,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6604,10 +7046,12 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "青囊庐·血脉治疗部": [
+  "药王谷": [
     {
       "type": "npc_talk",
       "title": "街头表演",
@@ -6664,7 +7108,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6703,10 +7149,12 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "傀坊·无魂傀儡线": [
+  "机巧岛": [
     {
       "type": "find_item",
       "title": "拾获",
@@ -6719,7 +7167,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6737,7 +7187,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6778,7 +7230,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6792,7 +7246,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6811,7 +7267,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6845,7 +7303,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
   "顺天驿站": [
@@ -6866,7 +7326,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6880,7 +7342,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6899,10 +7363,12 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "雁塔地宫·深藏灵息库": [
+  "雁塔地宫": [
     {
       "type": "npc_talk",
       "title": "小偷",
@@ -6940,7 +7406,9 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -6958,7 +7426,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6972,7 +7442,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -6986,10 +7458,12 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "地坛·神识拾遗坊": [
+  "地坛": [
     {
       "type": "npc_talk",
       "title": "街头表演",
@@ -7051,7 +7525,7 @@ var NPC_ENCOUNTERS = {
       "questTrigger": null
     }
   ],
-  "月坛·暗市共振器": [
+  "月坛": [
     {
       "type": "npc_talk",
       "title": "算命的",
@@ -7068,7 +7542,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -7107,7 +7583,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -7121,10 +7599,12 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "铁塔·灵波放大器": [
+  "铁塔": [
     {
       "type": "npc_talk",
       "title": "街头表演",
@@ -7182,7 +7662,9 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
@@ -7200,10 +7682,12 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     }
   ],
-  "赤霞峰·炼丹洞": [
+  "紫霞山": [
     {
       "type": "npc_talk",
       "title": "算命的",
@@ -7220,7 +7704,9 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "find_item",
@@ -7234,7 +7720,9 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null
+      "questTrigger": null,
+      "requireProfession": ["灵修","药师","符修"],
+      "minRealm": "筑基",
     },
     {
       "type": "npc_talk",

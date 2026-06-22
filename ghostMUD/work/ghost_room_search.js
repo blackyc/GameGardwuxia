@@ -455,7 +455,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "赤霞峰·观星台": {
+  "问剑峰·观星台": {
     "searchChance": 0.4,
     "results": [
       {
@@ -793,7 +793,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "御花园·数据生态区": {
+  "御花园·卷宗生态区": {
     "searchChance": 0.4,
     "results": [
       {
@@ -983,7 +983,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "贡院·科举数据考": {
+  "贡院·科举卷宗考": {
     "searchChance": 0.4,
     "results": [
       {
@@ -1201,7 +1201,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "雨花台·信号墓地": {
+  "雨花台·讯号墓地": {
     "searchChance": 0.4,
     "results": [
       {
@@ -1559,7 +1559,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "燕子矶·鬼市信号灯塔": {
+  "燕子矶·鬼市讯号灯塔": {
     "searchChance": 0.4,
     "results": [
       {
@@ -1621,7 +1621,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "中和殿·数据仲裁庭": {
+  "中和殿·卷宗仲裁庭": {
     "searchChance": 0.4,
     "results": [
       {
@@ -1665,7 +1665,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "什刹海·冷冻数据湖": {
+  "什刹海·冷冻卷宗湖": {
     "searchChance": 0.4,
     "results": [
       {
@@ -2169,7 +2169,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "包公祠·数据审判所": {
+  "包公祠·卷宗审判所": {
     "searchChance": 0.4,
     "results": [
       {
@@ -2255,7 +2255,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "铁塔·信号放大器": {
+  "铁塔·讯号放大器": {
     "searchChance": 0.4,
     "results": [
       {
@@ -2317,7 +2317,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "繁塔·废弃数据墓园": {
+  "繁塔·废弃卷宗墓园": {
     "searchChance": 0.4,
     "results": [
       {
@@ -2529,7 +2529,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "汴河暗渠北口·数据泄洪道": {
+  "汴河暗渠北口·卷宗泄洪道": {
     "searchChance": 0.4,
     "results": [
       {
@@ -2781,7 +2781,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "未央宫遗迹·旧世数据坟场": {
+  "未央宫遗迹·旧世卷宗坟场": {
     "searchChance": 0.4,
     "results": [
       {
@@ -2851,7 +2851,7 @@ const ROOM_SEARCH = {
       }
     ]
   },
-  "碑林·数据铭文馆": {
+  "碑林·卷宗铭文馆": {
     "searchChance": 0.4,
     "results": [
       {

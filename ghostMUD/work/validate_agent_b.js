@@ -1,4 +1,4 @@
-// Agent B 自检脚本 v2
+﻿// Agent B 自检脚本 v2
 const fs = require('fs');
 const vm = require('vm');
 
@@ -76,7 +76,7 @@ console.log('  ✓ observable 标记的房间:', obsRooms.map(([k])=>k).join(', 
 
 // 5. 禁用词
 console.log('\n=== 5. 禁用词扫描 (§5) ===');
-const forbidden = ['电脑','芯片','终端','服务器','系统','程序','接口','数据','信号','扫描',
+const forbidden = ['电脑','符印','终端','服务器','系统','阵法','接口','卷宗','讯号','扫描',
                    '契约','合同','利息','文档','报告','档案','问卷','表格',
                    '你看到','你走过','你来到', // "你"作主语检查
                    '儿','哪儿','那么',
@@ -102,8 +102,8 @@ rooms.forEach(([k,v]) => {
 });
 if(forbiddenFound===0) console.log('  ✓ 禁用词扫描通过');
 
-// 6. AI高频词
-console.log('\n=== 6. AI高频词扫描 ===');
+// 6. 器灵高频词
+console.log('\n=== 6. 器灵高频词扫描 ===');
 const aiWords = ['不禁','不由得','下意识地','不由自主地','空气中弥漫着','他感到','她感到',
                  '与此同时','另一边','时间来到了','不知为何','似乎在说','好像在说',
                  '温柔地','轻轻地','深深地','缓缓地'];
@@ -117,7 +117,7 @@ rooms.forEach(([k,v]) => {
   const fangfuCount = (allText.match(/仿佛/g)||[]).length;
   if (fangfuCount > 1) { console.log('  ⚠',k,': 仿佛出现',fangfuCount,'次'); aiFound++; }
 });
-if(aiFound===0) console.log('  ✓ AI高频词扫描通过');
+if(aiFound===0) console.log('  ✓ 器灵高频词扫描通过');
 
 // 7. NPC纯中文
 console.log('\n=== 7. NPC名称中文检查 ===');

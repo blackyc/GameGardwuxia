@@ -1324,7 +1324,7 @@ var GHOST_SKILL_TREES_2 = {
       name: "截手九式",
       pinyin: "jieshou-jiushi",
       type: "hand",
-      description: "九式手法，每一式对应一种「截断」——截气血、截内力、截神识、截真气。不是攻击，而是精确的「手术式切断」——在战场上，截手九式的作用是为后续的大招清理干净的空间。",
+      description: "九式手法，每一式对应一种「截断」——截气血、截内力、截神识、截真气。不是攻击，而是精确的「刀术式切断」——在战场上，截手九式的作用是为后续的大招清理干净的空间。",
       baseDamage: "90%",
       baseSpeed: "120%",
       attackBonus: 5,

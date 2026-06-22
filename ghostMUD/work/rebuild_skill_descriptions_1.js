@@ -390,18 +390,18 @@ var GHOST_SKILL_TREES_1 = {
   },
 
   // ==========================================
-  // 宗派二：赤霞峰
+  // 宗派二：问剑峰
   // ==========================================
-  "赤霞峰": {
-    name: "赤霞峰",
-    description: "赤霞峰上终年霞光不散——但那霞不是太阳照的。道士们在血池边打坐，以池中倒影代替内观。他们说在血池里能看到自己真正的内脏。太极在这里不是拳理，是血脉的阴阳流转：阳面燃尽凡胎，阴面镇守本心。",
+  "问剑峰": {
+    name: "问剑峰",
+    description: "问剑峰上终年霞光不散——但那霞不是太阳照的。道士们在血池边打坐，以池中倒影代替内观。他们说在血池里能看到自己真正的内脏。太极在这里不是拳理，是血脉的阴阳流转：阳面燃尽凡胎，阴面镇守本心。",
     skills: [
       {
         id: "zixia_force_1",
         name: "太极心经",
         pinyin: "taiji-pincheng",
         type: "force",
-        description: "赤霞峰镇派心法。以血池倒影为镜，观照体内阴阳二气的运转。阳极时气血沸腾，每一拳都有千斤之力；阴极时气息沉入丹田，任外界攻伐如狂风骤雨，体内始终是深潭止水。两仪切换只在心念一动之间。",
+        description: "问剑峰镇派心法。以血池倒影为镜，观照体内阴阳二气的运转。阳极时气血沸腾，每一拳都有千斤之力；阴极时气息沉入丹田，任外界攻伐如狂风骤雨，体内始终是深潭止水。两仪切换只在心念一动之间。",
         baseDamage: "130%",
         baseSpeed: "105%",
         attackBonus: 0,
@@ -415,7 +415,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "太极拳",
         pinyin: "taiji-quan",
         type: "cuff",
-        description: "赤霞峰拳法。拳出如推磨——慢，但每推一圈力道便深一分。对方一刀劈来，拳劲不硬接，而是顺着刀势一转一带，那砍下来的力道便绕着太极圆弧转了一圈，原路回到对方自己身上。",
+        description: "问剑峰拳法。拳出如推磨——慢，但每推一圈力道便深一分。对方一刀劈来，拳劲不硬接，而是顺着刀势一转一带，那砍下来的力道便绕着太极圆弧转了一圈，原路回到对方自己身上。",
         baseDamage: "125%",
         baseSpeed: "90%",
         attackBonus: 5,
@@ -440,7 +440,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "紫霞长拳",
         pinyin: "zixia-changquan",
         type: "cuff",
-        description: "赤霞峰入门拳法。三十六式皆是基本拳路——直、劈、崩、靠，招招朴素。但朴素自有朴素的好处：拳速快、破绽少、连招流畅如行云流水。练到极处的人说，这套拳不是为了打人，是为了让自己感受赤霞峰在每一拳里跳动的脉搏。",
+        description: "问剑峰入门拳法。三十六式皆是基本拳路——直、劈、崩、靠，招招朴素。但朴素自有朴素的好处：拳速快、破绽少、连招流畅如行云流水。练到极处的人说，这套拳不是为了打人，是为了让自己感受问剑峰在每一拳里跳动的脉搏。",
         baseDamage: "110%",
         baseSpeed: "115%",
         attackBonus: 3,
@@ -454,7 +454,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "太极剑",
         pinyin: "taiji-jian",
         type: "sword",
-        description: "赤霞峰至高剑法。剑走太极圆弧——刺出时剑尖微微颤动，看似在画圈，实则在找对方护体真气的缝隙。太极剑从不硬碰：剑气贴着对方的防御一路滑过去，滑到缝隙处才骤然发力——一剑破防，无声无息。",
+        description: "问剑峰至高剑法。剑走太极圆弧——刺出时剑尖微微颤动，看似在画圈，实则在找对方护体真气的缝隙。太极剑从不硬碰：剑气贴着对方的防御一路滑过去，滑到缝隙处才骤然发力——一剑破防，无声无息。",
         baseDamage: "135%",
         baseSpeed: "105%",
         attackBonus: 8,
@@ -489,7 +489,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "频门十三剑",
         pinyin: "pinmen-shisanjian",
         type: "sword",
-        description: "赤霞峰剑法。十三剑各走一路真气运转之法——有的剑厚重如劈山，有的剑尖细如银针刺穴，有的剑气忽冷忽热。十三剑连环使出，对方的防守总有一处跟不上变化，那一剑便会自己找到破绽。",
+        description: "问剑峰剑法。十三剑各走一路真气运转之法——有的剑厚重如劈山，有的剑尖细如银针刺穴，有的剑气忽冷忽热。十三剑连环使出，对方的防守总有一处跟不上变化，那一剑便会自己找到破绽。",
         baseDamage: "120%",
         baseSpeed: "110%",
         attackBonus: 6,
@@ -503,7 +503,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "太极刀",
         pinyin: "taiji-dao",
         type: "blade",
-        description: "赤霞峰刀法。刀招沉稳，一刀劈出后不急收刀——刀身横在身前引气入地，将对方的力道顺着刀脊一路卸入脚底的石板。不是不攻，是先让对方的攻势落空，再一刀探入方才自己让出的空门。",
+        description: "问剑峰刀法。刀招沉稳，一刀劈出后不急收刀——刀身横在身前引气入地，将对方的力道顺着刀脊一路卸入脚底的石板。不是不攻，是先让对方的攻势落空，再一刀探入方才自己让出的空门。",
         baseDamage: "115%",
         baseSpeed: "105%",
         attackBonus: 3,
@@ -517,7 +517,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "弦虚刀法",
         pinyin: "xuanxu-daoma",
         type: "blade",
-        description: "赤霞峰刀法。刀锋过处不见血却嗡嗡作响——不是刀在响，是刀气震荡迫使对方体内真气跟着共振。一刀砍在护甲上，对方的四肢百骸却像被同时震了一下，气血翻涌不止。",
+        description: "问剑峰刀法。刀锋过处不见血却嗡嗡作响——不是刀在响，是刀气震荡迫使对方体内真气跟着共振。一刀砍在护甲上，对方的四肢百骸却像被同时震了一下，气血翻涌不止。",
         baseDamage: "125%",
         baseSpeed: "100%",
         attackBonus: 7,
@@ -531,7 +531,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "梯蕴纵",
         pinyin: "tiyun-zong",
         type: "dodge",
-        description: "赤霞峰身法。纵身时足底生出一团淡淡的白气——不是踩在实物上，是踩在自身逼出的真气上。一步踏出，身形已经拔起三丈，踏空而上如在登一道看不见的阶梯。",
+        description: "问剑峰身法。纵身时足底生出一团淡淡的白气——不是踩在实物上，是踩在自身逼出的真气上。一步踏出，身形已经拔起三丈，踏空而上如在登一道看不见的阶梯。",
         baseDamage: "100%",
         baseSpeed: "130%",
         attackBonus: 0,
@@ -556,7 +556,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "虎爪绝户手",
         pinyin: "huzhao-juehushou",
         type: "hand",
-        description: "赤霞峰霸道手法。五指如虎爪扣住对方关节，指尖真气沿着骨缝钻入——猛一发力，只听咔嗒一声脆响，对方的关节便被卸了下来，整条手臂悬在那里晃荡。此招歹毒，中招者即使接回关节也需三月卧床——长老明令：非生死关头禁用。",
+        description: "问剑峰霸道手法。五指如虎爪扣住对方关节，指尖真气沿着骨缝钻入——猛一发力，只听咔嗒一声脆响，对方的关节便被卸了下来，整条手臂悬在那里晃荡。此招歹毒，中招者即使接回关节也需三月卧床——长老明令：非生死关头禁用。",
         baseDamage: "140%",
         baseSpeed: "85%",
         attackBonus: 12,
@@ -570,7 +570,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "道家养生术",
         pinyin: "daojia-yangshengshu",
         type: "knowledge",
-        description: "赤霞峰养生法门。取道家炼丹术的药理，不炼丹而炼气——修习者的一呼一吸都有节奏地在经脉中运转，将吃下去的五谷精华炼化为精纯的真元。修得久的人，一日只食一餐，却面如桃花、气息绵长。",
+        description: "问剑峰养生法门。取道家炼丹术的药理，不炼丹而炼气——修习者的一呼一吸都有节奏地在经脉中运转，将吃下去的五谷精华炼化为精纯的真元。修得久的人，一日只食一餐，却面如桃花、气息绵长。",
         baseDamage: "100%",
         baseSpeed: "100%",
         attackBonus: 0,
@@ -582,10 +582,10 @@ var GHOST_SKILL_TREES_1 = {
       }
     ],
     teachers: [
-      { name: "张三丰", title: "赤霞峰祖师·道枢超级计算机集群首席架构师", maxSkills: 500, requirements: "门忠2000，道家养生术≥150，道德值≥50000" },
-      { name: "俞莲舟", title: "赤霞峰掌教·血脉调控研究所所长", maxSkills: 350, requirements: "门忠1000，太极心经≥120" },
-      { name: "殷梨亭", title: "赤霞峰长老·剑法神识参悟组组长", maxSkills: 250, requirements: "门忠500，太极剑≥60" },
-      { name: "谷虚道长", title: "赤霞峰接引使·入门弟子刀师", maxSkills: 120, requirements: "无" }
+      { name: "张三丰", title: "问剑峰祖师·道枢超级计算机集群首席架构师", maxSkills: 500, requirements: "门忠2000，道家养生术≥150，道德值≥50000" },
+      { name: "俞莲舟", title: "问剑峰掌教·血脉调控研究所所长", maxSkills: 350, requirements: "门忠1000，太极心经≥120" },
+      { name: "殷梨亭", title: "问剑峰长老·剑法神识参悟组组长", maxSkills: 250, requirements: "门忠500，太极剑≥60" },
+      { name: "谷虚道长", title: "问剑峰接引使·入门弟子刀师", maxSkills: 120, requirements: "无" }
     ]
   },
 
@@ -616,7 +616,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "紫霞心经",
         pinyin: "zixia-pincheng",
         type: "force",
-        description: "锈剑冢气宗心法。取赤霞峰衍化而来，重意不重招——气沉丹田，周身经脉布满一层淡紫色的真气。这层气不攻人，只护己，刀剑加之如砍在数层湿牛皮上，越往里阻力越大。",
+        description: "锈剑冢气宗心法。取问剑峰衍化而来，重意不重招——气沉丹田，周身经脉布满一层淡紫色的真气。这层气不攻人，只护己，刀剑加之如砍在数层湿牛皮上，越往里阻力越大。",
         baseDamage: "115%",
         baseSpeed: "100%",
         attackBonus: 0,
@@ -826,18 +826,18 @@ var GHOST_SKILL_TREES_1 = {
   },
 
   // ==========================================
-  // 宗派四：丝狱
+  // 宗派四：织狱
   // ==========================================
-  "丝狱": {
-    name: "丝狱",
-    description: "峡谷上方是密密麻麻的蛛网——不是普通的蛛丝，是银丝，肉眼可见灵气在其中流动。丝狱的人走在丝上，用丝来感知和传递消息。最长的几根银丝延伸入雾中，没人知道连着哪里。",
+  "织狱": {
+    name: "织狱",
+    description: "峡谷上方是密密麻麻的蛛网——不是普通的蛛丝，是银丝，肉眼可见灵气在其中流动。织狱的人走在丝上，用丝来感知和传递消息。最长的几根银丝延伸入雾中，没人知道连着哪里。",
     skills: [
       {
         id: "yiwang_force_1",
         name: "混电器功",
         pinyin: "hundian-qicheng",
         type: "force",
-        description: "丝狱基础心法。将散布在天地间的零散灵气一丝丝地收入丹田——闹市中人气鼎沸，灵气反而最旺。修习者只要身处城池，内力便源源不绝；荒山野岭反而不济。",
+        description: "织狱基础心法。将散布在天地间的零散灵气一丝丝地收入丹田——闹市中人气鼎沸，灵气反而最旺。修习者只要身处城池，内力便源源不绝；荒山野岭反而不济。",
         baseDamage: "120%",
         baseSpeed: "105%",
         attackBonus: 0,
@@ -851,7 +851,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "降龙十八章",
         pinyin: "xianglong-shibazhang",
         type: "strike",
-        description: "丝狱至高掌法。十八掌对应十八条龙脉之气——每一掌击出都有龙吟之声伴随。掌力不是一波推出去，而是层层叠叠如浪涌来，第一重未到第二重已生，十八重掌劲叠加的当口，便是山也要裂开。",
+        description: "织狱至高掌法。十八掌对应十八条龙脉之气——每一掌击出都有龙吟之声伴随。掌力不是一波推出去，而是层层叠叠如浪涌来，第一重未到第二重已生，十八重掌劲叠加的当口，便是山也要裂开。",
         baseDamage: "165%",
         baseSpeed: "85%",
         attackBonus: 15,
@@ -896,7 +896,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "打狗棒法",
         pinyin: "dagou-bangma",
         type: "staff",
-        description: "丝狱独门棒法。棒身看似一根寻常青竹，暗藏三十六种变化——挑、绊、缠、点、戳、转，招招克敌要害。打狗棒法不以力胜，以巧制人。",
+        description: "织狱独门棒法。棒身看似一根寻常青竹，暗藏三十六种变化——挑、绊、缠、点、戳、转，招招克敌要害。打狗棒法不以力胜，以巧制人。",
         baseDamage: "120%",
         baseSpeed: "115%",
         attackBonus: 6,
@@ -941,7 +941,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "锁喉拳",
         pinyin: "suohou-quan",
         type: "cuff",
-        description: "丝狱擒拿术。虎口卡住对方喉结，拇指压在两侧气脉上——不掐死，但让对方一口气提不上来。被锁喉的人脸涨得通红，四肢使不出一丝力气。",
+        description: "织狱擒拿术。虎口卡住对方喉结，拇指压在两侧气脉上——不掐死，但让对方一口气提不上来。被锁喉的人脸涨得通红，四肢使不出一丝力气。",
         baseDamage: "125%",
         baseSpeed: "105%",
         attackBonus: 7,
@@ -955,7 +955,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "缠丝擒拿手",
         pinyin: "chansi-qinnashou",
         type: "parry",
-        description: "丝狱招架术。来招不硬接——手掌贴着对方的手臂一路滑过去，像蛛丝缠住飞蛾。缠上的地方越多，对方的招式就越施展不开，到最后像被裹在一张无形的网里，越动越紧。",
+        description: "织狱招架术。来招不硬接——手掌贴着对方的手臂一路滑过去，像蛛丝缠住飞蛾。缠上的地方越多，对方的招式就越施展不开，到最后像被裹在一张无形的网里，越动越紧。",
         baseDamage: "105%",
         baseSpeed: "110%",
         attackBonus: 2,
@@ -969,7 +969,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "六合刀",
         pinyin: "liuhe-dao",
         type: "blade",
-        description: "丝狱实用刀法。六式街头砍杀，简单直白——没有虚招、没有噱头，刀刀奔着要害去。不是用来表演的，是用来在巷战里活命的。",
+        description: "织狱实用刀法。六式街头砍杀，简单直白——没有虚招、没有噱头，刀刀奔着要害去。不是用来表演的，是用来在巷战里活命的。",
         baseDamage: "130%",
         baseSpeed: "95%",
         attackBonus: 9,
@@ -983,7 +983,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "逍遥游",
         pinyin: "xiaoyao-you",
         type: "dodge",
-        description: "丝狱身法。穿过闹市如穿过空巷——身形混在人群里，步频和旁边挑担的小贩一样，肩的高低和看热闹的闲汉一样。逍遥游练到家的，站在你身边一盏茶的功夫，你都想不起他是几时来的。",
+        description: "织狱身法。穿过闹市如穿过空巷——身形混在人群里，步频和旁边挑担的小贩一样，肩的高低和看热闹的闲汉一样。逍遥游练到家的，站在你身边一盏茶的功夫，你都想不起他是几时来的。",
         baseDamage: "100%",
         baseSpeed: "120%",
         attackBonus: 0,
@@ -997,7 +997,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "漫天花雨",
         pinyin: "mantian-huayu",
         type: "throwing",
-        description: "丝狱暗器。一把细针撒出去，如春雨润物无声——针太细，肉眼几乎看不见，但每一根针上都附着施术者的一丝真气，沾到身上便开始干扰对手的内息运转。",
+        description: "织狱暗器。一把细针撒出去，如春雨润物无声——针太细，肉眼几乎看不见，但每一根针上都附着施术者的一丝真气，沾到身上便开始干扰对手的内息运转。",
         baseDamage: "110%",
         baseSpeed: "100%",
         attackBonus: 5,
@@ -1008,10 +1008,10 @@ var GHOST_SKILL_TREES_1 = {
       }
     ],
     teachers: [
-      { name: "洪七公", title: "丝狱帮主·降龙十八章法门栈唯一完整传承者", maxSkills: 500, requirements: "门忠2000，混电器功≥150，完成「九指」解封任务" },
-      { name: "鲁有脚", title: "丝狱污衣派长老·街头格斗训练官", maxSkills: 250, requirements: "门忠500" },
-      { name: "彭长老", title: "丝狱净衣派长老·情报交易协调人", maxSkills: 250, requirements: "门忠500（净衣派路线）" },
-      { name: "黎生", title: "丝狱接引人·新兵招募与基础训练", maxSkills: 120, requirements: "须由现有丝狱成员推荐" }
+      { name: "洪七公", title: "织狱帮主·降龙十八章法门栈唯一完整传承者", maxSkills: 500, requirements: "门忠2000，混电器功≥150，完成「九指」解封任务" },
+      { name: "鲁有脚", title: "织狱污衣派长老·街头格斗训练官", maxSkills: 250, requirements: "门忠500" },
+      { name: "彭长老", title: "织狱净衣派长老·情报交易协调人", maxSkills: 250, requirements: "门忠500（净衣派路线）" },
+      { name: "黎生", title: "织狱接引人·新兵招募与基础训练", maxSkills: 120, requirements: "须由现有织狱成员推荐" }
     ]
   },
 

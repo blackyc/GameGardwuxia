@@ -1,8 +1,8 @@
-/**
- * data_loader.js — 数据加载器
+﻿/**
+ * data_loader.js — 卷宗加载器
  * 
  * 原始 work/ 文件使用全局 const 声明，通过 index.html 的 <script> 标签加载到 window 上
- * 本模块负责从 window 收集这些全局变量，整理为统一的数据对象
+ * 本模块负责从 window 收集这些全局变量，整理为统一的卷宗对象
  * 
  * 加载顺序（由 index.html 保证）：
  * 1. rebuild_enemies_items_realms.js → REALMS, ENEMIES, ITEMS, LOOT_TABLES, PREREQ_TYPES
@@ -18,9 +18,9 @@
 let _data = null;
 
 /**
- * 从 window 收集所有数据文件注入的全局变量
+ * 从 window 收集所有卷宗文件注入的全局变量
  * 必须在所有 <script> 标签加载完成后调用
- * @returns {object} 统一数据对象
+ * @returns {object} 统一卷宗对象
  */
 export function collectData() {
   if (_data) return _data;
@@ -59,7 +59,7 @@ export function collectData() {
     _data.enemyTiers[tier].push(name);
   });
 
-  console.log('[DataLoader] 数据加载完成:', {
+  console.log('[DataLoader] 卷宗加载完成:', {
     境界: _data.REALMS.length,
     敌人: _data.enemyNames.length,
     物品: _data.ITEMS.length,
@@ -72,10 +72,10 @@ export function collectData() {
   return _data;
 }
 
-/** 获取已加载的数据 */
+/** 获取已加载的卷宗 */
 export function getData() {
   if (!_data) {
-    throw new Error('[DataLoader] 数据尚未加载，请先调用 collectData()');
+    throw new Error('[DataLoader] 卷宗尚未加载，请先调用 collectData()');
   }
   return _data;
 }

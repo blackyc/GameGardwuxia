@@ -1,0 +1,2142 @@
+﻿{
+  "meta": {
+    "title": "聊斋大明·装备体系设计文档",
+    "version": "1.0.0",
+    "design_date": "2026-06-18",
+    "description": "法器改造系统（8槽位/34法器）+ 兵器系统（45种法器）+ 神经灵石系统（35种灵石）",
+    "base_references": {
+      "combat_systems": "D:\\MUD\\combat_systems.json — 战斗公式(AP/DP概率模型)、法器17种类型、丹药体系",
+      "cdda_reference": "D:\\MUD\\cdda_reference.json — CDDA bionics能量/植入/标签系统、物品flags体系",
+      "cyberpunk_2077": "法器分类体系（操作系统/循环系统/额皮质/免疫系统/骨骼/手臂/腿部）"
+    },
+    "design_principles": [
+      "能量体系：真气值=法器驱动能源，映射CDDA的bionic power(kJ)",
+      "标签驱动：所有物品通过flags声明特性，引擎根据flags决定交互逻辑",
+      "MUD数值兼容：damage/atk_bonus等字段与combat_systems.json中的damage_formula直接对接",
+      "稀有度五阶：common(白) → uncommon(绿) → rare(蓝) → epic(紫) → legendary(橙)"
+    ]
+  },
+
+  "core_energy_system": {
+    "description": "聊斋大明法器驱动的能量体系，参考CDDA bionics power系统改造为大明世界观",
+    "telomere_power": {
+      "name": "端粒能量",
+      "concept": "法器改造消耗人体端粒（染色体末端保护结构）中储存的生物能量，端粒长度即能量池上限",
+      "unit": "端粒节（Telomere Units / TU）",
+      "base_max": "初始100TU，每提升1级端粒修为+10TU，满修为约1000TU",
+      "recovery_methods": [
+        {"method": "丹田储能", "rate": "每时辰+5TU", "desc": "基础自然恢复"},
+        {"method": "辟谷换能", "rate": "消耗食物恢复TU，1饱食度=2TU", "desc": "消耗食物转化为端粒能量"},
+        {"method": "日光采补", "rate": "户外日照下每时辰+10TU", "desc": "太阳能表皮吸收板"},
+        {"method": "行功蓄力", "rate": "每移动一步+0.5TU", "desc": "关节扭转棘轮发电"},
+        {"method": "吞丹炼化", "rate": "消耗丹药瞬间恢复大量TU", "desc": "端粒酶注入灵石"},
+        {"method": "灵石充能", "rate": "消耗灵石外部充能，1灵石=50TU", "desc": "外部能源补给"},
+        {"method": "微型丹炉", "rate": "每时辰+20TU（终极法器），永久被动", "desc": "微型核聚变反应炉"}
+      ]
+    },
+    "computing_power": {
+      "name": "算力",
+      "concept": "八荒脑法器提供的计算性能资源，用于运行神经灵石和破解敌方法器",
+      "unit": "算力点（Compute Points / CP）",
+      "base_max": "初始50CP，每植入1级脑部法器+30CP",
+      "recovery": "每回合自动恢复消耗CP的20%",
+      "usage": ["运行神经灵石的主动技能", "破解敌方法器/护体罡气", "编译新的神经灵石程序", "远程骇入敌方千机臂法器"]
+    }
+  },
+
+  "cyberware_slots": {
+    "arm_strength": {
+      "name": "麒麟臂",
+      "slot_id": "arm_strength",
+      "body_part": "双臂",
+      "description": "力量增强槽位，改造臂部肌肉和骨骼结构。增强近战伤害、投掷距离、负重上限。满级可搭载法器法器。",
+      "base_stats_affected": ["str（体格）", "近战damage_bonus", "负重上限"],
+      "max_install_count": 1,
+      "installation_risk": "失败则臂部经脉受损，str临时-3，需养伤7日",
+      "cyberwares": [
+        {
+          "id": "arm_basic_servo",
+          "name": "麒麟臂·初锻",
+          "tier": 1,
+          "rarity": "common",
+          "description": "基础型伺服肌肉束。锻铁匠人给矿工装的初级臂力增强器，能多扛两筐煤，也能多抡几锤。",
+          "effects": {
+            "str_bonus": 2,
+            "melee_damage_bonus": 3,
+            "carry_weight_bonus": 20,
+            "telomere_cost_passive": "1TU/时辰"
+          },
+          "requirements": {"str_min": 0, "telomere_level": 0},
+          "flags": ["被动", "可升级", "机械增强"],
+          "price": 500
+        },
+        {
+          "id": "arm_hydraulic_muscle",
+          "name": "麒麟臂·液压",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "液压肌肉束阵列。以微型液压缸替代部分肌纤维，挥拳如铁锤，握力可碎骨。京城锦衣卫小旗标配。",
+          "effects": {
+            "str_bonus": 4,
+            "melee_damage_bonus": 6,
+            "carry_weight_bonus": 40,
+            "unarmed_damage": 8,
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"str_min": 12, "telomere_level": 10},
+          "flags": ["被动", "可升级", "机械增强", "法器法器兼容"],
+          "price": 2000
+        },
+        {
+          "id": "arm_myomer_fiber",
+          "name": "麒麟臂·碳纤",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "碳微尘管人造肌纤。以微尘碳管编织的人造肌肉，力量与灵活性兼具。锦衣卫千户级别才配得上的高端货。",
+          "effects": {
+            "str_bonus": 6,
+            "melee_damage_bonus": 10,
+            "carry_weight_bonus": 60,
+            "unarmed_damage": 15,
+            "throw_range_bonus": 5,
+            "telomere_cost_passive": "3TU/时辰",
+            "active_skill": {
+              "name": "麒麟一击",
+              "cost": "15TU",
+              "cooldown": "5回合",
+              "effect": "下一次近战攻击damage×2.0，无视护甲50%"
+            }
+          },
+          "requirements": {"str_min": 16, "telomere_level": 30},
+          "flags": ["被动", "主动技能", "可升级", "法器法器兼容"],
+          "price": 8000
+        },
+        {
+          "id": "arm_quantum_actuator",
+          "name": "麒麟臂·先天",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "先天纠缠致动器。利用先天隧穿效应驱动，零延迟响应，力量输出接近人体理论极限。东厂督主的收藏级法器。",
+          "effects": {
+            "str_bonus": 8,
+            "melee_damage_bonus": 15,
+            "carry_weight_bonus": 80,
+            "unarmed_damage": 25,
+            "throw_range_bonus": 10,
+            "armor_penetration": 20,
+            "telomere_cost_passive": "5TU/时辰",
+            "active_skill": {
+              "name": "先天崩拳",
+              "cost": "30TU",
+              "cooldown": "8回合",
+              "effect": "下一次近战攻击damage×3.0，无视全部护甲，有20%概率击晕目标1回合"
+            }
+          },
+          "requirements": {"str_min": 20, "telomere_level": 60},
+          "flags": ["被动", "主动技能", "破甲", "法器法器兼容"],
+          "price": 30000
+        },
+        {
+          "id": "arm_dragon_sinew",
+          "name": "麒麟臂·龙筋",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "传说级法器。以陨石中提取的超导丝线编织的人造龙筋，据说是从'龙脉秘境'中发掘的上古科技遗物。运转时臂现龙纹，力可开山。",
+          "effects": {
+            "str_bonus": 12,
+            "melee_damage_bonus": 25,
+            "carry_weight_bonus": 120,
+            "unarmed_damage": 40,
+            "throw_range_bonus": 15,
+            "armor_penetration": 35,
+            "crit_damage_bonus": 0.5,
+            "telomere_cost_passive": "8TU/时辰",
+            "active_skill": {
+              "name": "龙威天降",
+              "cost": "50TU",
+              "cooldown": "15回合",
+              "effect": "接下来3回合内：近战damage×3.5、全部攻击无视护甲、每次命中附加目标max_kee/10的真实伤害"
+            }
+          },
+          "requirements": {"str_min": 26, "telomere_level": 100},
+          "flags": ["被动", "主动技能", "破甲", "真实伤害", "法器法器兼容", "传奇唯一"],
+          "price": 150000,
+          "lore": "此物非人间工匠所能铸就。"
+        }
+      ]
+    },
+
+    "eye_perception": {
+      "name": "千里眼",
+      "slot_id": "eye_perception",
+      "body_part": "双眼",
+      "description": "感知增强槽位，改造眼部光学系统。增强远程命中率、暴击率、发现陷阱与隐藏目标。",
+      "base_stats_affected": ["per（感知/容貌映射）", "远程命中", "暴击率", "探测范围"],
+      "max_install_count": 1,
+      "installation_risk": "失败则暂时失明3日，per临时-5",
+      "cyberwares": [
+        {
+          "id": "eye_basic_zoom",
+          "name": "千里眼·鹰瞳",
+          "tier": 1,
+          "rarity": "common",
+          "description": "基础光学变焦镜片。说白了就是在眼球上贴了个望远镜片，比肉眼强点但有限。",
+          "effects": {
+            "per_bonus": 2,
+            "ranged_hit_bonus": 5,
+            "vision_range_bonus": 3,
+            "trap_detect_bonus": 10
+          },
+          "requirements": {"per_min": 0, "telomere_level": 0},
+          "flags": ["被动", "可升级"],
+          "price": 400
+        },
+        {
+          "id": "eye_multi_spectrum",
+          "name": "千里眼·多谱",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "红外/夜视/热成像多光谱复合眼。白天看千里，夜里见鬼魅，热成像更是让隐身的梁上君子无处遁形。",
+          "effects": {
+            "per_bonus": 4,
+            "ranged_hit_bonus": 10,
+            "vision_range_bonus": 6,
+            "trap_detect_bonus": 20,
+            "night_vision": true,
+            "stealth_detect_bonus": 15,
+            "ignore_darkness_penalty": true
+          },
+          "requirements": {"per_min": 10, "telomere_level": 10},
+          "flags": ["被动", "可升级", "夜视", "热成像"],
+          "price": 2500
+        },
+        {
+          "id": "eye_battle_predict",
+          "name": "千里眼·先知",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "战斗预测器灵植入。通过分析对手微动作预判攻击方向，内置弹道计算器实时修正射击参数。神机营神射手的不传之秘。",
+          "effects": {
+            "per_bonus": 6,
+            "ranged_hit_bonus": 18,
+            "vision_range_bonus": 9,
+            "trap_detect_bonus": 30,
+            "crit_rate_bonus": 5,
+            "dodge_perception_bonus": 10,
+            "night_vision": true,
+            "stealth_detect_bonus": 25,
+            "ignore_darkness_penalty": true
+          },
+          "requirements": {"per_min": 14, "telomere_level": 25},
+          "flags": ["被动", "可升级", "夜视", "热成像", "弹道预测"],
+          "price": 10000
+        },
+        {
+          "id": "eye_quantum_sensor",
+          "name": "千里眼·天网",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "先天传感器阵列。能以概率波的形式感知周围一切运动物体的轨迹，甚至能'看到'墙后的敌人。据说能捕捉到鬼魂的先天态痕迹。",
+          "effects": {
+            "per_bonus": 8,
+            "ranged_hit_bonus": 25,
+            "vision_range_bonus": 12,
+            "trap_detect_bonus": 45,
+            "crit_rate_bonus": 8,
+            "dodge_perception_bonus": 15,
+            "night_vision": true,
+            "stealth_detect_bonus": 40,
+            "wall_penetration_vision_range": 5,
+            "ignore_darkness_penalty": true,
+            "active_skill": {
+              "name": "天网锁定",
+              "cost": "20TU",
+              "cooldown": "6回合",
+              "effect": "本回合及下一回合，所有远程攻击必中且必暴击"
+            }
+          },
+          "requirements": {"per_min": 18, "telomere_level": 50},
+          "flags": ["被动", "主动技能", "夜视", "穿墙视野", "先天感知"],
+          "price": 40000
+        },
+        {
+          "id": "eye_celestial_eye",
+          "name": "千里眼·天眼",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "传说中佛陀才有的天眼通。据说是从敦煌千佛洞地下丹房中发掘的上古微尘光学系统，开机时瞳孔呈现金色莲花图案。能同时追踪一百个目标，精确到毫厘。",
+          "effects": {
+            "per_bonus": 12,
+            "ranged_hit_bonus": 35,
+            "vision_range_bonus": 20,
+            "trap_detect_bonus": 60,
+            "crit_rate_bonus": 12,
+            "dodge_perception_bonus": 25,
+            "night_vision": true,
+            "stealth_detect_bonus": 60,
+            "wall_penetration_vision_range": 10,
+            "ignore_darkness_penalty": true,
+            "ignore_blind_effects": true,
+            "active_skill": {
+              "name": "天眼·因果洞见",
+              "cost": "40TU",
+              "cooldown": "10回合",
+              "effect": "接下来3回合：全队per+8、暴击率+15%、所有敌人闪避率减半、隐藏目标强制显形"
+            }
+          },
+          "requirements": {"per_min": 24, "telomere_level": 100},
+          "flags": ["被动", "主动技能", "夜视", "穿墙视野", "先天感知", "免疫致盲", "传奇唯一"],
+          "price": 200000,
+          "lore": "色即是空，空即是色。"
+        }
+      ]
+    },
+
+    "body_defense": {
+      "name": "金刚体",
+      "slot_id": "body_defense",
+      "body_part": "躯干",
+      "description": "防御增强槽位，改造躯干表皮/骨骼/内脏。增强护甲值、伤害减免、环境抗性。",
+      "base_stats_affected": ["护甲值(armor)", "伤害减免%", "环境防护", "HP上限"],
+      "max_install_count": 1,
+      "installation_risk": "失败则胸口气血逆行，kee上限临时-20%，需静养5日",
+      "cyberwares": [
+        {
+          "id": "body_ceramic_plate",
+          "name": "金刚体·瓷甲",
+          "tier": 1,
+          "rarity": "common",
+          "description": "皮下陶瓷防刺镀层。在皮肤下植入陶瓷片防刺，矿工和巡捕的基础防护。挨一刀不至于当场见阎王。",
+          "effects": {
+            "armor_bonus": 5,
+            "pierce_reduction": 3,
+            "kee_max_bonus": 20,
+            "telomere_cost_passive": "1TU/时辰"
+          },
+          "requirements": {"con_min": 0, "telomere_level": 0},
+          "flags": ["被动", "可升级"],
+          "price": 600
+        },
+        {
+          "id": "body_carbon_mesh",
+          "name": "金刚体·碳网",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "皮下碳纤维网状编织。轻便但坚韧，不增多少重量却能挡下匕首直刺。锦衣卫暗探的最爱。",
+          "effects": {
+            "armor_bonus": 10,
+            "pierce_reduction": 6,
+            "slash_reduction": 4,
+            "kee_max_bonus": 40,
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"con_min": 10, "telomere_level": 10},
+          "flags": ["被动", "可升级", "轻量化"],
+          "price": 3000
+        },
+        {
+          "id": "body_alloy_plating",
+          "name": "金刚体·合金",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "钛合金胸腔衬板+内脏减震凝胶。穿上它等于随时套了件锁子甲在身体里。神机营重装兵的标准配置。",
+          "effects": {
+            "armor_bonus": 18,
+            "pierce_reduction": 10,
+            "slash_reduction": 8,
+            "bash_reduction": 6,
+            "kee_max_bonus": 70,
+            "explosion_reduction": 15,
+            "telomere_cost_passive": "3TU/时辰"
+          },
+          "requirements": {"con_min": 14, "telomere_level": 25},
+          "flags": ["被动", "可升级", "防爆"],
+          "price": 12000
+        },
+        {
+          "id": "body_nanite_armor",
+          "name": "金刚体·微尘",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "微尘傀儡群护甲。不计其数的微尘傀儡在体内游走，感知到冲击波时瞬间在受力点聚集成致密装甲层。平时轻若无物，战时坚若磐石。",
+          "effects": {
+            "armor_bonus": 28,
+            "pierce_reduction": 16,
+            "slash_reduction": 14,
+            "bash_reduction": 12,
+            "kee_max_bonus": 110,
+            "explosion_reduction": 30,
+            "environmental_protection": 5,
+            "telomere_cost_passive": "5TU/时辰",
+            "active_skill": {
+              "name": "微尘壁垒",
+              "cost": "25TU",
+              "cooldown": "8回合",
+              "effect": "接下来2回合内护甲值翻倍，免疫流血效果"
+            }
+          },
+          "requirements": {"con_min": 18, "telomere_level": 55},
+          "flags": ["被动", "主动技能", "防爆", "环境防护"],
+          "price": 45000
+        },
+        {
+          "id": "body_diamond_lattice",
+          "name": "金刚体·金刚",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "金刚石晶格骨骼置换。将全身骨骼以化学气相沉积法替换为单晶金刚石结构，皮肤下嵌有自修复液态金属层。刀枪不入，水火不侵，真·金刚不坏。",
+          "effects": {
+            "armor_bonus": 40,
+            "pierce_reduction": 25,
+            "slash_reduction": 22,
+            "bash_reduction": 20,
+            "kee_max_bonus": 180,
+            "explosion_reduction": 50,
+            "environmental_protection": 10,
+            "damage_reduction_percent": 15,
+            "immune_bleed": true,
+            "telomere_cost_passive": "8TU/时辰",
+            "active_skill": {
+              "name": "金刚不坏",
+              "cost": "45TU",
+              "cooldown": "12回合",
+              "effect": "接下来3回合：护甲值×3、免疫所有状态异常、反弹所受伤害的30%给攻击者"
+            }
+          },
+          "requirements": {"con_min": 24, "telomere_level": 100},
+          "flags": ["被动", "主动技能", "防爆", "环境防护", "免疫流血", "伤害反弹", "传奇唯一"],
+          "price": 250000,
+          "lore": "佛说金刚，即非金刚，是名金刚。"
+        }
+      ]
+    },
+
+    "leg_mobility": {
+      "name": "瞬风腿",
+      "slot_id": "leg_mobility",
+      "body_part": "双腿",
+      "description": "移动增强槽位，改造腿部肌肉和关节。增强移动速度、闪避率、跳跃距离。",
+      "base_stats_affected": ["移动速度", "闪避率(dodge)", "跳跃距离", "行动力/回合"],
+      "max_install_count": 1,
+      "installation_risk": "失败则腿部经脉受损，移动速度临时-30%，需养伤5日",
+      "cyberwares": [
+        {
+          "id": "leg_spring_tendon",
+          "name": "瞬风腿·弹簧",
+          "tier": 1,
+          "rarity": "common",
+          "description": "碳纤维弹簧肌腱。在跟腱中植入弹簧结构，跑起来省力还带弹跳效果。驿站急递铺信差的首选。",
+          "effects": {
+            "move_speed_bonus": 10,
+            "dodge_bonus": 5,
+            "jump_range_bonus": 2,
+            "telomere_cost_passive": "1TU/时辰"
+          },
+          "requirements": {"telomere_level": 0},
+          "flags": ["被动", "可升级"],
+          "price": 500
+        },
+        {
+          "id": "leg_pneumatic_piston",
+          "name": "瞬风腿·气动",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "气动活塞关节。压缩气体驱动的辅助关节，爆发力惊人。起步快，转向猛，跳得高。",
+          "effects": {
+            "move_speed_bonus": 20,
+            "dodge_bonus": 10,
+            "jump_range_bonus": 4,
+            "initiative_bonus": 3,
+            "busy_recovery_bonus": 1,
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"telomere_level": 10},
+          "flags": ["被动", "可升级"],
+          "price": 2500
+        },
+        {
+          "id": "leg_magnetic_levitation",
+          "name": "瞬风腿·磁浮",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "磁悬浮关节轴承。关节以磁力悬浮，零摩擦运转。跑起来真正无声无息，水面轻功不是梦。据说练到极致能凌空踏虚三步。",
+          "effects": {
+            "move_speed_bonus": 35,
+            "dodge_bonus": 18,
+            "jump_range_bonus": 7,
+            "initiative_bonus": 6,
+            "busy_recovery_bonus": 2,
+            "water_walk": true,
+            "stealth_move_bonus": 15,
+            "telomere_cost_passive": "3TU/时辰"
+          },
+          "requirements": {"telomere_level": 25},
+          "flags": ["被动", "可升级", "水面行走", "无声移动"],
+          "price": 10000
+        },
+        {
+          "id": "leg_quantum_phase",
+          "name": "瞬风腿·先天",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "先天相位同步器。利用先天隧穿效应在微观层面'漂移'，闪避时人物会短暂呈现半透明状态。敌人眼看要砍到，刀却穿了过去。",
+          "effects": {
+            "move_speed_bonus": 50,
+            "dodge_bonus": 28,
+            "jump_range_bonus": 10,
+            "initiative_bonus": 10,
+            "busy_recovery_bonus": 3,
+            "water_walk": true,
+            "stealth_move_bonus": 25,
+            "phase_dodge_chance": 10,
+            "telomere_cost_passive": "5TU/时辰",
+            "active_skill": {
+              "name": "先天闪避",
+              "cost": "20TU",
+              "cooldown": "5回合",
+              "effect": "本回合闪避率+40%，闪避成功后获得一次额外反击机会"
+            }
+          },
+          "requirements": {"telomere_level": 55},
+          "flags": ["被动", "主动技能", "水面行走", "无声移动", "相位闪避"],
+          "price": 38000
+        },
+        {
+          "id": "leg_void_stride",
+          "name": "瞬风腿·虚空",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "空间折叠步态。据说是从西域极西之地传来的空间技术，每一步都能在微观层面折叠空间。看上去只是迈了一小步，实际已掠过十丈。",
+          "effects": {
+            "move_speed_bonus": 70,
+            "dodge_bonus": 40,
+            "jump_range_bonus": 15,
+            "initiative_bonus": 15,
+            "busy_recovery_bonus": 5,
+            "water_walk": true,
+            "stealth_move_bonus": 35,
+            "phase_dodge_chance": 18,
+            "ignore_terrain_penalty": true,
+            "telomere_cost_passive": "8TU/时辰",
+            "active_skill": {
+              "name": "缩地成寸",
+              "cost": "35TU",
+              "cooldown": "6回合",
+              "effect": "瞬间移动到战场任意位置，移动后下一次攻击damage×2.0，闪避率+50%本回合"
+            }
+          },
+          "requirements": {"telomere_level": 100},
+          "flags": ["被动", "主动技能", "缩地", "水面行走", "无声移动", "相位闪避", "无视地形", "传奇唯一"],
+          "price": 220000,
+          "lore": "不积跬步，无以缩千里。"
+        }
+      ]
+    },
+
+    "heart_energy": {
+      "name": "燃魂心",
+      "slot_id": "heart_energy",
+      "body_part": "心脏/胸腔",
+      "description": "能量核心槽位，改造心脏及能量代谢系统。决定端粒能量池上限、能量恢复速率、战斗续航。",
+      "base_stats_affected": ["端粒能量上限(max_TU)", "TU恢复速率", "持续战斗能力"],
+      "max_install_count": 1,
+      "installation_risk": "失败则心脏受损，TU上限永久-20，需养伤10日",
+      "cyberwares": [
+        {
+          "id": "heart_basic_reactor",
+          "name": "燃魂心·微炉",
+          "tier": 1,
+          "rarity": "common",
+          "description": "基础生化微型反应炉。一个小到能装在心室旁边的甲醇燃料电池，靠血液中的葡萄糖发电。效率不高，但总比没有强。",
+          "effects": {
+            "max_tu_bonus": 30,
+            "tu_regen_bonus": 2,
+            "tu_regen_from_food_bonus": 0.3,
+            "telomere_cost_passive": "0TU（能量核心本身不耗能）"
+          },
+          "requirements": {"telomere_level": 0},
+          "flags": ["被动", "可升级", "能量核心"],
+          "price": 800
+        },
+        {
+          "id": "heart_kinetic_generator",
+          "name": "燃魂心·动炉",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "动能回收发电机。把心跳、呼吸、肌肉运动的机械能全部回收转换为端粒能量。动得越多，能量越足。",
+          "effects": {
+            "max_tu_bonus": 60,
+            "tu_regen_bonus": 4,
+            "tu_regen_from_food_bonus": 0.5,
+            "tu_regen_from_move": 1,
+            "telomere_cost_passive": "0TU"
+          },
+          "requirements": {"telomere_level": 15},
+          "flags": ["被动", "可升级", "能量核心", "动能回收"],
+          "price": 3500
+        },
+        {
+          "id": "heart_solar_collector",
+          "name": "燃魂心·日炉",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "皮下光伏阵列+热量回收系统。日光下能量充沛，在极热环境中甚至会能量溢出。配合龟息功可以在沙漠里不吃不喝走一个月。",
+          "effects": {
+            "max_tu_bonus": 100,
+            "tu_regen_bonus": 6,
+            "tu_regen_from_food_bonus": 0.7,
+            "tu_regen_from_move": 2,
+            "tu_regen_sunlight_bonus": 8,
+            "heat_resistance": 10,
+            "telomere_cost_passive": "0TU"
+          },
+          "requirements": {"telomere_level": 30},
+          "flags": ["被动", "可升级", "能量核心", "日光充能", "耐热"],
+          "price": 15000
+        },
+        {
+          "id": "heart_antimatter_cell",
+          "name": "燃魂心·反炉",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "正反物质湮灭电池。在心脏中植入一个微型磁约束环，以微量反物质与正物质对撞释放能量。输出功率之大足以驱动全身所有高阶法器同时运转。",
+          "effects": {
+            "max_tu_bonus": 160,
+            "tu_regen_bonus": 10,
+            "tu_regen_from_food_bonus": 1.0,
+            "tu_regen_from_move": 3,
+            "tu_regen_sunlight_bonus": 5,
+            "all_cyberware_cost_reduction": 0.3,
+            "heat_resistance": 15,
+            "telomere_cost_passive": "0TU",
+            "passive_skill": {
+              "name": "湮灭过载",
+              "effect": "TU低于20%时，自动触发一次50TU恢复，每场战斗限1次"
+            }
+          },
+          "requirements": {"telomere_level": 65},
+          "flags": ["被动", "能量核心", "法器功耗减免", "自动回能", "耐热"],
+          "price": 60000
+        },
+        {
+          "id": "heart_perpetual_furnace",
+          "name": "燃魂心·永动",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "传说级能源核心。据说是墨家巨子在'龙脉秘境'中找到的上古遗物——一个永不停息的微型太极反应炉。阴阳二气在炉内周流不息，生生无穷。持有者几乎不可能在战斗中耗尽能量。",
+          "effects": {
+            "max_tu_bonus": 250,
+            "tu_regen_bonus": 15,
+            "tu_regen_from_food_bonus": 1.5,
+            "tu_regen_from_move": 5,
+            "tu_regen_sunlight_bonus": 10,
+            "all_cyberware_cost_reduction": 0.5,
+            "heat_resistance": 25,
+            "cold_resistance": 25,
+            "energy_immune_drain": true,
+            "telomere_cost_passive": "0TU",
+            "passive_skill": {
+              "name": "生生不息",
+              "effect": "每回合开始自动恢复最大TU的5%，TU永不枯竭"
+            }
+          },
+          "requirements": {"telomere_level": 100},
+          "flags": ["被动", "能量核心", "法器功耗减半", "免疫能量吸取", "耐寒耐热", "传奇唯一"],
+          "price": 300000,
+          "lore": "太极生两仪，两仪生四象，四象生万物。"
+        }
+      ]
+    },
+
+    "brain_computing": {
+      "name": "八荒脑",
+      "slot_id": "brain_computing",
+      "body_part": "大脑/颅腔",
+      "description": "算力增强槽位，改造大脑皮层及神经接口。决定算力池上限、神经灵石运行效率、敌方法器破解能力。",
+      "base_stats_affected": ["算力上限(max_CP)", "CP恢复速率", "灵石编译速度", "破解成功率"],
+      "max_install_count": 1,
+      "installation_risk": "失败则脑神经受损，int临时-5，随机遗忘一项技能，需休养10日",
+      "cyberwares": [
+        {
+          "id": "brain_basic_coprocessor",
+          "name": "八荒脑·协处",
+          "tier": 1,
+          "rarity": "common",
+          "description": "基础神经协处理器。一个外挂在运动皮层上的微型灵石，帮你记点东西、算点数。账房先生们的最爱。",
+          "effects": {
+            "max_cp_bonus": 30,
+            "cp_regen_bonus": 2,
+            "int_bonus": 1,
+            "chip_slots": 2,
+            "telomere_cost_passive": "1TU/时辰"
+          },
+          "requirements": {"int_min": 0, "telomere_level": 0},
+          "flags": ["被动", "可升级", "灵石槽位+2"],
+          "price": 600
+        },
+        {
+          "id": "brain_neural_mesh",
+          "name": "八荒脑·神经网",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "神经灵网加速器。在大脑皮层上铺一层微尘电极网，加快神经元灵波传导速度。反应更快，学东西也更快。",
+          "effects": {
+            "max_cp_bonus": 60,
+            "cp_regen_bonus": 4,
+            "int_bonus": 3,
+            "chip_slots": 3,
+            "skill_learn_speed_bonus": 0.15,
+            "sen_cost_reduction": 0.1,
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"int_min": 10, "telomere_level": 15},
+          "flags": ["被动", "可升级", "灵石槽位+3", "学习加速"],
+          "price": 3500
+        },
+        {
+          "id": "brain_quantum_processor",
+          "name": "八荒脑·先天核",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "先天计算核心。在大脑前额叶中植入一台微型先天计算机，利用先天叠加态同时处理多个线程。你的脑子相当于同时有八个自己在思考。",
+          "effects": {
+            "max_cp_bonus": 100,
+            "cp_regen_bonus": 7,
+            "int_bonus": 5,
+            "chip_slots": 5,
+            "skill_learn_speed_bonus": 0.3,
+            "sen_cost_reduction": 0.2,
+            "hack_success_bonus": 15,
+            "chip_compile_speed_bonus": 0.25,
+            "telomere_cost_passive": "3TU/时辰"
+          },
+          "requirements": {"int_min": 15, "telomere_level": 35},
+          "flags": ["被动", "可升级", "灵石槽位+5", "学习加速", "破解增强"],
+          "price": 18000
+        },
+        {
+          "id": "brain_neuromorphic_array",
+          "name": "八荒脑·仿生阵",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "神经形态计算阵列。以亿万个硅神经元构建的模拟大脑，与生物脑并行工作。你的大脑实际算力接近一台超级计算机。",
+          "effects": {
+            "max_cp_bonus": 160,
+            "cp_regen_bonus": 10,
+            "int_bonus": 8,
+            "chip_slots": 7,
+            "skill_learn_speed_bonus": 0.5,
+            "sen_cost_reduction": 0.35,
+            "hack_success_bonus": 25,
+            "chip_compile_speed_bonus": 0.5,
+            "multi_chip_active": true,
+            "telomere_cost_passive": "5TU/时辰",
+            "active_skill": {
+              "name": "算力燃血",
+              "cost": "30CP",
+              "cooldown": "10回合",
+              "effect": "接下来2回合算力翻倍，所有灵石技能冷却减半"
+            }
+          },
+          "requirements": {"int_min": 20, "telomere_level": 60},
+          "flags": ["被动", "主动技能", "灵石槽位+7", "学习加速", "破解增强", "多灵石并行"],
+          "price": 50000
+        },
+        {
+          "id": "brain_singularity_core",
+          "name": "八荒脑·奇点",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "传说级神经计算核心。据说是从上古文明废墟中挖掘出的人工智能核心碎片，将它装入大脑的那一刻，你就不再只是一副血肉之躯。计算能力接近于神。",
+          "effects": {
+            "max_cp_bonus": 250,
+            "cp_regen_bonus": 15,
+            "int_bonus": 12,
+            "chip_slots": 10,
+            "skill_learn_speed_bonus": 0.8,
+            "sen_cost_reduction": 0.5,
+            "hack_success_bonus": 40,
+            "chip_compile_speed_bonus": 0.75,
+            "multi_chip_active": true,
+            "instant_compile": true,
+            "immune_hack_backfire": true,
+            "telomere_cost_passive": "8TU/时辰",
+            "active_skill": {
+              "name": "奇点降临",
+              "cost": "50CP",
+              "cooldown": "15回合",
+              "effect": "接下来3回合：所有灵石冷却时间归零（可连续使用）、破解必然成功、敌方所有电子设备瘫痪"
+            }
+          },
+          "requirements": {"int_min": 26, "telomere_level": 100},
+          "flags": ["被动", "主动技能", "灵石槽位+10", "学习加速", "破解增强", "多灵石并行", "免疫反噬", "传奇唯一"],
+          "price": 280000,
+          "lore": "道生一，一生二，二生三，三生万物。"
+        }
+      ]
+    },
+
+    "arm_weapon": {
+      "name": "千机臂",
+      "slot_id": "arm_weapon",
+      "body_part": "前臂/手腕",
+      "description": "法器植入槽位，专门用于搭载法器法器系统。千机臂本身不提供属性加成，但决定了可植入的法器法器数量和等级。",
+      "base_stats_affected": ["法器法器植入位点数量", "法器法器品质上限"],
+      "max_install_count": 1,
+      "installation_risk": "失败则手腕神经受损，一段时间内无法使用手部法器",
+      "cyberwares": [
+        {
+          "id": "weapon_basic_mount",
+          "name": "千机臂·单铳",
+          "tier": 1,
+          "rarity": "common",
+          "description": "基础型法器法器接口。在前臂预留一个标准化插槽，可以装一支法器短铳或袖箭发射器。江湖底层的初代改造。",
+          "effects": {
+            "weapon_slots": 1,
+            "weapon_tier_max": 2,
+            "weapon_switch_speed_bonus": 0,
+            "telomere_cost_passive": "1TU/时辰"
+          },
+          "requirements": {"telomere_level": 0},
+          "flags": ["被动", "可升级", "法器槽位"],
+          "price": 800
+        },
+        {
+          "id": "weapon_dual_mount",
+          "name": "千机臂·双铳",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "双通道法器接口。双臂各一个标准化插槽，支持快速切换。锦衣卫行动组的标配——左手袖箭右手短铳，远近皆宜。",
+          "effects": {
+            "weapon_slots": 2,
+            "weapon_tier_max": 3,
+            "weapon_switch_speed_bonus": 1,
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"telomere_level": 15},
+          "flags": ["被动", "可升级", "法器槽位×2", "快速切换"],
+          "price": 4000
+        },
+        {
+          "id": "weapon_rotary_chamber",
+          "name": "千机臂·转轮",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "旋转弹仓式法器平台。前臂内置旋转弹仓，可预装三种不同的法器法器，战斗中一键切换。神机营百户级装备。",
+          "effects": {
+            "weapon_slots": 3,
+            "weapon_tier_max": 4,
+            "weapon_switch_speed_bonus": 2,
+            "weapon_switch_cost_reduction": 0.3,
+            "telomere_cost_passive": "3TU/时辰"
+          },
+          "requirements": {"telomere_level": 35},
+          "flags": ["被动", "可升级", "法器槽位×3", "快速切换", "切换省能"],
+          "price": 15000
+        },
+        {
+          "id": "weapon_modular_platform",
+          "name": "千机臂·万化",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "模块化法器平台。手腕处装有微型微尘组装工厂，可在数秒内将原料打印为所需的法器模块。东厂厂公亲自审批才能植入的军用级装备。",
+          "effects": {
+            "weapon_slots": 4,
+            "weapon_tier_max": 5,
+            "weapon_switch_speed_bonus": 3,
+            "weapon_switch_cost_reduction": 0.5,
+            "ammo_fabrication": true,
+            "telomere_cost_passive": "5TU/时辰",
+            "active_skill": {
+              "name": "万化归宗",
+              "cost": "25TU",
+              "cooldown": "6回合",
+              "effect": "本回合内所有法器法器攻击不消耗弹药，damage+20%"
+            }
+          },
+          "requirements": {"telomere_level": 65},
+          "flags": ["被动", "主动技能", "法器槽位×4", "弹药制造", "切换省能"],
+          "price": 45000
+        },
+        {
+          "id": "weapon_arsenal_pocket",
+          "name": "千机臂·武库",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "微型空间折叠武库。据说是根据'袖里乾坤'仙术原理改造的先天存储装置，手臂中折叠了一个微型异次元空间，可收纳整整一个小型军火库。",
+          "effects": {
+            "weapon_slots": 5,
+            "weapon_tier_max": 5,
+            "weapon_switch_speed_bonus": 5,
+            "weapon_switch_cost_reduction": 0.7,
+            "ammo_fabrication": true,
+            "infinite_ammo_storage": true,
+            "telomere_cost_passive": "8TU/时辰",
+            "active_skill": {
+              "name": "千机尽出",
+              "cost": "50TU",
+              "cooldown": "12回合",
+              "effect": "本回合内，所有已植入的法器法器同时攻击一次（每把法器独立判定命中），总damage按80%累加"
+            }
+          },
+          "requirements": {"telomere_level": 100},
+          "flags": ["被动", "主动技能", "法器槽位×5", "弹药制造", "无限弹药", "传奇唯一"],
+          "price": 260000,
+          "lore": "袖中藏日月，壶里有乾坤。"
+        }
+      ]
+    },
+
+    "core_special": {
+      "name": "涅槃核",
+      "slot_id": "core_special",
+      "body_part": "丹田/核心",
+      "description": "核心特殊能力槽位，改造丹田位置的终极法器。只能植入一个，提供改变战局的特殊能力。自爆、复活、燃血、涅槃等。",
+      "base_stats_affected": ["特殊技能", "全属性微弱加成"],
+      "max_install_count": 1,
+      "installation_risk": "最高风险！失败可能导致角色永久死亡（概率5%）或所有已植入法器损坏",
+      "cyberwares": [
+        {
+          "id": "core_emergency_heal",
+          "name": "涅槃核·续命",
+          "tier": 1,
+          "rarity": "common",
+          "description": "紧急生命维持系统。kee归零时自动注入一剂强心针，给你续一口命。只能救一次，用过就废。江湖人称'第二条命'。",
+          "effects": {
+            "all_stats_bonus": 1,
+            "passive_skill": {
+              "name": "续命还魂",
+              "effect": "kee归零时自动触发：恢复kee至max_kee的30%，清除所有负面状态。每场战斗限1次，每次植入后仅可用1次（需重新植入）",
+              "cooldown": "一次性消耗"
+            },
+            "telomere_cost_passive": "1TU/时辰"
+          },
+          "requirements": {"telomere_level": 5},
+          "flags": ["被动", "战斗复活", "一次性"],
+          "price": 2000
+        },
+        {
+          "id": "core_overclock",
+          "name": "涅槃核·燃血",
+          "tier": 2,
+          "rarity": "uncommon",
+          "description": "端粒燃血模块。强行榨取端粒深处的备用能量，短时间内获得爆发性提升。用完后端粒会暂时缩短——身体会非常虚弱。",
+          "effects": {
+            "all_stats_bonus": 2,
+            "active_skill": {
+              "name": "端粒燃血",
+              "cost": "30TU + 临时降低max_TU的30%持续整场战斗",
+              "cooldown": "20回合",
+              "effect": "接下来3回合：全属性+8、damage×2.0、闪避+20%，结束后获得'端粒疲劳'debuff（全属性-4持续10回合）"
+            },
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"telomere_level": 25},
+          "flags": ["主动技能", "爆发", "代价型"],
+          "price": 8000
+        },
+        {
+          "id": "core_self_destruct",
+          "name": "涅槃核·舍身",
+          "tier": 3,
+          "rarity": "rare",
+          "description": "微型聚变自毁装置。将全身端粒能量和丹田反应炉在瞬间释放，产生毁灭性爆炸。极端情况下与敌人同归于尽的终极手段。墨家'舍生取义'道心的聊斋体现。",
+          "effects": {
+            "all_stats_bonus": 2,
+            "active_skill": {
+              "name": "焚身爆",
+              "cost": "全部TU + 角色生命归零",
+              "cooldown": "不可重复（角色死亡）",
+              "effect": "对全场所有敌人造成(剩余TU × 3)的真实伤害，无视护甲和闪避。自身死亡。若队友在范围内也会受伤（队友伤害减半）。"
+            },
+            "telomere_cost_passive": "2TU/时辰"
+          },
+          "requirements": {"telomere_level": 40},
+          "flags": ["主动技能", "自毁", "真实伤害", "终极大招"],
+          "price": 15000
+        },
+        {
+          "id": "core_phoenix_rebirth",
+          "name": "涅槃核·涅槃",
+          "tier": 4,
+          "rarity": "epic",
+          "description": "涅槃重生系统。丹田中植入了一组特殊的微尘修复集群和一个记忆备份单元。即使肉体被摧毁，只要丹田核心未损坏，就能在三天后重塑肉身。",
+          "effects": {
+            "all_stats_bonus": 3,
+            "passive_skill": {
+              "name": "凤凰涅槃",
+              "effect": "角色死亡后，若丹田未受直接攻击，3个时辰后自动复活（kee恢复100%，清除所有负面状态）。每次复活消耗1个'涅槃印'，最多存储3个，每个涅槃印需要30日恢复。",
+              "max_charges": 3,
+              "charge_recovery_days": 30
+            },
+            "telomere_cost_passive": "5TU/时辰"
+          },
+          "requirements": {"telomere_level": 70},
+          "flags": ["被动", "复活", "不死"],
+          "price": 80000
+        },
+        {
+          "id": "core_akashic_record",
+          "name": "涅槃核·阿赖耶",
+          "tier": 5,
+          "rarity": "legendary",
+          "description": "传说级核心法器。据说是西域密宗高僧与墨家巨子联手，将'阿赖耶识'的概念工程化——在丹田中植入了通往集体无意识先天场的接口。持有者可以短暂接入宇宙根本信息场，'参悟'任何需要的技能和能力。",
+          "effects": {
+            "all_stats_bonus": 5,
+            "active_skill": {
+              "name": "阿赖耶识·参悟",
+              "cost": "100TU + 100CP",
+              "cooldown": "30回合",
+              "effect": "接下来5回合：全属性+15、所有技能等级临时+50、damage×3.0、免疫一切伤害和异常状态。结束后获得'神识耗尽'debuff（全属性-10持续20回合，不可驱散）"
+            },
+            "passive_skill": {
+              "name": "不灭意志",
+              "effect": "kee归零时不会死亡，改为进入'濒死'状态（kee=1，无法行动但可被队友救治）。每场战斗限1次。"
+            },
+            "telomere_cost_passive": "10TU/时辰"
+          },
+          "requirements": {"telomere_level": 100},
+          "flags": ["主动技能", "神降", "不灭", "终极大招", "传奇唯一"],
+          "price": 500000,
+          "lore": "万法归一，一归万法。阿赖耶识，不生不灭。"
+        }
+      ]
+    }
+  },
+
+  "weapons": [
+    {
+      "id": "wpn_vibro_xiuchun",
+      "name": "分子振动·绣春刀",
+      "type": "刀/法器复合",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "刀类",
+      "damage": 15,
+      "atk_bonus": 5,
+      "skill_used": "blade",
+      "min_str": 8,
+      "weight": 2.5,
+      "rarity": "common",
+      "flags": ["可淬毒", "可格挡", "分子振动", "破甲10%"],
+      "description": "锦衣卫制式装备。刀身以分子振动技术锻制，刃口在微尘尺度上每秒振动百万次，能切开大多数合金装甲。刀柄内置微型电池，续航8个时辰。",
+      "price": 1500
+    },
+    {
+      "id": "wpn_plasma_yanling",
+      "name": "等离子·雁翎刀",
+      "type": "刀/能量刃",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "刀类",
+      "damage": 20,
+      "atk_bonus": 7,
+      "skill_used": "blade",
+      "min_str": 10,
+      "weight": 2.8,
+      "rarity": "uncommon",
+      "flags": ["可格挡", "等离子", "灼烧", "破甲20%", "能量法器"],
+      "description": "刀身被电离气体包裹，出鞘时发幽蓝光芒。能以高温等离子体熔化对方护甲，附带的灼烧效果让伤口无法愈合。边军游击将军的佩刀首选。",
+      "price": 6000
+    },
+    {
+      "id": "wpn_quantum_guandao",
+      "name": "先天·青龙偃月",
+      "type": "刀/先天刃",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "刀类",
+      "damage": 28,
+      "atk_bonus": 10,
+      "skill_used": "blade",
+      "min_str": 14,
+      "weight": 4.5,
+      "rarity": "rare",
+      "flags": ["可格挡", "先天刀刃", "破甲35%", "重兵器", "双手"],
+      "description": "仿关羽青龙偃月刀之形制，刀身以先天纠缠态金属锻造。斩击时刀刃可短暂先天隧穿护甲，直接伤及本体。挥舞时带龙吟之声，威势惊人。",
+      "price": 25000
+    },
+    {
+      "id": "wpn_vibro_tangheng",
+      "name": "分子振动·唐横刀",
+      "type": "刀/法器复合",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "刀类",
+      "damage": 18,
+      "atk_bonus": 6,
+      "skill_used": "blade",
+      "min_str": 9,
+      "weight": 2.2,
+      "rarity": "uncommon",
+      "flags": ["可淬毒", "可格挡", "分子振动", "破甲15%", "轻便"],
+      "description": "唐代横刀形制的聊斋复刻。轻便灵巧，出刀极快，分子振动刃可轻松切开锁子甲。长安不良帅的标准佩刀。",
+      "price": 5000
+    },
+    {
+      "id": "wpn_nano_wakizashi",
+      "name": "微尘丝·胁差",
+      "type": "刀/微尘刃",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "刀类",
+      "damage": 22,
+      "atk_bonus": 8,
+      "skill_used": "blade",
+      "min_str": 6,
+      "weight": 1.0,
+      "rarity": "epic",
+      "flags": ["可淬毒", "微尘刃", "破甲40%", "无视护甲50%", "轻便", "单分子"],
+      "description": "刀刃仅一个微尘厚——理论上可以切开任何宏观物体。轻若鸿毛，锋利无双。据说刀身在黑暗中是隐形的，只有沾了血才显出轮廓。",
+      "price": 45000
+    },
+    {
+      "id": "wpn_plasma_longyuan",
+      "name": "等离子·龙渊剑",
+      "type": "剑/能量刃",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "剑类",
+      "damage": 19,
+      "atk_bonus": 9,
+      "skill_used": "sword",
+      "min_str": 8,
+      "weight": 1.8,
+      "rarity": "uncommon",
+      "flags": ["可格挡", "等离子", "灼烧", "破甲20%", "能量法器"],
+      "description": "剑身内部有微型等离子发生器，出鞘时剑身被电离氩气包裹。蓝焰缭绕，煞是好看。华山派聊斋剑宗的入门佩剑。",
+      "price": 7000
+    },
+    {
+      "id": "wpn_vibro_qinggang",
+      "name": "分子振动·青釭剑",
+      "type": "剑/法器复合",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "剑类",
+      "damage": 17,
+      "atk_bonus": 8,
+      "skill_used": "sword",
+      "min_str": 7,
+      "weight": 1.6,
+      "rarity": "rare",
+      "flags": ["可格挡", "分子振动", "破甲25%", "精准", "名剑"],
+      "description": "传说中赵云佩剑的聊斋复刻。剑身以钛合金为基，分子振动脉动精确校准到与人体神经系统共振。握剑者感觉剑是手臂的自然延伸。",
+      "price": 28000
+    },
+    {
+      "id": "wpn_quantum_chunjun",
+      "name": "先天·纯钧剑",
+      "type": "剑/先天刃",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "剑类",
+      "damage": 30,
+      "atk_bonus": 12,
+      "skill_used": "sword",
+      "min_str": 12,
+      "weight": 2.0,
+      "rarity": "legendary",
+      "flags": ["可格挡", "先天刀刃", "破甲50%", "名剑", "暴击率+10%", "先天纠缠"],
+      "description": "上古名剑'纯钧'的先天态重构版本。剑身由纠缠态先天对构成——一把剑在两个位置同时存在。你的剑刃可能从任何方向、任何距离发起攻击。欧冶子在九泉之下也会惊叹。",
+      "price": 180000
+    },
+    {
+      "id": "wpn_plasma_zhangba",
+      "name": "等离子·丈八蛇矛",
+      "type": "枪/能量矛",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "枪类",
+      "damage": 24,
+      "atk_bonus": 8,
+      "skill_used": "spear",
+      "min_str": 13,
+      "weight": 5.0,
+      "rarity": "rare",
+      "flags": ["等离子", "灼烧", "破甲20%", "长兵器", "可格挡", "冲锋加成"],
+      "description": "张飞丈八蛇矛的等离子强化版。矛尖喷射电离气体形成等离子蛇信，刺入敌人身体后会向四周释放电弧。冲锋陷阵第一利器。",
+      "price": 22000
+    },
+    {
+      "id": "wpn_vibro_big_spear",
+      "name": "分子振动·沥泉枪",
+      "type": "枪/法器复合",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "枪类",
+      "damage": 21,
+      "atk_bonus": 7,
+      "skill_used": "spear",
+      "min_str": 11,
+      "weight": 4.0,
+      "rarity": "uncommon",
+      "flags": ["分子振动", "破甲15%", "长兵器", "可格挡", "名枪"],
+      "description": "岳飞沥泉神枪的聊斋改造版。枪尖以分子振动合金打造，刺入护甲如穿纸帛。枪身内置惯性制导陀螺仪，投掷后可自动修正弹道。",
+      "price": 9000
+    },
+    {
+      "id": "wpn_emp_whip",
+      "name": "电磁鞭·缚龙索",
+      "type": "鞭/电磁法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "鞭类",
+      "damage": 14,
+      "atk_bonus": 6,
+      "skill_used": "whip",
+      "min_str": 5,
+      "weight": 1.5,
+      "rarity": "rare",
+      "flags": ["鞭类", "电磁脉冲", "远程近战", "缴械", "对机械特攻"],
+      "description": "以超导丝线编织的电磁鞭。击打敌人时会释放EMP脉冲，对电子设备和法器化敌人效果拔群。最重要的是——能让对方的法器脱手飞出。",
+      "price": 15000
+    },
+    {
+      "id": "wpn_plasma_whip",
+      "name": "等离子鞭·火蛇",
+      "type": "鞭/等离子法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "鞭类",
+      "damage": 18,
+      "atk_bonus": 5,
+      "skill_used": "whip",
+      "min_str": 6,
+      "weight": 1.8,
+      "rarity": "epic",
+      "flags": ["鞭类", "等离子", "灼烧", "远程近战", "范围攻击"],
+      "description": "整条鞭子就是一道被磁场约束的等离子体。挥舞时如一条火蛇在空中狂舞，所过之处熔金化铁。注意：雨天慎用，可能短路。",
+      "price": 42000
+    },
+    {
+      "id": "wpn_vibro_staff",
+      "name": "分子振动·盘龙棍",
+      "type": "棍/法器复合",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "棍类",
+      "damage": 16,
+      "atk_bonus": 6,
+      "skill_used": "stick",
+      "min_str": 10,
+      "weight": 3.5,
+      "rarity": "common",
+      "flags": ["可格挡", "分子振动", "破甲10%", "长兵器", "钝器", "少林"],
+      "description": "少林棍法的聊斋改造版。棍身以碳纤维缠绕钛合金芯制成，两端内置分子振动锤击模块。一棍下去，内伤外伤一起来。",
+      "price": 3000
+    },
+    {
+      "id": "wpn_shock_hammer",
+      "name": "雷霆锤·雷公",
+      "type": "锤/电磁法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "锤类",
+      "damage": 26,
+      "atk_bonus": 4,
+      "skill_used": "hammer",
+      "min_str": 16,
+      "weight": 8.0,
+      "rarity": "rare",
+      "flags": ["重兵器", "电磁冲击", "眩晕", "破甲30%", "双手", "钝器"],
+      "description": "巨型动力锤。锤头内置电容阵列，击中的瞬间释放高压脉冲，不但砸碎骨头还能电晕对手。需要法器手臂才能从容挥舞。",
+      "price": 20000
+    },
+    {
+      "id": "wpn_shock_claw",
+      "name": "电击爪·无常",
+      "type": "爪/电磁法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "爪/匕首类",
+      "damage": 12,
+      "atk_bonus": 10,
+      "skill_used": "dagger",
+      "min_str": 4,
+      "weight": 0.8,
+      "rarity": "uncommon",
+      "flags": ["轻便", "电磁", "麻痹", "暴击率+5%", "可淬毒"],
+      "description": "五指尖端内藏高压电极，划过敌人皮肤时释放电流麻痹神经。黑白无常同款——白无常电左，黑无常电右。暗杀者和拷问官的最爱。",
+      "price": 5500
+    },
+    {
+      "id": "wpn_rail_crossbow",
+      "name": "电磁弩·追星",
+      "type": "弩/电磁发射器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "暗器/远程类",
+      "damage": 22,
+      "atk_bonus": 8,
+      "skill_used": "throwing",
+      "min_str": 6,
+      "weight": 3.0,
+      "rarity": "rare",
+      "flags": ["远程", "电磁加速", "破甲30%", "无声", "弹药:钢针"],
+      "description": "以电磁轨道加速发射钢针的弩。无声、无焰、无烟，三百步外取人性命而敌人不知攻击来自何方。锦衣卫暗杀行动专用。",
+      "price": 18000
+    },
+    {
+      "id": "wpn_gauss_bow",
+      "name": "高斯弓·落月",
+      "type": "弓/电磁加速",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "弓类",
+      "damage": 20,
+      "atk_bonus": 7,
+      "skill_used": "archery",
+      "min_str": 8,
+      "weight": 2.5,
+      "rarity": "epic",
+      "flags": ["远程", "高斯加速", "破甲25%", "穿透", "弹药:碳纤维箭"],
+      "description": "看似一张传统木弓，弓弦却是超导线圈。拉开弓弦时电容器充电，释放时以高斯原理将碳纤维箭加速至超音速。箭过之处，音爆如雷。",
+      "price": 48000
+    },
+    {
+      "id": "wpn_cyber_fire_palm",
+      "name": "麒麟臂·烈焰",
+      "type": "法器法器/等离子喷射",
+      "category": "纯法器法器",
+      "sub_category": "麒麟臂系",
+      "damage": 18,
+      "atk_bonus": 6,
+      "skill_used": "unarmed",
+      "min_str": 10,
+      "weight": 0,
+      "rarity": "rare",
+      "flags": ["法器法器", "等离子喷射", "灼烧", "范围攻击", "需麒麟臂≥3级", "能量法器"],
+      "description": "手掌中心植入微型等离子发生器。出掌时从掌心喷射等离子火球，近距离可将敌人烧成焦炭。传说中的'火焰掌'终于有了科学解释。",
+      "install_slot": "千机臂",
+      "energy_cost": "8TU/次",
+      "price": 12000
+    },
+    {
+      "id": "wpn_cyber_storm_needle",
+      "name": "千机臂·暴雨",
+      "type": "法器法器/暗器发射器",
+      "category": "纯法器法器",
+      "sub_category": "千机臂系",
+      "damage": 10,
+      "atk_bonus": 8,
+      "skill_used": "throwing",
+      "min_str": 4,
+      "weight": 0,
+      "rarity": "uncommon",
+      "flags": ["法器法器", "多发", "远程", "可淬毒", "需千机臂≥1级"],
+      "description": "前臂内置转轮式暗器发射器。一次可装填12支淬毒钢针，以压缩气体发射。暴雨梨花针的工业化量产版本。",
+      "install_slot": "千机臂",
+      "energy_cost": "3TU/发",
+      "ammo_per_volley": 12,
+      "price": 4000
+    },
+    {
+      "id": "wpn_cyber_monofilament",
+      "name": "千机臂·单分子线",
+      "type": "法器法器/微尘线",
+      "category": "纯法器法器",
+      "sub_category": "千机臂系",
+      "damage": 16,
+      "atk_bonus": 10,
+      "skill_used": "whip",
+      "min_str": 5,
+      "weight": 0,
+      "rarity": "epic",
+      "flags": ["法器法器", "单分子", "破甲50%", "远程近战", "暗杀", "需千机臂≥2级"],
+      "description": "从手腕射出两根仅一个分子粗的切割线。可以像鞭子一样挥舞切割，也可以悄悄绕到敌人身后拉线——敌人还没感觉到痛就已经身首异处。",
+      "install_slot": "千机臂",
+      "energy_cost": "5TU/次",
+      "price": 38000
+    },
+    {
+      "id": "wpn_cyber_mantis_blade",
+      "name": "千机臂·螳螂刀",
+      "type": "法器法器/弹出式刀刃",
+      "category": "纯法器法器",
+      "sub_category": "千机臂系",
+      "damage": 22,
+      "atk_bonus": 7,
+      "skill_used": "blade",
+      "min_str": 6,
+      "weight": 0,
+      "rarity": "rare",
+      "flags": ["法器法器", "弹出式", "分子振动", "破甲25%", "快速攻击", "需千机臂≥2级"],
+      "description": "前臂骨外侧内置两把可弹出的分子振动刀。平时隐藏，战斗时从手腕上方弹出，如螳螂的前臂。攻速极快，适合连击流。",
+      "install_slot": "千机臂",
+      "energy_cost": "2TU/回合（展开状态）",
+      "price": 16000
+    },
+    {
+      "id": "wpn_cyber_gorilla_fist",
+      "name": "麒麟臂·金刚拳",
+      "type": "法器法器/动力拳套",
+      "category": "纯法器法器",
+      "sub_category": "麒麟臂系",
+      "damage": 25,
+      "atk_bonus": 5,
+      "skill_used": "unarmed",
+      "min_str": 12,
+      "weight": 0,
+      "rarity": "rare",
+      "flags": ["法器法器", "动力拳", "钝器", "破甲30%", "击退", "需麒麟臂≥2级"],
+      "description": "拳骨上覆盖钛合金冲击面，内置微型火箭推进器。一拳打出时火箭点火加速，冲击力堪比攻城锤。可以徒手拆城门——字面意思。",
+      "install_slot": "千机臂",
+      "energy_cost": "10TU/拳",
+      "price": 14000
+    },
+    {
+      "id": "wpn_cyber_projectile_launcher",
+      "name": "千机臂·霹雳炮",
+      "type": "法器法器/微型导弹",
+      "category": "纯法器法器",
+      "sub_category": "千机臂系",
+      "damage": 30,
+      "atk_bonus": 3,
+      "skill_used": "throwing",
+      "min_str": 8,
+      "weight": 0,
+      "rarity": "epic",
+      "flags": ["法器法器", "爆炸", "范围攻击", "远程", "弹药:微型火箭", "需千机臂≥3级"],
+      "description": "手臂内藏微型火箭发射管。发射的'神火飞鸦'微型火箭锁定目标后自动追踪，命中即爆炸。一发的威力相当于一个小型火药桶。",
+      "install_slot": "千机臂",
+      "energy_cost": "15TU/发",
+      "ammo_type": "微型火箭弹",
+      "price": 35000
+    },
+    {
+      "id": "wpn_cyber_lightning_arc",
+      "name": "麒麟臂·惊雷",
+      "type": "法器法器/电弧发射器",
+      "category": "纯法器法器",
+      "sub_category": "麒麟臂系",
+      "damage": 20,
+      "atk_bonus": 5,
+      "skill_used": "unarmed",
+      "min_str": 10,
+      "weight": 0,
+      "rarity": "epic",
+      "flags": ["法器法器", "电弧", "连锁伤害", "对机械特攻", "麻痹", "需麒麟臂≥3级"],
+      "description": "手掌内置特斯拉线圈。释放高压电弧连锁攻击多个敌人，对装备电子设备的敌人有额外伤害。雨天威力翻倍——不过自己也可能被电到。",
+      "install_slot": "千机臂",
+      "energy_cost": "12TU/次",
+      "chain_targets": 3,
+      "price": 32000
+    },
+    {
+      "id": "wpn_cyber_nanite_swarm",
+      "name": "千机臂·微尘蜂群",
+      "type": "法器法器/微尘傀儡群",
+      "category": "纯法器法器",
+      "sub_category": "千机臂系",
+      "damage": 15,
+      "atk_bonus": 12,
+      "skill_used": "unarmed",
+      "min_str": 4,
+      "weight": 0,
+      "rarity": "legendary",
+      "flags": ["法器法器", "微尘", "持续伤害", "忽略护甲", "自动追踪", "需千机臂≥4级"],
+      "description": "释放一群微尘分解傀儡。蜂群自动追踪最近的敌人，钻进护甲缝隙后开始分解血肉。每回合造成持续伤害直到敌人死亡或蜂群能量耗尽。真正的'蚀骨之痛'。",
+      "install_slot": "千机臂",
+      "energy_cost": "20TU/次",
+      "duration": "5回合",
+      "damage_per_turn": 8,
+      "price": 85000
+    },
+    {
+      "id": "wpn_quantum_cutter",
+      "name": "先天切割刃",
+      "type": "先天法器/手持",
+      "category": "先天法器",
+      "sub_category": "先天系",
+      "damage": 32,
+      "atk_bonus": 8,
+      "skill_used": "blade",
+      "min_str": 6,
+      "weight": 1.5,
+      "rarity": "epic",
+      "flags": ["先天刀刃", "破甲60%", "无视护甲30%", "能量法器"],
+      "description": "握柄发射出一道先天概率波形成的'刀刃'。它不是一个物理实体——它在宏观层面表现为一把刀，但在先天层面无处不在又无处可在。被它切开的物体，截面光滑得在电子显微镜下也看不出磨损。",
+      "price": 65000
+    },
+    {
+      "id": "wpn_quantum_halberd",
+      "name": "先天方天画戟",
+      "type": "先天法器/长柄",
+      "category": "先天法器",
+      "sub_category": "先天系",
+      "damage": 35,
+      "atk_bonus": 9,
+      "skill_used": "halberd",
+      "min_str": 14,
+      "weight": 5.5,
+      "rarity": "legendary",
+      "flags": ["先天刀刃", "长兵器", "破甲60%", "重兵器", "暴击率+8%", "名器"],
+      "description": "吕布方天画戟的先天重铸。戟刃在多个平行维度同时存在，一次挥击等于无数个你同时在攻击。防御者的护甲再厚，也挡不住从另一个维度切入的刃锋。",
+      "price": 220000
+    },
+    {
+      "id": "wpn_nano_thread_blade",
+      "name": "微尘丝刃",
+      "type": "微尘法器/软剑",
+      "category": "先天/微尘法器",
+      "sub_category": "微尘系",
+      "damage": 26,
+      "atk_bonus": 14,
+      "skill_used": "sword",
+      "min_str": 4,
+      "weight": 0.3,
+      "rarity": "epic",
+      "flags": ["微尘刃", "单分子", "破甲70%", "轻便", "柔韧", "暗杀"],
+      "description": "整把剑就是一根绷紧的微尘碳管丝线。平时可绕在手腕上当手链，抽出时通电变硬成剑。轻到几乎没有重量，锋利到可以切开时间——这是夸张的说法，但切开任何物质——这是事实。",
+      "price": 72000
+    },
+    {
+      "id": "wpn_phase_dagger",
+      "name": "相位匕首·无常",
+      "type": "先天法器/短刃",
+      "category": "先天法器",
+      "sub_category": "先天系",
+      "damage": 20,
+      "atk_bonus": 15,
+      "skill_used": "dagger",
+      "min_str": 3,
+      "weight": 0.5,
+      "rarity": "legendary",
+      "flags": ["相位法器", "破甲80%", "无视护甲", "暗杀", "先天隧穿"],
+      "description": "一把可以在固体物质中'穿墙'的匕首。激活时刀身在先天层面逐出相位，插入敌人身体后重新实体化——刀尖直接出现在心脏内部。没有任何护甲能阻挡它，因为它根本不经过护甲。黑白无常证道之器。",
+      "price": 200000
+    },
+    {
+      "id": "wpn_smart_bow",
+      "name": "智能弓·天命",
+      "type": "弓/智能法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "弓类",
+      "damage": 23,
+      "atk_bonus": 12,
+      "skill_used": "archery",
+      "min_str": 7,
+      "weight": 2.0,
+      "rarity": "epic",
+      "flags": ["远程", "智能追踪", "破甲20%", "自动瞄准", "弹药:智能箭"],
+      "description": "弓身内嵌弹道计算灵石和微型姿态推进器。拉弓时自动计算风速、距离、目标移动轨迹。射出的箭可以在空中微调方向，会拐弯的箭——戚继光若在世定会狂喜。",
+      "price": 55000
+    },
+    {
+      "id": "wpn_plasma_staff",
+      "name": "等离子·降魔杵",
+      "type": "杖/能量法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "杖类",
+      "damage": 22,
+      "atk_bonus": 7,
+      "skill_used": "staff",
+      "min_str": 9,
+      "weight": 3.0,
+      "rarity": "rare",
+      "flags": ["可格挡", "等离子", "灼烧", "破甲20%", "对妖魔特攻", "少林"],
+      "description": "少林降魔杵的等离子升级版。杵头可释放高温等离子体，对'妖物'（即未登记法器改造者）有额外伤害加成。大和尚们说这是科学驱魔。",
+      "price": 18000
+    },
+    {
+      "id": "wpn_kinetic_mace",
+      "name": "动能流星锤·陨星",
+      "type": "锤/动能法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "鞭/锤类",
+      "damage": 28,
+      "atk_bonus": 4,
+      "skill_used": "mace",
+      "min_str": 13,
+      "weight": 6.0,
+      "rarity": "rare",
+      "flags": ["重兵器", "动能冲击", "击退", "破甲35%", "双手"],
+      "description": "链锤的聊斋强化。锤头内置陀螺仪和微型火箭，甩出后自动修正轨迹并加速。中者无不筋断骨折。据说灵感来自流星锤大师'铁臂'张的实战灵息。",
+      "price": 16000
+    },
+    {
+      "id": "wpn_vibro_trident",
+      "name": "分子振动·三尖两刃刀",
+      "type": "叉/法器复合",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "叉类",
+      "damage": 19,
+      "atk_bonus": 7,
+      "skill_used": "fork",
+      "min_str": 10,
+      "weight": 3.5,
+      "rarity": "uncommon",
+      "flags": ["分子振动", "破甲15%", "可格挡", "缴械", "长兵器"],
+      "description": "二郎神三尖两刃刀的科技复刻。三股叉尖均带分子振动，中叉主攻，两侧叉齿专门锁拿对方兵器。'叉住你的刀'不再只是比喻。",
+      "price": 7500
+    },
+    {
+      "id": "wpn_plasma_rake",
+      "name": "等离子·九齿钉耙",
+      "type": "耙/能量法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "耙类",
+      "damage": 20,
+      "atk_bonus": 6,
+      "skill_used": "rake",
+      "min_str": 11,
+      "weight": 4.5,
+      "rarity": "uncommon",
+      "flags": ["等离子", "灼烧", "破甲15%", "长兵器", "范围攻击"],
+      "description": "猪八戒九齿钉耙的等离子版。九个耙齿各自独立喷射等离子体，一耙下去九道灼痕。耕地效率极高——字面意思。",
+      "price": 7000
+    },
+    {
+      "id": "wpn_cryo_blade",
+      "name": "寒冰刃·霜降",
+      "type": "刀/低温法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "刀类",
+      "damage": 17,
+      "atk_bonus": 8,
+      "skill_used": "blade",
+      "min_str": 7,
+      "weight": 2.2,
+      "rarity": "rare",
+      "flags": ["低温", "冰冻", "减速", "破甲20%", "能量法器"],
+      "description": "刀身内循环液态氦，出鞘时刀面温度接近绝对零度。砍中敌人不只割伤，还会瞬间冻伤组织。被砍中的人会感觉一股寒意从伤口蔓延全身，动作越来越慢。",
+      "price": 20000
+    },
+    {
+      "id": "wpn_smart_rifle",
+      "name": "智能火铳·神机",
+      "type": "火器/智能法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "火器/远程",
+      "damage": 35,
+      "atk_bonus": 10,
+      "skill_used": "archery",
+      "min_str": 7,
+      "weight": 4.0,
+      "rarity": "epic",
+      "flags": ["远程", "智能", "破甲40%", "火器", "弹药:智能弹丸", "神机营"],
+      "description": "神机营最新列装的智能火铳。内置弹道计算灵石，发射的智能弹丸可在飞行中微调轨迹。三百步外百发百中，雨天也能用——弹丸自带防水密封。",
+      "price": 60000
+    },
+    {
+      "id": "wpn_quantum_bow",
+      "name": "先天弓·射日",
+      "type": "弓/先天法器",
+      "category": "先天法器",
+      "sub_category": "先天系",
+      "damage": 38,
+      "atk_bonus": 12,
+      "skill_used": "archery",
+      "min_str": 10,
+      "weight": 2.5,
+      "rarity": "legendary",
+      "flags": ["远程", "先天箭", "破甲60%", "必中", "无视距离", "名器"],
+      "description": "据说是后羿射日神弓的先天态。射出的是先天纠缠箭——箭头在你松手的那一刻已经命中目标，箭杆只是跟在后面完成因果律。所以你永远不会'射偏'。",
+      "price": 250000
+    },
+    {
+      "id": "wpn_sonic_blade",
+      "name": "超声波刃·天籁",
+      "type": "剑/声波法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "剑类",
+      "damage": 18,
+      "atk_bonus": 9,
+      "skill_used": "sword",
+      "min_str": 6,
+      "weight": 1.5,
+      "rarity": "rare",
+      "flags": ["超声波", "破甲30%", "内伤", "隐形伤害", "能量法器"],
+      "description": "剑身以超声波脉动振动（人耳无法听见）。砍中外表无伤，但超声波已将皮下组织和内脏震得稀碎。外表完好内里已烂——这种'体面'的死法是宫廷刺客的招牌。",
+      "price": 24000
+    },
+    {
+      "id": "wpn_disruptor_baton",
+      "name": "瓦解棍·断念",
+      "type": "棍/电磁法器",
+      "category": "传统冷兵器·聊斋改造",
+      "sub_category": "棍类",
+      "damage": 15,
+      "atk_bonus": 8,
+      "skill_used": "stick",
+      "min_str": 7,
+      "weight": 2.0,
+      "rarity": "uncommon",
+      "flags": ["电磁", "麻痹", "缴械", "可格挡", "非致命"],
+      "description": "锦衣卫维持治安的非致命法器。击打时释放定向电磁脉冲，直接干扰对方神经灵波。被打中的人不会流血，但当场四肢瘫软动弹不得。镇压暴动的利器。",
+      "price": 4000
+    },
+    {
+      "id": "wpn_antimatter_dart",
+      "name": "反物质针·虚无",
+      "type": "暗器/反物质法器",
+      "category": "先天法器",
+      "sub_category": "暗器类",
+      "damage": 50,
+      "atk_bonus": 5,
+      "skill_used": "throwing",
+      "min_str": 3,
+      "weight": 0.1,
+      "rarity": "legendary",
+      "flags": ["暗器", "反物质", "湮灭", "真实伤害", "一次性"],
+      "description": "针尖封存着微克级别的反物质。射入目标身体后磁约束失效，反物质与正物质湮灭——目标身体的一部分直接'消失'。每一根都是一次性的，用一根少一根。东厂秘密法器库最深处的东西。",
+      "price": 50000,
+      "ammo_consumable": true
+    }
+  ],
+
+  "neural_chips": [
+    {
+      "id": "chip_telomere_basic",
+      "name": "端粒酶·初阶注入",
+      "category": "修为灵石（端粒经验）",
+      "effect": "端粒修为经验+30",
+      "rarity": "common",
+      "cp_cost": 5,
+      "duration": "瞬间",
+      "cooldown": "无",
+      "description": "基础的微尘机械补给。亿万微尘傀儡携带端粒酶前体进入细胞核，加速端粒序列的延伸。江湖散修最常用的基础修炼灵石。",
+      "price": 200
+    },
+    {
+      "id": "chip_telomere_advanced",
+      "name": "端粒酶·中阶注入",
+      "category": "修为灵石（端粒经验）",
+      "effect": "端粒修为经验+100",
+      "rarity": "uncommon",
+      "cp_cost": 10,
+      "duration": "瞬间",
+      "cooldown": "无",
+      "description": "中等纯度的端粒酶微尘集群。效率是初阶的三倍有余。锦衣卫每月配发两枚作为修炼补贴。",
+      "price": 800
+    },
+    {
+      "id": "chip_telomere_elite",
+      "name": "端粒酶·高阶注入",
+      "category": "修为灵石（端粒经验）",
+      "effect": "端粒修为经验+300",
+      "rarity": "rare",
+      "cp_cost": 15,
+      "duration": "瞬间",
+      "cooldown": "无",
+      "description": "高纯度医用级端粒酶制剂。用一枚就抵得上苦修一月。东厂千户以上才能享用的稀缺资源。",
+      "price": 3000
+    },
+    {
+      "id": "chip_telomere_legendary",
+      "name": "端粒酶·太初原液",
+      "category": "修为灵石（端粒经验）",
+      "effect": "端粒修为经验+1000，有小概率(5%)直接突破当前境界",
+      "rarity": "legendary",
+      "cp_cost": 25,
+      "duration": "瞬间",
+      "cooldown": "无",
+      "description": "传说中从上古遗迹中提取的原始端粒酶样本。没人知道它是怎么合成的——所有试图拓印的丹房都失败了。据说一滴就能让凡人不老不死。",
+      "price": 50000
+    },
+    {
+      "id": "chip_compute_recovery_small",
+      "name": "算力·微风",
+      "category": "算力灵石（CP恢复）",
+      "effect": "立即恢复30CP",
+      "rarity": "common",
+      "cp_cost": 0,
+      "duration": "瞬间",
+      "cooldown": "5回合",
+      "description": "轻量级算力清理程序。就像给大脑扇了一阵凉风，头脑突然清醒了一点。",
+      "price": 150
+    },
+    {
+      "id": "chip_compute_recovery_medium",
+      "name": "算力·清泉",
+      "category": "算力灵石（CP恢复）",
+      "effect": "立即恢复80CP",
+      "rarity": "uncommon",
+      "cp_cost": 0,
+      "duration": "瞬间",
+      "cooldown": "5回合",
+      "description": "高效算力回收程序。清理神经元之间的垃圾灵波，释放被占用的计算资源。感觉就像渴了三天后喝到一口清泉。",
+      "price": 500
+    },
+    {
+      "id": "chip_compute_recovery_large",
+      "name": "算力·江河",
+      "category": "算力灵石（CP恢复）",
+      "effect": "立即恢复200CP",
+      "rarity": "rare",
+      "cp_cost": 0,
+      "duration": "瞬间",
+      "cooldown": "5回合",
+      "description": "大规模算力重置程序。将整个八荒脑的计算集群回魂优化，释放全部闲置资源。代价是接下来的5回合内无法使用任何灵石。",
+      "price": 2000
+    },
+    {
+      "id": "chip_compute_boost_short",
+      "name": "燃血·短时",
+      "category": "算力灵石（CP上限）",
+      "effect": "CP上限临时+50，持续10回合",
+      "rarity": "uncommon",
+      "cp_cost": 10,
+      "duration": "10回合",
+      "cooldown": "20回合",
+      "description": "临时增加脑神经接口的供电电压，在短时间内大幅提升算力上限。结束后会有短暂的头疼。",
+      "price": 600
+    },
+    {
+      "id": "chip_compute_boost_long",
+      "name": "燃血·持久",
+      "category": "算力灵石（CP上限）",
+      "effect": "CP上限临时+100，持续20回合",
+      "rarity": "rare",
+      "cp_cost": 20,
+      "duration": "20回合",
+      "cooldown": "30回合",
+      "description": "军用级算力扩容程序。神机营技术官开发的战场灵石，可以让一个普通操作员在关键时刻拥有相当于一台小型服务器的算力。",
+      "price": 3000
+    },
+    {
+      "id": "chip_heal_minor",
+      "name": "神经修复·微创",
+      "category": "治疗灵石（生命恢复）",
+      "effect": "立即恢复kee 50点，清除轻微流血",
+      "rarity": "common",
+      "cp_cost": 5,
+      "duration": "瞬间",
+      "cooldown": "3回合",
+      "description": "基础型微尘医疗傀儡集群。携带凝血因子和细胞生长因子，专治外伤。每个江湖人身上都应备上一打。",
+      "price": 100
+    },
+    {
+      "id": "chip_heal_medium",
+      "name": "神经修复·正骨",
+      "category": "治疗灵石（生命恢复）",
+      "effect": "立即恢复kee 150点，清除流血和轻微骨折",
+      "rarity": "uncommon",
+      "cp_cost": 10,
+      "duration": "瞬间",
+      "cooldown": "5回合",
+      "description": "外科级微尘修复集群。不仅能止血缝伤口，还能用碳纤维支架临时固定断骨。战场上活命的保障。",
+      "price": 400
+    },
+    {
+      "id": "chip_heal_major",
+      "name": "神经修复·再造",
+      "category": "治疗灵石（生命恢复）",
+      "effect": "立即恢复kee 400点，清除所有物理伤势，临时免疫流血10回合",
+      "rarity": "rare",
+      "cp_cost": 20,
+      "duration": "瞬间",
+      "cooldown": "8回合",
+      "description": "顶级微尘医疗程序。微尘傀儡集群进入受损组织，不仅能修复伤口，还能在短时间内3D打印替代组织填补缺损。就算是肠子被打穿了也能给你补好。",
+      "price": 2000
+    },
+    {
+      "id": "chip_heal_complete",
+      "name": "神经修复·涅槃",
+      "category": "治疗灵石（生命恢复）",
+      "effect": "kee恢复至100%，清除所有负面状态（包括经脉损伤和走火入魔），免疫所有伤害3回合",
+      "rarity": "legendary",
+      "cp_cost": 40,
+      "duration": "瞬间+3回合无敌",
+      "cooldown": "30回合",
+      "description": "传说中的万能微尘修复程序。据说是从龙脉秘境中发掘的上古医疗器灵，能在一瞬间完成全身的分子级重建。启动时你的身体会发出金光——那不是特效，是微尘傀儡在做他们的工作。",
+      "price": 40000
+    },
+    {
+      "id": "chip_breakthrough_basic",
+      "name": "突破·破壁",
+      "category": "突破灵石（境界突破）",
+      "effect": "突破当前境界成功率+15%（一次性，锁定期间使用）",
+      "rarity": "uncommon",
+      "cp_cost": 15,
+      "duration": "一次性",
+      "cooldown": "无（但仅突破时可使用）",
+      "description": "境界突破辅助程序。在你冲击修炼瓶颈时，灵石会暂时抑制大脑中产生'自我怀疑'灵波的神经回路——说白了就是让你在突破时更自信。心理作用也是作用。",
+      "price": 3000
+    },
+    {
+      "id": "chip_breakthrough_advanced",
+      "name": "突破·碎虚",
+      "category": "突破灵石（境界突破）",
+      "effect": "突破当前境界成功率+30%（一次性，锁定期间使用）",
+      "rarity": "rare",
+      "cp_cost": 25,
+      "duration": "一次性",
+      "cooldown": "无",
+      "description": "高级突破辅助程序。除了抑制自我怀疑灵波外，还短暂增强端粒酶的活性，让端粒在突破瞬间更容易延长。朝廷给功臣宿将的特供品。",
+      "price": 12000
+    },
+    {
+      "id": "chip_breakthrough_legendary",
+      "name": "突破·证道",
+      "category": "突破灵石（境界突破）",
+      "effect": "突破当前境界成功率+50%，失败不受反噬伤害，成功额外获得端粒经验500",
+      "rarity": "legendary",
+      "cp_cost": 40,
+      "duration": "一次性",
+      "cooldown": "无",
+      "description": "传说级的突破灵石。据说是秦始皇当年派徐福寻来的'长生不老药'配方，经过聊斋科技的重新编译。用了它——突破就像推一扇已经开了锁的门。",
+      "price": 80000
+    },
+    {
+      "id": "chip_firewall_basic",
+      "name": "护体罡气·篱笆",
+      "category": "防御灵石（抗心魔/抗破解）",
+      "effect": "神经入侵防御+15%，持续30回合",
+      "rarity": "common",
+      "cp_cost": 5,
+      "duration": "30回合",
+      "cooldown": "5回合",
+      "description": "基础神经护体罡气。在神经系统外面树一道简单的隔离墙，抵挡低级的法器入侵和走火入魔。篱笆不牢，但总比敞开门强。",
+      "price": 200
+    },
+    {
+      "id": "chip_firewall_advanced",
+      "name": "护体罡气·坚壁",
+      "category": "防御灵石（抗心魔/抗破解）",
+      "effect": "神经入侵防御+30%，免疫低级法器破解，持续50回合",
+      "rarity": "uncommon",
+      "cp_cost": 10,
+      "duration": "50回合",
+      "cooldown": "10回合",
+      "description": "军用级神经护体罡气。多层加密+动态灵波过滤，大部分敌人的破解程序遇到它只能碰壁。锦衣卫的标配防护。",
+      "price": 800
+    },
+    {
+      "id": "chip_firewall_elite",
+      "name": "护体罡气·长城",
+      "category": "防御灵石（抗心魔/抗破解）",
+      "effect": "神经入侵防御+50%，免疫低/中级法器破解，反弹低级破解给攻击者，持续80回合",
+      "rarity": "rare",
+      "cp_cost": 20,
+      "duration": "80回合",
+      "cooldown": "15回合",
+      "description": "堡垒级神经护体罡气。不仅能挡住攻击，还能将破解灵波原路反弹回去——让那个想骇入你的家伙尝尝被反噬的滋味。",
+      "price": 4000
+    },
+    {
+      "id": "chip_firewall_legendary",
+      "name": "护体罡气·天网",
+      "category": "防御灵石（抗心魔/抗破解）",
+      "effect": "神经入侵免疫（任何级别的法器破解均无效），走火入魔免疫，反弹全部破解伤害，持续整场战斗",
+      "rarity": "legendary",
+      "cp_cost": 35,
+      "duration": "整场战斗",
+      "cooldown": "50回合",
+      "description": "绝对神经防线。据说是当年鲁班留下的终极防御算法——任何试图入侵你神经系统的灵波都会被一个无限递归的反向追踪程序锁死。骇入你的人会发现自己被困在了自己制造的迷宫里。",
+      "price": 60000
+    },
+    {
+      "id": "chip_cleanse_toxin",
+      "name": "净化·清流",
+      "category": "解毒灵石（清除中毒）",
+      "effect": "清除所有中毒状态，临时毒素抗性+30%，持续20回合",
+      "rarity": "common",
+      "cp_cost": 5,
+      "duration": "瞬间+20回合抗性",
+      "cooldown": "5回合",
+      "description": "微尘级血液净化程序。微尘傀儡在血液中追猎毒素分子并将其分解为无害物质。中了蛇毒蝎毒？插上灵石就好。唐门毒师们的天敌。",
+      "price": 300
+    },
+    {
+      "id": "chip_cleanse_curse",
+      "name": "净化·驱邪",
+      "category": "驱邪灵石（清除心魔/诅咒）",
+      "effect": "清除走火入魔、经脉紊乱等道心类debuff，临时道心抗性+50%，持续30回合",
+      "rarity": "uncommon",
+      "cp_cost": 10,
+      "duration": "瞬间+30回合抗性",
+      "cooldown": "8回合",
+      "description": "神经状态重置程序。对大脑进行一次'软回魂'，清除所有非正常的神经灵网活动模式。走火入魔在脑科学上就是一种病态的神经震荡——这个灵石就是那剂对症的药。",
+      "price": 1000
+    },
+    {
+      "id": "chip_strength_boost",
+      "name": "强化·金刚力",
+      "category": "属性增益灵石（体格）",
+      "effect": "体格(str)临时+8，近战damage_bonus+10，持续15回合",
+      "rarity": "uncommon",
+      "cp_cost": 12,
+      "duration": "15回合",
+      "cooldown": "20回合",
+      "description": "神经肌肉增强程序。向运动神经元发送灵波，促使肌肉以超常功率输出。效果过后会有肌肉酸痛——但战场上谁在乎那个。",
+      "price": 800
+    },
+    {
+      "id": "chip_perception_boost",
+      "name": "强化·千里目",
+      "category": "属性增益灵石（感知）",
+      "effect": "感知(per)临时+8，远程hit_bonus+15，暴击率+8%，持续15回合",
+      "rarity": "uncommon",
+      "cp_cost": 12,
+      "duration": "15回合",
+      "cooldown": "20回合",
+      "description": "视觉皮层增强程序。临时提高视网膜的成像帧率和视觉皮层的信息处理速度。世界在你眼中变慢了——子弹的轨迹你也能看见。",
+      "price": 800
+    },
+    {
+      "id": "chip_defense_boost",
+      "name": "强化·铁布衫",
+      "category": "属性增益灵石（防御）",
+      "effect": "护甲值临时+20，伤害减免+15%，持续15回合",
+      "rarity": "uncommon",
+      "cp_cost": 12,
+      "duration": "15回合",
+      "cooldown": "20回合",
+      "description": "疼痛抑制+皮下组织硬化程序。关闭痛觉神经的同时让皮下结缔组织暂时硬化。你会感觉自己变成了铁人——虽然只是暂时的，但15回合足够决定胜负。",
+      "price": 800
+    },
+    {
+      "id": "chip_speed_boost",
+      "name": "强化·神行术",
+      "category": "属性增益灵石（速度）",
+      "effect": "移动速度+30%，闪避率+15%，先手值+10，持续15回合",
+      "rarity": "uncommon",
+      "cp_cost": 12,
+      "duration": "15回合",
+      "cooldown": "20回合",
+      "description": "小脑-脊髓反射加速程序。临时提高神经灵波从大脑到肌肉的传导速度。你的对手会怀疑你是不是学会了分身术。",
+      "price": 800
+    },
+    {
+      "id": "chip_all_stats_boost",
+      "name": "强化·天罡附体",
+      "category": "属性增益灵石（全属性）",
+      "effect": "全属性临时+6，damage×1.5，闪避+10%，护甲+10，持续10回合。结束后全属性-3持续10回合",
+      "rarity": "epic",
+      "cp_cost": 30,
+      "duration": "10回合",
+      "cooldown": "30回合",
+      "description": "全身系统过载程序。强行榨取所有系统的极限性能。10回合内你就是战场上的神——10回合后，你会痛不欲生。",
+      "price": 8000
+    },
+    {
+      "id": "chip_stealth_field",
+      "name": "潜行·隐龙诀",
+      "category": "潜行灵石（隐身）",
+      "effect": "进入隐身状态（非战斗时可自由移动不被发现），持续5回合或直到攻击。首次攻击damage×2.0",
+      "rarity": "rare",
+      "cp_cost": 20,
+      "duration": "5回合",
+      "cooldown": "15回合",
+      "description": "光学迷彩控制程序。控制全身皮下植入的微型LED阵列实时显示背后的景象，从视觉上'消失'。古代刺客梦寐以求的隐身术，如今只是一行代码的事。",
+      "price": 5000
+    },
+    {
+      "id": "chip_berserk",
+      "name": "狂暴·修罗道",
+      "category": "狂暴灵石（爆发）",
+      "effect": "damage×2.0，暴击率+20%，免疫疼痛和恐惧，持续8回合。期间无法使用任何其他灵石",
+      "rarity": "rare",
+      "cp_cost": 25,
+      "duration": "8回合",
+      "cooldown": "25回合",
+      "description": "战斗本能释放程序。短暂关闭大脑中负责理性判断的额叶皮层，将身体完全交给经过强化的小脑和脑干。你会变成一个只知杀戮的机器——注意别伤到自己人。",
+      "price": 6000
+    },
+    {
+      "id": "chip_emergency_shield",
+      "name": "护盾·金刚罩",
+      "category": "防御灵石（临时无敌）",
+      "effect": "生成一个吸收200点伤害的能量护盾，持续5回合或直到被击破",
+      "rarity": "rare",
+      "cp_cost": 25,
+      "duration": "5回合",
+      "cooldown": "20回合",
+      "description": "紧急能量护盾程序。调动全身法器的能量输出，在体表形成一层等离子屏障。看着像金钟罩，打着像铁布衫——本质上是凝聚态物理。",
+      "price": 4500
+    },
+    {
+      "id": "chip_emp_burst",
+      "name": "脉冲·天雷破",
+      "category": "攻击灵石（范围伤害）",
+      "effect": "以自身为中心释放EMP冲击波，范围内所有敌人受到30点电磁伤害，电子设备/法器敌人受到双倍伤害并麻痹2回合",
+      "rarity": "epic",
+      "cp_cost": 30,
+      "duration": "瞬间",
+      "cooldown": "15回合",
+      "description": "电磁脉冲爆发程序。以八荒脑为核心，调动全身电子设备同时向外释放电磁脉冲，相当于在身上引爆了一颗小型EMP炸弹。对法器化程度越高的敌人越致命。",
+      "price": 10000
+    },
+    {
+      "id": "chip_time_dilation",
+      "name": "时缓·须臾",
+      "category": "特殊灵石（时间感知）",
+      "effect": "获得1个额外行动回合（相当于时间减缓50%），闪避率+30%本回合",
+      "rarity": "epic",
+      "cp_cost": 35,
+      "duration": "1回合",
+      "cooldown": "12回合",
+      "description": "时间感知加速程序。大幅提高大脑神经灵波的采样脉动，让主观时间流逝变慢。在你的感知中，周围一切变成了慢动作——你有一整壶茶的功夫来从容应对本该在一瞬间发生的攻击。",
+      "price": 15000
+    },
+    {
+      "id": "chip_mind_blast",
+      "name": "神识·破军",
+      "category": "攻击灵石（道心攻击）",
+      "effect": "对单个敌人造成(我方int×3)的道心伤害，有30%概率造成'混乱'状态（攻击随机目标）持续3回合",
+      "rarity": "epic",
+      "cp_cost": 25,
+      "duration": "瞬间",
+      "cooldown": "10回合",
+      "description": "道心冲击程序。通过定向电磁波干扰目标的前额叶皮层，让他短时间内分不清敌我。'自己人打自己人'这个词就是这么来的。",
+      "price": 12000
+    },
+    {
+      "id": "chip_nanite_repair_aura",
+      "name": "领域·甘露",
+      "category": "治疗灵石（群体治疗）",
+      "effect": "释放微尘修复云，我方全体每回合恢复kee 30点，持续5回合",
+      "rarity": "epic",
+      "cp_cost": 40,
+      "duration": "5回合",
+      "cooldown": "20回合",
+      "description": "群体微尘治疗程序。将大量医疗微尘傀儡以气溶胶形式释放到空气中，附近的队友吸入后自动开始在体内修复损伤。团队战斗的救命神技。",
+      "price": 20000
+    },
+    {
+      "id": "chip_system_reboot",
+      "name": "重置·回春",
+      "category": "恢复灵石（全面恢复）",
+      "effect": "立即恢复kee 200、TU 100、CP 100，清除所有debuff，重置所有灵石冷却时间（除自身外）",
+      "rarity": "legendary",
+      "cp_cost": 50,
+      "duration": "瞬间",
+      "cooldown": "50回合（每场战斗限用1次）",
+      "description": "终极系统回魂程序。某种意义上相当于把你的整个法器系统'回魂'了一次——所有能量池重新校准，所有过热模块冷却归零，所有错误状态清零。代价是短期内不能再用这个灵石。",
+      "price": 50000
+    }
+  ],
+
+  "item_categories": {
+    "weapon_categories": {
+      "传统冷兵器·聊斋改造": {
+        "description": "以传统冷兵器为基础，加载聊斋科技增强。保留传统武学招式的兼容性，同时获得科技加成。",
+        "sub_types": ["刀类", "剑类", "枪类", "棍类", "鞭类", "锤类", "弓类", "弩类", "爪/匕首类", "杖类", "叉类", "耙类", "暗器/远程类", "火器/远程"],
+        "count": 31
+      },
+      "纯法器法器": {
+        "description": "完全嵌入法器槽位（千机臂或麒麟臂）的法器系统，不占用手持法器位。",
+        "sub_types": ["麒麟臂系（等离子/电弧/动力拳）", "千机臂系（暗器/微尘线/螳螂刀/导弹/蜂群）"],
+        "count": 9,
+        "slot_required": "千机臂"
+      },
+      "先天法器": {
+        "description": "基于先天力学原理的法器，拥有无视护甲、先天隧穿等特殊能力。",
+        "sub_types": ["先天刃", "先天远程", "相位法器"],
+        "count": 5
+      }
+    },
+    "chip_categories": {
+      "修为灵石": {"description": "提升端粒修为经验，对应MUD丹药体系中的聚灵丹系列", "count": 4},
+      "算力灵石": {"description": "恢复/提升算力池，对应MUD中的回法丹药", "count": 4},
+      "治疗灵石": {"description": "恢复生命/清除伤势，对应MUD中的疗伤药", "count": 4},
+      "突破灵石": {"description": "提高境界突破成功率，对应MUD中的破境丹", "count": 3},
+      "防御灵石": {"description": "神经护体罡气/抗心魔/抗破解，对应MUD中的清心丹", "count": 4},
+      "属性增益灵石": {"description": "临时提升各项属性，对应MUD中的buff类丹药", "count": 5},
+      "特殊灵石": {"description": "隐身/狂暴/护盾/时缓等特效灵石", "count": 11}
+    }
+  },
+
+  "rarity_system": {
+    "common": {"name": "普通", "color": "白色", "drop_rate_multiplier": 1.0, "npc_shop_availability": "各处均可购买"},
+    "uncommon": {"name": "精良", "color": "绿色", "drop_rate_multiplier": 0.4, "npc_shop_availability": "府城及以上法器诊所"},
+    "rare": {"name": "稀有", "color": "蓝色", "drop_rate_multiplier": 0.15, "npc_shop_availability": "京城法器诊所/门派兑换"},
+    "epic": {"name": "史诗", "color": "紫色", "drop_rate_multiplier": 0.05, "npc_shop_availability": "仅特定NPC/任务奖励"},
+    "legendary": {"name": "传说", "color": "橙色", "drop_rate_multiplier": 0.01, "npc_shop_availability": "唯一物品/BOSS掉落/隐藏任务"}
+  },
+
+  "gameplay_balance_notes": {
+    "slot_limitation": "8个槽位各只能植入1个法器，玩家必须在同槽位的不同法器间做选择",
+    "energy_economy": "高级法器消耗更多TU，若无强力能源核心支撑，可能战斗中能量耗尽导致法器失效",
+    "risk_reward": "法器植入有概率失败（随品质升高失败率增加），传说级涅槃核植入甚至有死亡风险",
+    "chip_slot_limit": "同时激活的灵石数量受八荒脑灵石槽位数限制，等级越高的脑部法器可同时运行越多灵石",
+    "weapon_synergy": "千机臂的法器槽位数决定了可植入的法器法器数量，与麒麟臂的等级共同决定可用法器法器的品质上限",
+    "progression_gate": "高级法器需要端粒修为门槛，确保玩家不能前期就获得过强装备",
+    "combat_formula_integration": "所有damage/atk_bonus/str_bonus等数值设计均参考combat_systems.json中的damage_formula，确保数值不溢出"
+  }
+}

@@ -1,51 +1,55 @@
-# GhostMUD 重构任务追踪与执行表
+# GhostMUD 重构任务追踪与执行表（单一总表）
 
-> **创建时间**：2026-06-22  
-> **目标**：参考猫国建设者（cat-zh-master）架构，对 ghostMUD 进行最小改动原则的重构  
-> **风格约束**：聊斋 60% + 认知侵蚀 30% + 不可名状 10%  
-> **平台目标**：同时适配手机端和桌面端
+> **创建时间**：2026-06-22
+> **最近迭代**：2026-06-23（v2.1：T3.3 定位纠正—宗门名以 narrative_design.md 为准 + T8 接入缺口 + 新增 T13 行功战斗系统 + T6 状态修正）
+> **宗门名权威标准**：`docs/narrative_design.md`（12 标准宗门名，任何 isAtFactionHQ/ROLL/任务引用的宗门名必须来自此文件）
+> **目标**：参考猫国建设者（cat-zh-master）架构，对 ghostMUD 进行最小改动原则的重构，并在此基础上扩展玩法
+> **风格约束**：聊斋 60% + 认知侵蚀 30% + 不可名状 10%
+> **平台目标**：同时适配手机端和桌面端（移动优先，max-width 440px）
+> **本文档为唯一活文档**：架构重构 + 内容玩法 + 战斗系统统一在此追踪。`todo_execution_plan.md` 已于 2026-06-23 并入本文，转为只读历史存档。
 
 ---
 
-## 一、现状分析
+## 一、现状（2026-06-23 核查后）
 
-### 1.1 当前 ghostMUD 架构
+### 1.1 重构后的真实架构（Vite + ES Module）
 
-| 层 | 文件 | 大小 | 职责 |
-|----|------|------|------|
-| **引擎+UI** | `ghost_mud_v2.html` | 104KB | 单文件包含全部 CSS + HTML + JS Game 类 |
-| **数据适配层** | `work/integration_v2.js` | 40KB | 合并 7 个 rebuild_*.js 数据文件 |
-| **数据层** | `work/rebuild_*.js` × 7 | ~840KB | 城市/野外/地牢房间、敌人、物品、境界、氛围、技能描述 |
-| **设计文档** | `docs/*.md` × 12 | ~140KB | 世界观、修炼体系、敌人类型学、术语映射、风格锚点、房间约束 |
-| **辅助工具** | `work/*.js` + `*.py` | ~2MB | 扫描/审计/验证/转换脚本 |
-| **旧版本** | `daogui_mud.html` | 48KB | 初版原型 |
+| 层 | 文件 | 大小 | 职责 | 状态 |
+|----|------|------|------|------|
+| **入口** | `index.html` | 11KB | 5 个 tab 面板 + 模态框 + 数据 `<script>` 引用 + bridge 脚本 + `main.js` 入口 | ⚠️ 仍含大量内联 HTML（遗留债，见 T9.x） |
+| **入口模块** | `src/main.js` | 0.8KB | Vite ES6 入口，`DOMContentLoaded` 后 `new Game()` | ✅ |
+| **主类** | `src/game.js` | ~53KB / 1290+ 行 | Game 类：游戏循环/移动/NPC/帮派/战斗/任务/物品/命令 | ✅ 已含存档接入、dirName 归一化 |
+| **核心引擎** | `src/core/timer.js` | 1.4KB | Timer 调度器（register/start/stop） | ✅ 已被 game.js 使用 |
+| | `src/core/tabmanager.js` | 1.7KB | TabManager（5 面板注册） | ✅ 已接入 |
+| | `src/core/respool.js` | 2.3KB | ResourcePool 类 | ⚠️ **类已建但 game.js 未使用**（见 T2.3b） |
+| | `src/core/storage.js` | 2.6KB | 存档 save/load/hasSave/clear | ✅ **已接入 explore 自动存档** |
+| | `src/core/namespace.js` | — | GhostEngine 命名空间 | ✅ |
+| **UI 层** | `src/ui/input.js` | — | InputManager（命令行 + 按钮绑定） | ✅（T3.0 修过语法错误） |
+| | `src/ui/renderer.js` | — | Renderer（面板/地图/日志渲染） | ⚠️ **全量 updateUI，无效果缓存**（见 T2.2） |
+| **数据加载** | `src/data/data_loader.js` | — | collectData() 从 window 收集全局变量 | ✅ |
+| **样式** | `src/styles/main.css` `themes/night.css` `responsive.css` | — | 三层 CSS 拆分 | ✅ 结构在；⚠️ 色板仍赛博风（见 T3.2） |
+| **数据层** | `work/rebuild_*.js` × 8 + `integration_v2.js` + `ghost_faction_recruiter_encounters.js` | ~1.2MB | 城市/野外/地牢房间、敌人、物品、境界、氛围、技能、适配层 | ✅ 通过 index.html `<script>` 串行加载 |
+| **构建** | `package.json` `vite.config.js` | — | Vite 5，`dev`/`build`/`preview` | ✅（T3.0b 修过 manualChunks） |
+| **诊断** | `diagnose.js` | 0.7KB | 启动后 console 打印卷宗加载状态 | 🟡 调试用，可移除 |
 
-**核心问题**：
-1. **单文件巨石架构**：`ghost_mud_v2.html` 104KB 包含 CSS（300行）+ HTML（200行）+ JS Game 类（1200行），不可维护
-2. **数据层臃肿**：7 个 rebuild_*.js 文件通过 `<script>` 标签串行加载，总体积 ~840KB，无懒加载
-3. **无模块化**：全局变量满天飞（`ENEMIES`、`LOCATIONS`、`NPC_ENCOUNTERS`、`FACTIONS` 等），无命名空间
-4. **CSS 硬编码**：所有样式内联在 HTML `<style>` 中，无主题切换能力
-5. **无存档系统**：状态全部在内存，刷新即丢失
-6. **已知 Bug**：道心衰减公式过简（known_issues 0001）、CSS 色板仍残留赛博风（0002）
-
-### 1.2 猫国建设者架构参考
+### 1.2 猫国建设者架构参考（保留）
 
 | 层 | 文件 | 职责 |
 |----|------|------|
 | **核心框架** | `core.js` (61KB) | TabManager 基类、Timer、数据存储感知、效果缓存系统 |
 | **主游戏** | `game.js` (148KB) | GamePage 主类、Server、Telemetry、存档/读档 |
-| **模块层** | `js/*.js` × 17 | buildings/village/science/religion/diplomacy/space/time/workshop/prestige/achievements/calendar/challenges/stats/ui/toolbar/math/void |
-| **UI 层** | `js/jsx/*.jsx.js` × 5 | React 组件：left/mid/right/toolbar/map 面板 |
-| **资源系统** | `js/resources.js` | 资源池管理（catnip/wood/minerals/...） |
-| **主题** | 多主题 CSS | 深色/浅色/赛博等多主题切换 |
+| **模块层** | `js/*.js` × 17 | buildings/village/science/religion/... |
+| **UI 层** | `js/jsx/*.jsx.js` × 5 | React 组件 |
+| **资源系统** | `js/resources.js` | resPool 资源池管理 |
 
-**可借鉴的关键模式**：
-1. **TabManager 分页管理**：每个功能模块继承 TabManager，统一 registerMeta/updateEffectCached 接口
-2. **效果缓存系统**：effectsCachedExisting + globalEffectsCached，避免每帧重算
-3. **资源池模式**：resPool 统一管理所有资源，addBarnWarehouseRatio 等修饰符
-4. **存档/读档**：IDataStorageAware mixin，dojo.subscribe("server/save") 事件驱动
-5. **模块化加载**：Dojo Toolkit 的 declare + require 模式（可迁移为 ES6 Module）
-6. **UI 组件化**：jsx 文件分离 UI 渲染逻辑
+**可借鉴关键模式**：TabManager 分页 / effectsCachedExisting 效果缓存 / resPool 资源池 / IDataStorageAware 存档 / 模块化加载 / UI 组件化。
+
+### 1.3 重构进度总览
+
+- **阶段 1 架构拆分**：✅ 完成（T1.1-T1.5 全绿）
+- **阶段 2 引擎模式**：🟡 4/6 完成（T2.2 效果缓存未做；T2.3 resPool 类建了但未接入）
+- **阶段 3 修复**：🟡 3/6 完成（T3.0/T3.0b/T3.4 已做；T3.1/T3.2/T3.3 待做）
+- **阶段 4-12（新并入）**：⬜ 全部待执行
 
 ---
 
@@ -54,131 +58,274 @@
 1. **最小改动**：不重写游戏逻辑，只拆分架构和修复已知问题
 2. **数据不动**：rebuild_*.js 数据文件保持不变，只改加载方式
 3. **渐进迁移**：分阶段拆分，每步可运行可测试
-4. **风格不变**：保持聊斋志怪风格，修复 CSS 色板但不改变视觉基调
-5. **双端适配**：CSS 响应式，移动端优先（当前已是 max-width:440px）
+4. **风格不变**：保持聊斋志怪风格，修复 CSS 色板但不改视觉基调
+5. **双端适配**：CSS 响应式，移动端优先
+6. **双轨并行**（v2 新增）：武修/灵修两套体系并存，共享世界看见不同深度的真相；术语/境界/道心/经济按 `state.path` 切换，不做文件级全局替换
 
 ---
 
-## 三、任务分解与执行表
+## 三、任务总表
 
-### 阶段 1：架构拆分（P1 - 核心）
+> 状态：✅ 已完成 / 🟡 部分完成或需验收 / ⏳ 待执行 / 🔴 阻塞中
 
-| 任务 ID | 任务名 | 输入 | 输出 | 依赖 | 状态 |
-|---------|--------|------|------|------|------|
-| **T1.1** | 拆分 CSS 到独立文件 | `ghost_mud_v2.html` 的 `<style>` 块 | `src/styles/main.css` + `src/styles/themes/night.css` + `src/styles/responsive.css` | 无 | ✅ 已完成 |
-| **T1.2** | 拆分 HTML 结构到模板 | `ghost_mud_v2.html` 的 `<body>` | `index.html`（12KB，含数据 script 标签 + module 入口） | T1.1 | ✅ 已完成 |
-| **T1.3** | 拆分 Game 类到 `src/game.js` | `ghost_mud_v2.html` 的 `<script>` Game 类 | `src/game.js`（58KB，完整迁移含战斗/任务/拜师/物品等全系统） | T1.2 | ✅ 已完成 |
-| **T1.4** | 拆分数据加载层 | `work/integration_v2.js` 及 7 个 rebuild | `src/data/data_loader.js`（从 window 收集全局变量，保留原始 work/ 文件） | T1.3 | ✅ 已完成 |
-| **T1.5** | 建立命名空间 | 全局变量 `ENEMIES`/`LOCATIONS` 等 | `src/core/namespace.js`（GhostEngine 命名空间） | T1.4 | ✅ 已完成 |
+### 阶段 1：架构拆分（P1 - 核心）✅
 
-### 阶段 2：猫国建设者模式引入（P2 - 架构改进）
+| ID | 任务名 | 输出 | 依赖 | 状态 |
+|----|--------|------|------|------|
+| **T1.1** | 拆分 CSS | `src/styles/main.css` + `themes/night.css` + `responsive.css` | 无 | ✅ |
+| **T1.2** | 拆分 HTML 模板 | `index.html`（11KB，仍含内联 HTML，见 T9.x） | T1.1 | ✅ |
+| **T1.3** | 拆分 Game 类 | `src/game.js`（~53KB，全系统迁移） | T1.2 | ✅ |
+| **T1.4** | 拆分数据加载层 | `src/data/data_loader.js` | T1.3 | ✅ |
+| **T1.5** | 建立命名空间 | `src/core/namespace.js` | T1.4 | ✅ |
 
-| 任务 ID | 任务名 | 说明 | 参考源 | 依赖 | 状态 |
-|---------|--------|------|--------|------|------|
-| **T2.1** | 引入 TabManager 基类 | 统一管理 5 个 Tab 面板（人物/包裹/武学/任务/境况） | `src/core/tabmanager.js`（1.7KB） | T1.5 | ✅ 已完成 |
-| **T2.2** | 引入效果缓存系统 | 替代当前散落的 updateUI 全量刷新 | `core.js` updateEffectCached | T2.1 | ⏳ 待执行 |
-| **T2.3** | 引入资源池模式 | 统一管理 气血/真元/道心/灵石/修为 | `src/core/respool.js`（2.3KB，ResourcePool 类） | T2.1 | ✅ 已完成 |
-| **T2.4** | 引入 Timer 调度器 | 替代当前 setInterval 挂机逻辑 | `src/core/timer.js`（1.4KB，含 start/stop/暂停恢复） | T2.1 | ✅ 已完成 |
-| **T2.5** | 引入存档系统 | localStorage 序列化/反序列化 + IDataStorageAware | `src/core/storage.js`（2.6KB，含 save/load/hasSave/clear） | T2.3 | ✅ 已完成 |
+### 阶段 2：猫国建设者模式引入（P2 - 架构改进）🟡
 
-### 阶段 3：已知问题修复（P3 - 质量改进）
+| ID | 任务名 | 说明 | 依赖 | 状态 |
+|----|--------|------|------|------|
+| **T2.1** | TabManager 基类 | `src/core/tabmanager.js`，5 面板注册 | T1.5 | ✅ 已接入 game.js |
+| **T2.2** | 效果缓存系统 🔴卡点 | 替代 `renderer.updateUI()` 全量刷新，参考 core.js `effectsCachedExisting` | T2.1 | ⏳ **阻塞 T3.1 / T5.3** |
+| **T2.3** | 资源池模式 | `src/core/respool.js` ResourcePool 类 | T2.1 | 🟡 **类已建，game.js 未使用**（state 仍是散字段） |
+| **T2.3b** | **resPool 接入（v2 新增）** | 把 state 的 气血/真元/道心/灵石/修为 迁到 resPool，game.js 全部读写改走 resPool | T2.3 | ⏳ |
+| **T2.4** | Timer 调度器 | `src/core/timer.js`，register('idle'/'daoxin') | T2.1 | ✅ 已接入 |
+| **T2.5** | 存档系统 | `src/core/storage.js` save/load/hasSave/clear | T2.3 | ✅ **已接入 explore 自动存档**（game.js:297） |
 
-| 任务 ID | 任务名 | 说明 | 来源 | 依赖 | 状态 |
-|---------|--------|------|------|------|------|
-| **T3.0** | 修复 input.js 语法错误 | `_bindActionButtons()` 中 forEach 回调未正确闭合 + 重复事件绑定，导致 Vite import analysis 失败 | 构建报错 | T1.3 | ✅ 已完成 |
-| **T3.0b** | 修复 vite.config.js manualChunks | Vite 8 (rolldown) 不支持对象格式 manualChunks，且引用的 6 个 src/data/*.js 文件不存在 | 构建报错 | T1.1 | ✅ 已完成 |
-| **T3.1** | 修复道心衰减公式 | 按境界×环境侵蚀度联动，非简单线性 | known_issues 0001 | T2.2 | ⏳ 待执行 |
-| **T3.2** | 修复 CSS 色板 | 替换赛博暗紫/霓虹为枯色/墨色/血色基调 | known_issues 0002 | T1.1 | ⏳ 待执行 |
-| **T3.3** | 修复 HQ 判断 | `isAtFactionHQ` 中残留旧术语映射 | 代码审查 | T1.5 | ⏳ 待执行 |
-| **T3.4** | 统一方向键映射 | 确保全链路使用中文方向键或建立完整双向映射 | known_issues 0005 | T1.5 | ⏳ 待执行 |
+### 阶段 3：已知问题修复（P3 - 质量改进）🟡
 
-### 阶段 4：双端适配增强（P4 - 体验改进）
+| ID | 任务名 | 说明 | 来源 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T3.0** | 修 input.js 语法错误 | forEach 回调未闭合 + 重复绑定 | 构建报错 | T1.3 | ✅ |
+| **T3.0b** | 修 vite.config manualChunks | Vite8/rolldown 不支持对象格式 | 构建报错 | T1.1 | ✅ |
+| **T3.1** | 修道心衰减公式 🔴 | 境界×环境侵蚀度联动，非线性 | known_issues 0001 | T2.2 | ⏳ **与 T8.4 双轨道心合并实现** |
+| **T3.2** | 修 CSS 色板 | 赛博暗紫/霓虹 → 枯色/墨色/血色 | known_issues 0002 | T1.1 | ⏳ |
+| **T3.3** | 修复 `isAtFactionHQ` 宗门名 🔴 | **当前含 8 个错误名**（梵网寺/剑巢/蚁网/毒巢/血镰/斗转阁/影墓/机巧岛），不在 `narrative_design.md` 12 标准宗门之列。**必须全部替换**为标准名（问剑峰/药王谷/血禅寺/焰心教/傀坊/逍遥驿/忘尘宗/紫霞山/归墟/镜阁/肉慈斋/青囊庐）。HQ 映射也须同步修正。**宗门名以 narrative_design.md 为唯一标准** | 代码审查 + narrative_design.md | — | ⏳ **优先级最高** |
+| **T3.4** | 统一方向键映射 | 全链路中文方向键 + 双向映射 | known_issues 0005 | T1.5 | ✅ **已完成**（game.js:261 DIR_CN 归一化 + dirName 扩展） |
 
-| 任务 ID | 任务名 | 说明 | 依赖 | 状态 |
-|---------|--------|------|------|------|
-| **T4.1** | 响应式断点 | 桌面端 >768px 展开双栏布局，移动端保持单栏 | T1.1 | ⏳ 待执行 |
-| **T4.2** | 触控优化 | 按钮热区 ≥44px，滑动手势支持地图滚动 | T1.1 | ⏳ 待执行 |
-| **T4.3** | 键盘快捷键 | 桌面端数字键切 Tab、方向键移动、空格打坐 | T1.3 | ⏳ 待执行 |
-| **T4.4** | 字体响应 | 桌面端 16px，移动端 15px，支持系统字体缩放 | T1.1 | ⏳ 待执行 |
+### 阶段 4：双端适配增强（P4 - 体验改进）⬜
 
-### 阶段 5：数据层优化（P5 - 性能改进）
+| ID | 任务名 | 说明 | 依赖 | 状态 |
+|----|--------|------|------|------|
+| **T4.1** | 响应式断点 | 桌面 >768px 双栏，移动单栏 | T1.1 | ⏳ |
+| **T4.2** | 触控优化 | 热区 ≥44px，滑动手势地图滚动 | T1.1 | ⏳ |
+| **T4.3** | 键盘快捷键 | 数字键切 Tab、方向键移动、空格打坐 | T1.3 | ⏳ |
+| **T4.4** | 字体响应 | 桌面 16px / 移动 15px，支持系统字体缩放 | T1.1 | ⏳ |
 
-| 任务 ID | 任务名 | 说明 | 依赖 | 状态 |
-|---------|--------|------|------|------|
-| **T5.1** | 数据懒加载 | 按区域动态加载房间数据，非首屏全量加载 | T1.4 | ⏳ 待执行 |
-| **T5.2** | 数据压缩 | NPC_ENCOUNTERS 410KB → 按区域拆分为多个 JSON | T5.1 | ⏳ 待执行 |
-| **T5.3** | 缓存优化 | 已探索房间描述缓存，避免重复渲染 | T2.2 | ⏳ 待执行 |
+### 阶段 5：数据层优化（P5 - 性能改进）⬜
+
+| ID | 任务名 | 说明 | 依赖 | 状态 |
+|----|--------|------|------|------|
+| **T5.1** | 数据懒加载 | 按区域动态加载房间 | T1.4 | ⏳ |
+| **T5.2** | 数据压缩 | NPC_ENCOUNTERS ~410KB → 按区域拆 JSON | T5.1 | ⏳ |
+| **T5.3** | 缓存优化 | 已探索房间描述缓存 | T2.2 | ⏳ |
+
+---
+
+### 阶段 6：内容还原（P0 🔴 - 最高优先级，原 plan Phase 0+1）
+
+> **背景**：v1→v2 迁移丢失了大量内容。`integration_v2.js` 只从 rebuild 房间提取了少量内嵌 encounter，其余 159 房间的搜索/NPC 数据只有结构壳。必须先修数据，否则上面搭什么系统都空洞。
+
+| ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T6.0** | 境界上限锁定化神 | REALMS 屏蔽最后 2 项（合体/渡劫）；checkBreakthrough 加 `if (s.realm >= REALMS.length-1) return`；化神后 idle 提示"前路已绝" | 0.5h | — | ⏳ |
+| **T6.1** | ROOM_SEARCH 还原 | ghost_room_search.js 592 条 → 注入 rebuild 房间 `observable.search_results`；建 v1→v2 房间名映射；聊斋化改写；分批：城市核心 20 间先做 | 3-5h | T6.0 | ⏳ |
+| **T6.2** | NPC_ENCOUNTERS 还原 | ghost_npc_encounters.js 385 NPC 块+715 选项 → 注入 `observable.npc_encounters`；保留 questStart/effect/reward 结构；按密度优先（鼓楼西鬼市→鸡鸣寺） | 4-6h | T6.0 | ⏳ |
+| **T6.3** | QUESTS 增量迁移 | v1 pkuxkx 18 任务 → 挑"护送/解密/拜师"5-8 条聊斋化并入 v2 QUESTS | 2-3h | T6.0 | ⏳ |
+| **T6.4** | 三层描述写入 🔴约束 | T6.1/T6.2 还原时**必须同步**写入 `desc_vague`+`desc_percept`（武修双认知），`desc_awakened`（灵修）可后续补 | 见 T8.9 | T8.1 | ⏳ |
+
+### 阶段 7：新手体验（P0 🔴 - 原计划 Phase 2+3）
+
+> **背景**：第一体验决定成败。当前 `index.html` 直接进散修起点，无 Roll 点无门派引导。
+
+| ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T7.1** | Roll 点界面 | `<div id="roll-modal">` 全屏；根骨/悟性/机缘 1~30；道心初值=根骨+悟性折算 80~100；算卦/抽签美学；写 state.innate | 1.5h | — | ⏳ |
+| **T7.2** | 12 门派介绍页 | Roll 后进门派轮盘；宗派名+哲学+专长+icon；默认散修；**先做 3 个引导链**（问剑峰/忘尘宗/归墟） | 1h | T7.1 | ⏳ |
+| **T7.3** | 新手区引导地图 | 每门派 HQ→3~5 新手房→1 引导任务链→通应天府；散修直接应天府·十字街口 | 2.5h | T7.2 | ⏳ |
+| **T7.4** | 散修路径 | 跳过门派，起点应天府·十字街口；背景"逃荒来的散修，残经封皮字不认识" | 0.5h | — | ⏳ |
+| **T7.5** | 点击系统（原 Phase 3） | 屏幕中央"打坐/运功"可点击区；新手区 +3~5 修为/click 无限制；离开新手后降至 5~15%；0.3s 冷却防连点；软引导"苦修效率低，该去探索" | 2h | T7.3 | ⏳ |
+
+### 阶段 8：双修体系（前置依赖 🔴 - 原计划 Phase 8，约 24h）
+
+> **核心诡计**：12 宗门中 6 个是以武修面貌存在的堕落灵修宗门，另 6 个是隐世灵修宗门。同世界，武修看见"巷子里好像有东西"，灵修看见"那是界隙——它们在往外渗"。
+>
+> **⚠️ 当前真实状态**：Phase 8 数据层已大量生成（`work/rebuild_meridians.js` 67KB、`rebuild_seals.js` 18KB、`rebuild_builds_drops_corruption.js` 35KB、`corruption_system.js` 28KB、`jianghu_events.js` 147KB、`cross_path_quests.js` 36KB，全部 2026-06-22~23 创建），**但 index.html 尚未加载任何这些文件**——数据生成了但未接入 Vite 新架构。
+> **宗门名以 narrative_design.md 为唯一标准**。
+
+| ID | 任务名 | 内容 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T8.0** | **Phase8 数据接入 Vite 🔴** | 将已有数据文件（meridians/seals/builds_drops_corruption/corruption_system/jianghu_events/cross_path_quests）加入 index.html 加载链 + bridge 脚本挂 window；验证无加载错误 | 2h | — | ⏳ **增补缺口，T8.1 前置** |
+| **T8.1** | 双境界体系 | WU_REALMS(5+1 上限天人) + LING_REALMS(5+1 上限化神)；三层认知 desc_vague/percept/awakened；getDesc() 按 path+realm 分发 | 2h | T6.0, **T8.0** | ⏳ |
+| **T8.2** | 12 宗门归属 | L1-L6 灵修 + W1-W6 武修；6 条人祸往事设定；HQ 遗物定义；**宗门名严格使用 narrative_design.md 标准**（已由 T3.3 先行修正 isAtFactionHQ） | 1.5h | T3.3 | ⏳ |
+| **T8.3** | 术语双轨制 | 面板/战斗/消息按 path 输出（内力↔灵力/真气↔灵气/剑法↔剑诀…）；引擎动态渲染，不做文件级替换 | 1.5h | T8.1 | ⏳ |
+| **T8.4** | 道心差异化 🔴 | 武修不自然下跌（仅特殊事件扣）+ 灵修炼气起缓跌（炼气/筑基每30tick-1，金丹/元婴每20，化神每10）+ 归零双结局；**T3.1 道心公式并入此项** | 2h | T8.1, T2.2 | ⏳ |
+| **T8.5** | 经济体系 | 金银铜（武修凡间）/ 灵石（灵修修士）双轨字段 + 黑市 + 黑灵石特殊通货 + ITEMS 更新 | 1.5h | T8.1 | ⏳ |
+| **T8.6** | UI 双轨适配 | 双面板 + 道心下跌指示器 + ROLL 界面灵修宗门 disabled（`// [灵修宗门] 待后续版本开放`） | 2.5h | T8.2, T8.3 | ⏳ |
+| **T8.7** | 双路径转职 | 路径A 散修→灵修（武师级触发暗巷引路人，5 步，道心-15）+ 路径B 宗门→灵修（宗师级触发遗物，5 步含回忆/真相，道心-20）；不可回退 | 3h | T8.3, T8.4, T8.5 | ⏳ |
+| **T8.8** | 灵修技能树 | 新增 `work/rebuild_skill_descriptions_ling.js`（30-40 条） | 2h | T8.3 | ⏳ |
+| **T8.9** | 三层描述适配 | 刷新 desc_vague/percept（武修双认知）+ desc_awakened（灵修灵视）；**与 T6.4 联动** | 3h | T8.1, T8.3, T8.4 | ⏳ |
+| **T8.10** | 野外遇敌分层 | 武修池 4 类（野兽/妖/邪/精怪）vs 灵修池 6 类（+鬼+人祸）；getEnemy() 分支；鬼需附体故武修可见邪不可见鬼 | 1h | T8.1, T8.4 | ⏳ |
+| **T8.11** | 交集任务框架 | 罗生门式双轨模板：双套 stageDescs/npcDialogues/eventDescriptions + path 分发；信息差五原则（武修文本禁修真术语） | 2h | T8.7, T8.9 | ⏳ |
+| **T8.12** | 灵修畸变系统 | 6 宗门×克苏鲁畸变路径 + CORRUPTION_TIERS(5级) + UI 畸变行 + NPC 反应 + 道心归零 6 条特殊结局 | 2h | T8.2, T8.4, T8.6 | ⏳ |
+
+### 阶段 9：UI 树状重构（P2 - 原计划 Phase 4）
+
+| ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T9.1** | index.html 去内联化 | 当前 11KB 内联 HTML 抽成模板/组件，回归 <5KB 仅引用 | 2h | — | ⏳ |
+| **T9.2** | 统一感知面板 | "感知"按钮展开：可见通路[北→XX]… / 可发现子房间 / 在场 NPC 列表→对话/交易/打听子选项 | 2h | T9.1 | ⏳ |
+| **T9.3** | 合并底栏按钮 | 替换 移动/交谈/搜索/窥探/打听 为统一"感知"；武学/休息/包裹/状态/感知同层；练功练武合并到武学，练武做成点击系统(T7.5) | 1.5h | T9.2 | ⏳ |
+
+### 阶段 10：小游戏系统（P1 - 原计划 Phase 5）
+
+| ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T10.1** | 文字解密 | NPC 出谜→选答案→正则匹配；残经碎片→正确排序→习得功法 | 2h | — | ⏳ |
+| **T10.2** | QTE | 坠石/崩塌/鬼物追击；文字提示→2s 内点按钮（闪/蹲/闭眼）；3 轮/次，容错 1 | 2h | — | ⏳ |
+| **T10.3** | 追逐战·子房间躲藏 | 不可战胜敌人→"躲藏"选项；躲藏点床底/柜后/枯井/树洞；判定随机 vs 道心/10；15s 未发现=安全 | 2h | T8.4 | ⏳ |
+| **T10.4** | 统一承载 | `<div id="minigame-modal">` 承载，NPC 遭遇/房间事件/战斗选项触发 | 1h | T10.1-T10.3 | ⏳ |
+
+### 阶段 11：差异化台本（P2 - 原计划 Phase 6）
+
+| ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T11.1** | 台本分支框架 | 每任务 stage 增加 `altDescs` 数组；维度：境界/道心/道心阶段/持有物品/宗派/时间 | 2h | T8.9 | ⏳ |
+| **T11.2** | 5 任务差异化试点 | 覆盖 15 个 QUESTS 中的 5 个做 path+realm 双维度差异化 | 3h | T11.1 | ⏳ |
+
+### 阶段 12：移动优化·地图可视化（P1 - 原计划 Phase 7）
+
+| ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T12.1** | 调研 | 放置江湖/主流轻美术 RPG/MUD 受众偏好（纯文字 vs 轻可视化） | 1h | — | ⏳ |
+| **T12.2** | 双层移动 | 层1 保留东南西北按钮；层2 改进 #map-container：画已探索房间+连线+点击节点移动+战争迷雾（未探索=灰虚线+???） | 4h | T12.1 | ⏳ |
+| **T12.3** | 灵修地图图层 🔴约束 | 灵修地图可显示界隙/灵脉节点（修真视角图层），武修不可见 | 1h | T12.2, T8.1 | ⏳ |
+
+### 阶段 13：行功战斗系统（P1 🟡 - 原 `xinggong_combat_design.md`，约 34h）
+
+> **设计文档**：`docs/xinggong_combat_design.md`（2026-06-23，v1.0）
+> **核心理念**：战斗从"你选招式"变为"你设计一套行功→看着它运转→未知何时会失控"。行功五式（起/承/转/合/归）自动循环，ATB 速度条驱动，畸变可篡改行功位。
+> **⚠️ 当前状态**：三个数据文件已生成（`work/rebuild_combat_gong.js` 1231 行 / `rebuild_combat_atb.js` 585 行 / `rebuild_combat_hijack.js` 1276 行），依赖 `rebuild_meridians.js`/`rebuild_seals.js`/`rebuild_builds_drops_corruption.js`/`combat_systems.json`。**但全部未接入 index.html 加载链**。
+
+| ID | 任务名 | 内容 | 工时 | 依赖 | 状态 |
+|----|--------|------|------|------|------|
+| **T13.0** | 行功数据接入 Vite 🔴 | 将 `rebuild_combat_gong/atb/hijack.js` + `rebuild_meridians.js` + `rebuild_seals.js` + `rebuild_builds_drops_corruption.js` 加入 index.html 加载链 + bridge 脚本；验证无加载错误 | 1.5h | T8.0 | ⏳ **前置，T8.0 完成后** |
+| **T13.1** | 行功图数据结构 + 编辑/保存 | 行功图数据模型（5 式位，3 套图，可填武学/刻印/丹药）；UI 编辑界面（MUD 文本式）；保存/切换行功图 | 6h | T13.0 | ⏳ |
+| **T13.2** | ATB 速度引擎 + 循环调度 | 速度条填充（基础+追风脉+状态修正）；行功自动循环（起→承→转→合→归→周天完成）；小周天奖励（精元回复+丹田异核效果）；高速连动 | 8h | T13.0, T13.1 | ⏳ |
+| **T13.3** | 畸变篡改系统 | 按畸变等级（0-5）逐级触发篡改：文本变异→数值波动→行功位替换→跳位→全图覆盖；灵修异化行功图（主动召畸变，威力高但不可切回） | 6h | T13.0, T8.4, T8.12 | ⏳ |
+| **T13.4** | 玩家干预系统 | 三类各一次：变式（切行功图，精元-20）、服药（限1次，灵修"镇畸丹"10%被替换）、脱战（追风脉修正）；武修道心≥50 可设内嵌条件 | 4h | T13.2 | ⏳ |
+| **T13.5** | BOSS 行功图 + NPC 模板 | BOSS 专属行功图（非随机技能，有章法可预判）；流派模板（剑宗/拳禅/枪阵/暗杀/辅助/宗师/虫巢/血肉/虚空 9 套） | 4h | T13.1, T13.2 | ⏳ |
+| **T13.6** | 战斗系统桥接 + 兼容 | `startCombat()` 路由：行功模式 vs 经典回合制（不删除旧代码，双模并存）；设置中可选模式 | 6h | T13.2-T13.5 | ⏳ |
 
 ---
 
 ## 四、执行顺序与依赖图
 
 ```
-T1.1 (CSS拆分) ──┬── T1.2 (HTML模板) ── T1.3 (Game类) ── T1.4 (数据加载) ── T1.5 (命名空间)
-                 │                                                          │
-T3.2 (色板修复) ─┘                                                          ├── T2.1 (TabManager) ──┬── T2.2 (效果缓存) ── T3.1 (道心公式)
-                                                                            │                        ├── T2.3 (资源池) ─── T2.5 (存档系统)
-                                                                            │                        └── T2.4 (Timer)
-                                                                            ├── T3.3 (HQ判断)
-                                                                            ├── T3.4 (方向键)
-                                                                            └── T4.x (双端适配)
-                                                                                                      └── T5.x (数据优化)
+【架构主线】
+T1.1-T1.5 (✅架构拆分) ──┬── T3.2 (色板) ⏳
+                         ├── T3.3 (isAtFactionHQ 宗门名修复 🔴独立，无依赖)
+                         ├── T3.4 (方向键 ✅)
+                         ├── T4.1-T4.4 (双端) ⏳
+                         ├── T9.1 (去内联化) ⏳ ── T9.2 ── T9.3 (感知面板)
+                         │
+                         └── T2.1 (✅Tab) ──┬── T2.2 (效果缓存 🔴卡点) ──┬── T3.1/T8.4 (道心)
+                                            ├── T2.3 (resPool🟡) ── T2.3b (接入) ── T2.5 (✅存档)
+                                            └── T5.3 (缓存)
+
+【内容+玩法主线】🔴 最高优先级
+T3.3 (宗门名修复) ← 独立，先做
+T8.0 (Phase8数据接入) ── T8.1 (双境界) ── T8.2 (12宗门) ── T8.3 (术语双轨) ──┬── T8.4 (道心🔴,并T3.1)
+                                                                            ├── T8.5 (经济)
+                                                                            ├── T8.8 (灵修技能树)
+                                                                            └── T8.9 (三层描述🔴联动T6.4)
+              ├── T8.10 (遇敌分层) ← T8.1,T8.4
+              ├── T8.11 (交集任务) ← T8.7,T8.9
+              └── T8.12 (畸变) ← T8.2,T8.4,T8.6
+
+T6.0 (境界锁定化神) ──┬── T6.1 (搜索还原) ──┐
+                      ├── T6.2 (NPC还原)  ──┼──→ T11 (差异化台本)
+                      └── T6.3 (任务增量) ──┘
+
+T7.1 (Roll点) ── T7.2 (门派页) ── T7.3 (新手地图) ── T7.5 (点击系统)
+                                   ↑ 受 T8.6 (UI双轨/灵修锁定) 约束
+
+【行功战斗主线】
+T13.0 (combat数据接入) ── T13.1 (行功图编辑) ──┬── T13.2 (ATB引擎)
+                                              ├── T13.3 (畸变篡改) ← T8.4,T8.12
+                                              ├── T13.5 (BOSS行功图)
+                                              └── T13.6 (桥接+兼容) ← T13.2-T13.5
+                        └── T13.4 (玩家干预) ← T13.2
+
+T10.x (小游戏) ── T10.3 依赖 T8.4
+T12.x (地图) ── T12.3 依赖 T8.1
 ```
 
-**推荐执行批次**：
-- **批次 A**（T1.1 → T1.2 → T1.3 → T1.4 → T1.5）：架构拆分，一次性完成
-- **批次 B**（T3.2 + T3.3 + T3.4）：快速修复，与批次 A 交叉进行
-- **批次 C**（T2.1 → T2.2 → T2.3 → T2.4 → T2.5）：架构改进，批次 A 完成后
-- **批次 D**（T3.1 + T4.1~T4.4）：体验改进，批次 C 完成后
-- **批次 E**（T5.1~T5.3）：性能优化，最后进行
+### 推荐执行批次（v3 重排）
+
+| 批次 | 任务 | 优先级 | 理由 |
+|------|------|--------|------|
+| **批次 B**（快速修复） | T3.2 色板 + T2.2 效果缓存 + **T3.3 宗门名修复** | 🔴 高 | T3.3 无依赖可立即修；T2.2 是关键卡点 |
+| **批次 F**（数据接入） | **T8.0 Phase8 数据接入 + T13.0 行功数据接入** | 🔴 最高 | 数据文件已生成但不接入 = 死代码；接入后 T8/T13 才可开工 |
+| **批次 G**（内容还原） | T6.0 境界锁 + T6.1 搜索 + T6.2 NPC + T6.3 任务 | 🔴 最高 | 数据空洞是当前最大体感问题 |
+| **批次 H**（新手体验） | T7.1 Roll + T7.2 门派 + T7.3 新手图 + T7.5 点击 | 🔴 高 | 第一体验 |
+| **批次 I**（双修深化） | T8.1-T8.12 全部子任务 | 🟡 中 | 依赖 T8.0 接入 |
+| **批次 J**（UI 重构） | T9.1-T9.3 | 🟢 低 | 单次重构 |
+| **批次 K**（行功战斗） | T13.1-T13.6（~32h） | 🟡 中 | 依赖 T13.0 接入 + T8.4/T8.12 |
+| **批次 D**（双端） | T4.1-T4.4 | 🟡 中 | 体验增强 |
+| **批次 E**（性能） | T5.1-T5.3 | 🟢 低 | 最后做 |
+| **批次 L/M**（小游戏+地图） | T10.x / T12.x | 🟡 中 | 可穿插 |
 
 ---
 
-## 五、文件结构规划
+## 五、文件结构（现状 + 待建）
 
 ```
 ghostMUD/
-├── index.html                    # 入口 HTML（精简，仅引用）
-├── css/
-│   ├── ghost.css                 # 主样式（从 v2.html 拆出）
-│   ├── themes/
-│   │   └── night.css             # 夜间主题（枯色/墨色/血色）
-│   └── responsive.css            # 双端响应式
-├── js/
+├── index.html                 # 入口（11KB，⚠️ T9.1 待去内联化）
+├── package.json / vite.config.js  # Vite 5 构建
+├── diagnose.js                # 调试脚本（🟡 可移除）
+├── src/
+│   ├── main.js                # ✅ ES6 入口
+│   ├── game.js                # ✅ Game 主类（~53KB）
 │   ├── core/
-│   │   ├── tabmanager.js         # TabManager 基类（参考 core.js）
-│   │   ├── timer.js              # 调度器（参考 game.js Timer）
-│   │   ├── respool.js            # 资源池（参考 resources.js）
-│   │   └── storage.js            # 存档系统（参考 IDataStorageAware）
-│   ├── game.js                   # Game 主类（从 v2.html 拆出）
+│   │   ├── timer.js           # ✅ Timer
+│   │   ├── tabmanager.js      # ✅ TabManager
+│   │   ├── respool.js         # 🟡 ResourcePool（T2.3b 待接入）
+│   │   ├── storage.js         # ✅ 存档（已接入）
+│   │   └── namespace.js       # ✅ 命名空间
 │   ├── ui/
-│   │   ├── panels.js             # 面板渲染（人物/包裹/武学/任务/境况）
-│   │   ├── modals.js             # 模态框（NPC/战斗/事件）
-│   │   └── map.js                # 地图渲染
-│   └── data/
-│       ├── loader.js             # 数据加载器
-│       └── namespace.js          # window.GHOST 命名空间
-├── data/                         # 数据文件（从 work/ 迁移）
-│   ├── rooms_city.js
-│   ├── rooms_wild.js
-│   ├── rooms_dungeon.js
-│   ├── enemies_items_realms.js
-│   ├── atmosphere.js
-│   ├── skills_1.js
-│   ├── skills_2.js
-│   ├── npc_encounters.js         # 按区域拆分（原 410KB）
-│   └── factions.js
-├── docs/                         # 设计文档（保持不变）
-│   ├── worldview.md
-│   ├── cultivation_system.md
-│   ├── bestiary_design.md
-│   ├── terminology_map.md
-│   ├── style_anchor.md
-│   ├── shared_constraint_v3.md
-│   ├── faction_rebrand.md
-│   ├── known_issues.md
-│   └── ...
-└── work/                         # 旧工具脚本（归档保留）
+│   │   ├── input.js           # ✅ InputManager
+│   │   └── renderer.js        # 🟡 Renderer（T2.2 待加效果缓存）
+│   ├── data/
+│   │   └── data_loader.js     # ✅ collectData
+│   └── styles/
+│       ├── main.css           # 🟡（T3.2 待改色板）
+│       ├── themes/night.css
+│       └── responsive.css     # ⬜（T4.1 待加断点）
+├── work/                      # 数据层
+│   ├── rebuild_*.js × 8        # 核心数据（enemies/rooms/city/wild/dungeon/skills/atmosphere）
+│   ├── integration_v2.js       # 数据适配桥接层（← LOCATIONS/MAP_POS/NPC_ENCOUNTERS…）
+│   ├── ghost_faction_recruiter_encounters.js
+│   ├── ghost_room_search.js / ghost_npc_encounters.js  # v1 源（T6.x 还原用）
+│   │
+│   ├── rebuild_meridians.js           # ⬜ Phase8 数据：奇经八脉（T8.0 待接入）
+│   ├── rebuild_seals.js               # ⬜ Phase8 数据：神魂刻印（T8.0 待接入）
+│   ├── rebuild_builds_drops_corruption.js  # ⬜ Phase8 数据：流派/掉落/畸变（T8.0 待接入）
+│   ├── corruption_system.js           # ⬜ Phase8 数据：6宗门畸变表（T8.0 待接入）
+│   ├── jianghu_events.js              # ⬜ Phase8 数据：江湖事件 32NPC（T8.0 待接入）
+│   ├── cross_path_quests.js           # ⬜ Phase8 数据：罗生门任务（T8.0 待接入）
+│   ├── rebuild_skill_descriptions_ling.js  # ⬜ T8.8 待建
+│   │
+│   ├── rebuild_combat_gong.js         # ⬜ 行功数据：行功图/小周天（T13.0 待接入）
+│   ├── rebuild_combat_atb.js          # ⬜ 行功数据：ATB 速度系统（T13.0 待接入）
+│   ├── rebuild_combat_hijack.js       # ⬜ 行功数据：畸变篡改（T13.0 待接入）
+│   └── combat_systems.json            # ⬜ 行功依赖：概率引擎（T13.0 待接入）
+│
+├── docs/
+│   ├── refactor_task_tracker.md       # ✅ 本文档（唯一活文档）
+│   ├── narrative_design.md            # ✅ 宗门名/世界观/叙事Build唯一标准
+│   ├── xinggong_combat_design.md      # ✅ 行功战斗系统完整设计规格
+│   ├── todo_execution_plan.md         # 📦 已归档只读
+│   ├── cleanup_tracker_20260622.md    # 📦 数据清理跟踪（F/G 段待完成）
+│   └── *.md × 10                      # 设计文档
 ```
 
 ---
@@ -186,37 +333,67 @@ ghostMUD/
 ## 六、验收标准
 
 ### 6.1 架构拆分验收
-- [ ] `index.html` < 5KB，仅含 `<link>` 和 `<script>` 引用
-- [ ] CSS 全部外链，HTML 中无 `<style>` 块
-- [ ] JS 全部外链，HTML 中无 `<script>` 内联逻辑
-- [ ] 全局变量减少 80%+（通过 `window.GHOST` 命名空间收拢）
-- [ ] 首屏加载不阻塞（数据懒加载）
+- [x] JS 全部外链（main.js → game.js → core/ui/data）
+- [ ] `index.html` < 5KB 仅引用（T9.1，当前 11KB 含内联 HTML）
+- [x] CSS 全部外链（main/night/responsive）
+- [ ] 全局变量减少 80%+（命名空间收拢，**未量化，需 T2.3b 接入后测算**）
+- [ ] 首屏加载不阻塞（T5.1 懒加载）
 
 ### 6.2 猫国建设者模式验收
-- [ ] Tab 5 个面板均通过 TabManager 统一管理
-- [ ] 效果计算走 effectsCachedExisting 缓存
-- [ ] 资源（气血/真元/道心/灵石/修为）通过 resPool 管理
-- [ ] 挂机逻辑通过 Timer 调度，非裸 setInterval
-- [ ] 刷新页面后状态可恢复（存档系统）
+- [x] Tab 5 面板经 TabManager 管理
+- [ ] 效果计算走 effectsCachedExisting（T2.2）
+- [ ] 资源经 resPool 管理（T2.3b，当前 resPool 类未接入）
+- [x] 挂机逻辑经 Timer 调度（非裸 setInterval）
+- [x] 刷新页面状态可恢复（存档已接入 explore 自动存档）
 
 ### 6.3 已知问题修复验收
-- [ ] 道心衰减公式与 cultivation_system.md v1.1 匹配
-- [ ] CSS 色板无赛博残留（暗紫/霓虹青）
-- [ ] 方向键全链路一致（UI → explore → connections → LOCATIONS）
-- [ ] `isAtFactionHQ` 使用新术语映射
+- [ ] 道心衰减与 cultivation_system.md v1.1 匹配（T3.1，并入 T8.4 双轨道心）
+- [ ] CSS 色板无赛博残留（T3.2）
+- [x] 方向键全链路一致（T3.4，DIR_CN 归一化）
+- [ ] `isAtFactionHQ` 宗门名 100% 来自 narrative_design.md（T3.3，无"梵网寺/剑巢/蚁网/毒巢/血镰/斗转阁/影墓/机巧岛"等虚构名）
 
-### 6.4 双端适配验收
-- [ ] 手机端（375px）：单栏布局，按钮可触控
-- [ ] 平板端（768px）：单栏布局，间距加大
-- [ ] 桌面端（1024px+）：双栏布局，左侧主面板+右侧日志/地图
-- [ ] 键盘快捷键在桌面端可用
+### 6.4 双端适配验收（T4.x）
+- [ ] 手机 375px 单栏、按钮可触控
+- [ ] 平板 768px 单栏加大间距
+- [ ] 桌面 1024px+ 双栏（左主面板+右日志/地图）
+- [ ] 键盘快捷键可用
 
 ### 6.5 风格一致性验收
-- [ ] 聊斋感 60%：日常场景中暗藏诡异
-- [ ] 认知侵蚀 30%：道心降低时的文本异常
-- [ ] 不可名状 10%：极罕见的"不对"事件
+- [ ] 聊斋感 60%（日常场景暗藏诡异）
+- [ ] 认知侵蚀 30%（道心降低时文本异常）
+- [ ] 不可名状 10%（极罕见"不对"事件）
 - [ ] 禁用词扫描通过（无赛博/科技残留）
-- [ ] 房间描述符合 shared_constraint_v3.md 句式规范
+- [ ] 房间描述符合 shared_constraint_v3.md 句式
+
+### 6.6 内容还原验收（T6.x）
+- [ ] 境界上限化神，化神后 idle 提示"前路已绝"（T6.0）
+- [ ] ROOM_SEARCH 从 7 房间恢复到 94 房间（T6.1）
+- [ ] NPC_ENCOUNTERS 从 5 NPC 块恢复到接近 385（T6.2）
+- [ ] QUESTS 增量到 18-20 条（T6.3）
+- [ ] 还原内容同步写入 desc_vague/percept（T6.4）
+
+### 6.7 双修体系验收（T8.x）
+- [ ] state.path 字段存在，武修/灵修两套境界可切换
+- [ ] getDesc() 按 path+realm 分发三层描述
+- [ ] 12 宗门归属明确（6 武修可选 + 6 灵修 disabled）
+- [ ] 道心机制按 path 差异化（武修不自然跌，灵修炼气起缓跌）
+- [ ] 经济双轨（金银铜 / 灵石）
+- [ ] 武修文本零修真术语，灵修可用术语
+- [ ] 道心归零有两套结局文本
+
+### 6.8 新手体验验收（T7.x）
+- [ ] Roll 点界面可重 roll，结果写入 state.innate
+- [ ] 门派介绍页显示，灵修宗门 disabled
+- [ ] 选门派后进对应新手区引导链
+- [ ] 点击系统新手区有效，离开新手后衰减
+
+### 6.9 行功战斗验收（T13.x）
+- [ ] 行功图编辑/保存/切换可操作（3 套行功图 × 5 式位）
+- [ ] ATB 速度条正确驱动角色动作，追风脉高阶可连动
+- [ ] 畸变篡改按等级逐级生效（描述→数值→替换→跳位→全图覆盖）
+- [ ] 玩家三种干预权（变式/服药/脱战）均可使用且冷却正确
+- [ ] 经典回合制保留且可通过设置切换（双模兼容）
+- [ ] BOSS 行功图有章法可预判（非随机技能选择）
 
 ---
 
@@ -225,10 +402,15 @@ ghostMUD/
 | 风险 | 等级 | 缓解措施 |
 |------|------|---------|
 | 数据层迁移导致游戏不可用 | 🔴 高 | 数据文件保持原格式，只改加载方式；每步可运行测试 |
+| **isAtFactionHQ 含 8 个错误宗门名**（T3.3） | 🔴 高 | 已在 tracker 明确定义：12 宗门名以 narrative_design.md 为唯一标准，错误名列表已写死，不可新增虚构宗门 |
+| **Phase8/行功数据文件未接入加载链**（T8.0/T13.0） | 🔴 高 | 7 个 Phase8 文件 + 3 个行功文件 已生成但 index.html 未加载；必须先接入 bridge 脚本挂 window，否则 T8/T13 全阻塞 |
+| **resPool 接入破坏存档兼容**（T2.3b） | 🟡 中 | state 字段→resPool 迁移时保留旧字段名映射，存档 deserialize 做兼容层 |
 | CSS 拆分后样式丢失 | 🟡 中 | 先完整复制再拆分，逐个视觉对比 |
-| 存档系统与现有状态不兼容 | 🟡 中 | 首版只存核心状态（realm/cultivation/daoxin/location），渐进扩展 |
-| 双端布局冲突 | 🟢 低 | 移动优先策略，桌面端用 media query 增强 |
-| NPC 遭遇数据拆分后丢失 | 🟡 中 | 拆分前后做 count 校验（当前 140 条 NPC + 12 帮派招募） |
+| 存档与现有状态不兼容 | 🟡 中 | 首版只存核心状态，渐进扩展 |
+| 双端布局冲突 | 🟢 低 | 移动优先，桌面用 media query 增强 |
+| NPC 遭遇数据拆分后丢失 | 🟡 中 | 拆分前后做 count 校验（当前 140 NPC + 12 招募） |
+| **双修体系内容工程量巨大**（T8，24h） | 🟡 中 | 先定框架（T8.1-T8.4）+ 灵修宗门 disabled 占位，内容逐步迭代 |
+| **T2.2 效果缓存引入渲染 bug** | 🟡 中 | 缓存失效策略要覆盖 state 所有变化点；先做脏标记再细化 |
 
 ---
 
@@ -237,10 +419,12 @@ ghostMUD/
 | 日期 | 变更 | 操作人 |
 |------|------|--------|
 | 2026-06-22 | 创建任务追踪与执行表 | 游戏设计师 |
-| 2026-06-22 | P1 架构拆分全部完成（T1.1-T1.5），P2 猫国模式核心模块完成（T2.1/T2.3/T2.4/T2.5），Vite 项目初始化完成，开发服务器启动成功 | 游戏设计师 |
-| 2026-06-22 | T3.0 修复 `src/ui/input.js` 语法错误：`_bindActionButtons()` 中 forEach 回调括号未闭合导致 Vite import analysis 失败，同时修复了重复事件绑定问题（每按钮绑定了两个 click listener） | AI |
-| 2026-06-22 | T3.0b 修复 `vite.config.js`：移除无效的 `manualChunks` 对象配置（Vite 8/rolldown 不支持对象格式，且引用的 6 个 `src/data/*.js` 文件不存在）。`vite build` 验证通过（15 modules transformed, built in 76ms） | AI |
+| 2026-06-22 | P1 架构拆分完成（T1.1-T1.5），P2 核心模块完成（T2.1/2.3/2.4/2.5），Vite 初始化，dev 启动成功 | 游戏设计师 |
+| 2026-06-22 | T3.0 修 input.js 语法错误（forEach 回调未闭合 + 重复绑定） | AI |
+| 2026-06-22 | T3.0b 修 vite.config manualChunks（Vite8 不支持对象格式） | AI |
+| **2026-06-23** | **自我迭代 v2（本轮）**：① 合并 `todo_execution_plan.md` 全部内容（原 Phase 0-8 → T6-T12）；② 修正 7 处状态偏差——T3.4 实际已完成(✅)、T2.5 已接入 explore 自动存档、T3.3 重定义为术语冲突、新增 T2.3b(resPool 接入缺口)、T3.1 并入 T8.4、T6.4 三层描述联动约束；③ 新增批次 F/G/H 优先级；④ 补 6.6-6.8 验收 checklist；⑤ `todo_execution_plan.md` 归档为只读历史 | ZCode |
+| **2026-06-23** | **自我迭代 v2.1（本会话续）**：① **T3.3 定位纠正**——不是"术语冲突"，是 `isAtFactionHQ` 含 8 个不在 narrative_design.md 12 宗门之列的虚构名（梵网寺/剑巢/蚁网/毒巢/血镰/斗转阁/影墓/机巧岛），宗门名以 narrative_design.md 为唯一标准；② **T8 状态修正**——Phase 8 数据文件（meridians/seals/builds/corruption/jianghu_events/cross_path_quests 共 ~350KB）已生成但未接入 Vite，新增 T8.0"Phase8 数据接入 Vite"；③ **新增 T13 行功战斗系统**——合并 `xinggong_combat_design.md`（34h，行功五式/ATB/畸变篡改/干预系统）；④ **T6.0-T6.3 状态回退** ⏳（内容还原实际未做）；⑤ 依赖图/批次/文件结构/验收/风险全部同步更新 | ZCode |
 
 ---
 
-*本文档为活文档，每批次完成后更新状态。*
+*本文档为唯一活文档，每批次完成后更新状态。来源：原 `refactor_task_tracker.md`（架构）+ `todo_execution_plan.md`（玩法）合并。*

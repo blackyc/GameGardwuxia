@@ -1,4 +1,4 @@
-/**
+﻿/**
  * storage.js — 存档系统
  * 参考猫国建设者 game.js 的 save/load + IDataStorageAware
  * 使用 localStorage 序列化/反序列化游戏状态
@@ -61,7 +61,7 @@ export class Storage {
     localStorage.removeItem(STORAGE_KEY);
   }
 
-  /** 序列化状态（只存核心数据） */
+  /** 序列化状态（只存核心卷宗） */
   _serialize(state) {
     return {
       realm: state.realm,

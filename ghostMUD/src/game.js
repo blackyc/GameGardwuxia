@@ -1,4 +1,4 @@
-/**
+﻿/**
  * game.js — 主游戏类
  * 从 ghost_mud_v2.html 的 Game 类迁移而来
  * 参考猫国建设者 game.js 的类结构
@@ -36,7 +36,7 @@ export class Game {
     this.renderer = new Renderer(this);
     this.input = new InputManager(this);
 
-    // 数据
+    // 卷宗
     this.data = collectData();
     console.log('[Game] Data collected:', {
       REALMS: (this.data.REALMS || []).length,
@@ -48,7 +48,7 @@ export class Game {
       getDesc: typeof this.data.getDesc
     });
 
-    // 解构常用数据
+    // 解构常用卷宗
     const { REALMS, LOCATIONS, NPC_ENCOUNTERS, FACTIONS, ROGUE_SKILLS, QUESTS, ITEMS, ROOM_SEARCH, MAP_POS, MAP_CONN, getDesc } = this.data;
     this.REALMS = REALMS;
     this.LOCATIONS = LOCATIONS;
@@ -424,7 +424,7 @@ export class Game {
       '忘尘宗': '🙏 「忘尘即是归宗。从今日起，你即忘尘宗弟子。忘我，忘尘，忘一切——连自己正在忘也一并忘记。入我忘尘，心即是空。」',
       '赤霞峰': '☯ 「赤霞峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
       '锈剑冢': '⚔ 「锈剑冢中万剑沉寂。从今日起，你手持的是败剑——败在他人手中，锈在自己手上。败剑不折，因为已经折过一次了。」',
-      '丝狱': '🐜 「丝狱之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
+      '织狱': '🐜 「织狱之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
       '焚身道': '🔥 「焚身道的圣火已在你丹田种下。从今日起，你的血是流动的焰——烧自己，也烧敌人。圣火不灭，焚身证道。」',
       '逍遥驿': '🎨 「逍遥驿不收弟子，只收过客。从今日起，天下之大，唯自由不可拘。他日你若想回头，驿门永远开着。」',
       '药王谷': '☠ 「药王谷的丹房为你敞开。从今日起，万毒皆你可控之物。剂量定生死——毒即是药，药即是毒。只是偶尔，毒会自己加一味。」',
@@ -562,7 +562,7 @@ export class Game {
       '梵网寺': ['忘尘峰'],
       '紫霞山': ['赤霞峰·观星台'],
       '剑巢': ['锈剑冢·地窟'],
-      '蚁网': ['丝狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
+      '蚁网': ['织狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
       '焰心教': ['光明顶·焰心殿'],
       '逍遥驿': ['逍遥驿·车马院'],
       '毒巢': ['鼓楼西·地下丹房'],
@@ -1080,7 +1080,7 @@ export class Game {
     rumors.push('「忘尘宗的山门就在城外的某座山上。但没人找得到——据说要道心足够稳才能看见。」');
     rumors.push('「最近城里的灵脉波动很不对劲。路边的野猫都跑了。晚上别走小巷。」');
     rumors.push('「城外废墟里埋着不少好东西。但也在那些东西的视线里。别独自去。」');
-    rumors.push('「血禅寺和丝狱最近在抢地盘。暗街一带最好绕道走——那不是给人走的街。」');
+    rumors.push('「血禅寺和织狱最近在抢地盘。暗街一带最好绕道走——那不是给人走的街。」');
 
     const encPool = this.NPC_ENCOUNTERS[s.location];
     if (encPool && encPool.length > 0) {
