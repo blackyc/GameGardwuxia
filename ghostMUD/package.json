@@ -1,0 +1,17 @@
+{
+  "name": "ghostmud",
+  "version": "2.0.0",
+  "description": "聊斋仙途·文字MUD — 重构版",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["mud", "text-game", "liaozhai", "roguelike"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

@@ -1,0 +1,19 @@
+/* === 夜间主题：枯色/墨色/血色基调 === */
+/* 替换原赛博暗紫/霓虹残留，回归聊斋志怪视觉 */
+
+:root {
+  --bg-base: #08060c;
+  --bg-card: rgba(20,14,24,.9);
+  --bg-panel: rgba(20,14,24,.9);
+  --text-primary: #b8a090;
+  --text-secondary: #6e5c50;
+  --text-dim: #4a3040;
+  --accent-blood: #b8443a;
+  --accent-gold: #c49a38;
+  --accent-jade: #6a9a78;
+  --accent-purple: #7a4a90;
+  --border-dim: rgba(50,20,30,.4);
+  --border-mid: rgba(60,30,40,.4);
+  --glow-warm: rgba(180,120,80,.3);
+  --glow-blood: rgba(180,60,50,.4);
+}

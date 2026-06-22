@@ -1,0 +1,187 @@
+/* === 响应式布局：双端适配 === */
+/* 移动优先：默认单栏，桌面端增强为双栏 */
+
+/* === 移动端（默认 <768px）=== */
+@media (max-width: 767px) {
+  #app {
+    max-width: 100%;
+  }
+  #input-wrap {
+    max-width: 100%;
+    left: 0;
+    transform: none;
+  }
+  .action-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+  }
+  .action-btn {
+    padding: 10px 2px;
+    font-size: 11px;
+  }
+  .action-btn .icon {
+    font-size: 16px;
+  }
+  .panel-body {
+    max-height: 280px;
+  }
+  #log-area {
+    max-height: 240px;
+  }
+  .modal-box {
+    max-width: 95%;
+    padding: 18px;
+  }
+  /* 桌面端隐藏的快捷键提示 */
+  .kbd-hint {
+    display: none;
+  }
+}
+
+/* === 平板端（768px-1023px）=== */
+@media (min-width: 768px) and (max-width: 1023px) {
+  #app {
+    max-width: 600px;
+  }
+  #input-wrap {
+    max-width: 600px;
+  }
+  .panel-body {
+    max-height: 350px;
+  }
+  #log-area {
+    max-height: 320px;
+  }
+}
+
+/* === 桌面端（>=1024px）双栏布局 === */
+@media (min-width: 1024px) {
+  #app {
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-areas:
+      "header  header"
+      "tabs    sidebar"
+      "main    sidebar"
+      "actions sidebar"
+      "log     sidebar";
+    gap: 10px;
+    padding: 0 20px 80px;
+  }
+
+  #header {
+    grid-area: header;
+    position: relative;
+    top: 0;
+  }
+
+  #tab-bar {
+    grid-area: tabs;
+    position: relative;
+    top: 0;
+    margin: 0;
+  }
+
+  /* 主区域：进度+位置+地图 */
+  .card:nth-of-type(1) {
+    grid-area: main;
+  }
+
+  /* 行动栏 */
+  .card:nth-of-type(2) {
+    grid-area: actions;
+  }
+
+  /* 江湖录 */
+  .card:nth-of-type(3) {
+    grid-area: log;
+  }
+
+  /* 侧栏：Tab 面板 */
+  .tab-panel {
+    grid-area: sidebar;
+    margin: 0;
+    max-height: none;
+  }
+
+  #input-wrap {
+    max-width: 1200px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .panel-body {
+    max-height: 500px;
+  }
+
+  #log-area {
+    max-height: 400px;
+  }
+
+  /* 桌面端显示键盘快捷键提示 */
+  .kbd-hint {
+    display: inline;
+    font-size: 10px;
+    color: #4a3040;
+    margin-left: 4px;
+  }
+
+  /* 地图更大 */
+  #map-container {
+    height: 550px;
+  }
+
+  /* 按钮更大 */
+  .action-btn {
+    padding: 12px 4px;
+    font-size: 13px;
+  }
+  .action-btn .icon {
+    font-size: 20px;
+  }
+}
+
+/* === 宽屏（>=1440px）=== */
+@media (min-width: 1440px) {
+  #app {
+    max-width: 1400px;
+  }
+  #input-wrap {
+    max-width: 1400px;
+  }
+}
+
+/* === 触控优化 === */
+@media (hover: none) and (pointer: coarse) {
+  .action-btn,
+  .tab-btn,
+  .combat-btn,
+  .modal-choice,
+  .modal-close,
+  .teacher-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .inv-item,
+  .quest-item,
+  .skill-item {
+    min-height: 40px;
+  }
+}
+
+/* === 减少动画 === */
+@media (prefers-reduced-motion: reduce) {
+  #app {
+    animation: none;
+  }
+  .map-node.current .dot {
+    animation: none;
+  }
+  #idle-status .pulse {
+    animation: none;
+  }
+  .log-entry {
+    animation: none;
+  }
+}
