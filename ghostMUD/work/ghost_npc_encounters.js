@@ -63,7 +63,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -84,7 +85,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -107,7 +109,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -128,7 +131,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -149,7 +153,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -172,7 +177,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -193,7 +199,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -214,7 +221,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -237,7 +245,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -258,7 +267,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -279,7 +289,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -300,7 +311,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -323,7 +335,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -344,7 +357,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -365,7 +379,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -386,7 +401,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -407,7 +423,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -430,7 +447,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -451,7 +469,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -472,7 +491,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -493,7 +513,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -516,7 +537,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -537,7 +559,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -558,7 +581,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -579,7 +603,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -600,7 +625,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -623,7 +649,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -644,7 +671,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -665,7 +693,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -686,7 +715,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -707,7 +737,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -730,7 +761,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -751,7 +783,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -772,7 +805,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -793,7 +827,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -814,7 +849,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -837,7 +873,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -858,7 +895,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -879,7 +917,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -900,7 +939,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -921,7 +961,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -944,7 +985,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -965,7 +1007,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -986,7 +1029,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1007,7 +1051,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1028,7 +1073,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1051,7 +1097,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1072,7 +1119,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1093,7 +1141,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1114,7 +1163,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1135,7 +1185,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1158,7 +1209,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1179,7 +1231,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1200,7 +1253,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1221,7 +1275,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1242,7 +1297,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1265,7 +1321,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1286,7 +1343,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1307,7 +1365,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1330,7 +1389,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1351,7 +1411,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1372,7 +1433,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1393,7 +1455,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1416,7 +1479,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1437,7 +1501,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1458,7 +1523,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1481,7 +1547,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1502,7 +1569,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1523,7 +1591,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1544,7 +1613,8 @@ var NPC_ENCOUNTERS = {
           "log": "老道笑了笑，把酒收回袖中：「我年轻时也这样——防着所有人。没关系。这世道，小心些没错。」他低头看自己的杯子，杯底有什么在动，他假装没看见。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1567,7 +1637,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1588,7 +1659,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1609,7 +1681,8 @@ var NPC_ENCOUNTERS = {
           "log": "她微笑颔首，抱着琴离去。转身时你看见她的后颈——有一行极小的字，像是烙上去的。没看清是什么字，你已经不想看了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1630,7 +1703,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1651,7 +1725,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1674,7 +1749,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1695,7 +1771,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1716,7 +1793,8 @@ var NPC_ENCOUNTERS = {
           "log": "他失望地将黄纸符收回怀中，指节捏得发白：「……也罢。兴许你有更合适的人选？」他转身时，你瞥见他的耳后——有三个针尖大的孔，呈三角形。"
         }
       ],
-      "questTrigger": "lost_chip",
+      "questTrigger": "lost_chip"
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1734,7 +1812,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1794,7 +1873,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1817,7 +1897,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1838,7 +1919,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1854,7 +1936,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1872,7 +1955,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1893,7 +1977,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1909,7 +1994,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -1931,7 +2017,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1952,7 +2039,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1968,7 +2056,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -1989,7 +2078,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -2032,7 +2122,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2052,7 +2143,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2073,7 +2165,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2094,7 +2187,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -2136,7 +2230,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2157,7 +2252,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2177,7 +2273,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -2200,7 +2297,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2216,7 +2314,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2237,7 +2336,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -2260,7 +2360,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2321,7 +2422,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -2339,7 +2441,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2360,7 +2463,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2380,7 +2484,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2400,7 +2505,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -2503,7 +2609,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -3836,7 +3943,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -3857,7 +3965,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -3878,7 +3987,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -3899,7 +4009,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -3919,7 +4030,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -3961,7 +4073,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -3997,7 +4110,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4020,7 +4134,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4081,7 +4196,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4103,7 +4219,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4124,7 +4241,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4144,7 +4262,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4184,7 +4303,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4227,7 +4347,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4248,7 +4369,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4264,7 +4386,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4302,7 +4425,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4322,7 +4446,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4380,7 +4505,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4401,7 +4527,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4439,7 +4566,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4455,7 +4583,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4476,7 +4605,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4494,7 +4624,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4510,7 +4641,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4531,7 +4663,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4609,7 +4742,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4630,7 +4764,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4651,7 +4786,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4669,7 +4805,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4729,7 +4866,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4747,7 +4885,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4763,7 +4902,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4846,7 +4986,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4868,7 +5009,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4888,7 +5030,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4909,7 +5052,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -4931,7 +5075,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4952,7 +5097,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -4973,7 +5119,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5015,7 +5162,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5036,7 +5184,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5057,7 +5206,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5078,7 +5228,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5094,7 +5245,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5117,7 +5269,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5138,7 +5291,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5158,7 +5312,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5180,7 +5335,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5201,7 +5357,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5217,7 +5374,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5238,7 +5396,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5259,7 +5418,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5301,7 +5461,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5321,7 +5482,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5342,7 +5504,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5360,7 +5523,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5381,7 +5545,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5402,7 +5567,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5425,7 +5591,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5441,7 +5608,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5461,7 +5629,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5524,7 +5693,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5540,7 +5710,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5561,7 +5732,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5588,7 +5760,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -5601,7 +5773,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5635,7 +5808,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5710,7 +5884,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5719,7 +5894,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -5732,14 +5907,15 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -5752,7 +5928,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5786,7 +5963,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5861,7 +6039,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5895,7 +6074,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -5913,7 +6093,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5929,14 +6110,15 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -5949,14 +6131,15 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -5969,7 +6152,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -5997,7 +6181,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -6010,7 +6194,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6045,7 +6230,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6082,14 +6268,15 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -6102,7 +6289,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6118,7 +6306,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6143,7 +6332,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -6156,7 +6345,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -6230,7 +6420,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -6248,7 +6439,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6273,7 +6465,7 @@ var NPC_ENCOUNTERS = {
     {
       "type": "npc_talk",
       "title": "卦师",
-      "desc": "戴墨镜的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下墨镜，左眼眶里不是眼睛，「——某个人在哪儿？」",
+      "desc": "戴瞎子的男子靠在墙边，手插在衣袋里——天上没有太阳。他朝你勾勾手指：「嘿，你。想知道点什么？祂的网最新动静？哪个宗门见不得人的事？还是——」他摘下瞎子，左眼眶里不是眼睛，「——某个人在哪儿？」",
       "results": [
         {
           "choice": "打听鬼市的消息（10灵石）",
@@ -6286,7 +6478,8 @@ var NPC_ENCOUNTERS = {
           "log": "「没兴趣？没关系。反正你迟早会来找我的。」他在你背后说道。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6322,7 +6515,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6342,7 +6536,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6363,7 +6558,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6384,7 +6580,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -6407,7 +6604,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6423,7 +6621,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6465,7 +6664,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6486,7 +6686,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6507,7 +6708,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6527,7 +6729,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6585,7 +6788,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6606,7 +6810,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6626,7 +6831,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6646,7 +6852,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -6664,7 +6871,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6700,7 +6908,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6721,7 +6930,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6764,7 +6974,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6785,7 +6996,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6801,7 +7013,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -6844,7 +7057,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6907,7 +7121,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6923,7 +7138,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6943,7 +7159,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6959,7 +7176,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -6980,7 +7198,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7023,7 +7242,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7039,7 +7259,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7055,7 +7276,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7117,7 +7339,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7158,7 +7381,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7176,7 +7400,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7196,7 +7421,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7239,7 +7465,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7255,7 +7482,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7276,7 +7504,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7312,7 +7541,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7335,7 +7565,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7351,7 +7582,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7372,7 +7604,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7415,7 +7648,8 @@ var NPC_ENCOUNTERS = {
           "log": "男孩泪汪汪地望着你，慢慢松开衣角。你刚转身，听见背后有人喊「小宝！又乱跑！」回头——妇人抱着孩子走远了。但你刚才分明没有看到那妇人出现。街上的人好像也没看到她。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7435,7 +7669,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7451,7 +7686,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7467,7 +7703,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7551,7 +7788,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7592,7 +7830,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7608,7 +7847,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7671,7 +7911,8 @@ var NPC_ENCOUNTERS = {
           "log": "老翁嘿嘿两声：「不识货。」收起药罐，闭眼晒太阳。他的影子比他的身子慢了一拍——你站起来走的时候才察觉。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7691,7 +7932,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     }
@@ -7713,7 +7955,8 @@ var NPC_ENCOUNTERS = {
           "log": "卦师在你身后笑了一声。笑声很轻，但巷子里的狗忽然全叫了起来。「不急，不急。该来的……早晚会来。」狗叫声停时，他已经不在原地了。"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },
@@ -7729,7 +7972,8 @@ var NPC_ENCOUNTERS = {
           "reward": "random_item"
         }
       ],
-      "questTrigger": null,
+      "questTrigger": null
+,
       "requireProfession": ["灵修","药师","符修"],
       "minRealm": "筑基",
     },

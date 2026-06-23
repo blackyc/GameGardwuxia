@@ -46,6 +46,24 @@ export function collectData() {
     MAP_CONN: window.MAP_CONN || [],
     GHOST_SKILL_TREES_1: window.GHOST_SKILL_TREES_1 || null,
     GHOST_SKILL_TREES_2: window.GHOST_SKILL_TREES_2 || null,
+    // Phase 8 双修体系数据
+    MERIDIANS: window.MERIDIANS || [],
+    SEALS: window.SEALS || [],
+    SEAL_CATEGORIES: window.SEAL_CATEGORIES || [],
+    BUILDS: window.BUILDS || [],
+    MERIDIAN_DROPS: window.MERIDIAN_DROPS || {},
+    CORRUPTION: window.CORRUPTION || {},
+    CORRUPTION_TIERS: window.CORRUPTION_TIERS || [],
+    CORRUPTION_DATA: window.CORRUPTION_DATA || {},
+    JIANGHU_NPCS: window.JIANGHU_NPCS || [],
+    JIANGHU_EVENTS: window.JIANGHU_EVENTS || [],
+    JIANGHU_SIDELINES: window.JIANGHU_SIDELINES || [],
+    CROSS_PATH_QUESTS: window.CROSS_PATH_QUESTS || [],
+    LING_SKILL_DATA: window.LING_SKILL_DATA || [],
+    // 行功战斗系统数据
+    XINGGONG: window.XINGGONG || null,
+    ATB_SYSTEM: window.ATB_SYSTEM || null,
+    COMBAT_HIJACK: window.COMBAT_HIJACK || null,
     getDesc: window.getDesc || ((obj) => obj?.desc || ''),
   };
 
@@ -67,6 +85,18 @@ export function collectData() {
     NPC遭遇: Object.keys(_data.NPC_ENCOUNTERS).length,
     帮派: Object.keys(_data.FACTIONS).length,
     任务: _data.QUESTS.length,
+    // Phase 8
+    经脉: _data.MERIDIANS.length,
+    刻印: _data.SEALS.length,
+    流派: _data.BUILDS.length,
+    畸变宗门: Object.keys(_data.CORRUPTION_DATA).length,
+    江湖NPC: _data.JIANGHU_NPCS.length,
+    交集任务: _data.CROSS_PATH_QUESTS.length,
+    灵修技能: _data.LING_SKILL_DATA.length,
+    // 行功
+    行功图: _data.XINGGONG ? '已加载' : '缺失',
+    ATB: _data.ATB_SYSTEM ? '已加载' : '缺失',
+    畸变篡改: _data.COMBAT_HIJACK ? '已加载' : '缺失',
   });
 
   return _data;

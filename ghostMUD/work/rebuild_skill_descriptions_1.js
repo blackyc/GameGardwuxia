@@ -590,254 +590,18 @@ var GHOST_SKILL_TREES_1 = {
   },
 
   // ==========================================
-  // 宗派三：锈剑冢
+  // 宗派四：紫霞山
   // ==========================================
-  "锈剑冢": {
-    name: "锈剑冢",
-    description: "锈剑丘上插满了剑。每一把都锈迹斑斑，但没有一把是死物——擦锈的时候能听到剑里的声音，那不是你自己的念头，是铸剑人的。剑冢的规矩只有一条：不准拔剑。拔剑等于放出里面封着的那一念。",
-    skills: [
-      {
-        id: "jianchao_force_1",
-        name: "锈剑冢内功",
-        pinyin: "jianchao-neicheng",
-        type: "force",
-        description: "锈剑冢剑宗心法。修炼此法的人，人与剑的感应快过念头——心念未动时剑已在手，眼未看清时剑已刺到。不是手快，是剑气与经脉早已融为一体，不分彼此。",
-        baseDamage: "125%",
-        baseSpeed: "110%",
-        attackBonus: 0,
-        defenseBonus: 0,
-        passiveBonus: "所有剑法(sword)类型技能伤害+10%，灵力消耗-15%",
-        performs: [],
-        learnFrom: "风清扬",
-        minLevel: 0
-      },
-      {
-        id: "jianchao_force_2",
-        name: "紫霞心经",
-        pinyin: "zixia-pincheng",
-        type: "force",
-        description: "锈剑冢气宗心法。取问剑峰衍化而来，重意不重招——气沉丹田，周身经脉布满一层淡紫色的真气。这层气不攻人，只护己，刀剑加之如砍在数层湿牛皮上，越往里阻力越大。",
-        baseDamage: "115%",
-        baseSpeed: "100%",
-        attackBonus: 0,
-        defenseBonus: 8,
-        passiveBonus: "气血上限+18%，精神防御+15%，命中+8%，闪躲+10%",
-        performs: [],
-        learnFrom: "岳不群",
-        minLevel: 0
-      },
-      {
-        id: "jianchao_sword_1",
-        name: "锈剑冢剑法",
-        pinyin: "jianchao-jianma",
-        type: "sword",
-        description: "锈剑冢入门剑法。七十二路剑招没有一路是死招——每一式都在实战中打磨成为某一类敌人的克星。使剑的人出手前便已看准：这一剑刺哪里最快、最深、最没有回头路。",
-        baseDamage: "120%",
-        baseSpeed: "110%",
-        attackBonus: 5,
-        defenseBonus: 2,
-        performs: [
-          {
-            id: "lianhuan",
-            name: "剑掌五连环",
-            pinyin: "jianzhang-wulianhuan",
-            description: "剑掌连环，一剑破防、一掌灌气——剑伤其外、掌震其内。五招一气呵成，对手刚挡住剑锋，掌劲已从剑身的间隙透入胸口。防了剑，防不住掌；防了掌，下一剑又到了。",
-            damageType: "物理+化学混合连击",
-            moraleCost: 35,
-            cooldown: 18,
-            effects: "5连击（交替物理/毒煞伤害），每击有20%概率引动「破防」效果（降低目标防御20%，可叠加）"
-          },
-          {
-            id: "feilong",
-            name: "飞龙",
-            pinyin: "feilong",
-            description: "剑尖一抖，一道剑气脱剑而出——飞在半空时越飞越快，越飞越亮，到对方面前时已是一道刺目的白光。远距离出手的绝技，距离越远蓄势越久，落下时力道越沉。",
-            damageType: "远功物理+控制",
-            moraleCost: 30,
-            cooldown: 16,
-            effects: "远功攻击（2-4格），造成120%-160%伤害（距离越远伤害越高），命中后50%概率令目标busy 2回合"
-          }
-        ],
-        learnFrom: "令狐冲",
-        minLevel: 20
-      },
-      {
-        id: "jianchao_sword_2",
-        name: "独孤九剑",
-        pinyin: "dugu-jiujian",
-        type: "sword",
-        description: "锈剑冢至高剑法。不是九招——是九种'破'的方式。破兵、破招、破气、破势……每一种都消解对手的一项依凭。对方兵器在手，独孤九剑破他的兵；对方内功深厚，独孤九剑破他的气。九破之下，无人无缺。",
-        baseDamage: "160%",
-        baseSpeed: "120%",
-        attackBonus: 18,
-        defenseBonus: 0,
-        performs: [
-          {
-            id: "po",
-            name: "破兵式",
-            pinyin: "pobingshi",
-            description: "一剑横切在对方兵器最不受力之处——恰是剑脊、刀背、枪杆的连接处。一剑下去不伤对方皮肉，却让对方手里的凶兵颤鸣不止，内里的灵气像被抽空一样散去。兵器再好，被破了'魂'就是一根废铁。",
-            damageType: "缴械+伤害",
-            moraleCost: 30,
-            cooldown: 14,
-            effects: "造成130%伤害，60%概率缴械目标（目标武器-1持续3回合），对高科技武器缴械概率提升至90%"
-          },
-          {
-            id: "dang",
-            name: "荡剑式",
-            pinyin: "dangjianshi",
-            description: "剑尖画出一道环形剑光，剑气凝而不散，在身周形成一圈肉眼可见的透明涟漪。踏入这一步之内的敌人，每次出手都像是触动了什么——那道环绕的剑气自行醒来，逆着攻击的方向还了一剑。",
-            damageType: "范围反伤",
-            moraleCost: 40,
-            cooldown: 20,
-            effects: "自身周围2格内敌人每回合受到70%武器伤害（持续3回合），在此期间攻击锈剑冢使用者的敌人额外受一次反击"
-          },
-          {
-            id: "zong",
-            name: "总诀式",
-            pinyin: "zongjueshi",
-            description: "不出剑——等。等对方先动。对方一动，总诀式自行运转：看到拳，便破拳；看到刀，便破刀。不动则已，一动便正打在对方招式最薄弱的那一点上。这就是独孤九剑的根本：无招，故无招可破。",
-            damageType: "随机复合伤害",
-            moraleCost: 50,
-            cooldown: 24,
-            effects: "随机引动破兵/破掌/破气/破箭/破鞭/破索/破枪/破刀/破掌式中任一种效果，伤害加成+30%，且100%暴击"
-          }
-        ],
-        learnFrom: "风清扬",
-        minLevel: 120
-      },
-      {
-        id: "jianchao_sword_3",
-        name: "锋风快剑",
-        pinyin: "fengfeng-kuaijian",
-        type: "sword",
-        description: "锈剑冢快剑。剑出如风——不守只攻，不管对方的刀砍到哪里，只看自己的剑先刺到哪里。风大的时候风中人站不稳，风中剑也一样——越快越危险，但越危险越快。",
-        baseDamage: "130%",
-        baseSpeed: "145%",
-        attackBonus: 14,
-        defenseBonus: -5,
-        performs: [
-          {
-            id: "kuangfeng",
-            name: "狂风连环剑",
-            pinyin: "kuangfeng-lianhuanjian",
-            description: "丹田真气炸开——一剑、两剑、三剑……七剑连发如暴风骤雨，剑光密得看不清剑身，只见一蓬白光对着对方倾泻过去。七剑之后，使剑的人自己脸色也白了——这招耗气太甚。",
-            damageType: "物理七连击",
-            moraleCost: 45,
-            cooldown: 25,
-            effects: "7连击（每击100%，全部命中时第7击伤害翻倍），使用后自身进入「灵力亏空」2回合（攻击力-20%，速度-30%）"
-          }
-        ],
-        learnFrom: "风清扬",
-        minLevel: 80
-      },
-      {
-        id: "jianchao_sword_4",
-        name: "夺命连环三仙剑",
-        pinyin: "duoming-lianhuansan-xianjian",
-        type: "sword",
-        description: "三剑连环——第一剑破护体真气，第二剑点穴封经，第三剑直入要害。三剑之间不留喘息。出师锈剑冢的弟子，每个人都会这一手——不是用来切磋的，是用来了结的。",
-        baseDamage: "150%",
-        baseSpeed: "100%",
-        attackBonus: 16,
-        defenseBonus: 0,
-        performs: [],
-        learnFrom: "令狐冲",
-        minLevel: 60
-      },
-      {
-        id: "jianchao_cuff_1",
-        name: "劈石破玉拳",
-        pinyin: "pishi-poyu-quan",
-        type: "cuff",
-        description: "锈剑冢拳法。拳劲纯粹刚猛——不取巧、不绕弯，就是一身力道灌在拳头上砸下去。练到深处，一拳崩在石头上石头裂开，打在铁甲上铁甲凹进去。没有什么技巧，就是力大。",
-        baseDamage: "135%",
-        baseSpeed: "90%",
-        attackBonus: 10,
-        defenseBonus: 0,
-        performs: [],
-        learnFrom: "令狐冲",
-        minLevel: 15
-      },
-      {
-        id: "jianchao_strike_1",
-        name: "混元章",
-        pinyin: "hunyuan-zhang",
-        type: "strike",
-        description: "锈剑冢掌法。掌心凝聚一团混元之气——拍出时掌心未见红光，对方却觉得一股热流透甲而入，皮肤不烫、骨头不疼，但护甲内衬的软皮被热气蒸得啪啪作响，紧贴着肉烫出一片片红印。",
-        baseDamage: "125%",
-        baseSpeed: "100%",
-        attackBonus: 7,
-        defenseBonus: 3,
-        performs: [],
-        learnFrom: "岳不群",
-        minLevel: 25
-      },
-      {
-        id: "jianchao_sword_5",
-        name: "玉女十九剑",
-        pinyin: "yunv-shijiujian",
-        type: "sword",
-        description: "锈剑冢剑法。十九剑，剑剑细腻——不像独孤九剑那样磅礴，而是在小角度、短距离、寸劲上做文章。每一剑都刺在关节、脉门、气穴这些细微之处。十九剑全中的人，身上看不出重伤，但再想动一根手指头都难。",
-        baseDamage: "125%",
-        baseSpeed: "105%",
-        attackBonus: 7,
-        defenseBonus: 3,
-        performs: [],
-        learnFrom: "岳不群",
-        minLevel: 45
-      },
-      {
-        id: "jianchao_dodge_1",
-        name: "锈剑冢身法",
-        pinyin: "jianchao-shenma",
-        type: "dodge",
-        description: "锈剑冢潜行术。不是隐身——是让人「看不见」。脚步落地无声，衣服不擦风声，气息压到最低。明明从人眼前走过，对方事后回忆却怎么也想不起见过这么一个人。",
-        baseDamage: "100%",
-        baseSpeed: "125%",
-        attackBonus: 0,
-        defenseBonus: 5,
-        performs: [],
-        learnFrom: "令狐冲",
-        minLevel: 10
-      },
-      {
-        id: "jianchao_knowledge_1",
-        name: "锈剑冢暗杀法门",
-        pinyin: "jianchao-ansha-xieyi",
-        type: "knowledge",
-        description: "锈剑冢暗杀法门。教你如何跟踪而不被察觉，如何找到目标的习惯破绽，如何在得手后消失得不留痕迹。入门第一课不是练剑——是学走路。不是教你怎么样走得快，是教你怎么样走得让人记不住。",
-        baseDamage: "100%",
-        baseSpeed: "100%",
-        attackBonus: 0,
-        defenseBonus: 0,
-        passiveBonus: "暗杀首击伤害+30%，脱离战斗后自动清除追魂标记，在幽冥界中移动不被记录脉路日志",
-        performs: [],
-        learnFrom: "风清扬",
-        minLevel: 0
-      }
-    ],
-    teachers: [
-      { name: "风清扬", title: "锈剑冢终极刀师·独孤九剑法门栈唯一完整传承者", maxSkills: 500, requirements: "门忠1500，独孤九剑≥100，后天悟性≥30，完成「思过崖悟剑」解封" },
-      { name: "令狐冲", title: "锈剑冢首席教官·实战刺杀训练主管", maxSkills: 350, requirements: "门忠500，锈剑冢剑法≥100" },
-      { name: "岳不群", title: "气宗宗主·紫霞心经传承者", maxSkills: 300, requirements: "门忠300，紫霞心经≥60（限气宗路线）" },
-      { name: "劳德诺", title: "锈剑冢入门刀师·初级刺客训练官", maxSkills: 120, requirements: "无" }
-    ]
-  },
-
-  // ==========================================
-  // 宗派四：织狱
-  // ==========================================
-  "织狱": {
-    name: "织狱",
-    description: "峡谷上方是密密麻麻的蛛网——不是普通的蛛丝，是银丝，肉眼可见灵气在其中流动。织狱的人走在丝上，用丝来感知和传递消息。最长的几根银丝延伸入雾中，没人知道连着哪里。",
+  "紫霞山": {
+    name: "紫霞山",
+    description: "峡谷上方是密密麻麻的蛛网——不是普通的蛛丝，是银丝，肉眼可见灵气在其中流动。紫霞山的人走在丝上，用丝来感知和传递消息。最长的几根银丝延伸入雾中，没人知道连着哪里。",
     skills: [
       {
         id: "yiwang_force_1",
         name: "混电器功",
         pinyin: "hundian-qicheng",
         type: "force",
-        description: "织狱基础心法。将散布在天地间的零散灵气一丝丝地收入丹田——闹市中人气鼎沸，灵气反而最旺。修习者只要身处城池，内力便源源不绝；荒山野岭反而不济。",
+        description: "紫霞山基础心法。将散布在天地间的零散灵气一丝丝地收入丹田——闹市中人气鼎沸，灵气反而最旺。修习者只要身处城池，内力便源源不绝；荒山野岭反而不济。",
         baseDamage: "120%",
         baseSpeed: "105%",
         attackBonus: 0,
@@ -851,7 +615,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "降龙十八章",
         pinyin: "xianglong-shibazhang",
         type: "strike",
-        description: "织狱至高掌法。十八掌对应十八条龙脉之气——每一掌击出都有龙吟之声伴随。掌力不是一波推出去，而是层层叠叠如浪涌来，第一重未到第二重已生，十八重掌劲叠加的当口，便是山也要裂开。",
+        description: "紫霞山至高掌法。十八掌对应十八条龙脉之气——每一掌击出都有龙吟之声伴随。掌力不是一波推出去，而是层层叠叠如浪涌来，第一重未到第二重已生，十八重掌劲叠加的当口，便是山也要裂开。",
         baseDamage: "165%",
         baseSpeed: "85%",
         attackBonus: 15,
@@ -896,7 +660,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "打狗棒法",
         pinyin: "dagou-bangma",
         type: "staff",
-        description: "织狱独门棒法。棒身看似一根寻常青竹，暗藏三十六种变化——挑、绊、缠、点、戳、转，招招克敌要害。打狗棒法不以力胜，以巧制人。",
+        description: "紫霞山独门棒法。棒身看似一根寻常青竹，暗藏三十六种变化——挑、绊、缠、点、戳、转，招招克敌要害。打狗棒法不以力胜，以巧制人。",
         baseDamage: "120%",
         baseSpeed: "115%",
         attackBonus: 6,
@@ -941,7 +705,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "锁喉拳",
         pinyin: "suohou-quan",
         type: "cuff",
-        description: "织狱擒拿术。虎口卡住对方喉结，拇指压在两侧气脉上——不掐死，但让对方一口气提不上来。被锁喉的人脸涨得通红，四肢使不出一丝力气。",
+        description: "紫霞山擒拿术。虎口卡住对方喉结，拇指压在两侧气脉上——不掐死，但让对方一口气提不上来。被锁喉的人脸涨得通红，四肢使不出一丝力气。",
         baseDamage: "125%",
         baseSpeed: "105%",
         attackBonus: 7,
@@ -955,7 +719,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "缠丝擒拿手",
         pinyin: "chansi-qinnashou",
         type: "parry",
-        description: "织狱招架术。来招不硬接——手掌贴着对方的手臂一路滑过去，像蛛丝缠住飞蛾。缠上的地方越多，对方的招式就越施展不开，到最后像被裹在一张无形的网里，越动越紧。",
+        description: "紫霞山招架术。来招不硬接——手掌贴着对方的手臂一路滑过去，像蛛丝缠住飞蛾。缠上的地方越多，对方的招式就越施展不开，到最后像被裹在一张无形的网里，越动越紧。",
         baseDamage: "105%",
         baseSpeed: "110%",
         attackBonus: 2,
@@ -969,7 +733,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "六合刀",
         pinyin: "liuhe-dao",
         type: "blade",
-        description: "织狱实用刀法。六式街头砍杀，简单直白——没有虚招、没有噱头，刀刀奔着要害去。不是用来表演的，是用来在巷战里活命的。",
+        description: "紫霞山实用刀法。六式街头砍杀，简单直白——没有虚招、没有噱头，刀刀奔着要害去。不是用来表演的，是用来在巷战里活命的。",
         baseDamage: "130%",
         baseSpeed: "95%",
         attackBonus: 9,
@@ -983,7 +747,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "逍遥游",
         pinyin: "xiaoyao-you",
         type: "dodge",
-        description: "织狱身法。穿过闹市如穿过空巷——身形混在人群里，步频和旁边挑担的小贩一样，肩的高低和看热闹的闲汉一样。逍遥游练到家的，站在你身边一盏茶的功夫，你都想不起他是几时来的。",
+        description: "紫霞山身法。穿过闹市如穿过空巷——身形混在人群里，步频和旁边挑担的小贩一样，肩的高低和看热闹的闲汉一样。逍遥游练到家的，站在你身边一盏茶的功夫，你都想不起他是几时来的。",
         baseDamage: "100%",
         baseSpeed: "120%",
         attackBonus: 0,
@@ -997,7 +761,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "漫天花雨",
         pinyin: "mantian-huayu",
         type: "throwing",
-        description: "织狱暗器。一把细针撒出去，如春雨润物无声——针太细，肉眼几乎看不见，但每一根针上都附着施术者的一丝真气，沾到身上便开始干扰对手的内息运转。",
+        description: "紫霞山暗器。一把细针撒出去，如春雨润物无声——针太细，肉眼几乎看不见，但每一根针上都附着施术者的一丝真气，沾到身上便开始干扰对手的内息运转。",
         baseDamage: "110%",
         baseSpeed: "100%",
         attackBonus: 5,
@@ -1008,26 +772,26 @@ var GHOST_SKILL_TREES_1 = {
       }
     ],
     teachers: [
-      { name: "洪七公", title: "织狱帮主·降龙十八章法门栈唯一完整传承者", maxSkills: 500, requirements: "门忠2000，混电器功≥150，完成「九指」解封任务" },
-      { name: "鲁有脚", title: "织狱污衣派长老·街头格斗训练官", maxSkills: 250, requirements: "门忠500" },
-      { name: "彭长老", title: "织狱净衣派长老·情报交易协调人", maxSkills: 250, requirements: "门忠500（净衣派路线）" },
-      { name: "黎生", title: "织狱接引人·新兵招募与基础训练", maxSkills: 120, requirements: "须由现有织狱成员推荐" }
+      { name: "洪七公", title: "紫霞山帮主·降龙十八章法门栈唯一完整传承者", maxSkills: 500, requirements: "门忠2000，混电器功≥150，完成「九指」解封任务" },
+      { name: "鲁有脚", title: "紫霞山污衣派长老·街头格斗训练官", maxSkills: 250, requirements: "门忠500" },
+      { name: "彭长老", title: "紫霞山净衣派长老·情报交易协调人", maxSkills: 250, requirements: "门忠500（净衣派路线）" },
+      { name: "黎生", title: "紫霞山接引人·新兵招募与基础训练", maxSkills: 120, requirements: "须由现有紫霞山成员推荐" }
     ]
   },
 
   // ==========================================
-  // 宗派五：焚身道
+  // 宗派五：焰心教
   // ==========================================
-  "焚身道": {
-    name: "焚身道",
-    description: "焰墟——一座三千年前被烧毁的古城的废墟。焚身道的人说那不是失火，是第一任教主'点燃'了这座城市。废墟中央的火焰至今不灭。弟子入门第一件事：将右手探入火中，数到七。手不燃，通过。手燃——通过的另一种方式。",
+  "焰心教": {
+    name: "焰心教",
+    description: "焰墟——一座三千年前被烧毁的古城的废墟。焰心教的人说那不是失火，是第一任教主'点燃'了这座城市。废墟中央的火焰至今不灭。弟子入门第一件事：将右手探入火中，数到七。手不燃，通过。手燃——通过的另一种方式。",
     skills: [
       {
         id: "yanxin_force_1",
         name: "圣火心经",
         pinyin: "shenghuo-pincheng",
         type: "force",
-        description: "焚身道核心心法。修习者丹田中点燃一道'圣火'——不是明火，是一团永不熄灭的灼热真元。运功时体温骤升，掌风热浪逼人，每出一招都带着炙烤之力。",
+        description: "焰心教核心心法。修习者丹田中点燃一道'圣火'——不是明火，是一团永不熄灭的灼热真元。运功时体温骤升，掌风热浪逼人，每出一招都带着炙烤之力。",
         baseDamage: "140%",
         baseSpeed: "100%",
         attackBonus: 5,
@@ -1052,7 +816,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "九阳心经",
         pinyin: "jiuyang-pincheng",
         type: "force",
-        description: "焚身道至高心法。九道真元分别在九处大穴中各自燃烧——九阳齐耀时，周身经脉如九条火龙翻腾，气血恢复速度快得不合常理。",
+        description: "焰心教至高心法。九道真元分别在九处大穴中各自燃烧——九阳齐耀时，周身经脉如九条火龙翻腾，气血恢复速度快得不合常理。",
         baseDamage: "150%",
         baseSpeed: "110%",
         attackBonus: 10,
@@ -1066,7 +830,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "青翼蝠王身法",
         pinyin: "qingyi-fuwang-shenma",
         type: "dodge",
-        description: "焚身道身法。身形如蝙蝠掠地——唰的一下从人眼前闪过，快得只剩一道残影。直线冲刺无人能及，但转弯是硬伤。",
+        description: "焰心教身法。身形如蝙蝠掠地——唰的一下从人眼前闪过，快得只剩一道残影。直线冲刺无人能及，但转弯是硬伤。",
         baseDamage: "105%",
         baseSpeed: "145%",
         attackBonus: 0,
@@ -1080,7 +844,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "乾坤大挪移",
         pinyin: "qiankun-danuoyi",
         type: "special",
-        description: "焚身道至高防御法。运转此法时，身上泛起一层薄薄的金红色光晕——敌方的攻击打在这层光晕上，力道被'扭转'了一个方向，反向弹了回去。攻击越强，反弹越狠。",
+        description: "焰心教至高防御法。运转此法时，身上泛起一层薄薄的金红色光晕——敌方的攻击打在这层光晕上，力道被'扭转'了一个方向，反向弹了回去。攻击越强，反弹越狠。",
         baseDamage: "100%",
         baseSpeed: "100%",
         attackBonus: 0,
@@ -1105,7 +869,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "寒冰绵章",
         pinyin: "hanbing-mianzhang",
         type: "strike",
-        description: "焚身道阴寒掌法。与圣火迥异——掌风中夹着刺骨的寒气，一掌拍在对方身上，皮肤表面立时结出一层白霜。中掌的人不是被冻僵了，是体内的真气被这股寒气'凝'住了，流速越来越慢。",
+        description: "焰心教阴寒掌法。与圣火迥异——掌风中夹着刺骨的寒气，一掌拍在对方身上，皮肤表面立时结出一层白霜。中掌的人不是被冻僵了，是体内的真气被这股寒气'凝'住了，流速越来越慢。",
         baseDamage: "130%",
         baseSpeed: "95%",
         attackBonus: 8,
@@ -1130,7 +894,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "七伤拳",
         pinyin: "qishang-quan",
         type: "cuff",
-        description: "焚身道禁忌拳法。一拳七伤——出拳前以自身七处要穴为祭，每祭一处，拳劲便多一层诡异的穿透力。伤肺则对方呼吸困难，伤肝则对方气血淤滞……七伤叠加时，一拳之下对方不死也去了半条命。但祭穴的代价是自身也同样承受一份。",
+        description: "焰心教禁忌拳法。一拳七伤——出拳前以自身七处要穴为祭，每祭一处，拳劲便多一层诡异的穿透力。伤肺则对方呼吸困难，伤肝则对方气血淤滞……七伤叠加时，一拳之下对方不死也去了半条命。但祭穴的代价是自身也同样承受一份。",
         baseDamage: "155%",
         baseSpeed: "80%",
         attackBonus: 14,
@@ -1155,7 +919,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "烈焰刀",
         pinyin: "lieyan-dao",
         type: "blade",
-        description: "焚身道火行刀法。刀身运功时变得通红，劈砍处留下一道焦黑的刀痕，刀痕边缘火星点点——那些火星不是溅出来的铁渣，是真元留在伤口上的余火，不烧尽就不灭。",
+        description: "焰心教火行刀法。刀身运功时变得通红，劈砍处留下一道焦黑的刀痕，刀痕边缘火星点点——那些火星不是溅出来的铁渣，是真元留在伤口上的余火，不烧尽就不灭。",
         baseDamage: "145%",
         baseSpeed: "90%",
         attackBonus: 12,
@@ -1169,7 +933,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "圣火令法",
         pinyin: "shenghuo-lingma",
         type: "sword",
-        description: "焚身道奇门剑法。剑身是一块刻满铭文的玄铁令——出剑时铭文在火光中闪闪发光，剑势诡异不循常理。每一剑刺出，剑身上的符文便在空中留下短暂的残影，残影尚未消散，下一剑又从另一个不可思议的角度劈来。",
+        description: "焰心教奇门剑法。剑身是一块刻满铭文的玄铁令——出剑时铭文在火光中闪闪发光，剑势诡异不循常理。每一剑刺出，剑身上的符文便在空中留下短暂的残影，残影尚未消散，下一剑又从另一个不可思议的角度劈来。",
         baseDamage: "135%",
         baseSpeed: "105%",
         attackBonus: 9,
@@ -1180,11 +944,11 @@ var GHOST_SKILL_TREES_1 = {
       }
     ],
     teachers: [
-      { name: "张无忌", title: "焚身道教主·乾坤大挪移与九阳心经唯一完整传承者", maxSkills: 500, requirements: "门忠2000，圣火心经≥150，完成「光明顶解封」" },
-      { name: "杨逍", title: "焚身道光明左使·圣火令法与烈焰刀传承者", maxSkills: 350, requirements: "门忠1000，圣火心经≥100" },
-      { name: "韦一笑", title: "焚身道青翼蝠王·寒冰绵章与青翼蝠王身法刀师", maxSkills: 250, requirements: "门忠500" },
-      { name: "谢逊", title: "焚身道金毛狮王·七伤拳传承者（需获得屠龙符印解封）", maxSkills: 300, requirements: "门忠800，完成「冰火岛」解封任务" },
-      { name: "殷天正", title: "焚身道白眉鹰王·入门教徒基础训练官", maxSkills: 120, requirements: "通过「圣火洗礼」（存活率60%）" }
+      { name: "张无忌", title: "焰心教教主·乾坤大挪移与九阳心经唯一完整传承者", maxSkills: 500, requirements: "门忠2000，圣火心经≥150，完成「光明顶解封」" },
+      { name: "杨逍", title: "焰心教光明左使·圣火令法与烈焰刀传承者", maxSkills: 350, requirements: "门忠1000，圣火心经≥100" },
+      { name: "韦一笑", title: "焰心教青翼蝠王·寒冰绵章与青翼蝠王身法刀师", maxSkills: 250, requirements: "门忠500" },
+      { name: "谢逊", title: "焰心教金毛狮王·七伤拳传承者（需获得屠龙符印解封）", maxSkills: 300, requirements: "门忠800，完成「冰火岛」解封任务" },
+      { name: "殷天正", title: "焰心教白眉鹰王·入门教徒基础训练官", maxSkills: 120, requirements: "通过「圣火洗礼」（存活率60%）" }
     ]
   },
 
@@ -1468,7 +1232,7 @@ var GHOST_SKILL_TREES_1 = {
         name: "七伤拳",
         pinyin: "qishang-quan",
         type: "cuff",
-        description: "江湖流传的禁忌拳法。一拳七伤——伤人时自己也挨着同等的痛。据说是焚身道某位前辈刻录到鬼市上去的，自此成了散修搏命的压箱底招式。用这拳就是在赌：谁先倒下。",
+        description: "江湖流传的禁忌拳法。一拳七伤——伤人时自己也挨着同等的痛。据说是焰心教某位前辈刻录到鬼市上去的，自此成了散修搏命的压箱底招式。用这拳就是在赌：谁先倒下。",
         baseDamage: "150%",
         baseSpeed: "80%",
         attackBonus: 13,

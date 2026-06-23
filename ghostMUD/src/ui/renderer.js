@@ -1,4 +1,4 @@
-﻿/**
+/**
  * renderer.js — UI 渲染器
  * 参考猫国建设器 game.js 的 render() 方法
  * 参考猫国建设器 core.js 的 effectsCachedExisting 模式实现脏标记缓存
@@ -95,7 +95,15 @@ export class Renderer {
     this._setText('stat-cultivation', next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满');
     this._setText('stat-daoxin', s.daoxin + ' / ' + s.maxDaoXin);
     this._setText('stat-lifespan', s.lifespan + ' 年');
-    this._setText('stat-stones', s.spiritStones);
+    this._setText('stat-mp', s.maxMp > 0 ? (s.mp + ' / ' + s.maxMp) : '-');
+    // 更新 MP 标签
+    const mpLabel = document.querySelector('#stat-mp');
+    const mpLabelEl = mpLabel ? mpLabel.previousElementSibling : null;
+    if (mpLabelEl) mpLabelEl.textContent = this.game.getMpName();
+    this._setText('stat-stones', this.game.formatMoney());
+    // 更新灵石/铜钱标签
+    const stonesLabel = document.getElementById('stones-label');
+    if (stonesLabel) stonesLabel.textContent = this.game.getMoneyName();
     this._setText('stat-techniques', s.techniques.length > 0 ? s.techniques.join('、') : '无');
     this._setText('stat-quests', s.activeQuests.length + ' / ' + (s.activeQuests.length + s.completedQuests.length));
   }
@@ -115,7 +123,15 @@ export class Renderer {
     this._setText('s-daoxin', s.daoxin + ' / ' + s.maxDaoXin);
     this._setText('s-life', s.lifespan + ' 年');
     this._setText('s-hp', s.hp + ' / ' + s.maxHp);
-    this._setText('s-stones', s.spiritStones);
+    this._setText('s-mp', s.maxMp > 0 ? (s.mp + ' / ' + s.maxMp) : '-');
+    // 更新 MP 标签
+    const sMpEl = document.getElementById('s-mp');
+    const sMpLabel = sMpEl ? sMpEl.previousElementSibling : null;
+    if (sMpLabel) sMpLabel.textContent = this.game.getMpName();
+    this._setText('s-stones', this.game.formatMoney());
+    // 更新灵石/铜钱标签
+    const sStonesLabel = document.getElementById('s-stones-label');
+    if (sStonesLabel) sStonesLabel.textContent = this.game.getMoneyName();
     this._setText('s-atk', s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0));
     this._setText('s-def', s.defense + (s.equipment.armor ? s.equipment.armor.def : 0));
     this._setText('s-tech', s.techniques.length > 0 ? s.techniques.join('、') : '无');
@@ -165,6 +181,13 @@ export class Renderer {
     this._setStyle('hp-bar', 'width', (s.hp / s.maxHp * 100) + '%');
     this._setText('hp-text', Math.floor(s.hp / s.maxHp * 100) + '%');
 
+    // MP 进度条（真气/灵力）
+    if (s.maxMp > 0) {
+      this._setStyle('mp-bar', 'width', (s.mp / s.maxMp * 100) + '%');
+      this._setText('mp-text', Math.floor(s.mp / s.maxMp * 100) + '%');
+      this._setText('mp-label', this.game.getMpName());
+    }
+
     // 道心颜色警告
     const dxEl = document.getElementById('stat-daoxin');
     dxEl.className = 'stat-value' + (s.daoxin < 20 ? ' danger' : s.daoxin < 50 ? ' highlight' : '');
@@ -173,10 +196,13 @@ export class Renderer {
     const stEl = document.getElementById('idle-status');
     if (s.isResting) {
       stEl.className = 'resting';
-      stEl.innerHTML = '<span class="pulse"></span>休憩中 · 气血/道心恢复';
+      stEl.innerHTML = '<span class="pulse"></span>休憩中 · 气血/内力/道心恢复';
+    } else if (s.isCultivating) {
+      stEl.className = 'resting';
+      stEl.innerHTML = '<span class="pulse"></span>修炼中 · 修为增长 · 道心减扣';
     } else {
       stEl.className = '';
-      stEl.innerHTML = '<span class="pulse"></span>挂机修炼中 · 每 3 秒获取修为';
+      stEl.innerHTML = '<span class="pulse"></span>挂机修炼中 · 每 30 秒获取修为';
     }
   }
 
@@ -237,7 +263,7 @@ export class Renderer {
         const stage = s.questStages[qId] || 0;
         html += '<div class="quest-item"><div class="quest-name">' + q.name + '</div>';
         html += '<div class="quest-stage">阶段 ' + (stage + 1) + '/' + q.stages.length + '：' + (q.stages[Math.min(stage, q.stages.length - 1)].desc) + '</div>';
-        html += '<div class="quest-reward">奖励：' + Object.entries(q.rewards).filter(([k]) => k !== 'faction' && k !== 'access').map(([k, v]) => (k === 'spiritStones' ? v + '灵石' : k === 'cultivation' ? v + '修为' : '获得' + v)).join('、') + '</div></div>';
+        html += '<div class="quest-reward">奖励：' + Object.entries(q.rewards).filter(([k]) => k !== 'faction' && k !== 'access').map(([k, v]) => (k === 'spiritStones' ? v + this.game.getMoneyName() : k === 'cultivation' ? v + '修为' : '获得' + v)).join('、') + '</div></div>';
       }
     }
     if (s.completedQuests.length > 0) {

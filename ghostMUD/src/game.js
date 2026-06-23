@@ -1,4 +1,4 @@
-﻿/**
+/**
  * game.js — 主游戏类
  * 从 ghost_mud_v2.html 的 Game 类迁移而来
  * 参考猫国建设者 game.js 的类结构
@@ -83,8 +83,11 @@ export class Game {
       daoxin: 100, maxDaoXin: 100,
       hp: r0.hp, maxHp: r0.hp,
       lifespan: 80,
-      spiritStones: 0,
+      spiritStones: 0,    // 灵石（灵修主货币 / 武修在鉴定任务后解锁）
+      copperCoins: 0,     // 铜钱（武修主货币 / 灵修辅货币），100文=1两银，10两银=1两金
+      knowsSpiritStones: false, // 武修灵石认知开关（完成鉴定任务链后true）
       attack: r0.atk, defense: r0.def,
+      mp: 80, maxMp: 80, // 真气/内力（武修）/灵力（灵修），战斗系统资源
       location: '应天府·十字街口',
       inventory: [],
       equipment: { weapon: null, armor: null },
@@ -92,10 +95,13 @@ export class Game {
       killCount: 0,
       totalCultivation: 0,
       isResting: false,
+      isCultivating: false,
+      trainCounter: 0, // 练功点击计数器，每10次扣道心
+      daoxinDecayCounter: 0, // 灵修道心衰减计数器
       gameStart: Date.now(),
       combat: null,
       npcEncounter: null,
-      explored: ['应天府·十字街口'],
+      explored: ['应天府·街口'],
       activeQuests: [],
       completedQuests: [],
       questStages: {},
@@ -143,6 +149,134 @@ export class Game {
     }
     return this.REALMS;
   }
+
+  /**
+   * 术语双轨制：根据 state.path 返回当前路径对应的术语
+   * T8.3 — 武修用武学术语（内力/招式/剑法），灵修用修真术语（灵力/术法/剑诀）
+   * @param {string} key — 术语键名：power/energy/action/defense/attack/move/body/train/identity/money
+   * @returns {string} 当前路径对应的中文术语
+   */
+  getTerm(key) {
+    const tm = window.TERM_MAP;
+    if (!tm || !tm[this.state.path] || !tm[this.state.path][key]) return key;
+    return tm[this.state.path][key];
+  }
+
+  /**
+   * 获取当前路径的货币名称（武修=铜钱，灵修=灵石）
+   */
+  getMoneyName() { return this.getTerm('money'); }
+
+  /**
+   * 获取当前路径主货币值
+   * 武修主货币=铜钱，灵修主货币=灵石
+   */
+  getMoney() { return this.state.path === 'ling' ? this.state.spiritStones : this.state.copperCoins; }
+
+  /**
+   * 增加主货币（按路径分发）
+   */
+  addMoney(amt) {
+    if (this.state.path === 'ling') this.state.spiritStones += amt;
+    else this.state.copperCoins += amt;
+  }
+
+  /**
+   * 消耗主货币（按路径分发，不足返回false）
+   */
+  spendMoney(amt) {
+    if (this.state.path === 'ling') {
+      if (this.state.spiritStones < amt) return false;
+      this.state.spiritStones -= amt;
+      return true;
+    } else {
+      if (this.state.copperCoins < amt) return false;
+      this.state.copperCoins -= amt;
+      return true;
+    }
+  }
+
+  /**
+   * 增加灵石（智能分发：灵修直接加spiritStones，武修未鉴定时进背包成「不知名的石头」，已鉴定直接加spiritStones）
+   */
+  addSpiritStones(amt) {
+    const s = this.state;
+    if (s.path === 'ling') {
+      s.spiritStones += amt;
+    } else if (s.knowsSpiritStones) {
+      s.spiritStones += amt;
+    } else {
+      // 武修不知灵石：进背包成「不知名的石头」
+      const existing = s.inventory.findIndex(it => it.name === '不知名的石头' && it.type === 'stone');
+      if (existing >= 0) {
+        s.inventory[existing].value = (s.inventory[existing].value || 0) + amt;
+      } else {
+        s.inventory.push({ name: '不知名的石头', type: 'stone', value: amt, desc: '一块温润的石头，触手微凉。说不清是什么材质。' });
+      }
+    }
+  }
+
+  /**
+   * 灵石鉴定任务完成 — 武修认知开关开启，背包中的「不知名的石头」转化为灵石
+   */
+  identifySpiritStones() {
+    const s = this.state;
+    if (s.knowsSpiritStones) return; // 已鉴定
+    s.knowsSpiritStones = true;
+    // 将背包中的「不知名的石头」转为灵石
+    let total = 0;
+    for (let i = s.inventory.length - 1; i >= 0; i--) {
+      if (s.inventory[i].name === '不知名的石头' && s.inventory[i].type === 'stone') {
+        total += s.inventory[i].value || 0;
+        s.inventory.splice(i, 1);
+      }
+    }
+    if (total > 0) {
+      s.spiritStones += total;
+      this.addLog('?? 鉴定完成——「不知名的石头」竟是灵石！获得 ' + total + ' 灵石。', 'special');
+    } else {
+      this.addLog('?? 你终于认出了灵石——这种修行者使用的货币。', 'special');
+    }
+    this.renderer.updateUI(['char', 'status', 'bag']);
+  }
+
+  /**
+   * 格式化货币显示
+   * 灵修：显示「X灵石 · 铜钱」双栏
+   * 武修已鉴定：显示「X灵石 · 铜钱」双栏
+   * 武修未鉴定：只显示铜钱「X两金·Y两银·Z文」
+   */
+  formatMoney() {
+    const s = this.state;
+    const parts = [];
+    // 灵石栏（灵修始终显示 / 武修鉴定后显示）
+    if (s.path === 'ling' || s.knowsSpiritStones) {
+      if (s.spiritStones > 0 || s.path === 'ling') {
+        parts.push(s.spiritStones + '灵石');
+      }
+    }
+    // 铜钱栏（始终显示）
+    const total = s.copperCoins;
+    const gold = Math.floor(total / 1000);
+    const silver = Math.floor((total % 1000) / 100);
+    const copper = total % 100;
+    const copperParts = [];
+    if (gold > 0) copperParts.push(gold + '两金');
+    if (silver > 0) copperParts.push(silver + '两银');
+    if (copper > 0 || copperParts.length === 0) copperParts.push(copper + '文');
+    parts.push(copperParts.join('·'));
+    return parts.join(' · ');
+  }
+
+  /**
+   * 获取当前路径的真气/灵力名称（MP术语）
+   */
+  getMpName() { return this.getTerm('power'); }
+
+  /**
+   * 获取当前路径的修炼术语（武修=练武，灵修=修炼）
+   */
+  getTrainName() { return this.getTerm('train'); }
 
   /**
    * 切换修行路径（武修 ↔ 灵修）
@@ -207,8 +341,8 @@ export class Game {
   }
 
   _registerTimers() {
-    this.timer.register('idle', () => this.idleTick(), 3000);
-    this.timer.register('daoxin', () => this.daoxinTick(), 15000);
+    this.timer.register('idle', () => this.idleTick(), 30000); // 每30秒一次tick
+    this.timer.register('daoxin', () => this.daoxinTick(), 30000); // 同步30秒
   }
 
   startGameAsRogue() {
@@ -233,7 +367,7 @@ export class Game {
     this.timer.start();
     this.renderer.updateLocationIcon();
     this.addLog('正德年间，世有修行之人。吐纳灵气，参悟大道。然修炼一途，每破一境便近祂一分——世人却未必知晓这是在敲谁的门。', 'system');
-    this.addLog('你从顺天府暗巷醒来——脑中残留着经文与经络的碎片。你是谁？不重要。重要的是：你还活着。', 'system');
+    this.addLog('你从应天府某条暗巷中醒来——你是谁？不重要。重要的是：你还活着。', 'system');
     this.addLog('🕯 挂机已启动。前路莫测，望君保重。', 'system');
     this.addLog('💡 城中探索将遇奇遇，野外险地方有敌袭。搜索可得金银器物。输入「帮助」查看命令。', 'system');
     this.addLog('⚡ 你尚未拜入任何帮派——在不同的城区探索，可能遇到各帮派的接引人。', 'system');
@@ -247,8 +381,22 @@ export class Game {
     const s = this.state;
     if (s.isResting) {
       s.hp = Math.min(s.maxHp, s.hp + 3);
+      s.mp = Math.min(s.maxMp, s.mp + 5);
       s.daoxin = Math.min(s.maxDaoXin, s.daoxin + 1);
       s.cultivation += 1;
+    } else if (s.isCultivating) {
+      // 修炼模式：按路径差异化，持续修为增长 + 道心减扣
+      if (s.path === 'ling') {
+        const base = 5 + s.realm * 3;
+        s.cultivation += base;
+        s.daoxin = Math.max(0, s.daoxin - 3);
+        if (Math.random() < 0.15) this.addLog('🌀 灵力在经脉中奔涌——深处有什么东西在回应。道心微颤。', 'event');
+      } else {
+        const gain = 7 + s.realm * 4;
+        s.cultivation += gain;
+        s.daoxin = Math.max(0, s.daoxin - 1);
+        if (Math.random() < 0.15) this.addLog('💪 汗水浸湿了衣襟，练武乏了——但修为在涨。', 'event');
+      }
     } else {
       const base = 2 + s.realm * 1.5;
       const equipBonus = s.equipment.weapon ? 0.5 : 0;
@@ -256,22 +404,38 @@ export class Game {
       s.cultivation += Math.floor(base + equipBonus + techBonus);
       s.totalCultivation += Math.floor(base + equipBonus + techBonus);
     }
-    if (Math.random() < 0.05 && !s.isResting) this.triggerIdleEvent();
+    if (Math.random() < 0.05 && !s.isResting && !s.isCultivating) this.triggerIdleEvent();
     this.checkBreakthrough();
     // 挂机循环中只有修为/道心/HP 变化，只需更新进度条和数值面板
     this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   daoxinTick() {
-    if (this.state.combat || this.state.npcEncounter || this.state.isResting) return;
+    if (this.state.combat || this.state.npcEncounter || this.state.isResting || this.state.isCultivating) return;
     const s = this.state;
     const loc = this.LOCATIONS[s.location];
-    const d = (loc ? loc.danger : 1) * 2 + (Math.random() > 0.7 ? 1 : 0);
-    s.daoxin = Math.max(0, s.daoxin - d);
-    if (s.daoxin < 20 && Math.random() < 0.3) {
-      this.addLog('😰 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
-      s.cultivation += 10;
+
+    if (s.path === 'wu') {
+      // 武修：道心不自然下跌，仅环境微扰（danger≥5 凶地扣1）
+      if (loc && loc.danger >= 5) {
+        s.daoxin = Math.max(0, s.daoxin - 1);
+        if (Math.random() < 0.3) this.addLog('?? 此地阴气逼人，道心微颤。', 'event');
+      }
+    } else {
+      // 灵修：道心按境界递增衰减
+      // 炼气(1)/筑基(2) 每30tick -1，金丹(3)/元婴(4) 每20tick -1，化神(5) 每10tick -1
+      const decayInterval = s.realm <= 2 ? 30 : s.realm <= 4 ? 20 : 10;
+      s.daoxinDecayCounter = (s.daoxinDecayCounter || 0) + 1;
+      if (s.daoxinDecayCounter >= decayInterval) {
+        s.daoxinDecayCounter = 0;
+        s.daoxin = Math.max(0, s.daoxin - 1);
+        if (s.daoxin < 20 && Math.random() < 0.3) {
+          this.addLog('?? 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
+          s.cultivation += 10;
+        }
+      }
     }
+
     if (s.daoxin <= 0) {
       s.daoxin = 0;
       this.gameOver('道心崩坏——你不再是你自己了。最后的念头散成无数碎片，其中一片还记得你的名字。只是一片。');
@@ -325,6 +489,10 @@ export class Game {
         s.defense = r.def;
         s.maxHp = r.hp;
         s.hp = r.hp;
+        // 真气上限成长：武修+40/境界，灵修+30/境界（化神追平后反超）
+        const mpGain = s.path === 'ling' ? (s.realm >= 5 ? 40 : 30) : 40;
+        s.maxMp += mpGain;
+        s.mp = s.maxMp;
         s.maxDaoXin += 20;
         s.daoxin = s.maxDaoXin;
         s.lifespan += 20;
@@ -344,7 +512,13 @@ export class Game {
 
   explore(dir) {
     if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法移动！请先结束当前互动。', 'combat'); return; }
+    if (this.state.isCultivating) { this.addLog('你正在修炼，无法移动。输入「修炼」结束再行。', 'system'); return; }
     const s = this.state;
+    // 移动打断修炼/休憩
+    let interrupted = '';
+    if (s.isResting) { s.isResting = false; interrupted = '休憩'; }
+    if (s.isCultivating) { s.isCultivating = false; interrupted = interrupted ? '修炼和休憩' : '修炼'; }
+    if (interrupted) this.addLog('🚶 你站起身，结束了' + interrupted + '。', 'info');
     const loc = this.LOCATIONS[s.location];
     if (!loc) { this.addLog('此处地脉紊乱，感知不到方位…', 'system'); return; }
 
@@ -460,8 +634,8 @@ export class Game {
       const parts = result.effect.split(';');
       for (const part of parts) {
         const [key, val] = part.split(':');
-        if (key === 'spend_gold') s.spiritStones -= parseInt(val);
-        else if (key === 'lose_gold') s.spiritStones = Math.max(0, s.spiritStones - parseInt(val));
+        if (key === 'spend_gold') this.spendMoney(parseInt(val));
+        else if (key === 'lose_gold') { const cur = this.getMoney(); this.addMoney(-Math.min(cur, parseInt(val))); }
         else if (key === 'check_atk') {
           if (s.attack >= parseInt(val)) {
             this.addLog(result.successLog || '成功！', 'npc');
@@ -515,10 +689,9 @@ export class Game {
 
     const ceremonies = {
       '忘尘宗': '🙏 「忘尘即是归宗。从今日起，你即忘尘宗弟子。忘我，忘尘，忘一切——连自己正在忘也一并忘记。入我忘尘，心即是空。」',
-      '赤霞峰': '☯ 「赤霞峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
-      '锈剑冢': '⚔ 「锈剑冢中万剑沉寂。从今日起，你手持的是败剑——败在他人手中，锈在自己手上。败剑不折，因为已经折过一次了。」',
-      '织狱': '🐜 「织狱之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
-      '焚身道': '🔥 「焚身道的圣火已在你丹田种下。从今日起，你的血是流动的焰——烧自己，也烧敌人。圣火不灭，焚身证道。」',
+      '问剑峰': '☯ 「问剑峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
+      '紫霞山': '🐜 「紫霞山之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
+      '焰心教': '🔥 「焰心教的圣火已在你丹田种下。从今日起，你的血是流动的焰——烧自己，也烧敌人。圣火不灭，焚身证道。」',
       '逍遥驿': '🎨 「逍遥驿不收弟子，只收过客。从今日起，天下之大，唯自由不可拘。他日你若想回头，驿门永远开着。」',
       '药王谷': '☠ 「药王谷的丹房为你敞开。从今日起，万毒皆你可控之物。剂量定生死——毒即是药，药即是毒。只是偶尔，毒会自己加一味。」',
       '血禅寺': '🩸 「血禅寺的戒刀在你掌心划了一道。从今日起，你的血与禅合而为一。猎头的路，只进不退——除非你不再是你。」',
@@ -616,9 +789,9 @@ export class Game {
     if (!sk) return;
     if (!s.skills[skillId]) { this.addLog('你尚未习得此武学。', 'system'); return; }
     const cost = 10 + s.skills[skillId].level * 3;
-    if (s.spiritStones < cost) { this.addLog('灵石不足！修炼需要 ' + cost + ' 灵石。', 'combat'); return; }
+    if (this.getMoney() < cost) { this.addLog(this.getMoneyName() + '不足！修炼需要 ' + cost + ' ' + this.getMoneyName() + '。', 'combat'); return; }
     if (s.daoxin < 5) { this.addLog('道心涣散，无法专注修炼。', 'combat'); return; }
-    s.spiritStones -= cost;
+    this.spendMoney(cost);
     s.daoxin = Math.max(0, s.daoxin - 5);
     const expGain = 10 + Math.floor(Math.random() * 20);
     s.skills[skillId].exp += expGain;
@@ -628,7 +801,7 @@ export class Game {
       s.skills[skillId].level++;
       this.addLog('🌟 「' + sk.name + '」突破至 Lv.' + s.skills[skillId].level + '！', 'breakthrough');
     } else {
-      this.addLog('🧘 修炼「' + sk.name + '」EXP+' + expGain + '（' + Math.floor(s.skills[skillId].exp) + '/' + needExp + '）消耗 ' + cost + ' 灵石', 'info');
+      this.addLog('🧘 修炼「' + sk.name + '」EXP+' + expGain + '（' + Math.floor(s.skills[skillId].exp) + '/' + needExp + '）消耗 ' + cost + ' ' + this.getMoneyName(), 'info');
     }
     if (['sword','blade','cuff','strike','finger','staff','whip','claw','spear','hammer'].includes(sk.type)) {
       s.equippedSkill = skillId;
@@ -657,17 +830,16 @@ export class Game {
   isAtFactionHQ(locationName, factionName) {
     const hqMap = {
       '忘尘宗': ['忘尘峰'],
-      '问剑峰': ['赤霞峰·观星台'],
-      '锈剑冢': ['锈剑冢·地窟'],
-      '织狱': ['织狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
-      '焚身道': ['光明顶·焰心殿'],
+      '问剑峰': ['问剑峰·剑冢'],
+      '紫霞山': ['紫霞山·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
+      '焰心教': ['光明顶·焰心殿'],
       '逍遥驿': ['逍遥驿·车马院'],
       '药王谷': ['鼓楼西·地下丹房'],
       '血禅寺': ['血禅寺'],
       '镜阁': ['镜阁·万镜堂', '樊楼·镜室'],
-      '归墟': ['归墟洞', '大明宫废墟'],
-      '青囊庐': ['青囊庐', '紫禁城旧药房'],
-      '傀坊': ['鼓楼望气塔', '紫禁城实验室']
+      '归墟': ['归墟洞', '未命名'],
+      '青囊庐': ['青囊庐', '未命名'],
+      '傀坊': ['傀坊', '未命名']
     };
     const hqs = hqMap[factionName] || [];
     return hqs.includes(locationName);
@@ -697,18 +869,18 @@ export class Game {
     const costs = [20, 80, 200];
     const cost = costs[Math.min(teacherTier, 2)] || 80;
 
-    if (s.spiritStones < cost) {
-      this.addLog(teacherName + '：「束脩不足。' + cost + '灵石，这是规矩。」', 'npc');
+    if (this.getMoney() < cost) {
+      this.addLog(teacherName + '：「束脩不足。' + cost + this.getMoneyName() + '，这是规矩。」', 'npc');
       return;
     }
 
-    s.spiritStones -= cost;
+    this.spendMoney(cost);
     s.factionRep += 10;
     teachableSkills.forEach(sk => {
       s.skills[sk.id] = { level: 1, exp: 0 };
       this.addLog('📖 向' + teacherName + '习得「' + sk.name + '」！', 'special');
     });
-    this.addLog('💰 支付束脩 ' + cost + ' 灵石。', 'item');
+    this.addLog('💰 支付束脩 ' + cost + ' ' + this.getMoneyName() + '。', 'item');
     // 拜师学习：灵石/门忠/技能变化
     this.renderer.updateUI(['char', 'status', 'wuxue']);
   }
@@ -786,12 +958,13 @@ export class Game {
       const exp = c.enemyData.exp + (c.enemyData.boss ? 50 : 0);
       const gold = c.enemyData.gold;
       s.cultivation += exp;
-      s.spiritStones += gold;
-      s.killCount++;
+      if (c.enemyData.dropsSpirit) { this.addSpiritStones(gold); }
+      else { this.addMoney(gold); }
       this.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
-      this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
+      if (!c.enemyData.dropsSpirit) this.addLog('   得 ' + exp + ' 修为，' + gold + ' ' + this.getMoneyName(), 'item');
+      else this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
       if (c.enemyData.boss && c.enemyData.special) {
-        this.addLog('🏆 ' + c.enemyData.special, 'special');
+        this.addLog('?? ' + c.enemyData.special, 'special');
       }
       this.checkQuestProgress('kill', c.enemyName);
       this.endCombat(true);
@@ -906,11 +1079,11 @@ export class Game {
       const exp = c.enemyData.exp + (c.enemyData.boss ? 50 : 0);
       const gold = c.enemyData.gold;
       s.cultivation += exp;
-      s.spiritStones += gold;
-      s.killCount++;
+      if (c.enemyData.dropsSpirit) { this.addSpiritStones(gold); }
+      else { this.addMoney(gold); }
       this.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
-      this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
-      this.checkQuestProgress('kill', c.enemyName);
+      if (!c.enemyData.dropsSpirit) this.addLog('   得 ' + exp + ' 修为，' + gold + ' ' + this.getMoneyName(), 'item');
+      else this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
       this.endCombat(true);
       return;
     }
@@ -943,8 +1116,9 @@ export class Game {
     const parts = rewardStr.split(';');
     for (const part of parts) {
       const [key, val] = part.split(':');
-      if (key === 'gain_gold') s.spiritStones += parseInt(val);
+      if (key === 'gain_gold') this.addMoney(parseInt(val));
       else if (key === 'gain_cultivation') s.cultivation += parseInt(val);
+      else if (key === 'gain_spirit') this.addSpiritStones(parseInt(val));
       else if (key === 'daoxin') s.daoxin = Math.min(s.maxDaoXin, s.daoxin + parseInt(val));
       else if (key === 'heal' || key === 'hp') s.hp = Math.min(s.maxHp, s.hp + (parseInt(val) || 30));
       else if (key === 'random_item') {
@@ -991,8 +1165,14 @@ export class Game {
     if (picked.type === 'money') {
       const [min, max] = picked.amount.split('-').map(Number);
       const amt = min + Math.floor(Math.random() * (max - min + 1));
-      s.spiritStones += amt;
-      this.addLog('💰 ' + picked.desc + '（+' + amt + ' 灵石）', 'item');
+      this.addMoney(amt);
+      this.addLog('💰 ' + picked.desc + '（+' + amt + ' ' + this.getMoneyName() + '）', 'item');
+    } else if (picked.type === 'spirit') {
+      const [min, max] = picked.amount.split('-').map(Number);
+      const amt = min + Math.floor(Math.random() * (max - min + 1));
+      this.addSpiritStones(amt);
+      const spiritName = (s.path === 'ling' || s.knowsSpiritStones) ? '灵石' : '不知名的石头';
+      this.addLog('?? ' + picked.desc + '（+' + amt + ' ' + spiritName + '）', 'item');
     } else if (picked.type === 'daoxin') {
       s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (picked.amount || 10));
       this.addLog('🧘 ' + picked.desc, 'info');
@@ -1083,7 +1263,8 @@ export class Game {
 
     this.addLog('🏆 任务完成：<b>' + q.name + '</b>！', 'breakthrough');
 
-    if (q.rewards.spiritStones) { s.spiritStones += q.rewards.spiritStones; this.addLog('   获得 ' + q.rewards.spiritStones + ' 灵石', 'item'); }
+    if (q.rewards.spiritStones) { this.addSpiritStones(q.rewards.spiritStones); this.addLog('   获得 ' + q.rewards.spiritStones + ' 灵石', 'item'); }
+    if (q.rewards.copperCoins) { s.copperCoins += q.rewards.copperCoins; this.addLog('   获得 ' + q.rewards.copperCoins + ' 文铜钱', 'item'); }
     if (q.rewards.cultivation) { s.cultivation += q.rewards.cultivation; this.addLog('   获得 ' + q.rewards.cultivation + ' 修为', 'item'); }
     if (q.rewards.technique) { if (!s.techniques.includes(q.rewards.technique)) { s.techniques.push(q.rewards.technique); this.addLog('   习得功法：' + q.rewards.technique, 'special'); } }
     if (q.rewards.equipment) { s.inventory.push({ name: q.rewards.equipment, type: 'equipment', desc: '任务奖励', slot: 'weapon', atk: 10 }); this.addLog('   获得装备：' + q.rewards.equipment, 'special'); }
@@ -1140,20 +1321,46 @@ export class Game {
     }, 100);
   }
 
-  meditate() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法打坐！', 'combat'); return; }
+  cultivate() {
+    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法修炼！', 'combat'); return; }
+    if (this.state.isResting) { this.addLog('休憩中无法修炼。先结束休憩吧。', 'system'); return; }
     const s = this.state;
-    const base = 10 + s.realm * 3;
-    s.cultivation += base;
-    s.daoxin = Math.min(s.maxDaoXin, s.daoxin + 3);
-    this.addLog('🧘 静心打坐，获得 ' + base + ' 点修为，道心稍安。', 'info');
-    this.checkBreakthrough();
-    // 打坐：修为/道心变化，更新进度条 + 数值面板
+    s.isCultivating = !s.isCultivating;
+    if (s.isCultivating) {
+      this.addLog(s.path === 'ling'
+        ? '🧘 你盘膝而坐，神识沉入丹田。灵力开始在经脉中自行周天——在此期间无法移动。再输入「修炼」可结束。'
+        : '💪 你摆开架势，拳招行云流水般打将出来。汗水浸湿衣襟，丹田却愈发火热——练功无法同时移动。再输入「修炼」可收功。', 'info');
+    } else {
+      this.addLog('✅ 你收了架势。风从远处吹来，带走一身热意。', 'info');
+    }
+    // 修炼 toggle：状态切换，需更新 UI 显示当前模式
+    this.renderer.updateUI(['progress', 'char', 'status']);
+  }
+
+  train() {
+    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法练功！', 'combat'); return; }
+    if (this.state.isCultivating || this.state.isResting) { this.addLog('你已在修炼/休憩中，先结束当前状态再练功。', 'system'); return; }
+    const s = this.state;
+    s.cultivation += (s.path === 'ling' ? 3 : 2);
+    s.trainCounter++;
+    // 每10次练功扣道心：武修-1（练武乏了），灵修-3（危险）
+    if (s.trainCounter % 10 === 0) {
+      const daoLoss = s.path === 'ling' ? 3 : 1;
+      s.daoxin = Math.max(0, s.daoxin - daoLoss);
+      this.addLog(s.path === 'ling'
+        ? '🌀 灵力运转过剧，经脉灼痛——什么东西在窥视。修为+3（道心-' + daoLoss + '）'
+        : '💪 连练十趟，筋骨愈发扎实，但你有些疲惫。修为+2（道心-' + daoLoss + '）', 'info');
+    } else {
+      this.addLog(s.path === 'ling'
+        ? '🌀 你凝神运功，灵力在经脉中流转一周。修为+3'
+        : '💪 你原地打了一套拳，筋骨微热。修为+2', 'info');
+    }
     this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   rest() {
     if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法休憩！', 'combat'); return; }
+    if (this.state.isCultivating) { this.addLog('修炼中无法休憩。先结束修炼吧。', 'system'); return; }
     const s = this.state;
     s.isResting = !s.isResting;
     this.addLog(s.isResting ? '💤 你寻了一处角落蜷起身子…' : '🔔 休憩结束，继续前行。', 'info');
@@ -1175,7 +1382,7 @@ export class Game {
     const s = this.state;
     const loc = this.LOCATIONS[s.location];
     if (!loc) return;
-    if (loc.danger >= 5) { this.addLog('此地无人可问，只有死亡的寂静。', 'system'); return; }
+    if (loc.danger >= 5) { this.addLog('此地无人可问，唯有寂寞如雪。', 'system'); return; }
 
     const nearby = loc.connections ? Object.entries(loc.connections).filter(e => this.LOCATIONS[e[1]]).map(e => ({dir: e[0], name: e[1], loc: this.LOCATIONS[e[1]]})) : [];
     const rumors = [];
@@ -1194,11 +1401,11 @@ export class Game {
       }
     }
 
-    rumors.push('「听说顺天府鬼市里有个卦师，什么消息都能算出来——只要出得起价。」');
-    rumors.push('「忘尘宗的山门就在城外的某座山上。但没人找得到——据说要道心足够稳才能看见。」');
+    rumors.push('「听说顺天府有个卦师，什么消息都能算出来——只要出得起价。」');
+    rumors.push('「城中有处秘地，藏有黄金万两。但没人找得到——据说要道心足够稳才能看见。」');
     rumors.push('「最近城里的灵脉波动很不对劲。路边的野猫都跑了。晚上别走小巷。」');
     rumors.push('「城外废墟里埋着不少好东西。但也在那些东西的视线里。别独自去。」');
-    rumors.push('「血禅寺和织狱最近在抢地盘。暗街一带最好绕道走——那不是给人走的街。」');
+    rumors.push('「最近夜里不安生，暗街一带最好绕道走——那不是给人走的路。」');
 
     const encPool = this.NPC_ENCOUNTERS[s.location];
     if (encPool && encPool.length > 0) {
@@ -1208,20 +1415,6 @@ export class Game {
 
     this.addLog('👂 ' + rumors[Math.floor(Math.random() * rumors.length)], 'info');
     // 打听：无状态变化，无需刷新 UI
-  }
-
-  pushup() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法练功！', 'combat'); return; }
-    const s = this.state;
-    const gain = Math.max(1, Math.floor(5 + s.realm * 1.5));
-    s.cultivation += gain;
-    s.daoxin = Math.max(0, s.daoxin - 2);
-    this.addLog('💪 你寻了一处空地站桩练功，浑身发热。修为+' + gain + '（道心-2）', 'info');
-    s.hp = Math.max(0, s.hp - 3);
-    if (s.hp <= 0) { s.hp = 0; this.gameOver('练功走火入魔，力竭而亡'); return; }
-    this.checkBreakthrough();
-    // 练功：修为/道心/HP变化，更新进度条 + 数值面板
-    this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   peek() {
@@ -1246,7 +1439,7 @@ export class Game {
     if (loc.boss) obs.push('⚠ 远处强大的气息…有一名高手盘踞此地。');
     if (this.ROOM_SEARCH[s.location]) obs.push('搜索此处约有<b>' + Math.floor(this.ROOM_SEARCH[s.location].searchChance * 100) + '%</b>概率有所发现。');
     if (this.NPC_ENCOUNTERS[s.location] && this.NPC_ENCOUNTERS[s.location].length > 0) obs.push('附近有<b>' + this.NPC_ENCOUNTERS[s.location].length + '</b>种可能的奇遇。输入「交谈」试试。');
-    if (s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction)) obs.push('🏫 你正在本帮据点——可向师傅<b>拜师</b>学习新武学！');
+    if (s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction)) obs.push('🏫 你正在本派据点——可向师傅<b>拜师</b>学习新武学！');
 
     this.addLog('👀 你凝神观察四周…', 'system');
     obs.forEach(o => this.addLog('   ' + o, 'info'));
@@ -1265,7 +1458,7 @@ export class Game {
       const exp = s.skills[sid].exp;
       const need = lv * 50;
       const cost = 10 + lv * 3;
-      this.addLog('  「' + sn + '」Lv.' + lv + ' EXP:' + Math.floor(exp) + '/' + need + ' 修炼消耗:' + cost + '灵石', 'info');
+      this.addLog('  「' + sn + '」Lv.' + lv + ' EXP:' + Math.floor(exp) + '/' + need + ' 修炼消耗:' + cost + ' ' + this.getMoneyName(), 'info');
     });
     this.addLog('💡 在「武学」面板中点击技能进行修炼。', 'system');
   }
@@ -1319,11 +1512,15 @@ export class Game {
       }
       s.inventory.splice(index, 1);
     } else if (item.type === 'stone') {
-      s.spiritStones += (item.value || 5);
-      s.inventory.splice(index, 1);
-      this.addLog('💰 汲取 ' + item.name + '，获得 ' + (item.value || 5) + ' 灵石。', 'item');
+      if (item.name === '不知名的石头' && !s.knowsSpiritStones) {
+        this.addLog('?? 你端详着这块温润的石头……说不上来是什么，但触手生凉。也许该找人鉴定一下。', 'special');
+      } else {
+        this.addSpiritStones(item.value || 5);
+        s.inventory.splice(index, 1);
+        this.addLog('?? 汲取 ' + item.name + '，获得 ' + (item.value || 5) + ' 灵石。', 'item');
+      }
     } else if (item.type === 'special') {
-      this.addLog('📿 ' + item.name + '——一件特殊之物，尚不知其用途。', 'special');
+      this.addLog('?? ' + item.name + '——一件特殊之物，尚不知其用途。', 'special');
     }
     // 使用物品：背包/属性/HP/道心可能变化
     this.renderer.updateUI(['char', 'status', 'progress', 'bag']);
@@ -1347,7 +1544,7 @@ export class Game {
     ov.className = 'modal-overlay';
     ov.innerHTML = '<div class="modal-box"><h2>💀 ' + reason + '</h2>' +
       '<p>最终境界：' + this.getRealms()[s.realm].name + '</p>' +
-      '<p>斩杀：' + s.killCount + ' | 灵石：' + s.spiritStones + '</p>' +
+      '<p>斩杀：' + s.killCount + ' | ' + this.getMoneyName() + '：' + this.formatMoney() + '</p>' +
       '<p>任务完成：' + s.completedQuests.length + '</p>' +
       '<p>所学：' + (s.techniques.length > 0 ? s.techniques.join('、') : '无') + '</p>' +
       '<p>修行时长：' + mins + '分' + secs + '秒 | 总修为：' + s.totalCultivation + '</p>' +
@@ -1370,12 +1567,12 @@ export class Game {
     else if (['南', 'south', 's', '向南'].includes(cmd)) this.explore('south');
     else if (['东', 'east', 'e', '向东'].includes(cmd)) this.explore('east');
     else if (['西', 'west', 'w', '向西'].includes(cmd)) this.explore('west');
-    else if (['打坐', '修炼', 'meditate'].includes(cmd)) this.meditate();
+    else if (['修炼', '修行', '打坐', 'meditate', 'cultivate'].includes(cmd)) this.cultivate();
+    else if (['练功', '练拳', 'pushup', 'train', '站桩'].includes(cmd)) this.train();
     else if (['搜寻', '搜索', 'search', '探索'].includes(cmd)) this.searchArea();
     else if (['休憩', '休息', 'rest'].includes(cmd)) this.rest();
     else if (['交谈', '谈话', 'talk', '聊聊', '聊天', '搭话'].includes(cmd)) this.talk();
     else if (['打听', '问询', 'ask', '消息', '问路'].includes(cmd)) this.askAround();
-    else if (['练功', '锻炼', 'pushup', '站桩'].includes(cmd)) this.pushup();
     else if (['观察', '窥探', 'peek', '瞭望', 'look', '看'].includes(cmd)) this.peek();
     else if (['练武', '修炼武学', 'practice'].includes(cmd)) this.practiceMenu();
     else if (['拜师', 'teacher'].includes(cmd)) this.askTeacher();
@@ -1392,8 +1589,7 @@ export class Game {
     } else if (['帮助', 'help', '?', '？', 'h'].includes(cmd)) {
       this.addLog('┏━━ 江 湖 须 知 ━━┓', 'system');
       this.addLog('┃ 🧭 移动：北/南/东/西', 'system');
-      this.addLog('┃ 🧘 打坐 · 🔍 搜索 · 💤 休憩', 'system');
-      this.addLog('┃ 💬 交谈 · 👂 打听 · 💪 练功 · 👀 窥探', 'system');
+      this.addLog('┃ 🧘 修炼 · 💪 练功 · 🔍 搜索 · 💤 休憩 · 💬 交谈 · 👂 打听 · 👀 窥探', 'system');
       this.addLog('┃ 🙇 拜师 · 📖 练武 · 🏯 武学', 'system');
       this.addLog('┃ 🗺 地图 · 📋 境况 · 📦 包裹', 'system');
       this.addLog('┃ 👤 人物 · 📜 任务：查看修为/任务', 'system');
