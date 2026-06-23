@@ -36,8 +36,9 @@ var LING_REALMS = window.LING_REALMS = [
   {idx:5, name:'化神', cost:3200, atk:68, def:26, hp:600, tier:'MAX'}
 ];
 
-// 兼容层（旧代码中直接引用REALMS的地方降级到WU_REALMS）
-var REALMS = window.REALMS = WU_REALMS;
+// 兼容层（旧代码中直接引用REALMS的地方降级到LING_REALMS）
+// 设计要求：境界上限锁定为化神（LING_REALMS[5]），WU_REALMS 保留但不再作为主境界表
+var REALMS = window.REALMS = LING_REALMS;
 
 
 // ============================================================

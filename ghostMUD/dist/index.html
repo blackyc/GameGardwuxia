@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>诡仙录·文字MUD</title>
-  <script type="module" crossorigin src="./assets/index-fbmBpZEg.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DZA_KzCB.css">
+  <script type="module" crossorigin src="./assets/index-Dwt-TH3U.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Bc3clAje.css">
 </head>
 <body>
 <div id="noise-overlay"></div>
@@ -75,7 +75,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="card-progress">
     <div class="card-header"><span class="dot"></span>修 炼 进 度</div>
     <div class="card-body">
       <div class="progress-wrap">
@@ -94,7 +94,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="card-location">
     <div class="card-header"><span class="dot"></span>所 在 之 地</div>
     <div class="card-body">
       <div id="location-bar">
@@ -120,7 +120,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="card-actions">
     <div class="card-header"><span class="dot"></span>行 动</div>
     <div class="card-body">
       <div class="action-grid" style="margin-bottom:7px">
@@ -152,7 +152,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="card-log">
     <div class="card-header"><span class="dot"></span>江 湖 录</div>
     <div class="card-body" id="log-area"></div>
   </div>
@@ -206,6 +206,39 @@
 <script src="/work/rebuild_skill_descriptions_2.js"></script>
 <script src="/work/integration_v2.js"></script>
 <script src="/work/ghost_faction_recruiter_encounters.js"></script>
+<script src="/work/rebuild_meridians.js"></script>
+<script src="/work/rebuild_seals.js"></script>
+<script src="/work/rebuild_builds_drops_corruption.js"></script>
+<script src="/work/corruption_system.js"></script>
+<script src="/work/jianghu_events.js"></script>
+<script src="/work/cross_path_quests.js"></script>
+
+<!-- ===== T13.0 行功战斗系统数据接入 START ===== -->
+<!-- 依赖：rebuild_meridians.js / rebuild_seals.js / rebuild_builds_drops_corruption.js (Phase8) -->
+<script src="/work/rebuild_combat_gong.js"></script>
+<script src="/work/rebuild_combat_atb.js"></script>
+<script src="/work/rebuild_combat_hijack.js"></script>
+<!-- combat_systems.json 是纯 JSON，不能用 script 标签，用 fetch 加载 -->
+<script>
+  // 同步加载 combat_systems.json 并挂到 window.COMBAT_SYSTEMS
+  // 使用 XMLHttpRequest 保证同步执行，后续桥接层能读到该变量
+  (function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/work/combat_systems.json', false); // 同步请求
+    xhr.send();
+    if (xhr.status === 200) {
+      try {
+        window.COMBAT_SYSTEMS = JSON.parse(xhr.responseText);
+        console.log('[T13.0] combat_systems.json loaded, keys:', Object.keys(window.COMBAT_SYSTEMS));
+      } catch(e) {
+        console.error('[T13.0] Failed to parse combat_systems.json:', e.message);
+      }
+    } else {
+      console.error('[T13.0] Failed to load combat_systems.json, status:', xhr.status);
+    }
+  })();
+</script>
+<!-- ===== T13.0 行功战斗系统数据接入 END ===== -->
 
 <!-- 桥接层：将 const/let 声明的全局变量挂到 window，供 ES6 模块读取 -->
 <script>
@@ -228,6 +261,41 @@
   if (typeof getDesc === 'function') window.getDesc = getDesc;
   // 检查 ghost_faction_recruiter_encounters.js 是否加载了 FACTION_RECRUITER_ENCOUNTERS
   if (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined') window.FACTION_RECRUITER_ENCOUNTERS = FACTION_RECRUITER_ENCOUNTERS;
+  // Phase8 数据文件桥接
+  // rebuild_meridians.js → const MERIDIANS
+  // rebuild_seals.js → const SEALS, SEAL_CATEGORIES
+  // rebuild_builds_drops_corruption.js → const BUILDS, MERIDIAN_DROPS, CORRUPTION
+  // corruption_system.js → var CORRUPTION_TIERS, CORRUPTION_DATA (已挂 window)
+  // jianghu_events.js → var JIANGHU_NPCS, JIANGHU_EVENTS, JIANGHU_SIDELINES (已挂 window)
+  // cross_path_quests.js → var CROSS_PATH_QUESTS (已挂 window)
+  [
+    'MERIDIANS',
+    'SEALS', 'SEAL_CATEGORIES',
+    'BUILDS', 'MERIDIAN_DROPS', 'CORRUPTION'
+  ].forEach(function(name) {
+    try {
+      if (eval('typeof ' + name) !== 'undefined') {
+        window[name] = eval(name);
+      }
+    } catch(e) { console.warn('[Bridge] Variable ' + name + ' not found: ' + e.message); }
+  });
+  // ===== T13.0 行功战斗系统桥接 START =====
+  // rebuild_combat_gong.js → const XINGGONG (行功图/小周天)
+  // rebuild_combat_atb.js → const ATB_SYSTEM (ATB 速度系统)
+  // rebuild_combat_hijack.js → const COMBAT_HIJACK (畸变篡改)
+  // combat_systems.json → window.COMBAT_SYSTEMS (已通过 fetch 直接挂载)
+  [
+    'XINGGONG',
+    'ATB_SYSTEM',
+    'COMBAT_HIJACK'
+  ].forEach(function(name) {
+    try {
+      if (eval('typeof ' + name) !== 'undefined') {
+        window[name] = eval(name);
+      }
+    } catch(e) { console.warn('[Bridge] Variable ' + name + ' not found: ' + e.message); }
+  });
+  // ===== T13.0 行功战斗系统桥接 END =====
 </script>
 
 <script src="/diagnose.js"></script>

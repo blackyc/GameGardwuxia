@@ -32,9 +32,11 @@
     max-width: 95%;
     padding: 18px;
   }
-  /* 桌面端隐藏的快捷键提示 */
   .kbd-hint {
     display: none;
+  }
+  #map-container {
+    height: 320px;
   }
 }
 
@@ -52,6 +54,9 @@
   #log-area {
     max-height: 320px;
   }
+  #map-container {
+    height: 400px;
+  }
 }
 
 /* === 桌面端（>=1024px）双栏布局 === */
@@ -64,6 +69,8 @@
       "header  header"
       "tabs    sidebar"
       "main    sidebar"
+      "loc     sidebar"
+      "map     sidebar"
       "actions sidebar"
       "log     sidebar";
     gap: 10px;
@@ -83,18 +90,24 @@
     margin: 0;
   }
 
-  /* 主区域：进度+位置+地图 */
-  .card:nth-of-type(1) {
+  /* 使用 ID 选择器精确放置关键卡片 */
+  #card-progress {
     grid-area: main;
   }
 
-  /* 行动栏 */
-  .card:nth-of-type(2) {
+  #card-location {
+    grid-area: loc;
+  }
+
+  #map-card {
+    grid-area: map;
+  }
+
+  #card-actions {
     grid-area: actions;
   }
 
-  /* 江湖录 */
-  .card:nth-of-type(3) {
+  #card-log {
     grid-area: log;
   }
 
@@ -119,7 +132,6 @@
     max-height: 400px;
   }
 
-  /* 桌面端显示键盘快捷键提示 */
   .kbd-hint {
     display: inline;
     font-size: 10px;
@@ -127,12 +139,10 @@
     margin-left: 4px;
   }
 
-  /* 地图更大 */
   #map-container {
-    height: 550px;
+    height: 500px;
   }
 
-  /* 按钮更大 */
   .action-btn {
     padding: 12px 4px;
     font-size: 13px;

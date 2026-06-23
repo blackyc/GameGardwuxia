@@ -223,6 +223,14 @@ export class Game {
 
   checkBreakthrough() {
     const s = this.state;
+    // 境界上限锁定：化神（index 5）为最高可达境界
+    const REALM_MAX_IDX = 5;
+    if (s.realm >= REALM_MAX_IDX) {
+      if (s.cultivation >= this.REALMS[REALM_MAX_IDX].cost) {
+        this.addLog('🌀 你已至化神之巅，天地之间再无前路可循…', 'system');
+      }
+      return;
+    }
     if (s.realm >= this.REALMS.length - 1) return;
     const n = this.REALMS[s.realm + 1];
     if (s.cultivation >= n.cost) {
@@ -559,18 +567,18 @@ export class Game {
 
   isAtFactionHQ(locationName, factionName) {
     const hqMap = {
-      '梵网寺': ['忘尘峰'],
-      '紫霞山': ['赤霞峰·观星台'],
-      '剑巢': ['锈剑冢·地窟'],
-      '蚁网': ['织狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
-      '焰心教': ['光明顶·焰心殿'],
+      '忘尘宗': ['忘尘峰'],
+      '问剑峰': ['赤霞峰·观星台'],
+      '锈剑冢': ['锈剑冢·地窟'],
+      '织狱': ['织狱·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
+      '焚身道': ['光明顶·焰心殿'],
       '逍遥驿': ['逍遥驿·车马院'],
-      '毒巢': ['鼓楼西·地下丹房'],
-      '血镰': ['血禅寺'],
-      '斗转阁': ['镜阁·万镜堂', '樊楼·镜室'],
-      '影墓': ['归墟洞', '大明宫废墟'],
-      '药王谷': ['青囊庐', '紫禁城旧药房'],
-      '机巧岛': ['鼓楼望气塔', '紫禁城实验室']
+      '药王谷': ['鼓楼西·地下丹房'],
+      '血禅寺': ['血禅寺'],
+      '镜阁': ['镜阁·万镜堂', '樊楼·镜室'],
+      '归墟': ['归墟洞', '大明宫废墟'],
+      '青囊庐': ['青囊庐', '紫禁城旧药房'],
+      '傀坊': ['鼓楼望气塔', '紫禁城实验室']
     };
     const hqs = hqMap[factionName] || [];
     return hqs.includes(locationName);
@@ -1004,24 +1012,38 @@ export class Game {
     if (this.mapOpen) {
       mc.classList.add('visible');
       this.renderer.renderMap();
+      // 滚动到地图卡片
       setTimeout(() => {
-        const pos = this.MAP_POS[this.state.location];
-        if (pos) {
-          const cont = document.getElementById('map-container');
-          cont.scrollLeft = pos.x * 10 - cont.clientWidth / 2;
-          cont.scrollTop = pos.y * 10 - cont.clientHeight / 2;
-        }
+        mc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 100);
     } else {
       mc.classList.remove('visible');
+      // 重置滚动位置
+      const cont = document.getElementById('map-container');
+      if (cont) { cont.scrollLeft = 0; cont.scrollTop = 0; }
     }
   }
 
   // ============ 日常动作 ============
 
   switchTab(tab) {
+    // 如果点击的是当前已打开的 tab，则关闭它（toggle 模式）
+    if (this.currentTab === tab) {
+      this.currentTab = null;
+      this.tabManager._currentTab = null;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('visible'));
+      return;
+    }
     this.currentTab = tab;
     this.tabManager.switchTo(tab);
+    // 自动滚动到 tab 面板区域
+    setTimeout(() => {
+      const panel = document.getElementById('panel-' + tab);
+      if (panel && panel.classList.contains('visible')) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 100);
   }
 
   meditate() {

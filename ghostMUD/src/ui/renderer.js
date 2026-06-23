@@ -232,13 +232,43 @@ export class Renderer {
       return;
     }
 
+    // === 自动缩放：根据节点分布范围计算 scale 和偏移 ===
+    const positions = Object.values(data.MAP_POS);
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const p of positions) {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    }
+    const rangeX = Math.max(1, maxX - minX);
+    const rangeY = Math.max(1, maxY - minY);
+    // 目标画布尺寸：容器可见区域大小
+    const container = document.getElementById('map-container');
+    const contW = container ? container.clientWidth - 40 : 400;
+    const contH = container ? container.clientHeight - 40 : 350;
+    // 每个坐标单位对应的像素，保证节点间距至少 70px，且不超过 120px
+    const scale = Math.min(120, Math.max(70, Math.min(contW / rangeX, contH / rangeY)));
+    const offsetX = (contW - rangeX * scale) / 2 + 20;
+    const offsetY = (contH - rangeY * scale) / 2 + 20;
+
+    // 设置 canvas 尺寸为容器大小
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+
+    // 坐标转换函数：将数据坐标转为画布像素坐标
+    const toPx = (pos) => ({
+      x: offsetX + (pos.x - minX) * scale,
+      y: offsetY + (pos.y - minY) * scale
+    });
+
     let html = '';
     // 画连线
     if (data.MAP_CONN) {
       for (const conn of data.MAP_CONN) {
         const [a, b] = conn;
-        const pa = data.MAP_POS[a];
-        const pb = data.MAP_POS[b];
+        const pa = toPx(data.MAP_POS[a]);
+        const pb = toPx(data.MAP_POS[b]);
         if (!pa || !pb) continue;
         const explored = s.explored.includes(a) && s.explored.includes(b);
         const dx = pb.x - pa.x;
@@ -250,11 +280,12 @@ export class Renderer {
     }
     // 画节点
     for (const [name, pos] of Object.entries(data.MAP_POS)) {
+      const px = toPx(pos);
       const isCurrent = name === s.location;
       const isExplored = s.explored.includes(name);
       const cls = isCurrent ? 'current' : isExplored ? 'explored' : 'unexplored';
       const label = isExplored || isCurrent ? name : '???';
-      html += `<div class="map-node ${cls}" style="left:${pos.x}px;top:${pos.y}px" data-loc="${name}"><div class="dot"></div><div class="label">${label}</div></div>`;
+      html += `<div class="map-node ${cls}" style="left:${px.x}px;top:${px.y}px" data-loc="${name}"><div class="dot"></div><div class="label">${label}</div></div>`;
     }
     canvas.innerHTML = html;
 
@@ -267,6 +298,16 @@ export class Renderer {
         }
       });
     });
+
+    // 自动居中到当前节点
+    const curPos = data.MAP_POS[s.location];
+    if (curPos) {
+      const curPx = toPx(curPos);
+      requestAnimationFrame(() => {
+        container.scrollLeft = Math.max(0, curPx.x - container.clientWidth / 2);
+        container.scrollTop = Math.max(0, curPx.y - container.clientHeight / 2);
+      });
+    }
   }
 
   /** 更新战斗 UI */

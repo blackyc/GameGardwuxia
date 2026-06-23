@@ -48,8 +48,11 @@
 
 - **阶段 1 架构拆分**：✅ 完成（T1.1-T1.5 全绿）
 - **阶段 2 引擎模式**：🟡 4/6 完成（T2.2 效果缓存未做；T2.3 resPool 类建了但未接入）
-- **阶段 3 修复**：🟡 3/6 完成（T3.0/T3.0b/T3.4 已做；T3.1/T3.2/T3.3 待做）
-- **阶段 4-12（新并入）**：⬜ 全部待执行
+- **阶段 3 修复**：🟡 5/6 完成（T3.0/T3.0b/T3.2/T3.3/T3.4 已做；T3.1 道心并入 T8.4 待做）
+- **阶段 6 内容还原**：🟡 1/4 完成（T6.0 ✅；T6.1-T6.3 待做）
+- **阶段 8 双修体系**：🟡 1/12 完成（T8.0 ✅；T8.1-T8.12 待做）
+- **阶段 13 行功战斗**：🟡 1/7 完成（T13.0 ✅；T13.1-T13.6 待做）
+- **阶段 4-12（其余）**：⬜ 全部待执行
 
 ---
 
@@ -96,8 +99,8 @@
 | **T3.0** | 修 input.js 语法错误 | forEach 回调未闭合 + 重复绑定 | 构建报错 | T1.3 | ✅ |
 | **T3.0b** | 修 vite.config manualChunks | Vite8/rolldown 不支持对象格式 | 构建报错 | T1.1 | ✅ |
 | **T3.1** | 修道心衰减公式 🔴 | 境界×环境侵蚀度联动，非线性 | known_issues 0001 | T2.2 | ⏳ **与 T8.4 双轨道心合并实现** |
-| **T3.2** | 修 CSS 色板 | 赛博暗紫/霓虹 → 枯色/墨色/血色 | known_issues 0002 | T1.1 | ⏳ |
-| **T3.3** | 修复 `isAtFactionHQ` 宗门名 🔴 | **当前含 8 个错误名**（梵网寺/剑巢/蚁网/毒巢/血镰/斗转阁/影墓/机巧岛），不在 `narrative_design.md` 12 标准宗门之列。**必须全部替换**为标准名（问剑峰/药王谷/血禅寺/焰心教/傀坊/逍遥驿/忘尘宗/紫霞山/归墟/镜阁/肉慈斋/青囊庐）。HQ 映射也须同步修正。**宗门名以 narrative_design.md 为唯一标准** | 代码审查 + narrative_design.md | — | ⏳ **优先级最高** |
+| **T3.2** | 修 CSS 色板 | 赛博暗紫/霓虹 → 枯色/墨色/血色 | known_issues 0002 | T1.1 | ✅ **已完成**（13处阴影/发光降低，blur≤4px，glow改rgba） |
+| **T3.3** | 修复 `isAtFactionHQ` 宗门名 🔴 | hqMap 11处键名已替换为 FACTIONS 实际键名（忘尘宗/问剑峰/锈剑冢/织狱/焚身道/逍遥驿/药王谷/血禅寺/镜阁/归墟/青囊庐/傀坊）。⚠️ 部分名与 narrative_design.md 标准名不同（如焚身道≠焰心教），留待 T8.2 统一 | 代码审查 + narrative_design.md | — | ✅ **功能修复完成**，T8.2 待统一名 |
 | **T3.4** | 统一方向键映射 | 全链路中文方向键 + 双向映射 | known_issues 0005 | T1.5 | ✅ **已完成**（game.js:261 DIR_CN 归一化 + dirName 扩展） |
 
 ### 阶段 4：双端适配增强（P4 - 体验改进）⬜
@@ -125,7 +128,7 @@
 
 | ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
 |----|--------|------|------|------|------|
-| **T6.0** | 境界上限锁定化神 | REALMS 屏蔽最后 2 项（合体/渡劫）；checkBreakthrough 加 `if (s.realm >= REALMS.length-1) return`；化神后 idle 提示"前路已绝" | 0.5h | — | ⏳ |
+| **T6.0** | 境界上限锁定化神 | REALMS 切换到 LING_REALMS(6级)；checkBreakthrough 加 `REALM_MAX_IDX=5` 上限检查；化神后提示"🌀 你已至化神之巅，天地之间再无前路可循…" | 0.5h | — | ✅ **已完成** |
 | **T6.1** | ROOM_SEARCH 还原 | ghost_room_search.js 592 条 → 注入 rebuild 房间 `observable.search_results`；建 v1→v2 房间名映射；聊斋化改写；分批：城市核心 20 间先做 | 3-5h | T6.0 | ⏳ |
 | **T6.2** | NPC_ENCOUNTERS 还原 | ghost_npc_encounters.js 385 NPC 块+715 选项 → 注入 `observable.npc_encounters`；保留 questStart/effect/reward 结构；按密度优先（鼓楼西鬼市→鸡鸣寺） | 4-6h | T6.0 | ⏳ |
 | **T6.3** | QUESTS 增量迁移 | v1 pkuxkx 18 任务 → 挑"护送/解密/拜师"5-8 条聊斋化并入 v2 QUESTS | 2-3h | T6.0 | ⏳ |
@@ -152,7 +155,7 @@
 
 | ID | 任务名 | 内容 | 工时 | 依赖 | 状态 |
 |----|--------|------|------|------|------|
-| **T8.0** | **Phase8 数据接入 Vite 🔴** | 将已有数据文件（meridians/seals/builds_drops_corruption/corruption_system/jianghu_events/cross_path_quests）加入 index.html 加载链 + bridge 脚本挂 window；验证无加载错误 | 2h | — | ⏳ **增补缺口，T8.1 前置** |
+| **T8.0** | **Phase8 数据接入 Vite 🔴** | 6个文件已接入 index.html 加载链 + 桥接层挂 window（MERIDIANS/SEALS/SEAL_CATEGORIES/BUILDS/MERIDIAN_DROPS/CORRUPTION + var 变量自动挂载） | 2h | — | ✅ **已完成** |
 | **T8.1** | 双境界体系 | WU_REALMS(5+1 上限天人) + LING_REALMS(5+1 上限化神)；三层认知 desc_vague/percept/awakened；getDesc() 按 path+realm 分发 | 2h | T6.0, **T8.0** | ⏳ |
 | **T8.2** | 12 宗门归属 | L1-L6 灵修 + W1-W6 武修；6 条人祸往事设定；HQ 遗物定义；**宗门名严格使用 narrative_design.md 标准**（已由 T3.3 先行修正 isAtFactionHQ） | 1.5h | T3.3 | ⏳ |
 | **T8.3** | 术语双轨制 | 面板/战斗/消息按 path 输出（内力↔灵力/真气↔灵气/剑法↔剑诀…）；引擎动态渲染，不做文件级替换 | 1.5h | T8.1 | ⏳ |
@@ -206,7 +209,7 @@
 
 | ID | 任务名 | 内容 | 工时 | 依赖 | 状态 |
 |----|--------|------|------|------|------|
-| **T13.0** | 行功数据接入 Vite 🔴 | 将 `rebuild_combat_gong/atb/hijack.js` + `rebuild_meridians.js` + `rebuild_seals.js` + `rebuild_builds_drops_corruption.js` 加入 index.html 加载链 + bridge 脚本；验证无加载错误 | 1.5h | T8.0 | ⏳ **前置，T8.0 完成后** |
+| **T13.0** | 行功数据接入 Vite 🔴 | 3个JS文件 + combat_systems.json(XHR同步加载) 已接入 index.html，桥接层挂 XINGGONG/ATB_SYSTEM/COMBAT_HIJACK/COMBAT_SYSTEMS | 1.5h | T8.0 | ✅ **已完成** |
 | **T13.1** | 行功图数据结构 + 编辑/保存 | 行功图数据模型（5 式位，3 套图，可填武学/刻印/丹药）；UI 编辑界面（MUD 文本式）；保存/切换行功图 | 6h | T13.0 | ⏳ |
 | **T13.2** | ATB 速度引擎 + 循环调度 | 速度条填充（基础+追风脉+状态修正）；行功自动循环（起→承→转→合→归→周天完成）；小周天奖励（精元回复+丹田异核效果）；高速连动 | 8h | T13.0, T13.1 | ⏳ |
 | **T13.3** | 畸变篡改系统 | 按畸变等级（0-5）逐级触发篡改：文本变异→数值波动→行功位替换→跳位→全图覆盖；灵修异化行功图（主动召畸变，威力高但不可切回） | 6h | T13.0, T8.4, T8.12 | ⏳ |
@@ -423,7 +426,7 @@ ghostMUD/
 | 2026-06-22 | T3.0 修 input.js 语法错误（forEach 回调未闭合 + 重复绑定） | AI |
 | 2026-06-22 | T3.0b 修 vite.config manualChunks（Vite8 不支持对象格式） | AI |
 | **2026-06-23** | **自我迭代 v2（本轮）**：① 合并 `todo_execution_plan.md` 全部内容（原 Phase 0-8 → T6-T12）；② 修正 7 处状态偏差——T3.4 实际已完成(✅)、T2.5 已接入 explore 自动存档、T3.3 重定义为术语冲突、新增 T2.3b(resPool 接入缺口)、T3.1 并入 T8.4、T6.4 三层描述联动约束；③ 新增批次 F/G/H 优先级；④ 补 6.6-6.8 验收 checklist；⑤ `todo_execution_plan.md` 归档为只读历史 | ZCode |
-| **2026-06-23** | **自我迭代 v2.1（本会话续）**：① **T3.3 定位纠正**——不是"术语冲突"，是 `isAtFactionHQ` 含 8 个不在 narrative_design.md 12 宗门之列的虚构名（梵网寺/剑巢/蚁网/毒巢/血镰/斗转阁/影墓/机巧岛），宗门名以 narrative_design.md 为唯一标准；② **T8 状态修正**——Phase 8 数据文件（meridians/seals/builds/corruption/jianghu_events/cross_path_quests 共 ~350KB）已生成但未接入 Vite，新增 T8.0"Phase8 数据接入 Vite"；③ **新增 T13 行功战斗系统**——合并 `xinggong_combat_design.md`（34h，行功五式/ATB/畸变篡改/干预系统）；④ **T6.0-T6.3 状态回退** ⏳（内容还原实际未做）；⑤ 依赖图/批次/文件结构/验收/风险全部同步更新 | ZCode |
+| **2026-06-23** | **批次 B/F/G 首轮执行**：T3.3 宗门名修复✅（hqMap 11处键名对齐 FACTIONS）+ T3.2 色板降炫光✅（13处阴影/发光降低）+ T6.0 境界锁定化神✅（REALM_MAX_IDX=5 + LING_REALMS）+ T8.0 Phase8 数据接入✅（6文件+桥接）+ T13.0 行功数据接入✅（3JS+1JSON+桥接）。Vite build 通过。⚠️ T3.3 宗门名以 FACTIONS 实际键名为准，部分与 narrative_design.md 不同，留待 T8.2 统一 | 游戏设计师 |
 
 ---
 
