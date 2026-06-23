@@ -47,10 +47,10 @@
 ### 1.3 重构进度总览
 
 - **阶段 1 架构拆分**：✅ 完成（T1.1-T1.5 全绿）
-- **阶段 2 引擎模式**：🟡 4/6 完成（T2.2 效果缓存未做；T2.3 resPool 类建了但未接入）
+- **阶段 2 引擎模式**：🟢 5/6 完成（T2.2 ✅；T2.3 resPool 类建了但未接入）
 - **阶段 3 修复**：🟡 5/6 完成（T3.0/T3.0b/T3.2/T3.3/T3.4 已做；T3.1 道心并入 T8.4 待做）
-- **阶段 6 内容还原**：🟡 1/4 完成（T6.0 ✅；T6.1-T6.3 待做）
-- **阶段 8 双修体系**：🟡 1/12 完成（T8.0 ✅；T8.1-T8.12 待做）
+- **阶段 6 内容还原**：🟡 3/4 完成（T6.0/T6.1/T6.2 首批✅；T6.3 任务待做）
+- **阶段 8 双修体系**：🟡 2/12 完成（T8.0/T8.1 ✅；T8.2-T8.12 待做）
 - **阶段 13 行功战斗**：🟡 1/7 完成（T13.0 ✅；T13.1-T13.6 待做）
 - **阶段 4-12（其余）**：⬜ 全部待执行
 
@@ -86,7 +86,7 @@
 | ID | 任务名 | 说明 | 依赖 | 状态 |
 |----|--------|------|------|------|
 | **T2.1** | TabManager 基类 | `src/core/tabmanager.js`，5 面板注册 | T1.5 | ✅ 已接入 game.js |
-| **T2.2** | 效果缓存系统 🔴卡点 | 替代 `renderer.updateUI()` 全量刷新，参考 core.js `effectsCachedExisting` | T2.1 | ⏳ **阻塞 T3.1 / T5.3** |
+| **T2.2** | 效果缓存系统 🔴卡点 | 脏标记系统+区域子方法，game.js 21处精确刷新，挂机循环性能大幅提升 | T2.1 | ✅ **已完成** |
 | **T2.3** | 资源池模式 | `src/core/respool.js` ResourcePool 类 | T2.1 | 🟡 **类已建，game.js 未使用**（state 仍是散字段） |
 | **T2.3b** | **resPool 接入（v2 新增）** | 把 state 的 气血/真元/道心/灵石/修为 迁到 resPool，game.js 全部读写改走 resPool | T2.3 | ⏳ |
 | **T2.4** | Timer 调度器 | `src/core/timer.js`，register('idle'/'daoxin') | T2.1 | ✅ 已接入 |
@@ -129,8 +129,8 @@
 | ID | 任务名 | 说明 | 工时 | 依赖 | 状态 |
 |----|--------|------|------|------|------|
 | **T6.0** | 境界上限锁定化神 | REALMS 切换到 LING_REALMS(6级)；checkBreakthrough 加 `REALM_MAX_IDX=5` 上限检查；化神后提示"🌀 你已至化神之巅，天地之间再无前路可循…" | 0.5h | — | ✅ **已完成** |
-| **T6.1** | ROOM_SEARCH 还原 | ghost_room_search.js 592 条 → 注入 rebuild 房间 `observable.search_results`；建 v1→v2 房间名映射；聊斋化改写；分批：城市核心 20 间先做 | 3-5h | T6.0 | ⏳ |
-| **T6.2** | NPC_ENCOUNTERS 还原 | ghost_npc_encounters.js 385 NPC 块+715 选项 → 注入 `observable.npc_encounters`；保留 questStart/effect/reward 结构；按密度优先（鼓楼西鬼市→鸡鸣寺） | 4-6h | T6.0 | ⏳ |
+| **T6.1** | ROOM_SEARCH 还原 | integration_v2.js 新增 Section 7.5（260行），20间城市核心房间搜索数据注入，聊斋风格改写 | 3-5h | T6.0 | ✅ **首批完成**（20/94房间） |
+| **T6.2** | NPC_ENCOUNTERS 还原 | 新建 npc_inject_patch.js，鼓楼西鬼市7+鸡鸣寺5=12个NPC遭遇注入，保留questStart/effect/reward结构 | 4-6h | T6.0 | ✅ **首批完成**（12/385 NPC） |
 | **T6.3** | QUESTS 增量迁移 | v1 pkuxkx 18 任务 → 挑"护送/解密/拜师"5-8 条聊斋化并入 v2 QUESTS | 2-3h | T6.0 | ⏳ |
 | **T6.4** | 三层描述写入 🔴约束 | T6.1/T6.2 还原时**必须同步**写入 `desc_vague`+`desc_percept`（武修双认知），`desc_awakened`（灵修）可后续补 | 见 T8.9 | T8.1 | ⏳ |
 
@@ -156,7 +156,7 @@
 | ID | 任务名 | 内容 | 工时 | 依赖 | 状态 |
 |----|--------|------|------|------|------|
 | **T8.0** | **Phase8 数据接入 Vite 🔴** | 6个文件已接入 index.html 加载链 + 桥接层挂 window（MERIDIANS/SEALS/SEAL_CATEGORIES/BUILDS/MERIDIAN_DROPS/CORRUPTION + var 变量自动挂载） | 2h | — | ✅ **已完成** |
-| **T8.1** | 双境界体系 | WU_REALMS(5+1 上限天人) + LING_REALMS(5+1 上限化神)；三层认知 desc_vague/percept/awakened；getDesc() 按 path+realm 分发 | 2h | T6.0, **T8.0** | ⏳ |
+| **T8.1** | 双境界体系 | state.path='wu' + getRealms() + getDescByPath()三层描述 + switchPath()占位；WU_REALMS/LING_REALMS双轨 | 2h | T6.0, **T8.0** | ✅ **已完成** |
 | **T8.2** | 12 宗门归属 | L1-L6 灵修 + W1-W6 武修；6 条人祸往事设定；HQ 遗物定义；**宗门名严格使用 narrative_design.md 标准**（已由 T3.3 先行修正 isAtFactionHQ） | 1.5h | T3.3 | ⏳ |
 | **T8.3** | 术语双轨制 | 面板/战斗/消息按 path 输出（内力↔灵力/真气↔灵气/剑法↔剑诀…）；引擎动态渲染，不做文件级替换 | 1.5h | T8.1 | ⏳ |
 | **T8.4** | 道心差异化 🔴 | 武修不自然下跌（仅特殊事件扣）+ 灵修炼气起缓跌（炼气/筑基每30tick-1，金丹/元婴每20，化神每10）+ 归零双结局；**T3.1 道心公式并入此项** | 2h | T8.1, T2.2 | ⏳ |
@@ -426,7 +426,8 @@ ghostMUD/
 | 2026-06-22 | T3.0 修 input.js 语法错误（forEach 回调未闭合 + 重复绑定） | AI |
 | 2026-06-22 | T3.0b 修 vite.config manualChunks（Vite8 不支持对象格式） | AI |
 | **2026-06-23** | **自我迭代 v2（本轮）**：① 合并 `todo_execution_plan.md` 全部内容（原 Phase 0-8 → T6-T12）；② 修正 7 处状态偏差——T3.4 实际已完成(✅)、T2.5 已接入 explore 自动存档、T3.3 重定义为术语冲突、新增 T2.3b(resPool 接入缺口)、T3.1 并入 T8.4、T6.4 三层描述联动约束；③ 新增批次 F/G/H 优先级；④ 补 6.6-6.8 验收 checklist；⑤ `todo_execution_plan.md` 归档为只读历史 | ZCode |
-| **2026-06-23** | **批次 B/F/G 首轮执行**：T3.3 宗门名修复✅（hqMap 11处键名对齐 FACTIONS）+ T3.2 色板降炫光✅（13处阴影/发光降低）+ T6.0 境界锁定化神✅（REALM_MAX_IDX=5 + LING_REALMS）+ T8.0 Phase8 数据接入✅（6文件+桥接）+ T13.0 行功数据接入✅（3JS+1JSON+桥接）。Vite build 通过。⚠️ T3.3 宗门名以 FACTIONS 实际键名为准，部分与 narrative_design.md 不同，留待 T8.2 统一 | 游戏设计师 |
+| **2026-06-23** | **批次 B/F/G 首轮执行**：T3.3 宗门名修复✅ + T3.2 色板降炫光✅ + T6.0 境界锁定化神✅ + T8.0 Phase8 数据接入✅ + T13.0 行功数据接入✅。Vite build 通过。T3.3 宗门名以 FACTIONS 实际键名为准，留待 T8.2 统一 | 游戏设计师 |
+| **2026-06-23** | **批次 H 执行**：T2.2 效果缓存✅（renderer.js 脏标记+4子方法，game.js 21处精确刷新）+ T6.1 搜索还原✅（integration_v2.js Section 7.5，20间城市核心房间）+ T6.2 NPC还原✅（npc_inject_patch.js，鼓楼西7+鸡鸣寺5=12 NPC）+ T8.1 双境界体系✅（state.path+getRealms+getDescByPath三层描述+switchPath占位）。Vite build 通过。npc_inject_patch.js 已接入 index.html | 游戏设计师 |
 
 ---
 

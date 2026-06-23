@@ -1,29 +1,96 @@
 ﻿/**
  * renderer.js — UI 渲染器
  * 参考猫国建设器 game.js 的 render() 方法
+ * 参考猫国建设器 core.js 的 effectsCachedExisting 模式实现脏标记缓存
  * 负责所有 DOM 更新，从 Game 类中分离
  */
 
 import { getData } from '../data/data_loader.js';
 
+// 区域常量：定义所有可独立刷新的 UI 区域
+const ZONE_CHAR = 'char';       // 人物面板（境界、修为、道心、寿命、灵石、功法、任务数）
+const ZONE_STATUS = 'status';   // 境况面板（含帮派信息、攻防、HP、位置、击杀）
+const ZONE_PROGRESS = 'progress'; // 进度条（修为/道心/HP 进度条 + 道心颜色警告 + 挂机状态）
+const ZONE_LOCATION = 'location'; // 位置信息（地名、描述、连接道路）
+const ZONE_BAG = 'bag';         // 背包 Tab
+const ZONE_WUXUE = 'wuxue';     // 武学 Tab
+const ZONE_QUEST = 'quest';     // 任务 Tab
+const ZONE_MAP = 'map';         // 地图
+const ZONE_COMBAT = 'combat';   // 战斗 UI
+
+// 所有区域列表
+const ALL_ZONES = [ZONE_CHAR, ZONE_STATUS, ZONE_PROGRESS, ZONE_LOCATION, ZONE_BAG, ZONE_WUXUE, ZONE_QUEST, ZONE_MAP, ZONE_COMBAT];
 
 export class Renderer {
   constructor(game) {
     this.game = game;
+    // 脏标记集合：记录哪些区域需要刷新
+    // 参考 cat-zh-master core.js 的 effectsCachedExisting 模式：
+    // 只在数据变化时更新对应 DOM 节点，避免全量刷新
+    this._dirty = new Set();
   }
 
-  /** 主 UI 更新 */
-  updateUI() {
-    const s = this.game.state;
+  /**
+   * 标记某个区域为脏（需要刷新）
+   * @param {string} zone - 区域名称，取值见 ZONE_* 常量
+   */
+  markDirty(zone) {
+    this._dirty.add(zone);
+  }
+
+  /**
+   * 主 UI 更新
+   * 无参数：全量刷新所有区域（兼容现有调用）
+   * 传 zone 字符串：只刷新指定区域
+   * 传 zone 数组：刷新数组中的所有区域
+   * @param {string|string[]} [zone] - 区域名称或区域数组
+   */
+  updateUI(zone) {
     const data = getData();
     if (!data.REALMS || data.REALMS.length === 0) {
       console.error('[Renderer] REALMS data not loaded!');
       return;
     }
+
+    if (zone === undefined) {
+      // 无参数：全量刷新（兼容原有行为）
+      this._dirty.clear();
+      ALL_ZONES.forEach(z => this._dirty.add(z));
+    } else if (typeof zone === 'string') {
+      // 单个区域：只刷新该区域
+      this._dirty.clear();
+      this._dirty.add(zone);
+    } else if (Array.isArray(zone)) {
+      // 数组：刷新多个区域
+      this._dirty.clear();
+      zone.forEach(z => this._dirty.add(z));
+    }
+
+    // 按脏标记选择性刷新
+    if (this._dirty.has(ZONE_CHAR)) this.updateCharPanel();
+    if (this._dirty.has(ZONE_STATUS)) this.updateStatusPanel();
+    if (this._dirty.has(ZONE_PROGRESS)) this.updateProgress();
+    if (this._dirty.has(ZONE_LOCATION)) this.updateLocation();
+    if (this._dirty.has(ZONE_BAG) && this.game.currentTab === 'bag') this.renderInventory();
+    if (this._dirty.has(ZONE_QUEST) && this.game.currentTab === 'quest') this.renderQuests();
+    if (this._dirty.has(ZONE_WUXUE) && this.game.currentTab === 'wuxue') this.renderWuxue();
+    if (this._dirty.has(ZONE_MAP) && this.game.mapOpen) this.renderMap();
+    if (this._dirty.has(ZONE_COMBAT) && this.game.state.combat) this.updateCombatUI();
+
+    // 清除脏标记
+    this._dirty.clear();
+  }
+
+  /**
+   * 更新人物面板（stat-* 元素）
+   * 包含：境界、修为、道心、寿命、灵石、功法、任务数
+   */
+  updateCharPanel() {
+    const s = this.game.state;
+    const data = getData();
     const currentRealm = data.REALMS[s.realm] || data.REALMS[0];
     const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
 
-    // 人物面板
     this._setText('stat-realm', currentRealm.name);
     this._setText('stat-cultivation', next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满');
     this._setText('stat-daoxin', s.daoxin + ' / ' + s.maxDaoXin);
@@ -31,8 +98,18 @@ export class Renderer {
     this._setText('stat-stones', s.spiritStones);
     this._setText('stat-techniques', s.techniques.length > 0 ? s.techniques.join('、') : '无');
     this._setText('stat-quests', s.activeQuests.length + ' / ' + (s.activeQuests.length + s.completedQuests.length));
+  }
 
-    // 境况面板
+  /**
+   * 更新境况面板（s-* 元素）
+   * 包含：境界、修为、道心、寿命、HP、灵石、攻防、功法、位置、击杀、帮派信息
+   */
+  updateStatusPanel() {
+    const s = this.game.state;
+    const data = getData();
+    const currentRealm = data.REALMS[s.realm] || data.REALMS[0];
+    const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
+
     this._setText('s-realm', currentRealm.name);
     this._setText('s-cult', next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满');
     this._setText('s-daoxin', s.daoxin + ' / ' + s.maxDaoXin);
@@ -59,8 +136,18 @@ export class Renderer {
       document.getElementById('s-skills-row').style.display = 'none';
       document.getElementById('s-rep-row').style.display = 'none';
     }
+  }
 
-    // 进度条
+  /**
+   * 更新进度条区域
+   * 包含：修为进度条、道心进度条、HP进度条、道心颜色警告、挂机状态
+   */
+  updateProgress() {
+    const s = this.game.state;
+    const data = getData();
+    const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
+
+    // 修为进度条
     if (next) {
       const pct = Math.min(100, (s.cultivation / next.cost) * 100);
       this._setStyle('cultivation-bar', 'width', pct + '%');
@@ -70,22 +157,17 @@ export class Renderer {
       this._setText('cultivation-text', '圆满');
     }
 
+    // 道心进度条
     this._setStyle('daoxin-bar', 'width', (s.daoxin / s.maxDaoXin * 100) + '%');
     this._setText('daoxin-text', Math.floor(s.daoxin / s.maxDaoXin * 100) + '%');
+
+    // HP 进度条
     this._setStyle('hp-bar', 'width', (s.hp / s.maxHp * 100) + '%');
     this._setText('hp-text', Math.floor(s.hp / s.maxHp * 100) + '%');
 
     // 道心颜色警告
     const dxEl = document.getElementById('stat-daoxin');
     dxEl.className = 'stat-value' + (s.daoxin < 20 ? ' danger' : s.daoxin < 50 ? ' highlight' : '');
-
-    // 位置信息
-    this._setText('location-name', s.location);
-    const loc = data.LOCATIONS[s.location];
-    this._setText('location-desc', loc ? data.getDesc(loc) : '未知之地');
-    document.getElementById('connections').innerHTML = loc && loc.connections
-      ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.game.dirName(d) + ' → ' + l + '</span>').join('')
-      : '';
 
     // 挂机状态
     const stEl = document.getElementById('idle-status');
@@ -96,13 +178,22 @@ export class Renderer {
       stEl.className = '';
       stEl.innerHTML = '<span class="pulse"></span>挂机修炼中 · 每 3 秒获取修为';
     }
+  }
 
-    // Tab 面板条件渲染
-    if (this.game.currentTab === 'bag') this.renderInventory();
-    if (this.game.currentTab === 'quest') this.renderQuests();
-    if (this.game.currentTab === 'wuxue') this.renderWuxue();
-    if (this.game.mapOpen) this.renderMap();
-    if (s.combat) this.updateCombatUI();
+  /**
+   * 更新位置信息区域
+   * 包含：地名、描述、连接道路
+   */
+  updateLocation() {
+    const s = this.game.state;
+    const data = getData();
+
+    this._setText('location-name', s.location);
+    const loc = data.LOCATIONS[s.location];
+    this._setText('location-desc', loc ? data.getDesc(loc) : '未知之地');
+    document.getElementById('connections').innerHTML = loc && loc.connections
+      ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.game.dirName(d) + ' → ' + l + '</span>').join('')
+      : '';
   }
 
   /** 渲染背包 */

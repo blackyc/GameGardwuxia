@@ -50,7 +50,7 @@ export class Game {
 
     // 解构常用卷宗
     const { REALMS, LOCATIONS, NPC_ENCOUNTERS, FACTIONS, ROGUE_SKILLS, QUESTS, ITEMS, ROOM_SEARCH, MAP_POS, MAP_CONN, getDesc } = this.data;
-    this.REALMS = REALMS;
+    this.REALMS = REALMS; // 兼容别名，指向当前路径的境界表（通过 getRealms() 动态切换）
     this.LOCATIONS = LOCATIONS;
     this.NPC_ENCOUNTERS = NPC_ENCOUNTERS;
     this.FACTIONS = FACTIONS;
@@ -60,15 +60,24 @@ export class Game {
     this.ROOM_SEARCH = ROOM_SEARCH;
     this.MAP_POS = MAP_POS;
     this.MAP_CONN = MAP_CONN;
-    this.getDesc = getDesc || ((obj) => obj?.desc || '');
+    // 双境界体系：WU_REALMS / LING_REALMS 引用
+    this.WU_REALMS = window.WU_REALMS || [];
+    this.LING_REALMS = window.LING_REALMS || [];
+    // getDesc：使用三层描述系统，fallback 到原始 getDesc（处理特殊对象）
+    this._rawGetDesc = getDesc || ((obj) => obj?.desc || '');
+    this.getDesc = (obj) => {
+      const desc = this.getDescByPath(obj);
+      return desc || this._rawGetDesc(obj);
+    };
 
     // UI 状态
     this.currentTab = null;
     this.mapOpen = false;
 
     // 游戏状态
-    const r0 = this.REALMS[0];
+    const r0 = (window.WU_REALMS || REALMS)[0]; // 默认武修路径
     this.state = {
+      path: 'wu', // 修行路径：'wu'（武修）| 'ling'（灵修）
       realm: 0,
       cultivation: 0,
       daoxin: 100, maxDaoXin: 100,
@@ -117,6 +126,75 @@ export class Game {
     this._registerTimers();
     this.startGameAsRogue();
     console.log('[Game] init() completed. Timer intervals:', this.timer._intervals.size);
+  }
+
+  // ============ 双境界体系 ============
+
+  /**
+   * 根据当前修行路径返回对应的境界表
+   * state.path === 'wu' → WU_REALMS（5级）
+   * state.path === 'ling' → LING_REALMS（6级）
+   * 同时刷新 this.REALMS 别名缓存
+   */
+  getRealms() {
+    const realms = this.state.path === 'ling' ? this.LING_REALMS : this.WU_REALMS;
+    if (realms && realms.length > 0) {
+      this.REALMS = realms; // 保持别名同步
+    }
+    return this.REALMS;
+  }
+
+  /**
+   * 切换修行路径（武修 ↔ 灵修）
+   * 目前仅支持 'wu'，'ling' 暂未开放
+   * // T8.7 双路径转职实现
+   */
+  switchPath(newPath) {
+    if (newPath !== 'wu' && newPath !== 'ling') {
+      this.addLog('未知的修行路径。', 'system');
+      return;
+    }
+    if (newPath === 'ling') {
+      // T8.7 双路径转职实现
+      this.addLog('灵修路径尚未开放，敬请期待。', 'system');
+      return;
+    }
+    const oldPath = this.state.path;
+    if (oldPath === newPath) {
+      this.addLog('你已在当前路径上。', 'system');
+      return;
+    }
+    this.state.path = newPath;
+    this.getRealms(); // 刷新 REALMS 别名
+    this.addLog('修行路径已切换至：' + (newPath === 'wu' ? '武修' : '灵修'), 'system');
+    this.renderer.updateUI();
+  }
+
+  /**
+   * 三层描述系统：根据修行路径和境界选择房间/NPC描述
+   * 武修凡人~练家子(0-1) → desc_vague（模糊感知）
+   * 武修武师以上(2+) → desc_percept（清晰感知，看到"不对劲"的线索）
+   * 灵修(任意境界) → desc_awakened（觉醒视角，看到真相）
+   * fallback → desc（现有默认描述）
+   */
+  getDescByPath(obj) {
+    if (!obj) return '';
+    const s = this.state;
+    if (s.path === 'ling') {
+      // 灵修：觉醒视角
+      if (obj.desc_awakened) return obj.desc_awakened;
+    } else {
+      // 武修：根据境界分层
+      if (s.realm <= 1) {
+        // 凡人~练家子：模糊感知
+        if (obj.desc_vague) return obj.desc_vague;
+      } else {
+        // 武师以上：清晰感知
+        if (obj.desc_percept) return obj.desc_percept;
+      }
+    }
+    // fallback 到现有 desc 字段
+    return obj.desc || '';
   }
 
   _registerTabs() {
@@ -180,7 +258,8 @@ export class Game {
     }
     if (Math.random() < 0.05 && !s.isResting) this.triggerIdleEvent();
     this.checkBreakthrough();
-    this.renderer.updateUI();
+    // 挂机循环中只有修为/道心/HP 变化，只需更新进度条和数值面板
+    this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   daoxinTick() {
@@ -196,8 +275,10 @@ export class Game {
     if (s.daoxin <= 0) {
       s.daoxin = 0;
       this.gameOver('道心崩坏——你不再是你自己了。最后的念头散成无数碎片，其中一片还记得你的名字。只是一片。');
+      return;
     }
-    this.renderer.updateUI();
+    // 道心定时扣减：只需更新进度条和数值面板
+    this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   triggerIdleEvent() {
@@ -223,22 +304,23 @@ export class Game {
 
   checkBreakthrough() {
     const s = this.state;
-    // 境界上限锁定：化神（index 5）为最高可达境界
+    const realms = this.getRealms();
+    // 境界上限锁定：化神（LING_REALMS index 5）为最高可达境界
     const REALM_MAX_IDX = 5;
     if (s.realm >= REALM_MAX_IDX) {
-      if (s.cultivation >= this.REALMS[REALM_MAX_IDX].cost) {
+      if (s.cultivation >= realms[REALM_MAX_IDX].cost) {
         this.addLog('🌀 你已至化神之巅，天地之间再无前路可循…', 'system');
       }
       return;
     }
-    if (s.realm >= this.REALMS.length - 1) return;
-    const n = this.REALMS[s.realm + 1];
+    if (s.realm >= realms.length - 1) return;
+    const n = realms[s.realm + 1];
     if (s.cultivation >= n.cost) {
       const ch = Math.min(0.95, 0.7 - s.realm * 0.08 + (s.daoxin / s.maxDaoXin) * 0.2);
       if (Math.random() < ch) {
         s.realm++;
         s.cultivation = 0;
-        const r = this.REALMS[s.realm];
+        const r = realms[s.realm];
         s.attack = r.atk;
         s.defense = r.def;
         s.maxHp = r.hp;
@@ -299,6 +381,7 @@ export class Game {
     this.renderer.updateLocationIcon();
     this.renderer.renderMap();
     this.checkQuestProgress('go', target);
+    // 移动后：位置 + 面板数值 + 进度条 + 地图都需刷新（可能遭遇战斗/NPC）
     this.renderer.updateUI();
 
     // 自动存档
@@ -319,7 +402,8 @@ export class Game {
     s.location = loc;
     this.addLog('🗺 快速前往 <b>' + loc + '</b>', 'info');
     this.renderer.renderMap();
-    this.renderer.updateUI();
+    // 快速旅行：位置信息 + 境况面板中的位置字段
+    this.renderer.updateUI(['location', 'status']);
   }
 
   // ============ NPC 遭遇系统 ============
@@ -416,6 +500,7 @@ export class Game {
   closeNPC() {
     this.state.npcEncounter = null;
     document.getElementById('npc-modal').classList.remove('active');
+    // NPC 交互可能改变多种状态，全量刷新
     this.renderer.updateUI();
   }
 
@@ -479,7 +564,8 @@ export class Game {
       }
     }
 
-    this.renderer.updateUI();
+    // 加入/切换帮派：人物面板 + 境况面板 + 武学面板都需刷新
+    this.renderer.updateUI(['char', 'status', 'wuxue']);
     if (this.currentTab === 'wuxue') this.renderer.renderWuxue();
   }
 
@@ -547,20 +633,23 @@ export class Game {
     if (['sword','blade','cuff','strike','finger','staff','whip','claw','spear','hammer'].includes(sk.type)) {
       s.equippedSkill = skillId;
     }
-    this.renderer.updateUI();
+    // 修炼武学：灵石/道心/技能变化，更新人物面板 + 进度条 + 武学面板
+    this.renderer.updateUI(['char', 'status', 'progress', 'wuxue']);
   }
 
   equipSkill(skillId) {
     if (!this.state.skills[skillId]) { this.addLog('尚未习得此武学。', 'system'); return; }
     this.state.equippedSkill = skillId;
     this.addLog('⚔ 装配「' + this.getSkillName(skillId) + '」为战斗主修武学。', 'info');
-    this.renderer.updateUI();
+    // 装配武学只影响人物/境况面板
+    this.renderer.updateUI(['char', 'status']);
   }
 
   unequipSkill() {
     this.state.equippedSkill = null;
     this.addLog('卸下装配武学。', 'info');
-    this.renderer.updateUI();
+    // 卸下武学只影响人物/境况面板
+    this.renderer.updateUI(['char', 'status']);
   }
 
   // ============ 拜师系统 ============
@@ -620,7 +709,8 @@ export class Game {
       this.addLog('📖 向' + teacherName + '习得「' + sk.name + '」！', 'special');
     });
     this.addLog('💰 支付束脩 ' + cost + ' 灵石。', 'item');
-    this.renderer.updateUI();
+    // 拜师学习：灵石/门忠/技能变化
+    this.renderer.updateUI(['char', 'status', 'wuxue']);
   }
 
   // ============ 战斗系统 ============
@@ -843,6 +933,7 @@ export class Game {
   endCombat(victory) {
     this.state.combat = null;
     document.getElementById('combat-modal').classList.remove('active');
+    // 战斗结束：多种状态可能变化，全量刷新
     this.renderer.updateUI();
     if (victory) this.checkBreakthrough();
   }
@@ -881,7 +972,7 @@ export class Game {
 
     if (Math.random() > data.searchChance) {
       this.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system');
-      this.renderer.updateUI();
+      // 搜索无果：无状态变化，无需刷新
       return;
     }
 
@@ -924,7 +1015,8 @@ export class Game {
     }
 
     this.checkQuestProgress('find', null);
-    this.renderer.updateUI();
+    // 搜索有结果：灵石/背包/HP/道心等可能变化
+    this.renderer.updateUI(['char', 'status', 'progress', 'bag', 'quest']);
   }
 
   pickItemByType(type) {
@@ -947,7 +1039,8 @@ export class Game {
       this.addLog('   ' + q.desc, 'quest');
       this.addLog('   阶段 1/' + q.stages.length + '：' + q.stages[0].desc, 'quest');
     }
-    this.renderer.updateUI();
+    // 接受任务：任务列表 + 人物面板任务计数
+    this.renderer.updateUI(['quest', 'char']);
   }
 
   checkQuestProgress(type, target) {
@@ -1001,6 +1094,7 @@ export class Game {
     s.activeQuests = s.activeQuests.filter(id => id !== questId);
     s.completedQuests.push(questId);
     this.checkBreakthrough();
+    // 完成任务：多种奖励可能改变多种状态，全量刷新
     this.renderer.updateUI();
   }
 
@@ -1054,7 +1148,8 @@ export class Game {
     s.daoxin = Math.min(s.maxDaoXin, s.daoxin + 3);
     this.addLog('🧘 静心打坐，获得 ' + base + ' 点修为，道心稍安。', 'info');
     this.checkBreakthrough();
-    this.renderer.updateUI();
+    // 打坐：修为/道心变化，更新进度条 + 数值面板
+    this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   rest() {
@@ -1062,7 +1157,8 @@ export class Game {
     const s = this.state;
     s.isResting = !s.isResting;
     this.addLog(s.isResting ? '💤 你寻了一处角落蜷起身子…' : '🔔 休憩结束，继续前行。', 'info');
-    this.renderer.updateUI();
+    // 休憩切换：挂机状态显示变化
+    this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   talk() {
@@ -1111,7 +1207,7 @@ export class Game {
     }
 
     this.addLog('👂 ' + rumors[Math.floor(Math.random() * rumors.length)], 'info');
-    this.renderer.updateUI();
+    // 打听：无状态变化，无需刷新 UI
   }
 
   pushup() {
@@ -1124,7 +1220,8 @@ export class Game {
     s.hp = Math.max(0, s.hp - 3);
     if (s.hp <= 0) { s.hp = 0; this.gameOver('练功走火入魔，力竭而亡'); return; }
     this.checkBreakthrough();
-    this.renderer.updateUI();
+    // 练功：修为/道心/HP变化，更新进度条 + 数值面板
+    this.renderer.updateUI(['progress', 'char', 'status']);
   }
 
   peek() {
@@ -1153,7 +1250,7 @@ export class Game {
 
     this.addLog('👀 你凝神观察四周…', 'system');
     obs.forEach(o => this.addLog('   ' + o, 'info'));
-    this.renderer.updateUI();
+    // 窥探：无状态变化，无需刷新 UI
   }
 
   practiceMenu() {
@@ -1201,7 +1298,7 @@ export class Game {
       if (item.effect === 'daoxin') s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (item.value || 20));
       else if (item.effect === 'hp') s.hp = Math.min(s.maxHp, s.hp + (item.value || 30));
       else if (item.effect === 'cultivation') s.cultivation += (item.value || 30);
-      else if (item.effect === 'breakthrough') s.cultivation += this.REALMS[Math.min(s.realm + 1, this.REALMS.length - 1)].cost * 0.4;
+      else if (item.effect === 'breakthrough') s.cultivation += this.getRealms()[Math.min(s.realm + 1, this.getRealms().length - 1)].cost * 0.4;
       else s.hp = Math.min(s.maxHp, s.hp + 20);
       this.addLog('💊 使用 ' + item.name + '。', 'item');
       s.inventory.splice(index, 1);
@@ -1228,7 +1325,8 @@ export class Game {
     } else if (item.type === 'special') {
       this.addLog('📿 ' + item.name + '——一件特殊之物，尚不知其用途。', 'special');
     }
-    this.renderer.updateUI();
+    // 使用物品：背包/属性/HP/道心可能变化
+    this.renderer.updateUI(['char', 'status', 'progress', 'bag']);
     this.checkBreakthrough();
   }
 
@@ -1248,7 +1346,7 @@ export class Game {
     const ov = document.createElement('div');
     ov.className = 'modal-overlay';
     ov.innerHTML = '<div class="modal-box"><h2>💀 ' + reason + '</h2>' +
-      '<p>最终境界：' + this.REALMS[s.realm].name + '</p>' +
+      '<p>最终境界：' + this.getRealms()[s.realm].name + '</p>' +
       '<p>斩杀：' + s.killCount + ' | 灵石：' + s.spiritStones + '</p>' +
       '<p>任务完成：' + s.completedQuests.length + '</p>' +
       '<p>所学：' + (s.techniques.length > 0 ? s.techniques.join('、') : '无') + '</p>' +

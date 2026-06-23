@@ -538,6 +538,269 @@ var ROOM_SEARCH = {};
 })();
 
 // ============================================================
+// 7.5 ROOM_SEARCH v1数据注入——城市核心20间房间
+//     从 v1 ghost_room_search.js 的搜索数据还原，
+//     描述文本按聊斋志怪风格改写，保留v1掉落逻辑
+// ============================================================
+(function() {
+  // v1→v2 房间名映射表（城市核心20间）
+  var V1_SEARCH_OVERRIDE = {
+    // 1. 应天府·十字街口 ← 应天暗巷
+    '应天府·十字街口': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '你在老槐树根部的泥地里摸到几枚铜钱，上面沾着青苔——像是埋了许久的。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '石墩底下的缝里塞着一只旧布袋，打开一看，几块碎银子滚落掌心。', chance: 0.1 },
+        { type: 'find_type', itemType: 'random', desc: '你在糖人担子后面的角落里翻到了一件被遗忘的物事。', chance: 0.12 },
+        { type: 'nothing', desc: '十字街口人来人往，地上什么也没留下。你直起腰来，膝盖咔嚓响了一声。', chance: 1 }
+      ]
+    },
+    // 2. 东大街 ← 应天东门
+    '东大街': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '你在歪脖子柳树根下的石缝里捡到几枚铜钱，铜钱上有一层绿色的锈——柳树泌的。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '布庄门口的台阶缝里卡着一只旧荷包，里面有几块碎银子。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在街角的香炉底座旁翻到一枚灵石残片，还有微弱的灵气在其中流转。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '柳树下的泥土里埋着一块残破灵石，灵气几乎散尽，但入手仍有凉意。', chance: 0.2 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在瓦砾堆下翻出一件蒙尘的法器——不知是哪个行商遗落的，擦去灰尘尚可一用。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在街边的杂物堆里摸到了一件说不清是什么的东西。', chance: 0.12 },
+        { type: 'nothing', desc: '东大街的石板被车马碾得光滑，什么也没藏住。你拍了拍手上的灰。', chance: 1 }
+      ]
+    },
+    // 3. 西大街 ← 应天西门
+    '西大街': {
+      searchChance: 0.4,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '当铺门口的石阶下，你翻到一枚灵石残片——大概是哪个走投无路的人当掉后遗落的。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '更夫老孙的竹梆子底下，嵌着一块残破灵石。他大概不知道那是什么——只知道梆子敲起来声音不一样。', chance: 0.2 },
+        { type: 'find_type', itemType: 'technique', desc: '你在米行后墙的砖缝里抽出一卷泛黄的纸——上面写着功法口诀，墨迹已经洇开，但尚可辨认。', chance: 0.15 },
+        { type: 'sanity', amount: 10, desc: '西大街的老铺子有种沉静的气息，你站在檐下歇了歇脚，心神莫名安宁了几分。', chance: 0.3 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在当铺后巷的废料堆里翻出一件旧法器，虽然蒙了厚厚的灰，但灵光未灭。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在街角不起眼的杂物堆里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '西大街的石板凹凸不平，缝里只有积水。你甩了甩手。', chance: 1 }
+      ]
+    },
+    // 4. 南大街 ← 应天南门
+    '南大街': {
+      searchChance: 0.4,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '梧桐树下，红衣小囡蹲过的地方，你捡到一枚灵石残片——她大概不知道这是什么。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '银楼门口的石阶缝里，卡着一块残破灵石。往来的人多，谁也没弯过腰。', chance: 0.2 },
+        { type: 'find_type', itemType: 'technique', desc: '绸缎庄后墙的墙皮剥落处，露出一段刻在砖上的功法残篇——不知何人所刻，笔力倒是不弱。', chance: 0.15 },
+        { type: 'sanity', amount: 10, desc: '南大街的梧桐树荫浓密，你站在树下歇了歇，树冠里传来极轻的沙沙声——不是风。心神却安定了。', chance: 0.3 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在梧桐树根旁的草丛里找到了几株药草——不是寻常草药，叶脉里有隐约的灵纹。', chance: 0.3 },
+        { type: 'cultivation', amount: 10, desc: '南大街的灵力波动虽然微弱，但你盘膝坐了片刻，经络中竟有一丝暖意流转。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在街边不起眼的角落里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '南大街宽阔整洁，没什么能藏的。你拍了拍膝盖。', chance: 1 }
+      ]
+    },
+    // 5. 北大街 ← 应天北门
+    '北大街': {
+      searchChance: 0.4,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '书铺门口的石阶下，你翻到一枚灵石残片——大概是哪位赶考书生遗落的盘缠。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '文昌祠的石狮子底座旁，埋着一块残破灵石。石狮子缺了半张脸，但灵石的凉意倒是完好的。', chance: 0.2 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在笔墨店后头的草丛里找到了几株药草——墨臭味盖住了药香，但灵纹还在。', chance: 0.3 },
+        { type: 'cultivation', amount: 10, desc: '北大街的坡道高处灵气略浓，你站了片刻，感觉经络微微发热。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在书铺间的杂物堆里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '北大街的书铺里全是书，地上倒是干净。你拍了拍手。', chance: 1 }
+      ]
+    },
+    // 6. 正阳门 ← 应天东门
+    '正阳门': {
+      searchChance: 0.45,
+      results: [
+        { type: 'money', amount: '5-30', desc: '城门洞里的石板缝中，你摸到几枚铜钱——穿堂风吹得它们冰凉。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '城门根下卡着一只旧布袋，里面有几块碎银子——不知是过路客遗落的，还是被谁故意藏的。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '城墙砖缝里，你抠出一枚灵石残片。城墙上的灵气流动极慢——这块残片大概是卡在缝里几十年了。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '城门基座的石料间，嵌着一块残破灵石。守门的兵士日日踩过，谁也没弯过腰。', chance: 0.2 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在城墙根的瓦砾堆里翻出一件蒙尘的法器——城墙上渗出的意识残余让它微微泛凉。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在城门洞的角落里摸到了点东西——穿堂风呼呼地灌。', chance: 0.12 },
+        { type: 'nothing', desc: '城门洞里风大，什么也藏不住。你缩了缩脖子。', chance: 1 }
+      ]
+    },
+    // 7. 石城门 ← 应天西门
+    '石城门': {
+      searchChance: 0.45,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '城门石阶下，你翻到一枚灵石残片——石头城的石头灵气比别处浓，残片中的灵力尚存。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '城墙根的碎石堆里，混着一块残破灵石——石城门的石头本就比别处古老。', chance: 0.2 },
+        { type: 'find_type', itemType: 'technique', desc: '城门内侧的墙壁上，刻着一段功法残篇——笔画极细，像是用指甲刻的。墨迹早已消失，但刻痕还在。', chance: 0.15 },
+        { type: 'sanity', amount: 10, desc: '石城门的石墙厚实沉静，你靠在墙上歇了歇，心神莫名安稳了几分。', chance: 0.3 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在城门根下的废料堆里翻出一件旧法器——石头城的灵气浸润日久，法器虽旧，底子尚在。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在城门角落的碎石堆里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '石城门的地面全是碎石，踩上去咯吱响。你什么也没找到。', chance: 1 }
+      ]
+    },
+    // 8. 聚宝门 ← 聚宝门
+    '聚宝门': {
+      searchChance: 0.45,
+      results: [
+        { type: 'find_type', itemType: 'random', desc: '聚宝门的城砖缝里，你摸到了一件说不上来的物事——城门聚宝，什么都有可能。', chance: 0.12 },
+        { type: 'nothing', desc: '聚宝门人来人往，守门的兵士盯了你一眼。你讪讪地直起身来。', chance: 1 }
+      ]
+    },
+    // 9. 太平门 ← 应天北门
+    '太平门': {
+      searchChance: 0.45,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '城门外的驿道旁，你捡到一枚灵石残片——大概是北行修士遗落的。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '城门基座的石缝里，嵌着一块残破灵石。太平门的风大，灵石上的灵气快被吹散了。', chance: 0.2 },
+        { type: 'find_type', itemType: 'consumable', desc: '城门外的草丛里，你找到了几株药草——北郊的荒地上灵气虽薄，但药草的灵纹倒清晰。', chance: 0.3 },
+        { type: 'cultivation', amount: 10, desc: '太平门外地势开阔，你站在城门下吐纳片刻，经络微微发热。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在城门根下的杂物堆里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '太平门外北风呼啸，什么也藏不住。你缩了缩手。', chance: 1 }
+      ]
+    },
+    // 10. 钟楼街 ← 鼓楼
+    '钟楼街': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '钟楼街的石板缝里，你捡到几枚铜钱——铜钱上沾着陈年的钟锈。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '街边的石墩底下，塞着一只旧布袋，里面有几块碎银子。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在钟楼基座的石阶下翻到一枚灵石残片——钟楼的铜钟日日震荡，灵石中的灵力反倒被震得更活跃了。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '街边的碎石堆里，混着一块残破灵石——大概是建钟楼时从石料里筛出来的。', chance: 0.2 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在钟楼后巷的废料堆里翻出一件蒙尘的法器——虽然破旧，但钟声日日洗濯，底子不差。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在街角不起眼的杂物堆里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '钟楼街的石板平整，没什么杂物。你拍了拍手。', chance: 1 }
+      ]
+    },
+    // 11. 鼓楼街 ← 鼓楼
+    '鼓楼街': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '鼓楼根下的石板缝里，你摸到几枚铜钱——铜钱上有鼓声震出来的裂纹。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '街边的石狮子背后，藏着一只旧布袋，里面有几块碎银子。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在鼓楼基座的台阶下翻到一枚灵石残片——鼓声日日轰鸣，灵石中的灵力被震得微微发烫。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '街边的石料堆里，混着一块残破灵石。鼓楼的石头比别处的沉——灵气也沉。', chance: 0.2 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在鼓楼后巷的瓦砾堆里翻出一件旧法器——鼓声震荡日久，法器的灵光反而更亮了。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在街角不起眼的角落里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '鼓楼街的更夫看了你一眼。你讪讪地直起身。', chance: 1 }
+      ]
+    },
+    // 12. 醉仙楼 ← 樊楼
+    '醉仙楼': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '你在醉仙楼后厨的泔水桶旁捡到几枚铜钱——大概是食客掏赏钱时掉落的。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '楼下的条桌缝里，卡着一只旧布袋——里面有几块碎银子，带着酒气。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在雅间的窗台上发现一枚灵石残片——大概是哪位修士酒醉后遗落的。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '楼梯板下的暗格里，藏着一块残破灵石——灵气微弱，但酒气浸透了它。', chance: 0.2 },
+        { type: 'hp', amount: 15, desc: '跑堂的收拾桌子时塞给你一碟剩菜——味道一般，但聊胜于无。你吃了几口，身上暖和了些。', chance: 0.4 },
+        { type: 'find_type', itemType: 'random', desc: '你在酒楼大堂的角落里摸到了点东西——跑堂的没好气地瞪了你一眼。', chance: 0.12 },
+        { type: 'nothing', desc: '醉仙楼里人声鼎沸，地上全是瓜子壳和骨头。你什么有用的也没找到。', chance: 1 }
+      ]
+    },
+    // 13. 聚宝当铺 ← 地坛旧货摊
+    '聚宝当铺': {
+      searchChance: 0.4,
+      results: [
+        { type: 'find_type', itemType: 'equipment', desc: '你在当铺的死当柜子后面，翻出一件蒙尘的法器——无人赎回的死当里，偶尔有好东西。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在当铺后院的杂物堆里摸到了点东西——大概是哪家败落人家当掉的破烂。', chance: 0.12 },
+        { type: 'nothing', desc: '当铺伙计精明得很，好东西都在柜子里。你只能在前厅转了转，什么也没摸到。', chance: 1 }
+      ]
+    },
+    // 14. 秦淮河·北岸 ← 秦淮河畔
+    '秦淮河·北岸': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '秦淮河岸的石阶缝里，你摸到几枚铜钱——河水日日浸着，铜钱上长了一层绿苔。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '岸边的柳树根下，埋着一只旧布袋——里面有几块碎银子，大概是画舫客人酒醉后遗落的。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在河岸的旧香案下旁找到一枚灵石残片——秦淮河的水气养着它，灵力尚存。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '河滩的碎石堆里，混着一块残破灵石——秦淮河水日日冲刷，灵气虽淡，但凉意沁骨。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在河岸的杂物堆里摸到了点东西——水腥气扑鼻。', chance: 0.12 },
+        { type: 'nothing', desc: '秦淮河的水声哗哗地响，你站在岸边望了许久，什么也没找到。', chance: 1 }
+      ]
+    },
+    // 15. 秦淮河·南岸 ← 秦淮河畔
+    '秦淮河·南岸': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '南岸的青石台阶缝里，你捡到几枚铜钱——比北岸的多了一层油渍，大概是食摊客人掉的。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '岸边的废弃货箱底，藏着一只旧布袋——里面有几块碎银子。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在南岸的旧码头石柱旁找到一枚灵石残片——南岸比北岸安静，灵力保存得更好些。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '河滩的淤泥里，你挖出一块残破灵石——灵气几乎被河水冲散了，但入手仍有凉意。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在南岸的杂物堆里摸到了点东西。', chance: 0.12 },
+        { type: 'nothing', desc: '秦淮河南岸比北岸冷清，你转了一圈，什么也没找到。', chance: 1 }
+      ]
+    },
+    // 16. 秦淮河·画舫码头 ← 秦淮河畔
+    '秦淮河·画舫码头': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '码头的木板缝隙里，你抠出几枚铜钱——画舫上的客人掉落的，铜钱上有胭脂的香气。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '码头的石墩后面，塞着一只旧荷包——里面有几块碎银子，绣着鸳鸯的荷包已经褪了色。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在码头的系船石柱旁翻到一枚灵石残片——画舫上修士遗落的，灵力被河水浸得微微发寒。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '码头下的河泥里，埋着一块残破灵石——画舫的灯笼光映在水面上，灵石的灵光在水底一闪一闪。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在码头的杂物堆里摸到了点东西——水腥气混着脂粉气。', chance: 0.12 },
+        { type: 'nothing', desc: '码头的船工看了你一眼，你讪讪地直起身。河水哗哗地拍着木桩。', chance: 1 }
+      ]
+    },
+    // 17. 秦淮河·东水关 ← 秦淮河畔
+    '秦淮河·东水关': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '水关的石闸缝里，你摸到几枚铜钱——水流冲刷日久，铜钱的字迹已经磨平了。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '水关的废弃闸板下，藏着一只旧布袋——里面有几块碎银子。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在水关的石壁上摸到一枚灵石残片——嵌在闸壁里，大概是很久以前修建水关时混入的。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '水关下的河床碎石中，你捞到一块残破灵石——灵气被水流冲得只剩下一点凉意。', chance: 0.2 },
+        { type: 'find_type', itemType: 'random', desc: '你在水关的角落里摸到了点东西——水流声哗哗地响。', chance: 0.12 },
+        { type: 'nothing', desc: '东水关的水流太急，什么也存不住。你甩了甩手上的水。', chance: 1 }
+      ]
+    },
+    // 18. 玄武湖·北岸 ← 玄武渡口
+    '玄武湖·北岸': {
+      searchChance: 0.4,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '你在湖岸的旧船墩旁翻到一枚灵石残片——玄武湖的水气滋养，灵力尚可。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '湖滩的碎石堆里，混着一块残破灵石——玄武湖底灵气暗流，灵石虽破，凉意犹在。', chance: 0.2 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在废弃的渡口凉亭废墟里翻出一件蒙尘的法器——大概是哪位修士游湖时遗落的，虽旧尚用。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在湖岸的芦苇丛里摸到了点东西——芦苇叶子割手。', chance: 0.12 },
+        { type: 'nothing', desc: '玄武湖的风大，湖面上什么也没有。你站了片刻，衣角被吹得猎猎响。', chance: 1 }
+      ]
+    },
+    // 19. 秦淮渡口·东埠 ← 玄武渡口
+    '秦淮渡口·东埠': {
+      searchChance: 0.4,
+      results: [
+        { type: 'find_type', itemType: 'consumable', desc: '渡口的石阶下，你翻到一枚灵石残片——摆渡的船工大概见过很多，但没人在意这种碎石头。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '渡口的缆绳石柱底座旁，嵌着一块残破灵石——船来船往，谁也没弯过腰。', chance: 0.2 },
+        { type: 'find_type', itemType: 'equipment', desc: '你在渡口的废弃货箱堆里翻出一件蒙尘的法器——不知是哪船货里漏出来的。', chance: 0.18 },
+        { type: 'find_type', itemType: 'random', desc: '你在渡口的杂物堆里摸到了点东西——满手都是河泥的腥气。', chance: 0.12 },
+        { type: 'nothing', desc: '渡口人来人往，船工吆喝着开船。你什么也没找到。', chance: 1 }
+      ]
+    },
+    // 20. 夫子庙 ← 樊楼
+    '夫子庙': {
+      searchChance: 0.4,
+      results: [
+        { type: 'money', amount: '5-30', desc: '夫子庙前的石阶上，你捡到几枚铜钱——大概是香客布施时掉落的。', chance: 0.35 },
+        { type: 'money', amount: '10-50', desc: '庙侧的功德箱后面，塞着一只旧布袋——里面有几块碎银子，大概是有人还愿时遗落的。', chance: 0.1 },
+        { type: 'find_type', itemType: 'consumable', desc: '你在供桌底下翻到一枚灵石残片——夫子庙的香火气浸透了它，灵力中混着一丝书卷气。', chance: 0.25 },
+        { type: 'find_type', itemType: 'stone', desc: '庙后的碎石堆里，混着一块残破灵石——夫子庙的灵气虽淡，但灵石上的灵纹反而比别处的清晰。', chance: 0.2 },
+        { type: 'hp', amount: 15, desc: '庙里的执事看你面善，递了一碗素面——味道寡淡，但吃了身上暖和了些。', chance: 0.4 },
+        { type: 'find_type', itemType: 'random', desc: '你在夫子庙的角落里摸到了点东西——满手都是香灰。', chance: 0.12 },
+        { type: 'nothing', desc: '夫子庙里香客众多，地上被打扫得干干净净。你什么也没找到。', chance: 1 }
+      ]
+    }
+  };
+
+  // 注入：用 v1 还原数据覆盖默认生成的 ROOM_SEARCH
+  var _overrideKeys = Object.keys(V1_SEARCH_OVERRIDE);
+  for (var _oi = 0; _oi < _overrideKeys.length; _oi++) {
+    var _roomName = _overrideKeys[_oi];
+    if (LOCATIONS[_roomName]) {
+      ROOM_SEARCH[_roomName] = V1_SEARCH_OVERRIDE[_roomName];
+    }
+  }
+
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[ROOM_SEARCH v1注入] 已注入 ' + _overrideKeys.length + ' 间城市核心房间的搜索数据');
+  }
+})();
+
+// ============================================================
 // 8. 生成 NPC_ENCOUNTERS
 // ============================================================
 var NPC_ENCOUNTERS = {};
@@ -901,3 +1164,12 @@ var getDesc = window.getDesc = function(obj) {
   }
   return obj.desc || '';
 };
+
+// ============================================================
+// 11. v1 NPC 遭遇数据注入（鼓楼西鬼市 + 鸡鸣寺区域）
+//     从 ghost_npc_encounters.js 精选还原，聊斋志怪风格轻度改写
+//     不修改原数据文件，运行时合并到 NPC_ENCOUNTERS
+//     注入逻辑在独立文件 npc_inject_patch.js 中实现
+//     本段仅作为标记——实际注入代码在 npc_inject_patch.js
+// ============================================================
+// 注：请在 integration_v2.js 之后加载 npc_inject_patch.js}
