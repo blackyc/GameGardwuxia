@@ -228,6 +228,11 @@
 <script src="/work/rebuild_combat_atb.js"></script>
 <script src="/work/rebuild_combat_hijack.js"></script>
 
+<!-- 行功战斗系统 v3.0 数据层 -->
+<script src="/work/combat_skills_v3.js"></script>
+<script src="/work/combat_equipment_v3.js"></script>
+<script src="/work/combat_boss_v3.js"></script>
+
 <!-- 桥接层：将 const/let 声明的全局变量挂到 window，供 ES6 模块读取 -->
 <script>
   // rebuild_*.js 中用 const 声明的变量不会自动挂到 window
@@ -244,7 +249,9 @@
     'JIANGHU_NPCS', 'JIANGHU_EVENTS', 'JIANGHU_SIDELINES',
     'CROSS_PATH_QUESTS', 'LING_SKILL_DATA',
     // 行功战斗系统
-    'XINGGONG', 'ATB_SYSTEM', 'COMBAT_HIJACK'
+    'XINGGONG', 'ATB_SYSTEM', 'COMBAT_HIJACK',
+    // 行功战斗系统 v3.0（combat_*_v3.js 用 var 声明，已自动挂载 window，此处保险）
+    'COMBAT_SKILLS_V3', 'COMBAT_EQUIPMENT_V3', 'COMBAT_BOSS_V3'
   ].forEach(function(name) {
     try {
       if (eval('typeof ' + name) !== 'undefined') {

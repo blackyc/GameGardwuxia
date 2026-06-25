@@ -4,6 +4,15 @@
  */
 
 import { Game } from './game.js';
+// 行功战斗系统 v3.0 — 预加载模块确保 Vite 打包
+import { BattleEngine } from './battle_async.js';
+import { HijackEngine } from './battle_hijack.js';
+import { InterveneEngine } from './battle_intervene.js';
+
+// 将战斗引擎类挂载到 window，供 game.js 及调试使用
+window.BattleEngine = BattleEngine;
+window.HijackEngine = HijackEngine;
+window.InterveneEngine = InterveneEngine;
 
 // 等待 DOM 加载完成
 if (document.readyState === 'loading') {

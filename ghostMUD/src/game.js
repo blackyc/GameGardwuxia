@@ -22,6 +22,10 @@ import { ResourcePool } from './core/respool.js';
 import { Storage } from './core/storage.js';
 import { InputManager } from './ui/input.js';
 import { Renderer } from './ui/renderer.js';
+// 行功战斗系统 v3.0
+import { BattleEngine } from './battle_async.js';
+import { HijackEngine } from './battle_hijack.js';
+import { InterveneEngine } from './battle_intervene.js';
 
 export class Game {
   constructor() {
@@ -74,6 +78,11 @@ export class Game {
     this.currentTab = null;
     this.mapOpen = false;
 
+    // 行功战斗系统 v3.0 引擎实例
+    this.battleEngine = null;    // 战斗时创建实例
+    this.hijackEngine = null;
+    this.interveneEngine = null;
+
     // 游戏状态
     const r0 = (window.WU_REALMS || REALMS)[0]; // 默认武修路径
     this.state = {
@@ -112,6 +121,10 @@ export class Game {
       factionRep: 0,
       performCooldowns: {},
       roundCount: 0,
+      // 行功战斗系统 v3.0
+      chart: null,           // 当前行功图
+      presetCharts: [],      // 预设行功图列表
+      corruptionLevel: 0,    // 畸变等级
     };
 
     // 尝试加载存档
@@ -897,6 +910,105 @@ export class Game {
   }
 
   startCombat(name, data) {
+    // 行功战斗系统 v3.0：检查是否有行功图数据
+    const chart = this.state.chart || (window.XINGGONG && window.XINGGONG[this.state.faction]);
+    if (chart && window.COMBAT_SKILLS_V3) {
+      // 使用新战斗引擎
+      this.battleEngine = new BattleEngine(this);
+      this.hijackEngine = new HijackEngine(this.battleEngine);
+      this.interveneEngine = new InterveneEngine(this.battleEngine);
+
+      // 设置回调
+      this.battleEngine._onLog = (text, type) => this.addLog(text, type);
+      this.battleEngine._onUpdate = () => this.renderer.updateCombatUI();
+      this.battleEngine._onEnd = (victory) => this.endCombat(victory);
+
+      // 启动战斗
+      this.state.combat = { enemyName: name, enemyData: data };
+      document.getElementById('combat-modal').classList.add('active');
+      this.battleEngine.startCombat(data, chart);
+    } else {
+      // fallback 到旧引擎
+      this._legacyStartCombat(name, data);
+    }
+  }
+
+  /**
+   * 战斗行动代理 — 新引擎优先，旧引擎 fallback
+   * action: 'attack'|'skill'|'defend'|'flee'|'variant'|'potion'|'retreat'
+   */
+  combatAction(action) {
+    if (this.battleEngine && this.battleEngine.battleState && this.battleEngine.battleState.active) {
+      // 转发到新引擎
+      const be = this.battleEngine;
+      switch (action) {
+        case 'attack': {
+          // 自动出招：找第一个 CD 就绪的槽位
+          for (let i = 0; i < 5; i++) {
+            if (be.battleState.slotUnlocked[i] && be.battleState.cooldowns[i] <= 0) {
+              be.autoCast(i);
+              return;
+            }
+          }
+          // 没有 CD 就绪的技能，调息
+          this.addLog('⏳ 所有招式都在冷却中…', 'combat');
+          break;
+        }
+        case 'skill': {
+          // 显示绝招/技能选择面板
+          this.showPerforms();
+          return;
+        }
+        case 'defend': {
+          // 新引擎中 defend = 调息（恢复真气）
+          this.addLog('🧘 凝神调息，真气回复。', 'combat');
+          break;
+        }
+        case 'flee': {
+          // 尝试撤退
+          if (this.interveneEngine) {
+            this.interveneEngine.doRetreat();
+          } else {
+            this.addLog('🏃 无法撤退！', 'combat');
+          }
+          break;
+        }
+        case 'variant': {
+          // 畸变干预
+          if (this.interveneEngine) {
+            const presets = this.interveneEngine.getAvailableInterventions();
+            if (presets && presets.variant) {
+              this.interveneEngine.doVariant(presets.variant[0]?.id);
+            }
+          }
+          break;
+        }
+        case 'potion': {
+          // 丹药干预
+          if (this.interveneEngine) {
+            this.interveneEngine.doPotion(null);
+          }
+          break;
+        }
+        case 'retreat': {
+          // 撤退干预
+          if (this.interveneEngine) {
+            this.interveneEngine.doRetreat();
+          }
+          break;
+        }
+        default:
+          // 未知动作，尝试旧引擎
+          this._legacyCombatAction(action);
+          break;
+      }
+    } else {
+      // 旧引擎 fallback
+      this._legacyCombatAction(action);
+    }
+  }
+
+  _legacyStartCombat(name, data) {
     this.state.roundCount = 0;
     this.state.performCooldowns = {};
     this.state.combat = {
@@ -907,7 +1019,7 @@ export class Game {
     this.renderer.updateCombatUI();
   }
 
-  combatAction(action) {
+  _legacyCombatAction(action) {
     if (!this.state.combat) return;
     const c = this.state.combat, s = this.state;
     switch (action) {
@@ -1088,12 +1200,12 @@ export class Game {
       return;
     }
 
-    this.enemyTurn();
+    this._legacyEnemyTurn();
     this.hidePerforms();
     this.renderer.updateCombatUI();
   }
 
-  enemyTurn() {
+  _legacyEnemyTurn() {
     const s = this.state, c = s.combat;
     if (!c) return;
     const eDmg = Math.max(1, c.enemyAtk + Math.floor(Math.random() * 8) - s.defense - (s.equipment.armor ? s.equipment.armor.def : 0));
@@ -1104,6 +1216,17 @@ export class Game {
   }
 
   endCombat(victory) {
+    // 清理新引擎实例（避免重入：BattleEngine.endCombat 会回调此方法）
+    if (this.battleEngine) {
+      const be = this.battleEngine;
+      this.battleEngine = null;
+      this.hijackEngine = null;
+      this.interveneEngine = null;
+      // 如果 BattleEngine 尚未停止，停止它
+      if (be.battleState && be.battleState.active) {
+        be.endCombat(victory);
+      }
+    }
     this.state.combat = null;
     document.getElementById('combat-modal').classList.remove('active');
     // 战斗结束：多种状态可能变化，全量刷新
