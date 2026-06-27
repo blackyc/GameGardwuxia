@@ -23,7 +23,7 @@
 | **核心引擎** | `src/core/timer.js` | 1.4KB | Timer 调度器（register/start/stop） | ✅ 已被 game.js 使用 |
 | | `src/core/tabmanager.js` | 1.7KB | TabManager（5 面板注册） | ✅ 已接入 |
 | | `src/core/respool.js` | 2.3KB | ResourcePool 类 | ⚠️ **类已建但 game.js 未使用**（见 T2.3b） |
-| | `src/core/storage.js` | 2.6KB | 存档 save/load/hasSave/clear | ✅ **已接入 explore 自动存档** |
+| | `src/core/storage.js` | ~8KB | 存档 v3：多槽位+全35字段+版本迁移+备份恢复+导入导出+UI | ✅ **v3 重写完成**（2026-06-27）|
 | | `src/core/namespace.js` | — | GhostEngine 命名空间 | ✅ |
 | **UI 层** | `src/ui/input.js` | — | InputManager（命令行 + 按钮绑定） | ✅（T3.0 修过语法错误） |
 | | `src/ui/renderer.js` | — | Renderer（面板/地图/日志渲染） | ✅ 效果缓存+MP显示+术语双轨标签 |
@@ -50,7 +50,7 @@
 - **阶段 1 架构拆分**：✅ 完成（T1.1-T1.5 全绿）
 - **阶段 2 引擎模式**：🟢 5/6 完成（T2.2 ✅；T2.3 resPool 类建了但未接入）
 - **阶段 3 修复**：✅ 6/6 完成（T3.0/T3.0b/T3.2/T3.3/T3.4 ✅；T3.1 道心并入 T8.4 ✅）
-- **阶段 6 内容还原**：🟡 3/4 完成（T6.0/T6.1/T6.2 首批✅；T6.3 任务待做）
+- **阶段 6 内容还原**：🟡 3.5/4 完成（T6.0/T6.1/T6.2 首批✅；T6.3 QUESTS✅ 含引擎契约修复；T6.4 三层描述待做）
 - **阶段 8 双修体系**：🟡 7.5/12 完成（T8.0/T8.1/T8.2/T8.3/T8.4/T8.5 ✅；T8.9 引擎✅/数据⏳；T8.6/T8.7/T8.8/T8.10/T8.11/T8.12 待做）
 - **阶段 13 行功战斗**：🟡 1/7 完成（T13.0 ✅；T13.1-T13.6 待做）
 - **阶段 4-12（其余）**：⬜ 全部待执行
@@ -93,7 +93,7 @@
 | **T2.3** | 资源池模式 | `src/core/respool.js` ResourcePool 类 | T2.1 | 🟡 **类已建，game.js 未使用**（state 仍是散字段） |
 | **T2.3b** | **resPool 接入（v2 新增）** | 把 state 的 气血/真元/道心/灵石/修为 迁到 resPool，game.js 全部读写改走 resPool | T2.3 | ⏳ |
 | **T2.4** | Timer 调度器 | `src/core/timer.js`，register('idle'/'daoxin') | T2.1 | ✅ 已接入 |
-| **T2.5** | 存档系统 | `src/core/storage.js` save/load/hasSave/clear | T2.3 | ✅ **已接入 explore 自动存档**（game.js:297） |
+| **T2.5** | 存档系统 v3 | `src/core/storage.js` 多槽位+全35字段+版本迁移v1→v3+备份恢复+导入导出(base64/文件)+UI面板 | T2.3 | ✅ **v3 完成**（2026-06-27）。23个存档触发点（idleTick/突破/战斗/任务/搜索/使用物品/修炼/练功/拜师/移动/页面离开）；60s定时自动存档；双重确认删档。30项E2E测试全通过 |
 
 ### 阶段 3：已知问题修复（P3 - 质量改进）🟡
 
@@ -134,8 +134,15 @@
 | **T6.0** | 境界上限锁定化神 | REALMS 切换到 LING_REALMS(6级)；checkBreakthrough 加 `REALM_MAX_IDX=5` 上限检查；化神后提示"🌀 你已至化神之巅，天地之间再无前路可循…" | 0.5h | — | ✅ **已完成** |
 | **T6.1** | ROOM_SEARCH 还原 | integration_v2.js 新增 Section 7.5（260行），20间城市核心房间搜索数据注入，聊斋风格改写 | 3-5h | T6.0 | ✅ **首批完成**（20/94房间） |
 | **T6.2** | NPC_ENCOUNTERS 还原 | 新建 npc_inject_patch.js，鼓楼西鬼市7+鸡鸣寺5=12个NPC遭遇注入，保留questStart/effect/reward结构 | 4-6h | T6.0 | ✅ **首批完成**（12/385 NPC） |
-| **T6.3** | QUESTS 增量迁移 | v1 pkuxkx 18 任务 → 挑"护送/解密/拜师"5-8 条聊斋化并入 v2 QUESTS | 2-3h | T6.0 | ⏳ |
+| **T6.3** | QUESTS 增量迁移 | v1 pkuxkx 18 任务 → 挑"护送/解密/拜师"5-8 条聊斋化并入 v2 QUESTS | 2-3h | T6.0 | ✅ **已完成**（22条：原15条重新契约化 + 7条迁移聊斋化）。**附带修复 QUESTS 引擎契约断裂**：旧数据用 `stage.action`+每阶段 `reward`，引擎读 `stage.type`+顶层 `q.rewards`→任务从不推进、完成即崩。已统一为引擎契约。详见下「T6.3 修复明细」 |
 | **T6.4** | 三层描述写入 🔴约束 | T6.1/T6.2 还原时**必须同步**写入 `desc_vague`+`desc_percept`（武修双认知），`desc_awakened`（灵修）可后续补 | 见 T8.9 | T8.1 | ⏳ |
+
+> **T6.3 修复明细（2026-06-27）**：
+> 1. **契约断裂修复**：`integration_v2.js` 的 QUESTS 原用 `stage.action`+每阶段 `stage.reward`，而引擎 `checkQuestProgress` 读 `stage.type`、`completeQuest`/`renderQuests` 读顶层 `q.rewards` → 任务永远不推进、完成即 TypeError、任务页渲染崩溃。已统一为引擎契约（`stage.type` 引擎词汇表 + 可选 `stage.location`/`stage.target` + 顶层 `q.rewards`）。
+> 2. **checkQuestProgress 增强**（game.js）：加入向后兼容的位置/目标门控——`go` 类阶段有 `location` 时仅在该房间推进；`kill` 有 `target` 时仅匹配敌人名；`find` 引擎传 null 改用 `s.location` 判定。无 location/target 字段则回退原任意匹配行为。
+> 3. **autoStart 机制**（game.js 新增 `_autoStartQuests`）：移动后扫描 QUESTS，`autoStart:true` 且 `startLocation`=当前地点且未激活/未完成 → 自动 `startQuest`；`startGameAfterStartup` 末尾亦调用一次（开局触发 q001）。任务靠旅行即可触达，无需改写 410KB NPC 文件。
+> 4. **stage0 设计铁律**：autoStart 任务的 stage0 必须是「首个目标」，**不得**是「抵达 startLocation」（否则 autoStart 与 stage0 同一到达事件冲突，stage0 永远卡死）。22 条已全量校验通过。
+> 5. **验证**：vite build ✓；契约校验 22/22 通过（type/reward/location 全合法，stage0 零冗余，无同地点连续 go 触发阶段）；端到端模拟 q001/q002/q003/q014 全流程推进+完成+发奖无误。
 
 ### 阶段 7：新手体验（P0 🔴 - 原计划 Phase 2+3）
 
@@ -276,7 +283,7 @@ T12.x (地图) ── T12.3 依赖 T8.1 ✅
 |------|------|--------|------|
 | **批次 B**（快速修复） | ~~T3.2 色板~~ ✅ + ~~T2.2 效果缓存~~ ✅ + ~~T3.3 宗门名修复~~ ✅ | ✅ 已完成 | T3.3 无依赖可立即修；T2.2 是关键卡点 |
 | **批次 F**（数据接入） | ~~T8.0 Phase8 数据接入~~ ✅ + ~~T13.0 行功数据接入~~ ✅ | ✅ 已完成 | 数据文件已生成但不接入 = 死代码；接入后 T8/T13 才可开工 |
-| **批次 G**（内容还原） | ~~T6.0 境界锁~~ ✅ + ~~T6.1 搜索~~ ✅ + ~~T6.2 NPC~~ ✅ + T6.3 任务 | 🟡 3/4 完成 | 数据空洞是当前最大体感问题 |
+| **批次 G**（内容还原） | ~~T6.0 境界锁~~ ✅ + ~~T6.1 搜索~~ ✅ + ~~T6.2 NPC~~ ✅ + ~~T6.3 QUESTS~~ ✅ | 🟢 4/4 完成（T6.4 为跨段约束） | 数据空洞是当前最大体感问题 |
 | **批次 H**（新手体验） | T7.1 Roll + T7.2 门派 + T7.3 新手图 + T7.5 点击 | 🔴 高 | 第一体验 |
 | **批次 I**（双修深化） | ~~T8.1 双境界~~ ✅ / ~~T8.2 宗门~~ ✅ / ~~T8.3 术语~~ ✅ / ~~T8.4 道心~~ ✅ / ~~T8.5 经济~~ ✅ / T8.6-T8.12 待做 | 🟡 5/12 完成 | 依赖 T8.0 接入 |
 | **批次 J**（UI 重构） | T9.1-T9.4 + T4.1 桌面双栏 | 🟡 中 | 多页面架构重构，与 T8.6 UI双轨适配配合 |
@@ -442,7 +449,7 @@ ghostMUD/
 | **2026-06-24** | **v2.5（本迭代）**：① T8.5 经济双轨✅（state.copperCoins + spiritStones 双字段 + getMoney/addMoney/spendMoney/formatMoney 四方法 + 武修1000文=1金进位 + 全经济触点替换：战斗/搜刮/修炼/拜师/任务/汲取/事件 + renderer.js formatMoney()显示 + index.html 货币标签id化）；② T8.4 道心差异化✅（武修不自然下跌/灵修按境界递增 + T3.1 并入）；③ T8.2 宗门名统一✅；④ T8.3 术语双轨制✅；⑤ MP系统新增；⑥ 行动框架三层重写 + 30s tick。Build JS 58.91KB | AI 工程师 |
 | **2026-06-24** | **v2.4（本迭代）**：① T8.2 宗门名统一✅（织狱→紫霞山/焚身道→焰心教/锈剑冢删除 + game.js ceremonies/hqMap/askAround 同步）；② T8.3 术语双轨制✅（getTerm/getMoneyName/getMpName + renderer.js 11处灵石硬编码替换）；③ T8.4 道心差异化✅（武修不自然下跌/灵修按境界递增衰减 + 修炼/练功道心减扣 + daoxinDecayCounter + T3.1 并入完成）；④ MP系统新增（state.mp/maxMp 80→突破+40/30 + 休憩+5/tick + 突破回满 + UI蓝色进度条）；⑤ 行动框架重写（cultivate toggle/rest toggle/train 点点点 + 30s tick + trainCounter每10次扣道心）；⑥ 定时器间隔 3s/15s→30s/30s。Build JS 58.40KB | AI 工程师 |
 | **2026-06-24** | **v2.6 代码同步核实（本会话）**：① 亲自核查 `src/game.js`/`index.html`/`data_loader.js` 确认 T3.3✅(hqMap 10 标准名) / T2.2✅(21 处精确刷新) / T8.0✅(index:217-229 全部加载) / T8.1✅(state.path+getRealms) / T8.3✅(TERM_MAP 双轨) / T8.4✅(daoxinTick 418-437 双轨) / T8.5✅(铜钱/灵石 双字段) / T6.0✅(化神锁定)；② **T8.2 订正**：hqMap 宗门名已完成但 3 处 HQ 地名占位"未命名"待补（归墟/青囊庐/傀坊 game.js:840-842）；③ **T8.9 订正**：引擎已完成（getDescByPath :314-332），数据未填→ 🟡；④ 进度总览补代码证据行号 + 标注真正卡点（T8.7 switchPath stub :293 / T8.11 JIANGHU 零消费 / T8.12 CORRUPTION 零消费 / T13.1-13.6 XINGGONG 零消费） | ZCode |
-| **2026-06-26** | **UI 规范 v3.0 改写（本会话）**：`docs/ui_architecture_spec.md` 全量改写为「写意水彩·融墨于画」v3.0，以 jimeng 期待效果图为锚——①美学从敦煌壁画转向写意水彩国风（控件融入画作，卡牌=灰蓝半透圆角罩，按钮=菱形徽章+卷轴挂钩）；②色彩改莫兰迪柔和（薄荷绿#A3C9A8/珊瑚橘#E08E79/木色#C5A059）+ 矿物高饱和（群青/朱砂/金箔/沙土）双色板，比例随情境翻转；③基底从暗暖壁面改浅水彩（暖宣/烟蓝）；④页面切换改★祥云帷幕动画（700ms 左右云向内浮入→停→向两侧浮出）；⑤★新增第十一章场景动态配色系统（按房间名「·」前缀识别大区，8+套视觉主题，CSS 渐变占位后期换插画）；⑥新增第十四章菱形徽章控件规范；⑦旧 v2.0 暖窟归档至 `dunhuang_warm_cave_spec.md`（与 `dunhuang_cold_cave_spec.md` 成对）。**tracker 同步**：UI 引用版本 v1.0→v3.0；T9.4 描述更新（祥云帷幕）；**新增 T9.5 场景动态配色+插画系统**（3h，依赖 T9.1）。本任务仅产出/更新文档，未改任何代码 | ZCode |
+| **2026-06-27** | **T6.3 QUESTS 修复 + T2.5 存档系统 v3（本会话）**：① **T6.3 QUESTS 引擎契约修复**✅——22条任务全部对齐引擎契约（stage.type+top-level q.rewards），修复 checkQuestProgress 位置/目标门控，新增 _autoStartQuests() 自动触发；② **T2.5 存档系统 v3**✅——storage.js 全量重写：35字段全序列化（补15漏存字段）、多槽位(_auto+_slot1/2/3)、版本迁移链v1→v2→v3、备份恢复(写前备份+损坏自动恢复)、导入导出(base64码+文件下载)、类型校验+默认值合并；③ **23个存档触发点**（idleTick/突破/战斗/任务/搜索/使用物品/修炼/练功/拜师/移动/快速旅行/页面离开保护）；④ **存档UI面板**（index.html+main.css+input.js+game.js）：自动存档信息/3手动槽位(保存/读取/删除)/导出文件/复制存档码/文件导入/存档码导入/双重确认删档；⑤ **30项E2E测试全通过**。Build JS 113.78KB | 游戏设计师 |
 
 ---
 

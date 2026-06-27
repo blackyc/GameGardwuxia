@@ -72,6 +72,22 @@ export class InputManager {
           case 'combat':
             this.game.combatAction(btn.dataset.combat);
             break;
+          case 'openSaveMenu':
+            this.game.openSaveMenu();
+            break;
+          case 'exportSave':
+            this.game.exportSaveFile();
+            break;
+          case 'importSave':
+            this.game.openSaveMenu();
+            // 展开导入区域
+            const impInput = document.getElementById('import-str-input');
+            const impBtn = document.getElementById('btn-import-str');
+            if (impInput && impBtn) { impInput.style.display = 'block'; impBtn.style.display = 'inline-block'; }
+            break;
+          case 'wipeConfirm':
+            this.game.wipeConfirm();
+            break;
         }
       });
     });
@@ -110,6 +126,41 @@ export class InputManager {
     const performBack = document.getElementById('perform-back-btn');
     if (performBack) {
       performBack.addEventListener('click', () => this.game.hidePerforms());
+    }
+
+    // 存档面板按钮
+    const saveClose = document.getElementById('save-close-btn');
+    if (saveClose) saveClose.addEventListener('click', () => {
+      document.getElementById('save-modal').classList.remove('active');
+    });
+
+    // 手动存档槽位按钮
+    document.querySelectorAll('.save-btn[data-slot]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const slot = btn.dataset.slot;
+        if (btn.classList.contains('save')) this.game.manualSave(slot);
+        else if (btn.classList.contains('load')) this.game.manualLoad(slot);
+        else if (btn.classList.contains('del')) this.game.manualDelete(slot);
+      });
+    });
+
+    // 导出/导入按钮
+    const exportFile = document.getElementById('btn-export-file');
+    if (exportFile) exportFile.addEventListener('click', () => this.game.exportSaveFile());
+
+    const exportStr = document.getElementById('btn-export-str');
+    if (exportStr) exportStr.addEventListener('click', () => this.game.exportSaveString());
+
+    const importStr = document.getElementById('btn-import-str');
+    if (importStr) importStr.addEventListener('click', () => this.game.importSaveString());
+
+    const importFile = document.getElementById('btn-import-file');
+    const fileInput = document.getElementById('import-file-input');
+    if (importFile && fileInput) {
+      importFile.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) this.game.importSaveFile(e.target.files[0]);
+      });
     }
 
     // 点击模态框外部关闭

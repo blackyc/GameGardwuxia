@@ -208,3 +208,36 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
 .faction-badge{background:rgba(25,16,28,.9);border:1px solid rgba(60,30,40,.4);border-radius:6px;padding:6px 8px;margin-bottom:6px;text-align:center}
 .faction-badge .fname{font-size:13px;font-weight:bold;color:#c49a38;letter-spacing:2px}
 .faction-badge .fdesc{font-size:10px;color:#6e5c50;margin-top:2px}
+
+/* === Save Modal === */
+.save-section{margin-bottom:14px}
+.save-section-title{font-size:12px;color:#9a7a68;letter-spacing:2px;border-bottom:1px solid rgba(50,30,40,.25);padding-bottom:4px;margin-bottom:8px}
+.save-slot{background:rgba(16,10,18,.6);border:1px solid rgba(40,24,34,.4);border-radius:6px;padding:8px 10px;margin-bottom:6px}
+.save-slot .slot-info{font-size:12px;color:#8a7060;line-height:1.5}
+.save-slot .slot-info .detail{color:#6e5c50;font-size:11px}
+.save-slot .slot-info .time{color:#5a4a40;font-size:10px}
+.slot-actions{display:flex;gap:6px;margin-top:6px}
+.save-btn{background:rgba(22,14,24,.8);border:1px solid rgba(40,24,34,.5);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;color:#9a8070;cursor:pointer;transition:all .15s;flex:1;text-align:center}
+.save-btn:active{transform:scale(.97)}
+.save-btn.save{color:#6a9a78;border-color:rgba(40,60,50,.5)}
+.save-btn.save:active{background:rgba(20,30,24,.9)}
+.save-btn.load{color:#7a8aaa;border-color:rgba(40,50,70,.5)}
+.save-btn.load:active{background:rgba(20,24,35,.9)}
+.save-btn.del{color:#aa5050;border-color:rgba(70,30,35,.5);flex:0.6}
+.save-btn.del:active{background:rgba(35,16,18,.9)}
+.save-btn.export{color:#c4a06a;border-color:rgba(60,50,30,.5)}
+.save-btn.export:active{background:rgba(30,25,16,.9)}
+.save-btn.import{color:#8a7aaa;border-color:rgba(50,40,70,.5)}
+.save-btn.import:active{background:rgba(25,20,35,.9)}
+.save-export-row,.save-import-row{display:flex;gap:6px;margin-top:6px}
+.save-import-row input{flex:1;background:rgba(20,12,20,.8);border:1px solid rgba(40,24,34,.5);border-radius:6px;color:#c4b0a0;font-family:inherit;font-size:12px;padding:6px 10px;outline:none}
+.save-confirm-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,1,5,.92);display:flex;align-items:center;justify-content:center;z-index:300}
+.save-confirm-overlay .confirm-box{background:rgba(20,12,20,.97);border:2px solid rgba(100,28,36,.5);border-radius:8px;padding:24px;max-width:320px;width:90%;text-align:center}
+.save-confirm-overlay .confirm-box h3{color:#c05555;font-size:16px;margin-bottom:10px;letter-spacing:2px}
+.save-confirm-overlay .confirm-box p{font-size:13px;color:#b0a098;line-height:1.7;margin-bottom:14px}
+.save-confirm-overlay .confirm-actions{display:flex;gap:10px;justify-content:center}
+.save-confirm-overlay .confirm-actions button{border-radius:18px;padding:8px 20px;font-family:inherit;font-size:14px;cursor:pointer;letter-spacing:1px}
+.save-confirm-overlay .btn-yes{background:rgba(80,25,35,.9);color:#c4a098;border:1px solid rgba(120,30,40,.5)}
+.save-confirm-overlay .btn-yes:active{background:rgba(100,28,38,.95)}
+.save-confirm-overlay .btn-no{background:rgba(25,20,30,.8);color:#6e5c50;border:1px solid rgba(40,30,40,.5)}
+.save-confirm-overlay .btn-no:active{background:rgba(35,28,38,.9)}

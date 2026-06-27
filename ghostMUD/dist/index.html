@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>诡仙录·文字MUD</title>
-  <script type="module" crossorigin src="./assets/index-Do0CFeLK.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Bc3clAje.css">
+  <script type="module" crossorigin src="./assets/index-Ux0RbZcH.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-C40YDWUb.css">
 </head>
 <body>
 <div id="noise-overlay"></div>
@@ -155,6 +155,12 @@
         <button class="action-btn" data-action="switchTab" data-tab="status"><span class="icon">📋</span>境况</button>
         <button class="action-btn" data-action="askTeacher"><span class="icon">🙇</span>拜师</button>
       </div>
+      <div class="action-grid" style="margin-top:7px">
+        <button class="action-btn" data-action="openSaveMenu"><span class="icon">📜</span>存档</button>
+        <button class="action-btn" data-action="exportSave"><span class="icon">📤</span>导出</button>
+        <button class="action-btn" data-action="importSave"><span class="icon">📥</span>导入</button>
+        <button class="action-btn" data-action="wipeConfirm"><span class="icon">🗑</span>删档</button>
+      </div>
     </div>
   </div>
 
@@ -176,6 +182,65 @@
     <div class="modal-desc" id="npc-desc"></div>
     <div class="modal-choices" id="npc-choices"></div>
     <button class="modal-close" id="npc-close-btn">走开</button>
+  </div>
+</div>
+
+<!-- Save Management Modal -->
+<div class="modal" id="save-modal">
+  <div class="modal-box" style="max-width:400px">
+    <h3>📜 天 录 存 档</h3>
+    <div id="save-modal-content">
+      <!-- 自动存档信息 -->
+      <div class="save-section">
+        <div class="save-section-title">自动存档</div>
+        <div class="save-slot" id="save-auto-info">
+          <div class="slot-info">— 尚无自动存档 —</div>
+        </div>
+      </div>
+      <!-- 手动存档槽位 -->
+      <div class="save-section">
+        <div class="save-section-title">手动存档</div>
+        <div class="save-slot" id="save-slot-1">
+          <div class="slot-info">槽位一 · 空</div>
+          <div class="slot-actions">
+            <button class="save-btn save" data-slot="_slot1">保存</button>
+            <button class="save-btn load" data-slot="_slot1">读取</button>
+            <button class="save-btn del" data-slot="_slot1">删除</button>
+          </div>
+        </div>
+        <div class="save-slot" id="save-slot-2">
+          <div class="slot-info">槽位二 · 空</div>
+          <div class="slot-actions">
+            <button class="save-btn save" data-slot="_slot2">保存</button>
+            <button class="save-btn load" data-slot="_slot2">读取</button>
+            <button class="save-btn del" data-slot="_slot2">删除</button>
+          </div>
+        </div>
+        <div class="save-slot" id="save-slot-3">
+          <div class="slot-info">槽位三 · 空</div>
+          <div class="slot-actions">
+            <button class="save-btn save" data-slot="_slot3">保存</button>
+            <button class="save-btn load" data-slot="_slot3">读取</button>
+            <button class="save-btn del" data-slot="_slot3">删除</button>
+          </div>
+        </div>
+      </div>
+      <!-- 导入导出 -->
+      <div class="save-section">
+        <div class="save-section-title">导入 / 导出</div>
+        <div class="save-export-row">
+          <button class="save-btn export" id="btn-export-file">导出到文件</button>
+          <button class="save-btn export" id="btn-export-str">复制存档码</button>
+        </div>
+        <div class="save-import-row">
+          <input type="text" id="import-str-input" placeholder="粘贴存档码…" style="display:none">
+          <button class="save-btn import" id="btn-import-str" style="display:none">导入存档码</button>
+          <button class="save-btn import" id="btn-import-file">选择文件导入</button>
+          <input type="file" id="import-file-input" accept=".json,.txt" style="display:none">
+        </div>
+      </div>
+    </div>
+    <button class="modal-close" id="save-close-btn">关闭</button>
   </div>
 </div>
 

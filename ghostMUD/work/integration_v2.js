@@ -955,155 +955,282 @@ if (ROGUE_SKILLS) {
 //     location 使用 LOCATIONS 中的实际房间名
 // ============================================================
 var QUESTS = [
+  // ===== 原15条 · 重新契约化（stage.type + 顶层 rewards；stage0=首个目标，非"抵达起点"） =====
   {
     id: 'q001',
     name: '初识红尘',
     desc: '在应天府四处转转，熟悉这座城。一个游历之人，先从脚下开始。',
+    startLocation: '应天府·十字街口',
+    autoStart: true,
     stages: [
-      { desc: '到醉仙楼打听消息', location: '醉仙楼', action: 'talk', target: '跑堂', reward: { exp: 20, money: 30 } },
-      { desc: '前往秦淮河画舫码头探查', location: '秦淮河·画舫码头', action: 'arrive', reward: { exp: 50, money: 50 } }
-    ]
+      { desc: '到醉仙楼打听消息', type: 'talk', location: '醉仙楼' },
+      { desc: '前往秦淮河画舫码头探查', type: 'go', location: '秦淮河·画舫码头' }
+    ],
+    rewards: { cultivation: 70, copperCoins: 80 }
   },
   {
     id: 'q002',
     name: '寺庙里的钟声',
     desc: '鸡鸣寺的钟声近来有些异样——有人说钟声里多了一声，多出来的那声不是从钟里传出的。',
+    startLocation: '鸡鸣寺·山门',
+    autoStart: true,
     stages: [
-      { desc: '前往鸡鸣寺山门', location: '鸡鸣寺·山门', action: 'arrive', reward: { exp: 30 } },
-      { desc: '进入大雄宝殿参拜', location: '鸡鸣寺·大雄宝殿', action: 'arrive', reward: { exp: 40 } },
-      { desc: '登上钟楼查看铜钟', location: '鸡鸣寺·钟楼', action: 'arrive', reward: { exp: 60, money: 40 } },
-      { desc: '与撞钟僧交谈', location: '鸡鸣寺·钟楼', action: 'talk', target: '撞钟僧·叩音', reward: { exp: 80, item: '撞钟木槌' } }
-    ]
+      { desc: '进入大雄宝殿参拜', type: 'go', location: '鸡鸣寺·大雄宝殿' },
+      { desc: '登上钟楼与撞钟僧交谈', type: 'talk', location: '鸡鸣寺·钟楼' }
+    ],
+    rewards: { cultivation: 210, copperCoins: 40, item: '撞钟木槌' }
   },
   {
     id: 'q003',
     name: '城门的秘密',
     desc: '正阳门的守兵最近夜不能寐——城门每到子时就响，但门外空无一人。',
+    startLocation: '正阳门',
+    autoStart: true,
     stages: [
-      { desc: '到正阳门与城门守兵交谈', location: '正阳门', action: 'talk', target: '城门守兵王大', reward: { exp: 20 } },
-      { desc: '夜间在正阳门守候', location: '正阳门', action: 'arrive', reward: { exp: 40 } },
-      { desc: '将发现报告给应天府衙', location: '应天府衙·正堂', action: 'arrive', reward: { exp: 80, money: 100 } }
-    ]
+      { desc: '在正阳门搜寻异响来源', type: 'find', location: '正阳门' },
+      { desc: '前往应天府衙禀报', type: 'return', location: '应天府衙·正堂' }
+    ],
+    rewards: { cultivation: 140, copperCoins: 100 }
   },
   {
     id: 'q004',
     name: '书铺异闻',
     desc: '北大街书铺的旧书里，据说每一本都多了一页——那一页上写的东西，不是过去，也不是现在。',
+    startLocation: '北大街',
+    autoStart: true,
     stages: [
-      { desc: '到北大街书铺找老李', location: '北大街', action: 'talk', target: '书铺老李', reward: { exp: 20 } },
-      { desc: '在书铺中找到那本"多页书"', location: '北大街', action: 'search', reward: { exp: 40, item: '多页书' } },
-      { desc: '去国子监请教', location: '国子监·彝伦堂', action: 'arrive', reward: { exp: 50 } }
-    ]
+      { desc: '在北大街翻找那本"多页书"', type: 'find', location: '北大街' },
+      { desc: '去国子监请教', type: 'go', location: '国子监·彝伦堂' }
+    ],
+    rewards: { cultivation: 110, item: '多页书' }
   },
   {
     id: 'q005',
     name: '秦淮夜渡',
     desc: '秦淮河夜晚的画舫里，据说有不是活人的乘客。河边的老船工说，有些乘客付的船钱，第二天会变成纸灰。',
+    startLocation: '秦淮河·北岸',
+    autoStart: true,
     stages: [
-      { desc: '到秦淮河北岸调查', location: '秦淮河·北岸', action: 'arrive', reward: { exp: 30 } },
-      { desc: '前往画舫码头查看', location: '秦淮河·画舫码头', action: 'arrive', reward: { exp: 50 } },
-      { desc: '渡河后前往南岸', location: '秦淮河·南岸', action: 'arrive', reward: { exp: 30 } },
-      { desc: '前往秦淮渡口东埠', location: '秦淮渡口·东埠', action: 'arrive', reward: { exp: 60, money: 60 } }
-    ]
+      { desc: '前往画舫码头查看', type: 'go', location: '秦淮河·画舫码头' },
+      { desc: '渡河后前往南岸', type: 'go', location: '秦淮河·南岸' },
+      { desc: '前往秦淮渡口东埠', type: 'go', location: '秦淮渡口·东埠' }
+    ],
+    rewards: { cultivation: 170, copperCoins: 60 }
   },
   {
     id: 'q006',
     name: '古井怪谈',
     desc: '古井巷的老井夜半会传出哭声——巷子里的住户说，那声音是从井底往上爬的。',
+    startLocation: '古井巷',
+    autoStart: true,
     stages: [
-      { desc: '前往古井巷查看老井', location: '古井巷', action: 'arrive', reward: { exp: 25 } },
-      { desc: '深夜在古井巷守候', location: '古井巷', action: 'arrive', reward: { exp: 70 } }
-    ]
+      { desc: '在古井巷老井边守候探查', type: 'find', location: '古井巷' }
+    ],
+    rewards: { cultivation: 95 }
   },
   {
     id: 'q007',
     name: '乱葬岗之约',
     desc: '义庄看守说，每逢月圆，乱葬岗上会多出一座新坟——不是人埋的，是土自己拱起来的。',
+    startLocation: '义庄·乱葬岗',
+    autoStart: true,
     stages: [
-      { desc: '前往义庄乱葬岗', location: '义庄·乱葬岗', action: 'arrive', reward: { exp: 50 } },
-      { desc: '进入停尸房探查', location: '义庄·乱葬岗·停尸房内', action: 'arrive', reward: { exp: 80 } },
-      { desc: '与义庄看守交谈', location: '义庄·乱葬岗', action: 'talk', target: '义庄看守', reward: { exp: 60, money: 50 } }
-    ]
+      { desc: '进入停尸房探查', type: 'go', location: '义庄·乱葬岗·停尸房内' },
+      { desc: '折返义庄外围查勘', type: 'return', location: '义庄·乱葬岗' }
+    ],
+    rewards: { cultivation: 190, copperCoins: 50 }
   },
   {
     id: 'q008',
     name: '无梁殿之谜',
     desc: '灵谷寺无梁殿的石佛——有人说祂在低头，而且每天低一分。住持说那只是光影错觉。但你不信。',
+    startLocation: '灵谷寺·无梁殿',
+    autoStart: true,
     stages: [
-      { desc: '前往灵谷寺无梁殿', location: '灵谷寺·无梁殿', action: 'arrive', reward: { exp: 40 } },
-      { desc: '与灵谷住持交谈', location: '灵谷寺·无梁殿', action: 'talk', target: '灵谷住持·印光', reward: { exp: 50 } },
-      { desc: '攀登灵谷寺九层塔', location: '灵谷寺·九层塔', action: 'arrive', reward: { exp: 70 } }
-    ]
+      { desc: '攀登灵谷寺九层塔', type: 'go', location: '灵谷寺·九层塔' },
+      { desc: '登临塔顶第五层查勘', type: 'investigate', location: '灵谷寺·九层塔·第五层' }
+    ],
+    rewards: { cultivation: 160 }
   },
   {
     id: 'q009',
     name: '星陨异象',
     desc: '紫金山观星台附近夜半星落。观星老道说——落下来的不是星，陨石里面是空的。',
+    startLocation: '紫金山·观星台废墟',
+    autoStart: true,
     stages: [
-      { desc: '前往紫金山观星台废墟', location: '紫金山·观星台废墟', action: 'arrive', reward: { exp: 50 } },
-      { desc: '调查陨星坑', location: '紫金山·观星台废墟·陨星坑', action: 'arrive', reward: { exp: 60 } },
-      { desc: '与观星老道交谈', location: '紫金山·观星台废墟·陨星坑', action: 'talk', target: '观星老道', reward: { exp: 60, item: '星图石片' } }
-    ]
+      { desc: '调查陨星坑', type: 'go', location: '紫金山·观星台废墟·陨星坑' },
+      { desc: '深入地下密室', type: 'investigate', location: '紫金山·观星台废墟·地下密室' }
+    ],
+    rewards: { cultivation: 170, item: '星图石片' }
   },
   {
     id: 'q010',
     name: '雨花玛瑙',
     desc: '雨花台的玛瑙石最近颜色越发鲜艳。捡石人刘五说石头在吃颜色——但颜色从哪来的？',
+    startLocation: '雨花台·碎石坡',
+    autoStart: true,
     stages: [
-      { desc: '前往雨花台碎石坡', location: '雨花台·碎石坡', action: 'arrive', reward: { exp: 40 } },
-      { desc: '与捡石人刘五交谈', location: '雨花台·碎石坡', action: 'talk', target: '捡石人·刘五', reward: { exp: 40 } },
-      { desc: '找到一颗特异的雨花玛瑙', location: '雨花台·碎石坡', action: 'search', reward: { exp: 50, item: '雨花玛瑙' } }
-    ]
+      { desc: '在碎石坡寻找特异的雨花玛瑙', type: 'find', location: '雨花台·碎石坡' }
+    ],
+    rewards: { cultivation: 130, item: '雨花玛瑙' }
   },
   {
     id: 'q011',
     name: '狐仙幻境',
     desc: '栖霞野林里有人说看见了狐仙——一只白狐在林间穿行，身后跟着一串不点自亮的灯笼。',
+    startLocation: '栖霞野林',
+    autoStart: true,
     stages: [
-      { desc: '前往栖霞野林', location: '栖霞野林', action: 'arrive', reward: { exp: 50 } },
-      { desc: '寻找狐仙幻境入口', location: '栖霞野林', action: 'search', reward: { exp: 60 } },
-      { desc: '进入狐仙幻境', location: '栖霞野林·狐仙幻境', action: 'arrive', reward: { exp: 80, money: 120 } }
-    ]
+      { desc: '在林中寻觅狐仙踪迹', type: 'find', location: '栖霞野林' }
+    ],
+    rewards: { cultivation: 140, copperCoins: 120 }
   },
   {
     id: 'q012',
     name: '鬼市交易',
     desc: '鬼市外的石牌坊后面有一条暗巷——巷子里卖的东西，不是给人用的。但有些人对那些东西很感兴趣。',
+    startLocation: '鬼市外·石牌坊',
+    autoStart: true,
     stages: [
-      { desc: '前往鬼市外石牌坊', location: '鬼市外·石牌坊', action: 'arrive', reward: { exp: 60 } },
-      { desc: '找到暗门后巷', location: '鬼市外·石牌坊·暗门后巷', action: 'arrive', reward: { exp: 80 } }
-    ]
+      { desc: '找到暗门后巷', type: 'go', location: '鬼市外·石牌坊·暗门后巷' }
+    ],
+    rewards: { cultivation: 140, spiritStones: 2 }
   },
   {
     id: 'q013',
     name: '药铺寻药',
     desc: '回春堂的老大夫说，义庄附近有一种只在尸气滋养下生长的药引——尸苔花。需要有人敢去采。',
+    startLocation: '回春堂药铺',
+    autoStart: true,
     stages: [
-      { desc: '到回春堂药铺接任务', location: '回春堂药铺', action: 'arrive', reward: { exp: 20 } },
-      { desc: '前往义庄乱葬岗寻找尸苔花', location: '义庄·乱葬岗', action: 'search', reward: { exp: 40 } },
-      { desc: '将药引送回回春堂', location: '回春堂药铺', action: 'arrive', reward: { exp: 40, money: 150, item: '回春丹' } }
-    ]
+      { desc: '前往义庄乱葬岗寻找尸苔花', type: 'go', location: '义庄·乱葬岗' },
+      { desc: '在乱葬岗中采得尸苔花', type: 'find', location: '义庄·乱葬岗' },
+      { desc: '将药引送回回春堂', type: 'return', location: '回春堂药铺' }
+    ],
+    rewards: { cultivation: 100, copperCoins: 150, item: '回春丹' }
   },
   {
     id: 'q014',
     name: '铁剑封魔',
     desc: '牛首山古矿洞里插着一把铁剑，剑锷滚烫。矿工说那把剑插了三百年，最近在松动——剑底下压着的东西在往上顶。',
+    startLocation: '牛首山·采茶径',
+    autoStart: true,
     stages: [
-      { desc: '前往牛首山采茶径', location: '牛首山·采茶径', action: 'arrive', reward: { exp: 30 } },
-      { desc: '进入古矿洞查看铁剑', location: '牛首山·采茶径·古矿洞', action: 'arrive', reward: { exp: 70 } }
-    ]
+      { desc: '在山径附近斩除作祟之物', type: 'kill' },
+      { desc: '重返采茶径查勘铁剑', type: 'return', location: '牛首山·采茶径' }
+    ],
+    rewards: { cultivation: 100, copperCoins: 90 }
   },
   {
     id: 'q015',
     name: '朝天秘丹',
     desc: '朝天宫的炼丹房近日丹火异动——炉中炼的不是丹，是一个被封在丹药里的人。丹药裂了一道缝。',
+    startLocation: '朝天宫·棂星门',
+    autoStart: true,
     stages: [
-      { desc: '前往朝天宫棂星门', location: '朝天宫·棂星门', action: 'arrive', reward: { exp: 30 } },
-      { desc: '进入朝天宫三清殿', location: '朝天宫·三清殿', action: 'arrive', reward: { exp: 40 } },
-      { desc: '前往朝天宫炼丹房探查', location: '朝天宫·炼丹房', action: 'arrive', reward: { exp: 80, money: 100 } }
-    ]
+      { desc: '进入朝天宫三清殿', type: 'go', location: '朝天宫·三清殿' },
+      { desc: '前往朝天宫炼丹房探查', type: 'investigate', location: '朝天宫·炼丹房' }
+    ],
+    rewards: { cultivation: 150, copperCoins: 100, spiritStones: 1 }
+  },
+
+  // ===== 迁移自 v1（聊斋化） · 护送/解密/拜师 七条 =====
+  {
+    id: 'q016',
+    name: '梵音心经',
+    desc: '梵音堂经书坊的老经生说，寺中有一卷《心经》残本，读过的人夜里不再做噩梦——但读过的人也不再做任何梦了。他想找个有缘人把这卷经续上。',
+    startLocation: '梵音堂·经书坊',
+    autoStart: true,
+    stages: [
+      { desc: '到鸡鸣寺藏经阁查对原卷', type: 'go', location: '鸡鸣寺·藏经阁' },
+      { desc: '在藏经阁中静心抄录残页', type: 'find', location: '鸡鸣寺·藏经阁' },
+      { desc: '将抄本送回梵音堂经书坊', type: 'deliver', location: '梵音堂·经书坊' }
+    ],
+    rewards: { cultivation: 220, technique: '心经·静心诀', factionRep: 10 }
+  },
+  {
+    id: 'q017',
+    name: '铁剑试炼',
+    desc: '铁剑庐兵器铺后堂的铸剑师说，想学他的剑，先得在野林里替他取回一柄弃剑——那剑是自己跑掉的，跑的时候还带着血。',
+    startLocation: '铁剑庐·兵器铺后堂',
+    autoStart: true,
+    stages: [
+      { desc: '深入栖霞野林寻回弃剑', type: 'go', location: '栖霞野林' },
+      { desc: '在野林中斩杀缠剑之物', type: 'kill' },
+      { desc: '携剑返回铁剑庐复命', type: 'return', location: '铁剑庐·兵器铺后堂' }
+    ],
+    rewards: { cultivation: 260, technique: '锈剑三式', equipment: '寒铁短剑' }
+  },
+  {
+    id: 'q018',
+    name: '失窃封印',
+    desc: '聚宝当铺的掌柜压低声音说：前日收进的一方"镇纸"被人摸走了。那不是镇纸——是一方封印，封着的东西还在动。掌柜的指甲是青的。',
+    startLocation: '聚宝当铺',
+    autoStart: true,
+    stages: [
+      { desc: '前往古井巷追查线索', type: 'go', location: '古井巷' },
+      { desc: '在古井巷翻找失物痕迹', type: 'find', location: '古井巷' },
+      { desc: '追至义庄乱葬岗夺回封印', type: 'go', location: '义庄·乱葬岗' },
+      { desc: '将封印送还聚宝当铺', type: 'deliver', location: '聚宝当铺' }
+    ],
+    rewards: { cultivation: 240, copperCoins: 200, item: '残封印' }
+  },
+  {
+    id: 'q019',
+    name: '夜市密文',
+    desc: '秦淮南岸画舫夜市上，有人用一种看不懂的字记账。记账的伙计说，那不是字，是"请柬"——请的是不该来的人。他让你帮他对完最后一笔账。',
+    startLocation: '秦淮南岸·画舫夜市',
+    autoStart: true,
+    stages: [
+      { desc: '在夜市中寻访那位记账伙计', type: 'find', location: '秦淮南岸·画舫夜市' },
+      { desc: '携密文前往国子监求译', type: 'go', location: '国子监·彝伦堂' },
+      { desc: '回夜市向伙计复命', type: 'return', location: '秦淮南岸·画舫夜市' }
+    ],
+    rewards: { cultivation: 200, copperCoins: 120, item: '无字账页' }
+  },
+  {
+    id: 'q020',
+    name: '栖霞送药',
+    desc: '回春堂药铺的老大夫有一剂急药要送往栖霞野林深处的隐居者。他说那隐居者不能见光——药也不能见光。送药的人，最好也别回头看。',
+    startLocation: '回春堂药铺',
+    autoStart: true,
+    stages: [
+      { desc: '护送药囊前往青龙山野渡', type: 'escort', location: '青龙山·野渡' },
+      { desc: '续行至栖霞野林交药', type: 'deliver', location: '栖霞野林' },
+      { desc: '原路返回回春堂复命', type: 'return', location: '回春堂药铺' }
+    ],
+    rewards: { cultivation: 230, copperCoins: 180, item: '避光药囊' }
+  },
+  {
+    id: 'q021',
+    name: '逍遥护客',
+    desc: '逍遥馆客栈天字房住着一位不肯露面的客人，托你护送他出城。他付的是真金白银，只是那银子入手冰凉，且他从不让你走在他前面。',
+    startLocation: '逍遥馆·客栈天字房',
+    autoStart: true,
+    stages: [
+      { desc: '护客经聚宝门出城', type: 'escort', location: '聚宝门' },
+      { desc: '送至钟山北麓采石径分手', type: 'go', location: '钟山北麓·采石径' },
+      { desc: '返回逍遥馆复命', type: 'return', location: '逍遥馆·客栈天字房' }
+    ],
+    rewards: { cultivation: 250, copperCoins: 150, spiritStones: 2 }
+  },
+  {
+    id: 'q022',
+    name: '朝天寻丹',
+    desc: '朝天宫炼丹房的丹炉裂了道缝，炉里那枚本该圆融的丹药，近日在炉中自行翻转。丹师说，要补这道缝，需一味"火中寒"—只在幕府山望江崖的子夜才生。',
+    startLocation: '朝天宫·炼丹房',
+    autoStart: true,
+    stages: [
+      { desc: '远赴幕府山望江崖寻药', type: 'go', location: '幕府山·望江崖' },
+      { desc: '在望江崖采得"火中寒"', type: 'find', location: '幕府山·望江崖' },
+      { desc: '回朝天宫炼丹房交药', type: 'return', location: '朝天宫·炼丹房' }
+    ],
+    rewards: { cultivation: 280, technique: '丹火初引', item: '补缝丹' }
   }
 ];
+
+
 
 // ============================================================
 // ENEMIES / REALMS / ITEMS 直接来自 rebuild 文件
