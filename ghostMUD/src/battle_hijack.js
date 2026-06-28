@@ -5,7 +5,7 @@
  * 不修改 battle_async.js，由 BattleEngine 在 _checkHijack 中委托调用。
  *
  * 数据依赖：
- *   window.COMBAT_HIJACK — 畸变概率表、叙事模板、功法替换映射、祂的行功图
+ *   window.COMBAT_HIJACK — 畸变概率表、叙事模板、功法替换映射、祂的战诀
  *   window.CORRUPTION    — 六宗门×5级畸变链（CORRUPTION_DATA）
  *
  * 使用方式：
@@ -32,7 +32,7 @@ const SLOT_JUMP_CHANCE = 0.30;
 /** Tier 2 伤害浮动范围 ±20% */
 const DAMAGE_VARIANCE = 0.20;
 
-/** 灵修异化行功图：每次完整循环道心消耗 */
+/** 灵修异化战诀：每次完整循环道心消耗 */
 const LINGXIU_CYCLE_DAOXIN_COST = 2;
 
 /** 脉位 → bodyPart 映射（用于叙事模板选取） */
@@ -47,7 +47,7 @@ const MERIDIAN_TO_BODY = {
   '丹田异核': 'skin',
 };
 
-/** 祂的行功图实体键 → 宗门映射（反向查找） */
+/** 祂的战诀实体键 → 宗门映射（反向查找） */
 const SECT_TO_ENTITY = {
   '肉慈斋': 'shub',
   '忘尘宗': 'nyar',
@@ -72,11 +72,11 @@ export class HijackEngine {
     this.HIJACK = (typeof window !== 'undefined' && window.COMBAT_HIJACK) ? window.COMBAT_HIJACK : null;
     /** @type {CORRUPTION_DATA} 灵修畸变链引用 */
     this.CORRUPTION = (typeof window !== 'undefined' && window.CORRUPTION_DATA) ? window.CORRUPTION_DATA : null;
-    /** 当前战斗中行功图覆写状态 */
+    /** 当前战斗中战诀覆写状态 */
     this._chartOverrideActive = false;
     this._entityChartKey = null;
     this._entitySlotIndex = 0;
-    /** 灵修异化行功图激活状态 */
+    /** 灵修异化战诀激活状态 */
     this._lingxiuChartActive = false;
     this._lingxiuChartKey = null;
     this._lingxiuCycleCount = 0;
@@ -102,7 +102,7 @@ export class HijackEngine {
       return { triggered: false, type: null, modifiedSkill: null, log: '', extraEffects: null };
     }
 
-    // 灵修异化行功图激活时，篡改率翻倍
+    // 灵修异化战诀激活时，篡改率翻倍
     let effectiveRate = rate;
     if (this._lingxiuChartActive) {
       effectiveRate = Math.min(0.95, effectiveRate * 2);
@@ -333,12 +333,12 @@ export class HijackEngine {
   }
 
   // ----------------------------------------------------------
-  //  Tier 5：行功图覆写（整张行功图被「祂」覆盖）
+  //  Tier 5：战诀覆写（整张战诀被「祂」覆盖）
   // ----------------------------------------------------------
 
   /**
-   * 行功图覆写 — 整张行功图被「祂」覆盖，所有式位变为异化招式
-   * @param {object} chart - 当前行功图 { A: skillId, B: skillId, ... }
+   * 战诀覆写 — 整张战诀被「祂」覆盖，所有式位变为异化招式
+   * @param {object} chart - 当前战诀 { A: skillId, B: skillId, ... }
    * @returns {{ log: string, extraEffects: { entityChart: string, entityName: string, slots: object[] } }}
    */
   doChartOverride(chart) {
@@ -351,7 +351,7 @@ export class HijackEngine {
     if (!entityChart) {
       // 无数据 — 退化为不可名状通用效果
       const fallbackLog = `${tierInfo.combatLogOnCheck}\n` +
-        `[行功图覆写] 你低头一看——行功图上的笔迹不是你写的。五式全部变成了不可名状之招。\n` +
+        `[战诀覆写] 你低头一看——战诀上的笔迹不是你写的。五式全部变成了不可名状之招。\n` +
         `${tierInfo.narrative}`;
       return {
         log: fallbackLog,
@@ -379,7 +379,7 @@ export class HijackEngine {
         dmgType: 'spirit',
         skillNum: this._parseEntityDamage(slotData.effects),
         skillNumLvAdd: 0,
-        cd: 0, // 祂的行功图忽略CD
+        cd: 0, // 祂的战诀忽略CD
         mana: 0,
         target: 'enemy',
         targetNum: 1,
@@ -388,7 +388,7 @@ export class HijackEngine {
     }));
 
     const log = `${tierInfo.combatLogOnCheck}\n` +
-      `[行功图覆写] 你低头一看——行功图上的笔迹不是你写的。五式全部变成了${entityChart.name}。\n` +
+      `[战诀覆写] 你低头一看——战诀上的笔迹不是你写的。五式全部变成了${entityChart.name}。\n` +
       `${entityChart.chartDesc}\n` +
       `${tierInfo.narrative}`;
 
@@ -404,7 +404,7 @@ export class HijackEngine {
   }
 
   /**
-   * 获取当前覆写的实体行功图下一式
+   * 获取当前覆写的实体战诀下一式
    * @returns {{ skill: object, slotData: object, isLast: boolean } | null}
    */
   getNextEntitySlot() {
@@ -414,7 +414,7 @@ export class HijackEngine {
 
     const idx = this._entitySlotIndex;
     if (idx >= entityChart.slots.length) {
-      // 行功图循环完一圈 — 重置
+      // 战诀循环完一圈 — 重置
       this._entitySlotIndex = 0;
       return null;
     }
@@ -441,7 +441,7 @@ export class HijackEngine {
   }
 
   /**
-   * 退出行功图覆写状态
+   * 退出战诀覆写状态
    */
   clearChartOverride() {
     this._chartOverrideActive = false;
@@ -517,7 +517,7 @@ export class HijackEngine {
         }
         return {
           cdChange: 'zeroed_then_max',
-          log: `[CD] 祂的行功图忽略一切CD——出招后，所有式位立即重置为最大CD。规则碎了。`,
+          log: `[CD] 祂的战诀忽略一切CD——出招后，所有式位立即重置为最大CD。规则碎了。`,
         };
       }
 
@@ -527,22 +527,22 @@ export class HijackEngine {
   }
 
   // ----------------------------------------------------------
-  //  灵修异化行功图管理
+  //  灵修异化战诀管理
   // ----------------------------------------------------------
 
   /**
-   * 激活灵修异化行功图
-   * @param {string} chartKey - 异化行功图键名 'chongchao'|'xuerou'|'xukong'
+   * 激活灵修异化战诀
+   * @param {string} chartKey - 异化战诀键名 'chongchao'|'xuerou'|'xukong'
    * @returns {{ success: boolean, log: string }}
    */
   activateLingxiuChart(chartKey) {
     if (!this.HIJACK || !this.HIJACK.lingxiuCharts) {
-      return { success: false, log: `异化行功图数据不可用` };
+      return { success: false, log: `异化战诀数据不可用` };
     }
 
     const chart = this.HIJACK.lingxiuCharts[chartKey];
     if (!chart) {
-      return { success: false, log: `未找到异化行功图: ${chartKey}` };
+      return { success: false, log: `未找到异化战诀: ${chartKey}` };
     }
 
     this._lingxiuChartActive = true;
@@ -555,7 +555,7 @@ export class HijackEngine {
   }
 
   /**
-   * 灵修异化行功图完成一圈循环时的处理
+   * 灵修异化战诀完成一圈循环时的处理
    * @returns {{ daoxinLoss: number, hijackDoubled: boolean, log: string }}
    */
   onLingxiuCycleComplete() {
@@ -578,20 +578,20 @@ export class HijackEngine {
   }
 
   /**
-   * 退出灵修异化行功图（需回宗门「镇压」）
+   * 退出灵修异化战诀（需回宗门「镇压」）
    */
   deactivateLingxiuChart() {
     this._lingxiuChartActive = false;
     this._lingxiuChartKey = null;
-    return `[镇压] 你回到宗门，完成了镇压仪式——异化行功图被重新封入灵台深处。精元全复。`;
+    return `[镇压] 你回到宗门，完成了镇压仪式——异化战诀被重新封入灵台深处。精元全复。`;
   }
 
-  /** 灵修异化行功图是否激活 */
+  /** 灵修异化战诀是否激活 */
   get isLingxiuChartActive() {
     return this._lingxiuChartActive;
   }
 
-  /** 行功图覆写是否激活 */
+  /** 战诀覆写是否激活 */
   get isChartOverrideActive() {
     return this._chartOverrideActive;
   }
@@ -616,7 +616,7 @@ export class HijackEngine {
       // 4级：功法替换 + 跳位（50%概率各选其一）
       return Math.random() < 0.5 ? 'skill_replace' : 'slot_jump';
     }
-    // 5级：60%行功图覆写，25%跳位，15%功法替换
+    // 5级：60%战诀覆写，25%跳位，15%功法替换
     const roll = Math.random();
     if (roll < 0.60) return 'chart_override';
     if (roll < 0.85) return 'slot_jump';
@@ -637,7 +637,7 @@ export class HijackEngine {
       2: { name: '外显', combatLogOnCheck: `……你的身体似乎比你的意识快了一瞬`, narrative: `你的四肢开始「先行一步」。拳未出，臂已挥；目未定，眼已转。` },
       3: { name: '半人', combatLogOnCheck: `……这不是你会的招式。但你的身体在出。`, narrative: `出招的瞬间你认出了这个姿势——不是你在武学里学到的任何一招。是身体里的那个东西替你想的。` },
       4: { name: '人皮', combatLogOnCheck: `……你的身体想提前结束这场战斗`, narrative: `你的人皮在伪装成一个人。底下的东西已经等不及了——它要跳过中盘，直接收尾。` },
-      5: { name: '不可名状', combatLogOnCheck: `……行功图上浮出一层不属于你的笔迹`, narrative: `你的行功图已经不是你的了。每一招都出自另一个意志——祂的手法。` },
+      5: { name: '不可名状', combatLogOnCheck: `……战诀上浮出一层不属于你的笔迹`, narrative: `你的战诀已经不是你的了。每一招都出自另一个意志——祂的手法。` },
     };
     return fallback[level] || fallback[1];
   }
@@ -785,7 +785,7 @@ export class HijackEngine {
   }
 
   /**
-   * 获取实体行功图数据
+   * 获取实体战诀数据
    * @private
    */
   _getEntityChart(entityKey) {
@@ -796,7 +796,7 @@ export class HijackEngine {
   }
 
   /**
-   * 从实体行功图的effects描述中解析伤害数值
+   * 从实体战诀的effects描述中解析伤害数值
    * @private
    */
   _parseEntityDamage(effects) {
@@ -818,7 +818,7 @@ export class HijackEngine {
   }
 
   /**
-   * 获取玩家当前行功图
+   * 获取玩家当前战诀
    * @private
    */
   _getPlayerChart() {
@@ -857,7 +857,7 @@ export class HijackEngine {
   }
 
   // ----------------------------------------------------------
-  //  不可名状技随机后果（Tier 5 行功图覆写后使用）
+  //  不可名状技随机后果（Tier 5 战诀覆写后使用）
   // ----------------------------------------------------------
 
   /**

@@ -77,6 +77,9 @@ export class Renderer {
     if (this._dirty.has(ZONE_MAP) && this.game.mapOpen) this.renderMap();
     if (this._dirty.has(ZONE_COMBAT) && this.game.state.combat) this.updateCombatUI();
 
+    // 时辰显示（每次UI更新时刷新）
+    this.updateTimeDisplay();
+
     // 清除脏标记
     this._dirty.clear();
   }
@@ -135,7 +138,7 @@ export class Renderer {
     this._setText('s-atk', s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0));
     this._setText('s-def', s.defense + (s.equipment.armor ? s.equipment.armor.def : 0));
     this._setText('s-tech', s.techniques.length > 0 ? s.techniques.join('、') : '无');
-    this._setText('s-loc', s.location);
+    this._setText('s-loc', this.displayName(s.location));
     this._setText('s-kill', s.killCount);
 
     // 帮派信息
@@ -210,15 +213,37 @@ export class Renderer {
    * 更新位置信息区域
    * 包含：地名、描述、连接道路
    */
+  /** 从房间ID提取显示名（取·后最后一段，无·则原样返回） */
+  displayName(roomId) {
+    if (!roomId) return '';
+    const parts = roomId.split('\u00b7'); // ·
+    return parts.length > 1 ? parts.pop() : roomId;
+  }
+
+  /** 从房间ID提取大区名（取·前第一段） */
+  regionName(roomId) {
+    if (!roomId) return '';
+    const parts = roomId.split('\u00b7');
+    return parts.length > 1 ? parts[0] : '';
+  }
+
   updateLocation() {
     const s = this.game.state;
     const data = getData();
 
-    this._setText('location-name', s.location);
+    // 显示裸名，大区单独显示
+    this._setText('location-name', this.displayName(s.location));
+    const regionEl = document.getElementById('location-region');
+    if (regionEl) this._setText('location-region', this.regionName(s.location));
+
+    // 房间描述：优先使用game.getRoomDesc()（按时辰变体）
+    const desc = this.game.getRoomDesc ? this.game.getRoomDesc(s.location) : (data.getDesc(data.LOCATIONS[s.location]) || '未知之地');
+    this._setText('location-desc', desc);
+
+    // 连接通路显示裸名
     const loc = data.LOCATIONS[s.location];
-    this._setText('location-desc', loc ? data.getDesc(loc) : '未知之地');
     document.getElementById('connections').innerHTML = loc && loc.connections
-      ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.game.dirName(d) + ' → ' + l + '</span>').join('')
+      ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.game.dirName(d) + ' → ' + this.displayName(l) + '</span>').join('')
       : '';
   }
 
@@ -460,6 +485,14 @@ export class Renderer {
     else if (name.includes('药') || name.includes('医')) ico.textContent = '💊';
     else if (name.includes('铁') || name.includes('机')) ico.textContent = '⚙';
     else ico.textContent = '📍';
+  }
+
+  /** 更新时辰显示 */
+  updateTimeDisplay() {
+    const el = document.getElementById('time-display');
+    if (!el) return;
+    const timeName = this.game.getTimeName ? this.game.getTimeName() : '子时';
+    el.textContent = timeName;
   }
 
   /** 添加日志 */

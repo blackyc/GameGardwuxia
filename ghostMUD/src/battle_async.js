@@ -9,7 +9,7 @@
  * 5. 真气门禁4选1：真气不足时触发，5秒未选默认调息
  * 6. 异常状态7种 + 8种交互规则
  * 7. 羁绊概率三档制
- * 8. 敌人AI：BOSS用行功图，普通敌人用简单AI
+ * 8. 敌人AI：BOSS用战诀，普通敌人用简单AI
  *
  * 依赖：window.COMBAT_SKILLS_V3, window.COMBAT_BOSS_V3, window.COMBAT_EQUIPMENT_V3
  * 不修改 game.js，通过引用 game 实例操作
@@ -145,7 +145,7 @@ export class BattleEngine {
   /**
    * 启动战斗
    * @param {object} enemyData - 敌人数据
-   * @param {object} playerChart - 行功图 { A: skillId, B: skillId, C: skillId, D: skillId, E: skillId }
+   * @param {object} playerChart - 战诀 { A: skillId, B: skillId, C: skillId, D: skillId, E: skillId }
    */
   startCombat(enemyData, playerChart) {
     const s = this.state;
@@ -215,7 +215,7 @@ export class BattleEngine {
       weaponHitCount: 0,
     };
 
-    // 初始化敌人行功图CD
+    // 初始化敌人战诀CD
     if (this.battleState.enemyChart) {
       this.battleState.enemyCooldowns = {};
       for (const slot of SLOTS) {
@@ -232,7 +232,7 @@ export class BattleEngine {
     this._mpRegAccumulator = 0;
 
     // 记录战斗开始
-    this._addLog(`遭遇 ${enemy.name}！行功图展开——`, 'event');
+    this._addLog(`遭遇 ${enemy.name}！战诀展开——`, 'event');
     this._addLog(`五式同时开始读CD，等待就绪……`, 'info');
 
     // 启动 tick 定时器
@@ -704,8 +704,8 @@ export class BattleEngine {
   // ----------------------------------------------------------
 
   /**
-   * 变式：切换行功图
-   * @param {object} newChart - 新行功图 { A: skillId, ... }
+   * 变式：切换战诀
+   * @param {object} newChart - 新战诀 { A: skillId, ... }
    */
   interveneVariant(newChart) {
     const bs = this.battleState;
@@ -737,7 +737,7 @@ export class BattleEngine {
     // 重新扫描羁绊
     bs.bonds = this._scanBonds(newChart);
 
-    this._addLog(`[变式] 行功图切换！真气-20，CD减半，从起式重新开始`, 'event');
+    this._addLog(`[变式] 战诀切换！真气-20，CD减半，从起式重新开始`, 'event');
     this._notifyUpdate();
     return true;
   }
@@ -1038,8 +1038,8 @@ export class BattleEngine {
   // ----------------------------------------------------------
 
   /**
-   * 扫描行功图标签，计算羁绊三档
-   * @param {object} chart - 行功图
+   * 扫描战诀标签，计算羁绊三档
+   * @param {object} chart - 战诀
    * @returns {object} { tag: { count, tier, prob } }
    */
   checkBonds(chart) {
@@ -1101,7 +1101,7 @@ export class BattleEngine {
     if (!bs.enemy || bs.enemy.hp <= 0) return;
 
     if (bs.enemyChart) {
-      // BOSS行功图AI
+      // BOSS战诀AI
       this._bossAiTick();
     } else {
       // 简单AI
@@ -1113,7 +1113,7 @@ export class BattleEngine {
     }
   }
 
-  /** BOSS行功图AI @private */
+  /** BOSS战诀AI @private */
   _bossAiTick() {
     const bs = this.battleState;
     const slot = SLOTS[bs.enemySlot];
@@ -1245,7 +1245,7 @@ export class BattleEngine {
         this._addLog(`「祂」接管了你的行功——`, 'event');
         const namelessSkill = this._generateNamelessSkill();
         this._executeSkill(slot, namelessSkill, 'player');
-        // 祂的行功图忽略CD
+        // 祂的战诀忽略CD
         bs.cooldowns[slot] = 0;
         this.state.daoxin = Math.max(0, (this.state.daoxin || 100) - 3);
         this._addLog(`[道心判定] 道心-3（当前: ${this.state.daoxin}/100）`, 'event');

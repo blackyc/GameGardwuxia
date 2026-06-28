@@ -7,170 +7,218 @@
   <link rel="stylesheet" href="/src/styles/main.css">
   <link rel="stylesheet" href="/src/styles/themes/night.css">
   <link rel="stylesheet" href="/src/styles/responsive.css">
+  <link rel="stylesheet" href="/src/styles/intro.css">
+  <link rel="stylesheet" href="/src/styles/app_v3.css">
 </head>
 <body>
 <div id="noise-overlay"></div>
 
+<!-- 写意水彩背景层（场景动态配色驱动） -->
+<div id="scene-bg"></div>
+
 <div id="app">
-  <div id="header">
-    <div class="title">诡 仙 录</div>
-    <div class="subtitle">真假难辩 · 本心如烛</div>
-  </div>
 
-  <div id="tab-bar">
-    <button class="tab-btn" data-tab="char">人物</button>
-    <button class="tab-btn" data-tab="bag">包裹</button>
-    <button class="tab-btn" data-tab="wuxue">武学</button>
-    <button class="tab-btn" data-tab="quest">任务</button>
-    <button class="tab-btn" data-tab="status">境况</button>
-  </div>
-
-  <div class="tab-panel" id="panel-char">
-    <div class="panel-body">
-      <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value highlight" id="stat-realm">凡人</span></div>
-      <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="stat-cultivation">0 / 100</span></div>
-      <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="stat-daoxin">100 / 100</span></div>
-      <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="stat-lifespan">80 年</span></div>
-      <div class="stat-row"><span class="stat-label" id="mp-label">内力</span><span class="stat-value" id="stat-mp">80 / 80</span></div>
-      <div class="stat-row"><span class="stat-label" id="stones-label">灵石</span><span class="stat-value" id="stat-stones">0</span></div>
-      <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="stat-techniques">无</span></div>
-      <div class="stat-row"><span class="stat-label">任务数</span><span class="stat-value quest" id="stat-quests">0</span></div>
+  <!-- ════════════ 页面 1 · 江湖（主游戏页） ════════════ -->
+  <section class="page active" data-page="jianghu">
+    <div class="page-header">
+      <div class="title">诡 仙 录</div>
+      <div class="subtitle">真假难辩 · 本心如烛</div>
+      <div id="time-bar">时辰 <span id="time-display">子时</span></div>
     </div>
-  </div>
 
-  <div class="tab-panel" id="panel-bag">
-    <div class="panel-body" id="inv-body"><div class="inv-empty">空空如也</div></div>
-  </div>
-
-  <div class="tab-panel" id="panel-wuxue">
-    <div class="panel-body" id="wuxue-body" style="max-height:400px">
-      <div class="faction-badge" id="faction-badge" style="display:none">
-        <div class="fname" id="fb-name"></div>
-        <div class="fdesc" id="fb-desc"></div>
-      </div>
-      <div id="wuxue-content">
-        <div class="inv-empty">尚未拜入帮派</div>
+    <!-- 修炼进度（原 card） -->
+    <div class="card" id="card-progress">
+      <div class="card-header"><span class="dot"></span>修 炼 进 度</div>
+      <div class="card-body">
+        <div class="progress-wrap">
+          <div class="progress-label"><span>修为积累</span><span id="cultivation-text">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="cultivation-bar" style="width:0%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>道心</span><span id="daoxin-text">100%</span></div>
+          <div class="progress-bar"><div class="progress-fill daoxin" id="daoxin-bar" style="width:100%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>生命</span><span id="hp-text">100%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="hp-bar" style="width:100%;background:linear-gradient(90deg,#682828,#983838,#b84444);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(180,50,50,.3)"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span id="mp-label">内力</span><span id="mp-text">100%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="mp-bar" style="width:100%;background:linear-gradient(90deg,#1a2848,#2a4880,#3868b8);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(50,100,180,.3)"></div></div>
+        </div>
+        <div id="idle-status"><span class="pulse"></span>挂机修炼中 · 每 30 秒获取修为</div>
       </div>
     </div>
-  </div>
 
-  <div class="tab-panel" id="panel-quest">
-    <div class="panel-body" id="quest-body"><div class="inv-empty">暂无任务</div></div>
-  </div>
-
-  <div class="tab-panel" id="panel-status">
-    <div class="panel-body" id="status-body">
-      <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value" id="s-realm">凡人</span></div>
-      <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="s-cult">0 / 100</span></div>
-      <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="s-daoxin">100 / 100</span></div>
-      <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="s-life">80 年</span></div>
-      <div class="stat-row"><span class="stat-label">生命</span><span class="stat-value" id="s-hp">100 / 100</span></div>
-      <div class="stat-row"><span class="stat-label">内力</span><span class="stat-value" id="s-mp">80 / 80</span></div>
-      <div class="stat-row"><span class="stat-label" id="s-stones-label">灵石</span><span class="stat-value" id="s-stones">0</span></div>
-      <div class="stat-row"><span class="stat-label">攻击</span><span class="stat-value" id="s-atk">5</span></div>
-      <div class="stat-row"><span class="stat-label">防御</span><span class="stat-value" id="s-def">2</span></div>
-      <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="s-tech">无</span></div>
-      <div class="stat-row"><span class="stat-label">所在</span><span class="stat-value" id="s-loc">应天府·十字街口</span></div>
-      <div class="stat-row"><span class="stat-label">斩杀</span><span class="stat-value" id="s-kill">0</span></div>
-      <div class="stat-row" id="s-faction-row" style="display:none"><span class="stat-label">帮派</span><span class="stat-value" id="s-faction" style="color:#c49a38">无</span></div>
-      <div class="stat-row" id="s-skills-row" style="display:none"><span class="stat-label">武学</span><span class="stat-value" id="s-skills" style="font-size:11px">无</span></div>
-      <div class="stat-row" id="s-rep-row" style="display:none"><span class="stat-label">门忠</span><span class="stat-value" id="s-rep">0</span></div>
+    <!-- 所在地（原 card） -->
+    <div class="card" id="card-location">
+      <div class="card-header"><span class="dot"></span>所 在 之 地</div>
+      <div class="card-body">
+        <div id="location-bar">
+          <span id="location-icon">📍</span>
+          <div>
+            <div id="location-region" class="location-region"></div>
+            <div id="location-name">十字街口</div>
+            <div id="location-desc"></div>
+          </div>
+        </div>
+        <div class="connections" id="connections"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-header"><span class="dot"></span>修 炼 进 度</div>
-    <div class="card-body">
-      <div class="progress-wrap">
-        <div class="progress-label"><span>修为积累</span><span id="cultivation-text">0%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="cultivation-bar" style="width:0%"></div></div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-label"><span>道心</span><span id="daoxin-text">100%</span></div>
-        <div class="progress-bar"><div class="progress-fill daoxin" id="daoxin-bar" style="width:100%"></div></div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-label"><span>生命</span><span id="hp-text">100%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="hp-bar" style="width:100%;background:linear-gradient(90deg,#682828,#983838,#b84444);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(180,50,50,.3)"></div></div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-label"><span id="mp-label">内力</span><span id="mp-text">100%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="mp-bar" style="width:100%;background:linear-gradient(90deg,#1a2848,#2a4880,#3868b8);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(50,100,180,.3)"></div></div>
-      </div>
-      <div id="idle-status"><span class="pulse"></span>挂机修炼中 · 每 30 秒获取修为</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header"><span class="dot"></span>所 在 之 地</div>
-    <div class="card-body">
-      <div id="location-bar">
-        <span id="location-icon">📍</span>
-        <div>
-          <div id="location-name">应天府·十字街口</div>
-          <div id="location-desc"></div>
+    <!-- 行动（高频钮改菱形徽章） -->
+    <div class="card" id="card-actions">
+      <div class="card-header"><span class="dot"></span>行 动</div>
+      <div class="card-body">
+        <!-- 菱形徽章：高频操作（打坐/休憩/搜索/交谈） -->
+        <div class="diamond-row">
+          <button class="diamond-badge" data-action="meditate"><span class="label">打坐</span></button>
+          <button class="diamond-badge" data-action="rest"><span class="label">休憩</span></button>
+          <button class="diamond-badge" data-action="searchArea"><span class="label">搜索</span></button>
+          <button class="diamond-badge" data-action="talk"><span class="label">交谈</span></button>
+        </div>
+        <!-- 方向键 -->
+        <div class="action-grid" style="margin:10px 0 7px">
+          <button class="action-btn dir-btn" data-action="explore" data-dir="north"><span class="icon">⬆</span>北</button>
+          <button class="action-btn dir-btn" data-action="explore" data-dir="south"><span class="icon">⬇</span>南</button>
+          <button class="action-btn dir-btn" data-action="explore" data-dir="east"><span class="icon">➡</span>东</button>
+          <button class="action-btn dir-btn" data-action="explore" data-dir="west"><span class="icon">⬅</span>西</button>
+          <button class="action-btn dir-btn" data-action="explore" data-dir="up"><span class="icon">🔼</span>上</button>
+          <button class="action-btn dir-btn" data-action="explore" data-dir="down"><span class="icon">🔽</span>下</button>
+        </div>
+        <!-- 低频操作次级网格 -->
+        <div class="action-grid">
+          <button class="action-btn" data-action="askAround"><span class="icon">👂</span>打听</button>
+          <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
+          <button class="action-btn" data-action="peek"><span class="icon">👀</span>窥探</button>
+          <button class="action-btn" data-action="practiceMenu"><span class="icon">📖</span>练武</button>
+          <button class="action-btn" data-action="switchPage" data-page="wuxue"><span class="icon">🏯</span>武学</button>
+          <button class="action-btn" data-action="switchPage" data-page="renwu"><span class="icon">📋</span>人物</button>
+          <button class="action-btn" data-action="askTeacher"><span class="icon">🙇</span>拜师</button>
+          <button class="action-btn" data-action="switchPage" data-page="yutu"><span class="icon">🗺</span>舆图</button>
         </div>
       </div>
-      <div class="connections" id="connections"></div>
     </div>
-  </div>
 
-  <div class="card" id="map-card">
-    <div class="card-header"><span class="dot"></span>天 下 舆 图</div>
-    <div class="card-body">
-      <div id="map-container"><div id="map-canvas"></div></div>
-      <div id="map-legend">
-        <span><span class="ldot current"></span>当前位置</span>
-        <span><span class="ldot explored"></span>已探明</span>
-        <span><span class="ldot unexplored"></span>未探明</span>
-      </div>
+    <!-- 江湖录日志（原 card） -->
+    <div class="card" id="card-log">
+      <div class="card-header"><span class="dot"></span>江 湖 录</div>
+      <div class="card-body" id="log-area"></div>
     </div>
-  </div>
+  </section>
 
-  <div class="card">
-    <div class="card-header"><span class="dot"></span>行 动</div>
-    <div class="card-body">
-      <div class="action-grid" style="margin-bottom:7px">
-        <button class="action-btn dir-btn" data-action="explore" data-dir="north"><span class="icon">⬆</span>北</button>
-        <button class="action-btn dir-btn" data-action="explore" data-dir="south"><span class="icon">⬇</span>南</button>
-        <button class="action-btn dir-btn" data-action="explore" data-dir="east"><span class="icon">➡</span>东</button>
-        <button class="action-btn dir-btn" data-action="explore" data-dir="west"><span class="icon">⬅</span>西</button>
-        <button class="action-btn dir-btn" data-action="explore" data-dir="up"><span class="icon">🔼</span>上</button>
-        <button class="action-btn dir-btn" data-action="explore" data-dir="down"><span class="icon">🔽</span>下</button>
-      </div>
-      <div class="action-grid" style="margin-bottom:7px">
-        <button class="action-btn" data-action="meditate"><span class="icon">🧘</span>打坐</button>
-        <button class="action-btn" data-action="rest"><span class="icon">💤</span>休憩</button>
-        <button class="action-btn" data-action="searchArea"><span class="icon">🔍</span>搜索</button>
-        <button class="action-btn" data-action="talk"><span class="icon">💬</span>交谈</button>
-      </div>
-      <div class="action-grid">
-        <button class="action-btn map-btn" data-action="toggleMap"><span class="icon">🗺</span>地图</button>
-        <button class="action-btn" data-action="askAround"><span class="icon">👂</span>打听</button>
-        <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
-        <button class="action-btn" data-action="peek"><span class="icon">👀</span>窥探</button>
-      </div>
-      <div class="action-grid" style="margin-top:7px">
-        <button class="action-btn" data-action="practiceMenu"><span class="icon">📖</span>练武</button>
-        <button class="action-btn" data-action="switchTab" data-tab="wuxue"><span class="icon">🏯</span>武学</button>
-        <button class="action-btn" data-action="switchTab" data-tab="status"><span class="icon">📋</span>境况</button>
-        <button class="action-btn" data-action="askTeacher"><span class="icon">🙇</span>拜师</button>
-      </div>
-      <div class="action-grid" style="margin-top:7px">
-        <button class="action-btn" data-action="openSaveMenu"><span class="icon">📜</span>存档</button>
-        <button class="action-btn" data-action="exportSave"><span class="icon">📤</span>导出</button>
-        <button class="action-btn" data-action="importSave"><span class="icon">📥</span>导入</button>
-        <button class="action-btn" data-action="wipeConfirm"><span class="icon">🗑</span>删档</button>
+  <!-- ════════════ 页面 2 · 武学 ════════════ -->
+  <section class="page" data-page="wuxue">
+    <div class="page-header"><div class="title">武 学</div><div class="subtitle">行功图 · 技艺</div></div>
+    <div class="card">
+      <div class="card-body" id="wuxue-body" style="max-height:none">
+        <div class="faction-badge" id="faction-badge" style="display:none">
+          <div class="fname" id="fb-name"></div>
+          <div class="fdesc" id="fb-desc"></div>
+        </div>
+        <div id="wuxue-content">
+          <div class="inv-empty">尚未拜入帮派</div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card">
-    <div class="card-header"><span class="dot"></span>江 湖 录</div>
-    <div class="card-body" id="log-area"></div>
-  </div>
+  <!-- ════════════ 页面 3 · 行囊 ════════════ -->
+  <section class="page" data-page="xingnang">
+    <div class="page-header"><div class="title">行 囊</div><div class="subtitle">盘缠 · 物件</div></div>
+    <div class="card">
+      <div class="card-body" id="inv-body"><div class="inv-empty">空空如也</div></div>
+    </div>
+  </section>
+
+  <!-- ════════════ 页面 4 · 舆图 ════════════ -->
+  <section class="page" data-page="yutu">
+    <div class="page-header"><div class="title">舆 图</div><div class="subtitle">天 下 山 川</div></div>
+    <div class="card" id="map-card">
+      <div class="card-header"><span class="dot"></span>天 下 舆 图</div>
+      <div class="card-body">
+        <div id="map-container"><div id="map-canvas"></div></div>
+        <div id="map-legend">
+          <span><span class="ldot current"></span>当前位置</span>
+          <span><span class="ldot explored"></span>已探明</span>
+          <span><span class="ldot unexplored"></span>未探明</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ 页面 5 · 人物（合并 char+status+quest） ════════════ -->
+  <section class="page" data-page="renwu">
+    <div class="page-header"><div class="title">人 物</div><div class="subtitle">身份路引</div></div>
+
+    <!-- 子 Tab：状态 / 任务 -->
+    <div class="subtab-bar">
+      <button class="subtab active" data-subtab="state">状态</button>
+      <button class="subtab" data-subtab="quest">任务</button>
+    </div>
+
+    <!-- 子页：状态（panel-char + panel-status 合并） -->
+    <div class="subtab-panel active" id="subtab-state">
+      <div class="card">
+        <div class="card-header"><span class="dot"></span>身 份</div>
+        <div class="card-body" id="panel-char">
+          <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value highlight" id="stat-realm">凡人</span></div>
+          <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="stat-cultivation">0 / 100</span></div>
+          <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="stat-daoxin">100 / 100</span></div>
+          <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="stat-lifespan">80 年</span></div>
+          <div class="stat-row"><span class="stat-label" id="mp-label-char">内力</span><span class="stat-value" id="stat-mp">80 / 80</span></div>
+          <div class="stat-row"><span class="stat-label" id="stones-label">灵石</span><span class="stat-value" id="stat-stones">0</span></div>
+          <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="stat-techniques">无</span></div>
+          <div class="stat-row"><span class="stat-label">任务数</span><span class="stat-value quest" id="stat-quests">0</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="dot"></span>境 况</div>
+        <div class="card-body" id="panel-status">
+          <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value" id="s-realm">凡人</span></div>
+          <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="s-cult">0 / 100</span></div>
+          <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="s-daoxin">100 / 100</span></div>
+          <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="s-life">80 年</span></div>
+          <div class="stat-row"><span class="stat-label">生命</span><span class="stat-value" id="s-hp">100 / 100</span></div>
+          <div class="stat-row"><span class="stat-label" id="s-mp-label-row">内力</span><span class="stat-value" id="s-mp">80 / 80</span></div>
+          <div class="stat-row"><span class="stat-label" id="s-stones-label">灵石</span><span class="stat-value" id="s-stones">0</span></div>
+          <div class="stat-row"><span class="stat-label">攻击</span><span class="stat-value" id="s-atk">5</span></div>
+          <div class="stat-row"><span class="stat-label">防御</span><span class="stat-value" id="s-def">2</span></div>
+          <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="s-tech">无</span></div>
+          <div class="stat-row"><span class="stat-label">所在</span><span class="stat-value" id="s-loc">应天府·十字街口</span></div>
+          <div class="stat-row"><span class="stat-label">斩杀</span><span class="stat-value" id="s-kill">0</span></div>
+          <div class="stat-row" id="s-faction-row" style="display:none"><span class="stat-label">帮派</span><span class="stat-value" id="s-faction" style="color:#c49a38">无</span></div>
+          <div class="stat-row" id="s-skills-row" style="display:none"><span class="stat-label">武学</span><span class="stat-value" id="s-skills" style="font-size:11px">无</span></div>
+          <div class="stat-row" id="s-rep-row" style="display:none"><span class="stat-label">门忠</span><span class="stat-value" id="s-rep">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 子页：任务 -->
+    <div class="subtab-panel" id="subtab-quest">
+      <div class="card">
+        <div class="card-header"><span class="dot"></span>任 务</div>
+        <div class="card-body" id="quest-body"><div class="inv-empty">暂无任务</div></div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
+<!-- 底部 5 导航 -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" data-page="jianghu"><span class="nav-icon">🏮</span><span class="nav-label">江湖</span></button>
+  <button class="nav-btn" data-page="wuxue"><span class="nav-icon">⚔️</span><span class="nav-label">武学</span></button>
+  <button class="nav-btn" data-page="xingnang"><span class="nav-icon">🎒</span><span class="nav-label">行囊</span></button>
+  <button class="nav-btn" data-page="yutu"><span class="nav-icon">🗺️</span><span class="nav-label">舆图</span></button>
+  <button class="nav-btn" data-page="renwu"><span class="nav-icon">👤</span><span class="nav-label">人物</span></button>
+</nav>
+
+<!-- 祥云帷幕层（页面切换转场） -->
+<div id="cloud-veil-left"></div>
+<div id="cloud-veil-right"></div>
+
+<!-- 命令输入 -->
 <div id="input-wrap">
   <span id="input-prompt">▸</span>
   <input type="text" id="cmd-input" placeholder="输入命令…" autocomplete="off">
@@ -183,65 +231,6 @@
     <div class="modal-desc" id="npc-desc"></div>
     <div class="modal-choices" id="npc-choices"></div>
     <button class="modal-close" id="npc-close-btn">走开</button>
-  </div>
-</div>
-
-<!-- Save Management Modal -->
-<div class="modal" id="save-modal">
-  <div class="modal-box" style="max-width:400px">
-    <h3>📜 天 录 存 档</h3>
-    <div id="save-modal-content">
-      <!-- 自动存档信息 -->
-      <div class="save-section">
-        <div class="save-section-title">自动存档</div>
-        <div class="save-slot" id="save-auto-info">
-          <div class="slot-info">— 尚无自动存档 —</div>
-        </div>
-      </div>
-      <!-- 手动存档槽位 -->
-      <div class="save-section">
-        <div class="save-section-title">手动存档</div>
-        <div class="save-slot" id="save-slot-1">
-          <div class="slot-info">槽位一 · 空</div>
-          <div class="slot-actions">
-            <button class="save-btn save" data-slot="_slot1">保存</button>
-            <button class="save-btn load" data-slot="_slot1">读取</button>
-            <button class="save-btn del" data-slot="_slot1">删除</button>
-          </div>
-        </div>
-        <div class="save-slot" id="save-slot-2">
-          <div class="slot-info">槽位二 · 空</div>
-          <div class="slot-actions">
-            <button class="save-btn save" data-slot="_slot2">保存</button>
-            <button class="save-btn load" data-slot="_slot2">读取</button>
-            <button class="save-btn del" data-slot="_slot2">删除</button>
-          </div>
-        </div>
-        <div class="save-slot" id="save-slot-3">
-          <div class="slot-info">槽位三 · 空</div>
-          <div class="slot-actions">
-            <button class="save-btn save" data-slot="_slot3">保存</button>
-            <button class="save-btn load" data-slot="_slot3">读取</button>
-            <button class="save-btn del" data-slot="_slot3">删除</button>
-          </div>
-        </div>
-      </div>
-      <!-- 导入导出 -->
-      <div class="save-section">
-        <div class="save-section-title">导入 / 导出</div>
-        <div class="save-export-row">
-          <button class="save-btn export" id="btn-export-file">导出到文件</button>
-          <button class="save-btn export" id="btn-export-str">复制存档码</button>
-        </div>
-        <div class="save-import-row">
-          <input type="text" id="import-str-input" placeholder="粘贴存档码…" style="display:none">
-          <button class="save-btn import" id="btn-import-str" style="display:none">导入存档码</button>
-          <button class="save-btn import" id="btn-import-file">选择文件导入</button>
-          <input type="file" id="import-file-input" accept=".json,.txt" style="display:none">
-        </div>
-      </div>
-    </div>
-    <button class="modal-close" id="save-close-btn">关闭</button>
   </div>
 </div>
 
@@ -277,7 +266,6 @@
 <script src="/work/rebuild_skill_descriptions_1.js"></script>
 <script src="/work/rebuild_skill_descriptions_2.js"></script>
 <script src="/work/integration_v2.js"></script>
-<script src="/work/ghost_faction_recruiter_encounters.js"></script>
 
 <!-- Phase 8 数据层：双修体系 -->
 <script src="/work/rebuild_meridians.js"></script>
@@ -288,6 +276,9 @@
 <script src="/work/cross_path_quests.js"></script>
 <script src="/work/rebuild_skill_descriptions_ling.js"></script>
 
+<!-- 问剑峰门派HQ（T7.3） -->
+<script src="/work/rebuild_rooms_wenjianfeng.js"></script>
+
 <!-- 行功战斗系统数据层 -->
 <script src="/work/rebuild_combat_gong.js"></script>
 <script src="/work/rebuild_combat_atb.js"></script>
@@ -295,8 +286,6 @@
 
 <!-- 行功战斗系统 v3.0 数据层 -->
 <script src="/work/combat_skills_v3.js"></script>
-<script src="/work/combat_equipment_v3.js"></script>
-<script src="/work/combat_boss_v3.js"></script>
 
 <!-- 桥接层：将 const/let 声明的全局变量挂到 window，供 ES6 模块读取 -->
 <script>
@@ -315,8 +304,8 @@
     'CROSS_PATH_QUESTS', 'LING_SKILL_DATA',
     // 行功战斗系统
     'XINGGONG', 'ATB_SYSTEM', 'COMBAT_HIJACK',
-    // 行功战斗系统 v3.0（combat_*_v3.js 用 var 声明，已自动挂载 window，此处保险）
-    'COMBAT_SKILLS_V3', 'COMBAT_EQUIPMENT_V3', 'COMBAT_BOSS_V3'
+    // 问剑峰门派HQ
+    'WENJIANFENG_ROOMS'
   ].forEach(function(name) {
     try {
       if (eval('typeof ' + name) !== 'undefined') {
@@ -324,10 +313,7 @@
       }
     } catch(e) { console.warn('[Bridge] Variable ' + name + ' not found: ' + e.message); }
   });
-  // integration_v2.js 中用 var 声明的变量已自动挂到 window，无需处理
-  // 但 getDesc 是函数声明，也在全局词法环境，需要手动挂
   if (typeof getDesc === 'function') window.getDesc = getDesc;
-  // 检查 ghost_faction_recruiter_encounters.js 是否加载了 FACTION_RECRUITER_ENCOUNTERS
   if (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined') window.FACTION_RECRUITER_ENCOUNTERS = FACTION_RECRUITER_ENCOUNTERS;
 </script>
 

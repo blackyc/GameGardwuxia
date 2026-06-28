@@ -60,6 +60,8 @@ export function collectData() {
     JIANGHU_SIDELINES: window.JIANGHU_SIDELINES || [],
     CROSS_PATH_QUESTS: window.CROSS_PATH_QUESTS || [],
     LING_SKILL_DATA: window.LING_SKILL_DATA || [],
+    // 问剑峰门派HQ
+    WENJIANFENG_ROOMS: window.WENJIANFENG_ROOMS || {},
     // 行功战斗系统数据
     XINGGONG: window.XINGGONG || null,
     ATB_SYSTEM: window.ATB_SYSTEM || null,

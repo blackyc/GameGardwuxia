@@ -1,0 +1,368 @@
+/* === 开场 Cinematic 样式（开幕身世选择）===
+ * v3.0 批次H · 黑沉宿命 → 烟雨江湖
+ *
+ * 视觉锚：jimeng 写意国风概念图 + 用户文字描述
+ * - 黑沉背景 + 两杆重叠大旗（重绢布料，CSS 渐变占位）
+ * - 横向排版叙事文本，书法体高对比
+ * - 仿古宣纸条选项按钮（黑色双线墨迹描边）
+ * - 水墨涟漪、帷幕拉开、抖动方框
+ */
+
+/* ──────────────────────────────────────────
+   全屏舞台容器
+   ────────────────────────────────────────── */
+#intro-stage {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  /* 黑沉宿命底色：深墨黑 → 极暗褐 */
+  background:
+    radial-gradient(ellipse at 50% 50%, #1a1410 0%, #0a0806 60%, #050402 100%);
+  overflow: hidden;
+  color: #f0e6d4;
+  font-family: 'ZCOOL XiaoWei', 'STKaiti', 'KaiTi', serif;
+}
+#intro-stage.active { display: block; }
+
+/* ──────────────────────────────────────────
+   两杆大旗（重绢布料，重叠占位）
+   ────────────────────────────────────────── */
+.intro-flag {
+  position: absolute;
+  top: 0;
+  width: 55%;
+  height: 100%;
+  /* 重绢布料纹理：多层渐变模拟织物质感 + 暗纹 */
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 2px,
+      transparent 2px, transparent 8px),
+    repeating-linear-gradient(0deg,
+      rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px,
+      transparent 1px, transparent 6px),
+    linear-gradient(180deg, #1c1612 0%, #100c08 50%, #0a0704 100%);
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.7);
+  transition: transform 1.1s cubic-bezier(0.6, 0, 0.3, 1);
+  z-index: 2;
+}
+/* 旗杆（顶部木杆装饰） */
+.intro-flag::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #3a2a18 0%, #2a1d10 100%);
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+/* 大旗上的写意书法占位（淡墨字痕） */
+.intro-flag::after {
+  content: '命';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 280px;
+  font-family: 'ZCOOL KuaiLe', 'STKaiti', serif;
+  color: rgba(80, 60, 40, 0.12);
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.intro-flag.flag-left {
+  left: 0;
+}
+.intro-flag.flag-left::before { right: 0; }
+.intro-flag.flag-left.veiled { content: '運'; }
+
+.intro-flag.flag-right {
+  right: 0;
+}
+.intro-flag.flag-right::before { left: 0; }
+.intro-flag.flag-right::after { content: '運'; }
+
+/* 撤开动画（JS 加 class 触发）*/
+.intro-flag.flag-left.reveal { transform: translateX(-105%); }
+.intro-flag.flag-right.reveal { transform: translateX(105%); }
+
+/* 墨迹弧线残影（撤开时留下） */
+.flag-ink-trail {
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(20,15,10,0.4) 30%, rgba(20,15,10,0.6) 50%,
+    rgba(20,15,10,0.4) 70%, transparent 100%);
+  filter: blur(3px);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.8s ease-out 0.3s, transform 1.1s cubic-bezier(0.6,0,0.3,1);
+}
+.flag-ink-trail.show { opacity: 1; }
+
+/* ──────────────────────────────────────────
+   叙事文本区（纵向右→左）
+   ────────────────────────────────────────── */
+.intro-narrative {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  max-height: 80vh;
+  max-width: 90vw;
+  font-family: 'ZCOOL KuaiLe', 'STKaiti', 'KaiTi', serif;
+  font-size: 30px;
+  line-height: 1.9;
+  letter-spacing: 4px;
+  color: #f0e6d4;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.6);
+  text-align: start;
+}
+.intro-narrative.small {
+  font-size: 22px;
+  letter-spacing: 3px;
+}
+
+/* 打字机光标 */
+.tw-cursor {
+  display: inline-block;
+  color: #c2911b;
+  font-weight: bold;
+  margin-left: 2px;
+  /* 呼吸律动（与板鼓节奏同步，JS 注入 animation-duration）*/
+  animation: cursor-pulse 1s ease-in-out infinite;
+}
+@keyframes cursor-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.85); }
+}
+
+/* ──────────────────────────────────────────
+   选项容器 + 仿古宣纸条按钮
+   ────────────────────────────────────────── */
+.intro-choices {
+  position: absolute;
+  bottom: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 88%;
+  max-width: 440px;
+}
+
+.intro-choice {
+  position: relative;
+  background: linear-gradient(180deg, #e8dcc4 0%, #d8c8a8 100%);
+  /* 黑色双线墨迹描边 */
+  border: 2px solid #2a2018;
+  outline: 1px solid rgba(42,32,24,0.5);
+  outline-offset: 2px;
+  border-radius: 3px;
+  padding: 14px 18px 14px 22px;
+  color: #2a2018;
+  font-family: 'ZCOOL XiaoWei', 'STKaiti', serif;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  /* 呼吸律动（未选前与板鼓同步，JS 注入 duration）*/
+  animation: choice-breathe 1s ease-in-out infinite;
+}
+.intro-choice:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.intro-choice:active {
+  transform: translateY(0) scale(0.99);
+}
+@keyframes choice-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+/* 稀有度标记 */
+.intro-choice .rarity {
+  float: right;
+  font-size: 12px;
+  color: #b82f1e;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.intro-choice .origin-name {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  color: #1a1410;
+  margin-bottom: 4px;
+}
+.intro-choice .origin-flavor {
+  font-size: 13px;
+  color: #5a4a38;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.intro-choice .origin-summary {
+  font-size: 11px;
+  color: #7a6a50;
+  letter-spacing: 1px;
+  border-top: 1px dashed rgba(42,32,24,0.3);
+  padding-top: 5px;
+}
+.intro-choice .origin-summary .dim {
+  margin-right: 8px;
+}
+
+/* 门派选项变体（更宽，含 ceremony 片段）*/
+.intro-choice.faction-choice .origin-name {
+  color: #801414;
+}
+
+/* ──────────────────────────────────────────
+   水墨涟漪（选定瞬间，中心扩散）
+   ────────────────────────────────────────── */
+.ink-ripple {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 3px solid rgba(20,15,10,0.6);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+  animation: ink-spread 1.2s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+@keyframes ink-spread {
+  0% {
+    width: 20px; height: 20px;
+    border-width: 4px;
+    border-color: rgba(20,15,10,0.8);
+    opacity: 1;
+  }
+  100% {
+    width: 600px; height: 600px;
+    border-width: 1px;
+    border-color: rgba(20,15,10,0);
+    opacity: 0;
+  }
+}
+
+/* ──────────────────────────────────────────
+   如梦初醒 · 喂喂喂方框
+   ────────────────────────────────────────── */
+.wake-box {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  background: #f0e6d4;
+  border: 3px solid #2a2018;
+  outline: 2px solid rgba(42,32,24,0.4);
+  outline-offset: 3px;
+  padding: 28px 40px;
+  color: #1a1410;
+  font-family: 'ZCOOL KuaiLe', 'STKaiti', serif;
+  font-size: 32px;
+  letter-spacing: 6px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+  display: none;
+}
+.wake-box.active { display: block; }
+.wake-box.shake { animation: wake-shake 0.4s ease; }
+@keyframes wake-shake {
+  0%, 100% { transform: translate(-50%, -50%); }
+  20% { transform: translate(-52%, -50%) rotate(-1deg); }
+  40% { transform: translate(-48%, -50%) rotate(1deg); }
+  60% { transform: translate(-51%, -49%) rotate(-0.5deg); }
+  80% { transform: translate(-49%, -51%) rotate(0.5deg); }
+}
+.wake-box .wake-prompt {
+  display: block;
+  margin-top: 18px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #5a4a38;
+  cursor: pointer;
+  border-top: 1px dashed rgba(42,32,24,0.3);
+  padding-top: 12px;
+}
+
+/* ──────────────────────────────────────────
+   帷幕（黑色全屏，clip-path 中心向两侧拉开）
+   ────────────────────────────────────────── */
+.intro-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #050402;
+  /* 初始完全遮挡 */
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1.4s cubic-bezier(0.5, 0, 0.3, 1);
+  pointer-events: none;
+}
+.intro-curtain.open {
+  /* 从中心向上下拉开（帷幕感）*/
+  clip-path: inset(50% 0 50% 0);
+}
+
+/* ──────────────────────────────────────────
+   主场景淡入容器（帷幕后显露）
+   ────────────────────────────────────────── */
+.intro-scene-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 1.6s ease-out 0.4s;
+  /* 写意水彩主场景占位（应天府暖宣，对接 v3.0 场景系统）*/
+  background:
+    radial-gradient(ellipse at 30% 25%, rgba(197,160,89,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 75%, rgba(163,201,168,0.16) 0%, transparent 50%),
+    linear-gradient(165deg, #eae6df 0%, #d8d4c8 60%, #c5c0b0 100%);
+  pointer-events: none;
+}
+.intro-scene-reveal.show { opacity: 1; }
+
+/* ──────────────────────────────────────────
+   辅助：提示行（点击启动 / 跳过）
+   ────────────────────────────────────────── */
+.intro-hint {
+  position: absolute;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  font-size: 13px;
+  color: rgba(240,230,212,0.5);
+  letter-spacing: 2px;
+  text-align: center;
+  animation: hint-fade 2s ease-in-out infinite;
+}
+@keyframes hint-fade {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.intro-skip {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 8;
+  font-size: 12px;
+  color: rgba(240,230,212,0.4);
+  background: rgba(20,15,10,0.4);
+  border: 1px solid rgba(240,230,212,0.2);
+  padding: 6px 12px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+.intro-skip:hover { color: rgba(240,230,212,0.8); }
+
+/* 响应式：小屏缩小叙事字号 */
+@media (max-width: 480px) {
+  .intro-narrative { font-size: 24px; letter-spacing: 3px; }
+  .intro-narrative.small { font-size: 18px; }
+  .intro-choice .origin-name { font-size: 16px; }
+  .intro-flag::after { font-size: 180px; }
+}

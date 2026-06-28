@@ -2,7 +2,7 @@
  * battle_intervene.js — 玩家干预系统引擎 v3.0
  *
  * 三类干预（每类每场战斗限1次）：
- * 1. 变式：切换行功图，CD减半，真气-20
+ * 1. 变招：切换战诀，CD减半，真气-20
  * 2. 服药：使用丹药恢复真气/HP/解状态/降畸变
  * 3. 脱战：速度检定，成功脱离战斗，失败受罚
  *
@@ -11,7 +11,7 @@
  * - ES6 模块导出
  * - 干预状态从 battleEngine.battleState.interventionUsed 读写
  * - 药品数据从 game.state.inventory 读取
- * - 行功图从 battleEngine.battleState.chart 或玩家预设读取
+ * - 战诀从 battleEngine.battleState.chart 或玩家预设读取
  *
  * 依赖：BattleEngine (battle_async.js)
  */
@@ -20,7 +20,7 @@
 //  常量
 // ============================================================
 
-/** 行功图预设ID → 名称映射 */
+/** 战诀预设ID → 名称映射 */
 const CHART_PRESETS = {
   poixie:  { name: `破邪谱`, desc: `攻伐为先，招招毙命` },
   shouxin: { name: `守心谱`, desc: `守中带攻，以静制动` },
@@ -58,15 +58,15 @@ const POTION_CONFIG = {
 
 /** 干预冷却叙事文本 */
 const NARRATIVE = {
-  variant: `你咬牙变换行功——丹田一阵剧痛，经脉中的气机被迫改道。那些东西不喜欢你换路。`,
-  potion: `你摸出药丸塞入口中——药力在经脉中炸开，短暂地压制了体内的异样。`,
-  retreatSuccess: `你抓住一个间隙抽身而退——身后的气息渐渐远去。这一次，你跑赢了。`,
-  retreatFail: `你想退，但身体不听——那些东西不想走。它们拽着你的经脉，把你钉在原地。`,
+  variant: `你抓住机会，临阵变招。`,
+  potion: `你摸出药丸塞入口中，短暂地压制了体内异样。`,
+  retreatSuccess: `你欺身佯攻，趁敌人回防之际你抽身而退——身后气息渐渐远去。`,
+  retreatFail: `你的意图被敌人识破，敌人攻势更加猛烈。`,
   alreadyUsed: `此法本场已用过，不可再用。`,
   noPotion: `行囊中没有此药。`,
   notLing: `镇畸丹唯有灵修可服。`,
-  noChart: `未找到该行功图预设。`,
-  mpGateBlocking: `真气门禁中无法干预。`,
+  noChart: `暂未预设其他变招。`,
+  mpGateBlocking: `真气不足，无法干预。`,
 };
 
 // ============================================================
@@ -140,7 +140,7 @@ export class InterveneEngine {
     }
   }
 
-  /** @private 获取玩家预设行功图
+  /** @private 获取玩家预设战诀
    *  从 game.state 中的预设系统读取
    *  预期结构：game.state.chartPresets = { poixie: {A:..,B:..,...}, ... }
    *  若不存在则返回 null
@@ -178,12 +178,12 @@ export class InterveneEngine {
   }
 
   // ----------------------------------------------------------
-  //  1. 变式：切换行功图
+  //  1. 变招：切换战诀
   // ----------------------------------------------------------
 
   /**
-   * 变式：切换到指定行功图预设
-   * @param {string} chartId - 行功图预设ID: 'poixie' | 'shouxin' | 'boming'
+   * 变招：切换到指定战诀预设
+   * @param {string} chartId - 战诀预设ID: 'poixie' | 'shouxin' | 'boming'
    * @returns {{ success: boolean, log: string, newChart: object|null }}
    */
   doVariant(chartId) {
@@ -196,37 +196,37 @@ export class InterveneEngine {
       return { success: false, log: NARRATIVE.mpGateBlocking, newChart: null };
     }
 
-    // 检查：是否已用过变式
+    // 检查：是否已用过变招
     if (bs.interventionUsed.variant) {
       this._log(NARRATIVE.alreadyUsed, `info`);
       return { success: false, log: NARRATIVE.alreadyUsed, newChart: null };
     }
 
-    // 检查：目标行功图是否存在
+    // 检查：目标战诀是否存在
     const newChart = this._getPresetChart(chartId);
     if (!newChart) {
       this._log(NARRATIVE.noChart, `info`);
       return { success: false, log: NARRATIVE.noChart, newChart: null };
     }
 
-    // 检查：行功图是否与当前相同
+    // 检查：战诀是否与当前相同
     const currentChart = bs.chart;
     const isSame = Object.keys(newChart).every(
       k => newChart[k] === currentChart[k]
     );
     if (isSame) {
-      this._log(`当前已是该行功图，无需变换。`, `info`);
-      return { success: false, log: `当前已是该行功图`, newChart: null };
+      this._log(`当前已是该战诀，无需变换。`, `info`);
+      return { success: false, log: `当前已是该战诀`, newChart: null };
     }
 
-    // ===== 执行变式 =====
+    // ===== 执行变招 =====
 
     bs.interventionUsed.variant = true;
 
-    // 切换行功图
+    // 切换战诀
     bs.chart = { ...newChart };
 
-    // 变式代价：真气-20
+    // 变招代价：真气-20
     bs.player.mp = Math.max(0, bs.player.mp - 20);
 
     // 所有式位CD减半（向下取一位小数）
@@ -247,8 +247,8 @@ export class InterveneEngine {
 
     // 叙事
     this._log(NARRATIVE.variant, `event`);
-    const presetName = CHART_PRESETS[chartId]?.name || `新行功图`;
-    this._log(`[变式] 切换至${presetName}，真气-20，所有CD减半`, `combat`);
+    const presetName = CHART_PRESETS[chartId]?.name || `新战诀`;
+    this._log(`[变招] 切换至${presetName}，真气-20，所有CD减半`, `combat`);
 
     this._notify();
 
@@ -500,7 +500,7 @@ export class InterveneEngine {
     const used = bs.interventionUsed;
     const mpGateBlocking = this._isMpGatePending();
 
-    // --- 变式 ---
+    // --- 变招 ---
     const presetCharts = [];
     const presets = this.game.state.chartPresets || this.game.state.charts || {};
     for (const [id, cfg] of Object.entries(CHART_PRESETS)) {
@@ -552,7 +552,7 @@ export class InterveneEngine {
     return [
       {
         type: `variant`,
-        label: `变式`,
+        label: `变招`,
         available: !used.variant && !mpGateBlocking,
         used: used.variant,
         charts: presetCharts,
@@ -576,7 +576,7 @@ export class InterveneEngine {
     ];
   }
 
-  /** @private 判断当前行功图是否匹配某预设 */
+  /** @private 判断当前战诀是否匹配某预设 */
   _isCurrentChart(chartId, presets) {
     const bs = this._bs();
     if (!bs) return false;

@@ -4,6 +4,7 @@
  */
 
 import { Game } from './game.js';
+import { PageManager } from './ui/page_manager.js';
 // 行功战斗系统 v3.0 — 预加载模块确保 Vite 打包
 import { BattleEngine } from './battle_async.js';
 import { HijackEngine } from './battle_hijack.js';
@@ -23,6 +24,9 @@ if (document.readyState === 'loading') {
       document.getElementById('log-area').innerHTML = '<div class="log-entry system">⚠ 卷宗加载失败！请刷新页面重试。</div>';
       return;
     }
+    // 初始化页面管理器
+    window.pageManager = new PageManager();
+    window.pageManager.init();
     window.game = new Game();
   });
 } else {
@@ -30,9 +34,13 @@ if (document.readyState === 'loading') {
   if (typeof window.LOCATIONS === 'undefined') {
     console.error('[Main] 卷宗文件未加载！');
     setTimeout(() => {
+      window.pageManager = new PageManager();
+      window.pageManager.init();
       window.game = new Game();
     }, 500);
   } else {
+    window.pageManager = new PageManager();
+    window.pageManager.init();
     window.game = new Game();
   }
 }

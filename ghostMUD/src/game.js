@@ -26,6 +26,12 @@ import { Renderer } from './ui/renderer.js';
 import { BattleEngine } from './battle_async.js';
 import { HijackEngine } from './battle_hijack.js';
 import { InterveneEngine } from './battle_intervene.js';
+// 开场 cinematic（批次H · T7.1/T7.2）
+import { IntroScene } from './ui/intro_scene.js';
+import audio from './audio/AudioManager.js';
+
+// 时辰名映射
+const TIME_NAMES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 
 export class Game {
   constructor() {
@@ -110,7 +116,7 @@ export class Game {
       gameStart: Date.now(),
       combat: null,
       npcEncounter: null,
-      explored: ['应天府·街口'],
+      explored: ['应天府·十字街口'],
       activeQuests: [],
       completedQuests: [],
       questStages: {},
@@ -122,9 +128,12 @@ export class Game {
       performCooldowns: {},
       roundCount: 0,
       // 行功战斗系统 v3.0
-      chart: null,           // 当前行功图
-      presetCharts: [],      // 预设行功图列表
+      chart: null,           // 当前战诀
+      presetCharts: [],      // 预设战诀列表
       corruptionLevel: 0,    // 畸变等级
+      // 时间系统
+      gameTime: 0,           // 0-11，0=子时，1=丑时，...11=亥时
+      realTimeAccumulator: 0 // 真实毫秒累计，满300000ms推进1时辰
     };
 
     // 尝试加载存档
@@ -143,182 +152,28 @@ export class Game {
     this.input.init();
     this._registerTabs();
     this._registerTimers();
-    this._setupSaveProtection();
-    this.startGameAsRogue();
+    this._setupPageManager();
+
+    // 开场判断：有存档且已看过开场 → 直接进主循环；否则启动 IntroScene
+    if (this.state.introSeen) {
+      this.startGameAfterStartup();
+    } else {
+      // 首次进入或无存档 → 播放开场 cinematic
+      this.intro = new IntroScene();
+      this.intro.start(this);
+    }
     console.log('[Game] init() completed. Timer intervals:', this.timer._intervals.size);
   }
 
-  /** 注册页面关闭/切换保护：离开页面前紧急存档 */
-  _setupSaveProtection() {
-    window.addEventListener('beforeunload', () => {
-      if (this.state) this.storage.save(this.state);
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden' && this.state) {
-        this.storage.save(this.state);
-      }
-    });
-  }
-
-  // ============ 存档管理 UI ============
-
-  /** 打开存档管理面板 */
-  openSaveMenu() {
-    this._refreshSaveSlotDisplay();
-    document.getElementById('save-modal').classList.add('active');
-  }
-
-  /** 刷新存档槽位显示 */
-  _refreshSaveSlotDisplay() {
-    const realms = this.getRealms();
-    // 自动存档
-    const autoInfo = this.storage.getSlotInfo('_auto');
-    const autoEl = document.getElementById('save-auto-info');
-    if (autoInfo) {
-      const time = new Date(autoInfo.timestamp).toLocaleString('zh-CN');
-      const realmName = realms[autoInfo.realm]?.name || '未知';
-      autoEl.innerHTML = `<div class="slot-info">📍 ${autoInfo.location} | ${realmName}<br><span class="detail">修为 ${autoInfo.cultivation} | 道心 ${autoInfo.daoxin}</span><br><span class="time">${time}</span></div>`;
-    } else {
-      autoEl.innerHTML = '<div class="slot-info">— 尚无自动存档 —</div>';
-    }
-    // 手动槽位
-    for (let i = 1; i <= 3; i++) {
-      const info = this.storage.getSlotInfo('_slot' + i);
-      const el = document.getElementById('save-slot-' + i);
-      const infoEl = el.querySelector('.slot-info');
-      if (info) {
-        const time = new Date(info.timestamp).toLocaleString('zh-CN');
-        const realmName = realms[info.realm]?.name || '未知';
-        infoEl.innerHTML = `槽位${'一二三'[i-1]} · 📍 ${info.location} | ${realmName}<br><span class="detail">修为 ${info.cultivation} | ${time}</span>`;
-      } else {
-        infoEl.innerHTML = `槽位${'一二三'[i-1]} · 空`;
-      }
-    }
-  }
-
-  /** 保存到手动槽位 */
-  manualSave(slot) {
-    if (this.state.combat) { this.addLog('交战中无法存档！', 'combat'); return; }
-    this.storage.save(this.state, slot);
-    this.addLog('📜 已保存到 ' + slot, 'system');
-    this._refreshSaveSlotDisplay();
-  }
-
-  /** 从手动槽位读取 */
-  manualLoad(slot) {
-    const loaded = this.storage.load(slot);
-    if (!loaded) { this.addLog('该槽位无存档。', 'system'); return; }
-    // 先保存当前状态到自动槽（安全网）
-    this.storage.save(this.state, '_auto');
-    Object.assign(this.state, loaded);
-    this.getRealms(); // 刷新境界表缓存
-    this.addLog('📂 已读取 ' + slot + ' 的存档。', 'system');
-    this.renderer.updateLocationIcon();
-    this.renderer.updateUI();
-    document.getElementById('save-modal').classList.remove('active');
-    this._save();
-  }
-
-  /** 删除手动槽位 */
-  manualDelete(slot) {
-    this._confirmAction('确认删除此槽位存档？', () => {
-      this.storage.clear(slot);
-      this.addLog('🗑 已删除 ' + slot, 'system');
-      this._refreshSaveSlotDisplay();
-    });
-  }
-
-  /** 导出存档到文件 */
-  exportSaveFile() {
-    this.storage.exportToFile(this.state);
-    this.addLog('📤 存档已导出为文件。', 'system');
-  }
-
-  /** 导出存档码（base64 字符串） */
-  exportSaveString() {
-    const str = this.storage.exportToString(this.state);
-    // 尝试复制到剪贴板
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(str).then(() => {
-        this.addLog('📋 存档码已复制到剪贴板（' + str.length + ' 字符）。', 'system');
-      }).catch(() => {
-        this._showExportStringModal(str);
-      });
-    } else {
-      this._showExportStringModal(str);
-    }
-  }
-
-  /** 显示存档码输入框（用于手动复制） */
-  _showExportStringModal(str) {
-    const input = document.getElementById('import-str-input');
-    const importBtn = document.getElementById('btn-import-str');
-    input.value = str;
-    input.style.display = 'block';
-    importBtn.style.display = 'none'; // 隐藏导入按钮，这是导出显示
-    input.select();
-    this.addLog('📋 存档码已显示在输入框中，请手动复制。', 'system');
-  }
-
-  /** 导入存档码 */
-  importSaveString() {
-    const input = document.getElementById('import-str-input');
-    const str = input.value.trim();
-    if (!str) { this.addLog('请先粘贴存档码。', 'system'); return; }
-    const restored = this.storage.importFromString(str);
-    if (restored) {
-      Object.assign(this.state, restored);
-      this.getRealms();
-      this.addLog('📥 存档码导入成功！', 'system');
-      this.renderer.updateLocationIcon();
-      this.renderer.updateUI();
-      document.getElementById('save-modal').classList.remove('active');
-      input.value = '';
-      input.style.display = 'none';
-      this._save();
-    } else {
-      this.addLog('❌ 存档码无效，导入失败。', 'combat');
-    }
-  }
-
-  /** 从文件导入存档 */
-  importSaveFile(file) {
-    this.storage.importFromFile(file).then(restored => {
-      if (restored) {
-        Object.assign(this.state, restored);
-        this.getRealms();
-        this.addLog('📥 文件存档导入成功！', 'system');
-        this.renderer.updateLocationIcon();
-        this.renderer.updateUI();
-        document.getElementById('save-modal').classList.remove('active');
-        this._save();
-      } else {
-        this.addLog('❌ 文件存档无效，导入失败。', 'combat');
-      }
-    }).catch(() => {
-      this.addLog('❌ 文件读取失败。', 'combat');
-    });
-  }
-
-  /** 删档确认（双重确认，参考猫国建设者 wipe） */
-  wipeConfirm() {
-    this._confirmAction('⚠ 删档将清除所有存档（含自动存档和手动槽位），此操作不可逆！确认删档？', () => {
-      this._confirmAction('最后确认：真的要删档重来吗？所有进度将永久丢失！', () => {
-        this.storage.clearAll();
-        this.addLog('🗑 所有存档已清除，页面即将刷新…', 'system');
-        setTimeout(() => location.reload(), 1000);
-      });
-    });
-  }
-
-  /** 通用确认对话框 */
-  _confirmAction(message, onConfirm) {
-    const ov = document.createElement('div');
-    ov.className = 'save-confirm-overlay';
-    ov.innerHTML = `<div class="confirm-box"><h3>确认</h3><p>${message}</p><div class="confirm-actions"><button class="btn-no">取消</button><button class="btn-yes">确认</button></div></div>`;
-    document.body.appendChild(ov);
-    ov.querySelector('.btn-no').addEventListener('click', () => ov.remove());
-    ov.querySelector('.btn-yes').addEventListener('click', () => { ov.remove(); onConfirm(); });
+  /**
+   * IntroScene 完成后的回调（由 intro_scene.js → _finish() 调用）
+   * 身世和门派已由 IntroScene 应用到 state，此处只需进主循环
+   */
+  onIntroComplete() {
+    console.log('[Game] Intro complete, entering main loop');
+    // 若 IntroScene 中选了门派，joinFaction 已被调用；
+    // 若跳过未选门派，保持散修起点
+    this.startGameAfterStartup();
   }
 
   // ============ 双境界体系 ============
@@ -518,6 +373,59 @@ export class Game {
     return obj.desc || '';
   }
 
+  /**
+   * 获取房间描述（按时辰变体）
+   * 时辰分段：
+   * - gameTime 0,1,2（子丑寅）：入夜 → desc_night
+   * - gameTime 3,4（卯辰）：清晨 → desc_morning
+   * - gameTime 5,6,7（巳午未）：正午 → desc_noon
+   * - gameTime 8,9,10（申酉戌）：黄昏 → desc_dusk
+   * - gameTime 11（亥）：入夜 → desc_night
+   */
+  getRoomDesc(roomId) {
+    const room = this.LOCATIONS[roomId];
+    if (!room) return '';
+
+    // 竹林深处迷宫房间不按时辰变化
+    if (roomId.includes('竹林深处') || roomId.includes('青竹巷·尽头竹林')) {
+      return room.desc || '';
+    }
+
+    const t = this.state.gameTime;
+    let descField = null;
+
+    if (t === 0 || t === 1 || t === 2 || t === 11) {
+      // 子丑寅亥 → 入夜
+      descField = 'desc_night';
+    } else if (t === 3 || t === 4) {
+      // 卯辰 → 清晨
+      descField = 'desc_morning';
+    } else if (t === 5 || t === 6 || t === 7) {
+      // 巳午未 → 正午
+      descField = 'desc_noon';
+    } else if (t === 8 || t === 9 || t === 10) {
+      // 申酉戌 → 黄昏
+      descField = 'desc_dusk';
+    }
+
+    // 返回对应时段描述，若无则 fallback 到默认 desc
+    return (descField && room[descField]) ? room[descField] : (room.desc || '');
+  }
+
+  /**
+   * 判断当前是否为子时
+   */
+  isZiHour() {
+    return this.state.gameTime === 0;
+  }
+
+  /**
+   * 获取当前时辰名称
+   */
+  getTimeName() {
+    return TIME_NAMES[this.state.gameTime] + '时';
+  }
+
   _registerTabs() {
     this.tabManager.init();
     this.tabManager.register('char', () => {});
@@ -527,22 +435,28 @@ export class Game {
     this.tabManager.register('status', () => {});
   }
 
+  _setupPageManager() {
+    const pm = window.pageManager;
+    if (!pm) { console.warn('[Game] PageManager not found, skipping setup'); return; }
+    // 换页前渲染目标页内容
+    pm.onBeforeSwitch = (pageId) => {
+      if (pageId === 'wuxue') this.renderer.renderWuxue();
+      else if (pageId === 'xingnang') this.renderer.renderInventory();
+      else if (pageId === 'yutu') this.renderer.renderMap();
+      else if (pageId === 'renwu') this.renderer.renderQuests();
+    };
+    // 换页后更新当前页标记
+    pm.onAfterSwitch = (pageId) => {
+      this.currentTab = pageId;
+      this.renderer.updateUI();
+    };
+    // 场景切换钩子：移动时自动更新场景
+    this._pageManager = pm;
+  }
+
   _registerTimers() {
     this.timer.register('idle', () => this.idleTick(), 30000); // 每30秒一次tick
     this.timer.register('daoxin', () => this.daoxinTick(), 30000); // 同步30秒
-    this.timer.register('autosave', () => this._autosave(), 60000); // 每60秒自动存档
-  }
-
-  /** 自动存档（定时器驱动） */
-  _autosave() {
-    if (this.state && !this.state.combat) {
-      this.storage.save(this.state);
-    }
-  }
-
-  /** 手动存档快捷方法（关键状态变化后调用） */
-  _save() {
-    if (this.state) this.storage.save(this.state);
   }
 
   startGameAsRogue() {
@@ -564,15 +478,32 @@ export class Game {
   }
 
   startGameAfterStartup() {
+    // 恢复 #app 可见性（IntroScene 完成或老存档跳过开场）
+    const appEl = document.getElementById('app');
+    if (appEl) appEl.style.visibility = '';
     this.timer.start();
     this.renderer.updateLocationIcon();
-    this.addLog('正德年间，世有修行之人。吐纳灵气，参悟大道。然修炼一途，每破一境便近祂一分——世人却未必知晓这是在敲谁的门。', 'system');
-    this.addLog('你从应天府某条暗巷中醒来——你是谁？不重要。重要的是：你还活着。', 'system');
+    const s = this.state;
+    // 根据是否有身世/门派决定开场白
+    if (s.innateName) {
+      // IntroScene 已完成，身世+门派已应用
+      this.addLog(`身世：${s.innateName}。门派：${s.faction || '散修'}。`, 'system');
+    } else {
+      // 老存档或跳过开场，无身世信息
+      this.addLog('正德年间，世有修行之人。吐纳灵气，参悟大道。然修炼一途，每破一境便近祂一分——世人却未必知晓这是在敲谁的门。', 'system');
+      this.addLog('你从应天府某条暗巷中醒来——你是谁？不重要。重要的是：你还活着。', 'system');
+    }
     this.addLog('🕯 挂机已启动。前路莫测，望君保重。', 'system');
     this.addLog('💡 城中探索将遇奇遇，野外险地方有敌袭。搜索可得金银器物。输入「帮助」查看命令。', 'system');
-    this.addLog('⚡ 你尚未拜入任何帮派——在不同的城区探索，可能遇到各帮派的接引人。', 'system');
-    this._autoStartQuests();
+    if (s.faction === '散修' || !s.faction) {
+      this.addLog('⚡ 你尚未拜入任何帮派——在不同的城区探索，可能遇到各帮派的接引人。', 'system');
+    }
     this.renderer.updateUI();
+    // 设置初始场景配色
+    if (this._pageManager) {
+      const scene = this._pageManager.resolveScene(this.state.location);
+      this._pageManager.setScene(scene);
+    }
   }
 
   // ============ 游戏循环 ============
@@ -607,11 +538,18 @@ export class Game {
     }
     if (Math.random() < 0.05 && !s.isResting && !s.isCultivating) this.triggerIdleEvent();
     this.checkBreakthrough();
+
+    // 时间推进：每30秒累加，满300000ms（10次tick）推进1时辰
+    s.realTimeAccumulator += 30000;
+    if (s.realTimeAccumulator >= 300000) {
+      s.realTimeAccumulator -= 300000;
+      s.gameTime = (s.gameTime + 1) % 12;
+      // 通知UI更新时辰显示
+      if (this.renderer) this.renderer.updateTimeDisplay();
+    }
+
     // 挂机循环中只有修为/道心/HP 变化，只需更新进度条和数值面板
     this.renderer.updateUI(['progress', 'char', 'status']);
-    // 挂机存档：每2个tick存一次（约60秒），避免频繁写 localStorage
-    this._idleSaveCounter = (this._idleSaveCounter || 0) + 1;
-    if (this._idleSaveCounter % 2 === 0) this._save();
   }
 
   daoxinTick() {
@@ -703,12 +641,10 @@ export class Game {
         this.renderer.updateLocationIcon();
         this.addLog('🌟 突破！你已踏入 <b>' + r.name + '</b> 之境！', 'breakthrough');
         if (r.desc) this.addLog('   ' + r.desc, 'event');
-        this._save();
       } else {
         s.cultivation = Math.floor(n.cost * 0.6);
         s.daoxin -= 15;
         this.addLog('💥 冲关失败！修为震荡，道心遭受重创…', 'combat');
-        this._save();
         if (s.daoxin <= 0) this.gameOver('冲关失败，道心崩裂');
       }
     }
@@ -734,11 +670,22 @@ export class Game {
     if (!target) { this.addLog('前方的路不见了。也许从来就没有过。', 'system'); return; }
     if (!this.LOCATIONS[target]) { this.addLog('那个地方……你记不起是哪里了。明明刚刚还记得。', 'system'); return; }
 
+    // 竹林深处子时判定：非子时不得进入竹林深处
+    if (target.includes('竹林深处') && !this.isZiHour()) {
+      this.addLog('竹林深处此刻不通。', 'system');
+      return;
+    }
+
     s.location = target;
     if (!s.explored.includes(target)) s.explored.push(target);
     const nl = this.LOCATIONS[target];
+    // 更新场景配色
+    if (this._pageManager) {
+      const scene = this._pageManager.resolveScene(target);
+      this._pageManager.setScene(scene);
+    }
     this.addLog('🚶 向' + this.dirName(dir) + '方行去…', 'info');
-    this.addLog('📍 抵达 <b>' + target + '</b> —— ' + this.getDesc(nl), 'info');
+    this.addLog('📍 抵达 <b>' + target + '</b> —— ' + this.getRoomDesc(target), 'info');
 
     // Room events
     if (nl.events && nl.events.length > 0 && Math.random() < 0.5) {
@@ -761,8 +708,6 @@ export class Game {
     this.renderer.updateLocationIcon();
     this.renderer.renderMap();
     this.checkQuestProgress('go', target);
-    // 入地自动触发任务：抵达带 autoStart 的任务起点时自动接取（仅一次）
-    this._autoStartQuests();
     // 移动后：位置 + 面板数值 + 进度条 + 地图都需刷新（可能遭遇战斗/NPC）
     this.renderer.updateUI();
 
@@ -786,7 +731,6 @@ export class Game {
     this.renderer.renderMap();
     // 快速旅行：位置信息 + 境况面板中的位置字段
     this.renderer.updateUI(['location', 'status']);
-    this._save();
   }
 
   // ============ NPC 遭遇系统 ============
@@ -1017,7 +961,6 @@ export class Game {
     }
     // 修炼武学：灵石/道心/技能变化，更新人物面板 + 进度条 + 武学面板
     this.renderer.updateUI(['char', 'status', 'progress', 'wuxue']);
-    this._save();
   }
 
   equipSkill(skillId) {
@@ -1107,7 +1050,7 @@ export class Game {
   }
 
   startCombat(name, data) {
-    // 行功战斗系统 v3.0：检查是否有行功图数据
+    // 行功战斗系统 v3.0：检查是否有战诀数据
     const chart = this.state.chart || (window.XINGGONG && window.XINGGONG[this.state.faction]);
     if (chart && window.COMBAT_SKILLS_V3) {
       // 使用新战斗引擎
@@ -1429,7 +1372,6 @@ export class Game {
     // 战斗结束：多种状态可能变化，全量刷新
     this.renderer.updateUI();
     if (victory) this.checkBreakthrough();
-    this._save();
   }
 
   applyReward(rewardStr) {
@@ -1518,7 +1460,6 @@ export class Game {
     this.checkQuestProgress('find', null);
     // 搜索有结果：灵石/背包/HP/道心等可能变化
     this.renderer.updateUI(['char', 'status', 'progress', 'bag', 'quest']);
-    this._save();
   }
 
   pickItemByType(type) {
@@ -1543,7 +1484,6 @@ export class Game {
     }
     // 接受任务：任务列表 + 人物面板任务计数
     this.renderer.updateUI(['quest', 'char']);
-    this._save();
   }
 
   checkQuestProgress(type, target) {
@@ -1555,25 +1495,20 @@ export class Game {
       if (stage >= q.stages.length) continue;
       const curStage = q.stages[stage];
 
-      // 1) 行为类型匹配（引擎词汇表）
-      let typeMatch = false;
-      const t = curStage.type;
-      if (t === 'go' && type === 'go') typeMatch = true;
-      else if (t === 'kill' && type === 'kill') typeMatch = true;
-      else if (t === 'encounter' && type === 'kill') typeMatch = true;
-      else if ((t === 'find' || t === 'collect') && type === 'find') typeMatch = true;
-      else if ((t === 'investigate' || t === 'return' || t === 'talk' || t === 'dialogue' || t === 'deliver' || t === 'find_clue' || t === 'choice' || t === 'escort') && type === 'go') typeMatch = true;
+      let advance = false;
+      if (curStage.type === 'go' && type === 'go') advance = true;
+      else if (curStage.type === 'kill' && type === 'kill') advance = true;
+      else if (curStage.type === 'encounter' && type === 'kill') advance = true;
+      else if (curStage.type === 'find' && type === 'find') advance = true;
+      else if (curStage.type === 'collect' && type === 'find') advance = true;
+      else if (curStage.type === 'investigate' && type === 'go') advance = true;
+      else if (curStage.type === 'return' && type === 'go') advance = true;
+      else if (curStage.type === 'talk' && type === 'go') advance = true;
+      else if ((curStage.type === 'dialogue' || curStage.type === 'deliver' || curStage.type === 'find_clue') && type === 'go') advance = true;
+      else if (curStage.type === 'choice' && type === 'go') advance = true;
+      else if (curStage.type === 'escort' && type === 'go') advance = true;
 
-      // 2) 位置/目标门控（向后兼容：stage 未声明 location/target 时按原行为任意匹配）
-      //    - go 类（含 talk/investigate/return/escort/deliver/dialogue/choice）：target = 刚进入的房间名
-      //    - kill 类：target = 敌人名
-      //    - find 类：引擎传 null，改用当前所在房间 s.location 判定
-      let gated = true;
-      if (type === 'go' && curStage.location && target !== curStage.location) gated = false;
-      else if (type === 'kill' && curStage.target && target !== curStage.target) gated = false;
-      else if (type === 'find' && curStage.location && s.location !== curStage.location) gated = false;
-
-      if ((typeMatch && gated) || (curStage.repeat && type === 'kill' && gated)) {
+      if (advance || (curStage.repeat && type === 'kill')) {
         s.questStages[qId] = stage + 1;
         if (stage + 1 < q.stages.length) {
           this.addLog('📜 任务「' + q.name + '」更新：' + q.stages[stage + 1].desc, 'quest');
@@ -1581,18 +1516,6 @@ export class Game {
           this.completeQuest(qId);
         }
       }
-    }
-  }
-
-  // 抵达任务起点自动接取：扫描 QUESTS 中 autoStart 且 startLocation=当前地点、未激活/未完成的任务
-  _autoStartQuests() {
-    const s = this.state;
-    if (!this.QUESTS) return;
-    for (const q of this.QUESTS) {
-      if (!q.autoStart || !q.startLocation) continue;
-      if (q.startLocation !== s.location) continue;
-      if (s.activeQuests.includes(q.id) || s.completedQuests.includes(q.id)) continue;
-      this.startQuest(q.id);
     }
   }
 
@@ -1617,7 +1540,6 @@ export class Game {
     this.checkBreakthrough();
     // 完成任务：多种奖励可能改变多种状态，全量刷新
     this.renderer.updateUI();
-    this._save();
   }
 
   // ============ 地图 ============
@@ -1676,7 +1598,6 @@ export class Game {
     }
     // 修炼 toggle：状态切换，需更新 UI 显示当前模式
     this.renderer.updateUI(['progress', 'char', 'status']);
-    this._save();
   }
 
   train() {
@@ -1698,7 +1619,6 @@ export class Game {
         : '💪 你原地打了一套拳，筋骨微热。修为+2', 'info');
     }
     this.renderer.updateUI(['progress', 'char', 'status']);
-    this._save();
   }
 
   rest() {
@@ -1709,7 +1629,6 @@ export class Game {
     this.addLog(s.isResting ? '💤 你寻了一处角落蜷起身子…' : '🔔 休憩结束，继续前行。', 'info');
     // 休憩切换：挂机状态显示变化
     this.renderer.updateUI(['progress', 'char', 'status']);
-    this._save();
   }
 
   talk() {
@@ -1869,7 +1788,6 @@ export class Game {
     // 使用物品：背包/属性/HP/道心可能变化
     this.renderer.updateUI(['char', 'status', 'progress', 'bag']);
     this.checkBreakthrough();
-    this._save();
   }
 
   // ============ 游戏结束 ============
@@ -1927,9 +1845,6 @@ export class Game {
     else if (['任务', 'quest', 'quests', 'mission'].includes(cmd)) this.switchTab('quest');
     else if (['人物', 'char'].includes(cmd)) this.switchTab('char');
     else if (['武学', 'wuxue', 'skill', 'skills'].includes(cmd)) this.switchTab('wuxue');
-    else if (['存档', 'save', '读档', 'load', '存档管理'].includes(cmd)) this.openSaveMenu();
-    else if (['导出', 'export'].includes(cmd)) this.exportSaveFile();
-    else if (['删档', 'wipe', 'reset', '重置'].includes(cmd)) this.wipeConfirm();
     else if (['位置', 'location', 'loc'].includes(cmd)) {
       const loc = this.LOCATIONS[this.state.location];
       this.addLog('📍 当前位置：<b>' + this.state.location + '</b>', 'info');
@@ -1941,7 +1856,6 @@ export class Game {
       this.addLog('┃ 🙇 拜师 · 📖 练武 · 🏯 武学', 'system');
       this.addLog('┃ 🗺 地图 · 📋 境况 · 📦 包裹', 'system');
       this.addLog('┃ 👤 人物 · 📜 任务：查看修为/任务', 'system');
-      this.addLog('┃ 📜 存档 · 📤 导出 · 🗑 删档', 'system');
       this.addLog('┃ 📖 探索：' + this.state.explored.length + '/' + Object.keys(this.LOCATIONS).length + ' 间', 'system');
       this.addLog('┃ 💡 在城里「交谈」遇奇遇、「打听」得情报', 'system');
       this.addLog('┃ 💡 「搜索」有概率得金银器物', 'system');
