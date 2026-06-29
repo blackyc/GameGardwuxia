@@ -759,20 +759,36 @@ export class Game {
     }
 
     const enc = pool[Math.floor(Math.random() * pool.length)];
-    this.state.npcEncounter = enc;
+    this._presentEncounter(enc);
+  }
 
+  /**
+   * 定向与指定 NPC 交谈（感知面板点击特定人物时调用）。
+   * 直接触发该 NPC 的遭遇，不再从房间池随机抽取。
+   * @param {number} npcIndex - NPC_ENCOUNTERS[room] 中的索引
+   */
+  speakToNpc(npcIndex) {
+    const room = this.state.location;
+    const pool = this.NPC_ENCOUNTERS[room];
+    if (!pool || npcIndex >= pool.length) {
+      this.addLog('此人已经不在此处了…', 'system');
+      return;
+    }
+    this._presentEncounter(pool[npcIndex]);
+  }
+
+  /** 内部：展示 NPC 遭遇模态框（共享，被 triggerNPCEncounter / speakToNpc 调用） */
+  _presentEncounter(enc) {
+    this.state.npcEncounter = enc;
     document.getElementById('npc-title').textContent = '👥 ' + enc.title;
     document.getElementById('npc-desc').textContent = this.getDesc(enc);
     const choicesDiv = document.getElementById('npc-choices');
     choicesDiv.innerHTML = enc.results.map((r, i) =>
       '<button class="modal-choice" data-npc-choice="' + i + '">' + r.choice + '</button>'
     ).join('');
-
-    // 绑定点击事件
     choicesDiv.querySelectorAll('[data-npc-choice]').forEach(btn => {
       btn.addEventListener('click', () => this.npcChoice(parseInt(btn.dataset.npcChoice)));
     });
-
     document.getElementById('npc-modal').classList.add('active');
   }
 
@@ -1716,6 +1732,92 @@ export class Game {
     this.addLog('👀 你凝神观察四周…', 'system');
     obs.forEach(o => this.addLog('   ' + o, 'info'));
     // 窥探：无状态变化，无需刷新 UI
+  }
+
+  /**
+   * 感知系统（T9.2）—— 玩家审视当前房间的认知行为。
+   * 返回交互全景对象，由 renderer.renderPerception() 渲染为感知面板。
+   *
+   * 这是"认知压缩"而非"UI 折叠"：感知把房间内分散的信息
+   * （通路/NPC/搜索点/可交谈对象/场景道具）整合成一张可交互的全景图。
+   * 武修/灵修感知返回内容可不同（双轨伏笔，本版按 path 给灵修额外提示）。
+   *
+   * @returns {object} { title, scene, connections[], npcs[], searchPoints[], props[], extras[] }
+   */
+  getRoomPerception() {
+    const s = this.state;
+    const loc = this.LOCATIONS[s.location];
+    if (!loc) return { title: s.location, connections: [], npcs: [], searchPoints: [], props: [], extras: ['眼前一片虚无…'] };
+
+    // 1. 通路：{方向 → 房间名}
+    const connections = loc.connections
+      ? Object.entries(loc.connections)
+          .filter(([dir, name]) => this.LOCATIONS[name])
+          .map(([dir, name]) => ({ dir, dirCn: this.dirName(dir), name, explored: s.explored.includes(name) }))
+      : [];
+
+    // 2. 在场人物：NPC_ENCOUNTERS + 帮派接引人
+    const npcs = [];
+    const pool = this.NPC_ENCOUNTERS[s.location];
+    if (pool && pool.length > 0) {
+      pool.forEach((enc, i) => {
+        if (enc.title) npcs.push({ name: enc.title, desc: this.getDesc(enc), type: 'encounter', index: i });
+      });
+    }
+    const factionPool = (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined')
+      ? (window.FACTION_RECRUITER_ENCOUNTERS || FACTION_RECRUITER_ENCOUNTERS)[s.location]
+      : null;
+    if (factionPool && factionPool.length > 0 && s.faction === '散修') {
+      factionPool.forEach((enc, i) => {
+        if (enc.title) npcs.push({ name: enc.title, desc: '（帮派接引人）', type: 'recruiter', index: i });
+      });
+    }
+
+    // 拜师标记：在宗门HQ且已有帮派时可拜师学新武学
+    const canAskTeacher = s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction);
+
+    // 3. 可搜索点：ROOM_SEARCH 存在即有
+    const searchPoints = [];
+    if (this.ROOM_SEARCH[s.location]) {
+      searchPoints.push({ name: '此地可搜索', desc: '约 ' + Math.floor(this.ROOM_SEARCH[s.location].searchChance * 100) + '% 概率有所发现' });
+    }
+
+    // 4. 场景道具：房间自身的 items（氛围道具，非背包物品）
+    const props = [];
+    if (loc.items && Array.isArray(loc.items)) {
+      loc.items.slice(0, 6).forEach((it) => {
+        if (it.name) props.push({ name: it.name, desc: this.getDesc(it) });
+      });
+    }
+
+    // 5. 额外提示（danger/boss/宗门据点/灵修伏笔）
+    const extras = [];
+    if (loc.boss) extras.push('⚠ 远处强大的气息…有一名高手盘踞此地。');
+    if (s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction)) {
+      extras.push('🏫 你正在本派据点——可向师傅拜师学习新武学！');
+    }
+    // 灵修双轨伏笔：感知可察觉凡人察觉不到的东西
+    if (s.path === 'ling') {
+      extras.push('🌀 你以神识扫过此地——空气中有一丝微弱的灵气波动，若有若无。');
+    }
+
+    return { title: s.location, danger: loc.danger, connections, npcs, searchPoints, props, extras, canAskTeacher };
+  }
+
+  /** 打开感知面板（由感知菱形徽章调用） */
+  openPerception() {
+    if (this.state.combat || this.state.npcEncounter) {
+      this.addLog('当前无法感知！', 'combat');
+      return;
+    }
+    const data = this.getRoomPerception();
+    this.renderer.renderPerception(data);
+  }
+
+  /** 关闭感知面板 */
+  closePerception() {
+    const panel = document.getElementById('perception-panel');
+    if (panel) panel.classList.remove('open');
   }
 
   practiceMenu() {

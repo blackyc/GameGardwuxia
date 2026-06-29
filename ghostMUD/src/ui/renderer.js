@@ -166,13 +166,13 @@ export class Renderer {
   updateProgress() {
     const s = this.game.state;
     const data = getData();
+    if (!data.REALMS || data.REALMS.length === 0) return;
     const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
 
-    // 修为进度条
+    // 修为进度条（已移至人物页，此处安全跳过）
     if (next) {
-      const pct = Math.min(100, (s.cultivation / next.cost) * 100);
-      this._setStyle('cultivation-bar', 'width', pct + '%');
-      this._setText('cultivation-text', Math.floor(pct) + '%');
+      this._setStyle('cultivation-bar', 'width', Math.min(100, (s.cultivation / next.cost) * 100) + '%');
+      this._setText('cultivation-text', Math.floor((s.cultivation / next.cost) * 100) + '%');
     } else {
       this._setStyle('cultivation-bar', 'width', '100%');
       this._setText('cultivation-text', '圆满');
@@ -195,19 +195,21 @@ export class Renderer {
 
     // 道心颜色警告
     const dxEl = document.getElementById('stat-daoxin');
-    dxEl.className = 'stat-value' + (s.daoxin < 20 ? ' danger' : s.daoxin < 50 ? ' highlight' : '');
+    if (dxEl) dxEl.className = 'stat-value' + (s.daoxin < 20 ? ' danger' : s.daoxin < 50 ? ' highlight' : '');
 
-    // 挂机状态
+    // 挂机状态（已从江湖页移除，安全跳过）
     const stEl = document.getElementById('idle-status');
-    if (s.isResting) {
-      stEl.className = 'resting';
-      stEl.innerHTML = '<span class="pulse"></span>休憩中 · 气血/内力/道心恢复';
-    } else if (s.isCultivating) {
-      stEl.className = 'resting';
-      stEl.innerHTML = '<span class="pulse"></span>修炼中 · 修为增长 · 道心减扣';
-    } else {
-      stEl.className = '';
-      stEl.innerHTML = '<span class="pulse"></span>挂机修炼中 · 每 30 秒获取修为';
+    if (stEl) {
+      if (s.isResting) {
+        stEl.className = 'resting';
+        stEl.innerHTML = '<span class="pulse"></span>休憩中 · 气血/内力/道心恢复';
+      } else if (s.isCultivating) {
+        stEl.className = 'resting';
+        stEl.innerHTML = '<span class="pulse"></span>修炼中 · 修为增长 · 道心减扣';
+      } else {
+        stEl.className = '';
+        stEl.innerHTML = '<span class="pulse"></span>挂机修炼中 · 每 30 秒获取修为';
+      }
     }
   }
 
@@ -242,11 +244,16 @@ export class Renderer {
     const desc = this.game.getRoomDesc ? this.game.getRoomDesc(s.location) : (data.getDesc(data.LOCATIONS[s.location]) || '未知之地');
     this._setText('location-desc', desc);
 
-    // 连接通路显示裸名
-    const loc = data.LOCATIONS[s.location];
-    document.getElementById('connections').innerHTML = loc && loc.connections
-      ? Object.entries(loc.connections).map(([d, l]) => '<span class="conn-tag">' + this.game.dirName(d) + ' → ' + this.displayName(l) + '</span>').join('')
-      : '';
+    // 在场NPC（显示在房间卡内，薄荷绿/珊瑚橘文字）
+    const npcsEl = document.getElementById('room-npcs');
+    if (npcsEl) {
+      const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
+      if (perc && perc.npcs && perc.npcs.length > 0) {
+        npcsEl.innerHTML = perc.npcs.map(n => '<span class="room-npc">· ' + n.name + '</span>').join('');
+      } else {
+        npcsEl.innerHTML = '';
+      }
+    }
   }
 
   /** 渲染背包 */
@@ -506,6 +513,91 @@ export class Renderer {
     area.appendChild(el);
     area.scrollTop = area.scrollHeight;
     while (area.children.length > 100) area.removeChild(area.firstChild);
+  }
+
+  /**
+   * 感知系统（T9.2）—— 渲染感知面板。
+   * 面板是宣纸贴纸感的 in-page 展开区，叠在江湖页上方。
+   * 数据来自 game.getRoomPerception()。
+   * @param {object} data — { title, connections, npcs, searchPoints, props, extras }
+   */
+  renderPerception(data) {
+    const panel = document.getElementById('perception-panel');
+    if (!panel) return;
+    let html = '';
+
+    // 通路
+    if (data.connections && data.connections.length > 0) {
+      html += '<div class="perc-section"><div class="perc-head">> 通路</div>';
+      data.connections.forEach((c) => {
+        const marker = c.explored ? '→' : '？';
+        const url = c.explored ? '' : ' style="color:var(--ink-soft);opacity:0.6"';
+        html += '<div class="perc-item perc-path" data-action="explore" data-dir="' + c.dir + '">'
+          + '<span class="perc-dir">' + c.dirCn + ' ' + marker + '</span>'
+          + '<span' + url + '>' + c.name + '</span></div>';
+      });
+      html += '</div>';
+    }
+
+    // 在场人物（交谈/交易/拜师 针对各 NPC，打听 独立为搜索项）
+    if (data.npcs && data.npcs.length > 0) {
+      html += '<div class="perc-section"><div class="perc-head">> 在场人物</div>';
+      data.npcs.forEach((n, i) => {
+        let subBtns = '<button class="perc-subbtn" data-npc-action="talk" data-npc-idx="' + i + '">交谈</button>'
+          + '<button class="perc-subbtn" data-npc-action="trade" data-npc-idx="' + i + '">交易</button>';
+        // 拜师按钮仅在宗门HQ且已有帮派时显示
+        if (data.canAskTeacher) {
+          subBtns += '<button class="perc-subbtn" data-npc-action="askTeacher" data-npc-idx="' + i + '">拜师</button>';
+        }
+        html += '<div class="perc-item perc-npc" data-npc-idx="' + i + '">'
+          + '<span class="perc-npc-name">' + n.name + '</span> '
+          + '<span style="font-size:11px;color:var(--ink-soft)">' + (n.desc || '') + '</span>'
+          + '<span class="perc-npc-actions">' + subBtns + '</span></div>';
+      });
+      html += '</div>';
+    }
+
+    // 可打听（房间级流言，不针对单个NPC）
+    html += '<div class="perc-section"><div class="perc-head">> 可打听</div>';
+    html += '<div class="perc-item perc-rumor" data-perc-action="rumor">'
+      + '<span>向周围路人打听消息……</span></div>';
+    html += '</div>';
+
+    // 可搜索
+    if (data.searchPoints && data.searchPoints.length > 0) {
+      html += '<div class="perc-section"><div class="perc-head">> 可探索</div>';
+      data.searchPoints.forEach((sp) => {
+        html += '<div class="perc-item perc-search" data-action="searchArea">'
+          + '<span>' + sp.name + '</span> '
+          + '<span style="font-size:11px;color:var(--ink-soft)">（' + sp.desc + '）</span></div>';
+      });
+      html += '</div>';
+    }
+
+    // 场景道具
+    if (data.props && data.props.length > 0) {
+      html += '<div class="perc-section"><div class="perc-head">> 所观之物</div>';
+      data.props.forEach((p) => {
+        html += '<div class="perc-item perc-prop"><span>' + p.name + '</span> '
+          + '<span style="font-size:11px;color:var(--ink-soft)">— ' + p.desc + '</span></div>';
+      });
+      html += '</div>';
+    }
+
+    // 额外提示
+    if (data.extras && data.extras.length > 0) {
+      html += '<div class="perc-section" style="border-left:3px solid var(--mint);padding-left:8px">';
+      data.extras.forEach((e) => {
+        html += '<div class="perc-extra" style="font-size:12px;color:var(--ink-soft);padding:2px 0">' + e + '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="perc-close-wrap"><button class="perc-close" id="perc-close-btn">收起 ▲</button></div>';
+    panel.querySelector('.perception-inner').innerHTML = html;
+    panel.classList.add('open');
+    // 滚动到顶
+    panel.scrollTop = 0;
   }
 
   // === 内部工具 ===

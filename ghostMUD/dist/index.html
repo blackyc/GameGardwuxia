@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>诡仙录·文字MUD</title>
-  <script type="module" crossorigin src="./assets/index-CBZ_UqDH.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BVBj_Cnc.css">
+  <title>诡仙录·文字MUD</title>
+  <script type="module" crossorigin src="./assets/index-BkMGk1Eb.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Clsa5pjC.css">
 </head>
 <body>
 <div id="noise-overlay"></div>
@@ -13,94 +13,64 @@
 <!-- 写意水彩背景层（场景动态配色驱动） -->
 <div id="scene-bg"></div>
 
+<!-- ════════════ 顶部工具条（参考猫国建设者） ════════════ -->
+<nav id="top-bar">
+  <span class="topbar-title">诡 仙 录</span>
+  <span class="topbar-spacer"></span>
+  <button class="topbar-btn" data-topbar="save" title="保存进度">保存</button>
+  <button class="topbar-btn" data-topbar="options" title="选项">选项</button>
+  <button class="topbar-btn" data-topbar="reset" title="重置">重置</button>
+  <button class="topbar-btn" data-topbar="delete" title="删档">删档</button>
+  <button class="topbar-btn" data-topbar="app" title="APP">APP</button>
+  <span class="topbar-ver" id="topbar-ver">Ver 1.0.0</span>
+</nav>
+
 <div id="app">
 
   <!-- ════════════ 页面 1 · 江湖（主游戏页） ════════════ -->
   <section class="page active" data-page="jianghu">
-    <div class="page-header">
-      <div class="title">诡 仙 录</div>
-      <div class="subtitle">真假难辩 · 本心如烛</div>
-      <div id="time-bar">时辰 <span id="time-display">子时</span></div>
+    <!-- 灰蓝半透卡：房间信息+在场NPC -->
+    <div class="room-card" id="room-card">
+      <div class="room-name"><span id="location-region" class="location-region"></span><span id="location-name">十字街口</span></div>
+      <div class="room-divider"></div>
+      <div class="room-desc" id="location-desc"></div>
+      <div class="room-npcs" id="room-npcs"></div>
     </div>
 
-    <!-- 修炼进度（原 card） -->
-    <div class="card" id="card-progress">
-      <div class="card-header"><span class="dot"></span>修 炼 进 度</div>
-      <div class="card-body">
-        <div class="progress-wrap">
-          <div class="progress-label"><span>修为积累</span><span id="cultivation-text">0%</span></div>
-          <div class="progress-bar"><div class="progress-fill" id="cultivation-bar" style="width:0%"></div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>道心</span><span id="daoxin-text">100%</span></div>
-          <div class="progress-bar"><div class="progress-fill daoxin" id="daoxin-bar" style="width:100%"></div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>生命</span><span id="hp-text">100%</span></div>
-          <div class="progress-bar"><div class="progress-fill" id="hp-bar" style="width:100%;background:linear-gradient(90deg,#682828,#983838,#b84444);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(180,50,50,.3)"></div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span id="mp-label">内力</span><span id="mp-text">100%</span></div>
-          <div class="progress-bar"><div class="progress-fill" id="mp-bar" style="width:100%;background:linear-gradient(90deg,#1a2848,#2a4880,#3868b8);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(50,100,180,.3)"></div></div>
-        </div>
-        <div id="idle-status"><span class="pulse"></span>挂机修炼中 · 每 30 秒获取修为</div>
-      </div>
+    <!-- 菱形徽章：高频操作 -->
+    <div class="diamond-row">
+      <button class="diamond-badge" data-action="perceive">
+        <span class="diamond-hook"></span>
+        <span class="label">感知</span>
+        <span class="diamond-tassel"></span>
+      </button>
+      <button class="diamond-badge" data-action="cultivate-menu">
+        <span class="diamond-hook"></span>
+        <span class="label">修行</span>
+        <span class="diamond-tassel"></span>
+      </button>
+      <button class="diamond-badge" data-action="rest">
+        <span class="diamond-hook"></span>
+        <span class="label">休憩</span>
+        <span class="diamond-tassel"></span>
+      </button>
     </div>
 
-    <!-- 所在地（原 card） -->
-    <div class="card" id="card-location">
-      <div class="card-header"><span class="dot"></span>所 在 之 地</div>
-      <div class="card-body">
-        <div id="location-bar">
-          <span id="location-icon">📍</span>
-          <div>
-            <div id="location-region" class="location-region"></div>
-            <div id="location-name">十字街口</div>
-            <div id="location-desc"></div>
-          </div>
-        </div>
-        <div class="connections" id="connections"></div>
-      </div>
+    <!-- 修行子选项（默认隐藏） -->
+    <div class="cultivate-submenu" id="cultivate-submenu" style="display:none">
+      <button class="action-btn" data-action="meditate"><span class="icon">🧘</span>入定</button>
+      <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
     </div>
 
-    <!-- 行动（高频钮改菱形徽章） -->
-    <div class="card" id="card-actions">
-      <div class="card-header"><span class="dot"></span>行 动</div>
-      <div class="card-body">
-        <!-- 菱形徽章：高频操作（打坐/休憩/搜索/交谈） -->
-        <div class="diamond-row">
-          <button class="diamond-badge" data-action="meditate"><span class="label">打坐</span></button>
-          <button class="diamond-badge" data-action="rest"><span class="label">休憩</span></button>
-          <button class="diamond-badge" data-action="searchArea"><span class="label">搜索</span></button>
-          <button class="diamond-badge" data-action="talk"><span class="label">交谈</span></button>
-        </div>
-        <!-- 方向键 -->
-        <div class="action-grid" style="margin:10px 0 7px">
-          <button class="action-btn dir-btn" data-action="explore" data-dir="north"><span class="icon">⬆</span>北</button>
-          <button class="action-btn dir-btn" data-action="explore" data-dir="south"><span class="icon">⬇</span>南</button>
-          <button class="action-btn dir-btn" data-action="explore" data-dir="east"><span class="icon">➡</span>东</button>
-          <button class="action-btn dir-btn" data-action="explore" data-dir="west"><span class="icon">⬅</span>西</button>
-          <button class="action-btn dir-btn" data-action="explore" data-dir="up"><span class="icon">🔼</span>上</button>
-          <button class="action-btn dir-btn" data-action="explore" data-dir="down"><span class="icon">🔽</span>下</button>
-        </div>
-        <!-- 低频操作次级网格 -->
-        <div class="action-grid">
-          <button class="action-btn" data-action="askAround"><span class="icon">👂</span>打听</button>
-          <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
-          <button class="action-btn" data-action="peek"><span class="icon">👀</span>窥探</button>
-          <button class="action-btn" data-action="practiceMenu"><span class="icon">📖</span>练武</button>
-          <button class="action-btn" data-action="switchPage" data-page="wuxue"><span class="icon">🏯</span>武学</button>
-          <button class="action-btn" data-action="switchPage" data-page="renwu"><span class="icon">📋</span>人物</button>
-          <button class="action-btn" data-action="askTeacher"><span class="icon">🙇</span>拜师</button>
-          <button class="action-btn" data-action="switchPage" data-page="yutu"><span class="icon">🗺</span>舆图</button>
-        </div>
-      </div>
+    <!-- 最近日志（最近3条） -->
+    <div class="recent-log">
+      <div class="recent-log-header">─ 最近日志 ─────────────</div>
+      <div id="log-area"></div>
     </div>
 
-    <!-- 江湖录日志（原 card） -->
-    <div class="card" id="card-log">
-      <div class="card-header"><span class="dot"></span>江 湖 录</div>
-      <div class="card-body" id="log-area"></div>
+    <!-- 感知面板（宣纸贴纸感 in-page 展开区） -->
+    <div class="perception-panel" id="perception-panel">
+      <div class="perception-inner" id="perception-inner"></div>
     </div>
   </section>
 
@@ -117,6 +87,13 @@
           <div class="inv-empty">尚未拜入帮派</div>
         </div>
       </div>
+    </div>
+    <!-- 练武按钮（武学熟练度互动） -->
+    <div class="card">
+      <div class="card-body" style="text-align:center">
+        <button class="action-btn" data-action="practiceMenu" style="min-width:120px"><span class="icon">📖</span>练武</button>
+      </div>
+    </div>
     </div>
   </section>
 

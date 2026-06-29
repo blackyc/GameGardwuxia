@@ -17,6 +17,7 @@ export class InputManager {
       this._bindTabButtons();
       this._bindCommandInput();
       this._bindModalButtons();
+      this._bindPerceptionPanel();
       this._bindDocumentFocus();
       console.log('[Input] All event handlers initialized');
     } catch (e) {
@@ -24,63 +25,68 @@ export class InputManager {
     }
   }
 
-  /** 绑定 data-action 按钮 */
+  /** 绑定 data-action 按钮（事件委托模式，支持动态注入的按钮） */
   _bindActionButtons() {
-    const buttons = document.querySelectorAll('[data-action]');
-    console.log(`[Input] Found ${buttons.length} action buttons`);
-    buttons.forEach(btn => {
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
       const action = btn.dataset.action;
-      btn.addEventListener('click', () => {
-        console.log(`[Input] Button clicked: ${action}`, btn.dataset);
-        switch (action) {
-          case 'explore':
-            this.game.explore(btn.dataset.dir);
-            break;
-          case 'meditate':
-            this.game.cultivate();
-            break;
-          case 'rest':
-            this.game.rest();
-            break;
-          case 'searchArea':
-            this.game.searchArea();
-            break;
-          case 'talk':
-            this.game.talk();
-            break;
-          case 'askAround':
-            this.game.askAround();
-            break;
-          case 'pushup':
-            this.game.train();
-            break;
-          case 'peek':
-            this.game.peek();
-            break;
-          case 'practiceMenu':
-            this.game.practiceMenu();
-            break;
-          case 'askTeacher':
-            this.game.askTeacher();
-            break;
-          case 'toggleMap':
-            this.game.toggleMap();
-            break;
-          case 'switchTab':
-            this.game.switchTab(btn.dataset.tab);
-            break;
-          case 'switchPage':
-            if (window.pageManager) window.pageManager.switchTo(btn.dataset.page);
-            break;
-          case 'combat':
-            this.game.combatAction(btn.dataset.combat);
-            break;
+      switch (action) {
+        case 'explore':
+          this.game.explore(btn.dataset.dir);
+          break;
+        case 'cultivate-menu': {
+          const sub = document.getElementById('cultivate-submenu');
+          if (sub) sub.style.display = (sub.style.display === 'none' || !sub.style.display) ? 'flex' : 'none';
+          break;
         }
-      });
+        case 'meditate':
+          this.game.cultivate();
+          break;
+        case 'rest':
+          this.game.rest();
+          break;
+        case 'searchArea':
+          this.game.searchArea();
+          break;
+        case 'talk':
+          this.game.talk();
+          break;
+        case 'askAround':
+          this.game.askAround();
+          break;
+        case 'pushup':
+          this.game.train();
+          break;
+        case 'peek':
+          this.game.peek();
+          break;
+        case 'perceive':
+          this.game.openPerception();
+          break;
+        case 'practiceMenu':
+          this.game.practiceMenu();
+          break;
+        case 'askTeacher':
+          this.game.askTeacher();
+          break;
+        case 'toggleMap':
+          this.game.toggleMap();
+          break;
+        case 'switchTab':
+          this.game.switchTab(btn.dataset.tab);
+          break;
+        case 'switchPage':
+          if (window.pageManager) window.pageManager.switchTo(btn.dataset.page);
+          break;
+        case 'combat':
+          this.game.combatAction(btn.dataset.combat);
+          break;
+      }
     });
   }
 
-  /** Tab 按钮事件 */
+  /** Tab 按钮事件 + 底部导航 */
   _bindTabButtons() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -96,6 +102,18 @@ export class InputManager {
         btn.classList.add('active');
         const panel = document.getElementById('subtab-' + target);
         if (panel) panel.classList.add('active');
+      });
+    });
+    // 底部 5 导航（临时绑定，PageManager 就绪后替代）
+    document.querySelectorAll('#bottom-nav .nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const page = btn.dataset.page;
+        if (window.pageManager) {
+          window.pageManager.switchTo(page);
+        } else {
+          document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.dataset.page === page));
+          document.querySelectorAll('#bottom-nav .nav-btn').forEach(b => b.classList.toggle('active', b === btn));
+        }
       });
     });
   }
@@ -133,6 +151,66 @@ export class InputManager {
           modal.classList.remove('active');
         }
       });
+    });
+  }
+
+  /** 感知面板事件委托（面板内容由 renderPerception 动态生成） */
+  _bindPerceptionPanel() {
+    const panel = document.getElementById('perception-panel');
+    if (!panel) return;
+    panel.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-perc-action], .perc-close, .perc-path, .perc-search, .perc-subbtn, .perc-npc');
+      if (!target) return;
+
+      // 收起按钮
+      if (target.classList.contains('perc-close')) {
+        this.game.closePerception();
+        return;
+      }
+
+      // 通路点击（探索）
+      if (target.closest('.perc-path')) {
+        const pathEl = target.closest('.perc-path');
+        const dir = pathEl.dataset.dir;
+        if (dir) {
+          this.game.closePerception();
+          // 微小延迟让面板关闭动效触发后再移动
+          setTimeout(() => this.game.explore(dir), 200);
+        }
+        return;
+      }
+
+      // 搜索点
+      if (target.closest('.perc-search')) {
+        this.game.closePerception();
+        setTimeout(() => this.game.searchArea(), 200);
+        return;
+      }
+
+      // 可打听（房间级流言，独立一级）
+      if (target.closest('.perc-rumor') || target.closest('[data-perc-action="rumor"]')) {
+        this.game.closePerception();
+        setTimeout(() => this.game.askAround(), 200);
+        return;
+      }
+
+      // NPC 子选项（交谈→定向遭遇 / 交易→待开放 / 拜师→askTeacher）
+      if (target.classList.contains('perc-subbtn')) {
+        const idx = parseInt(target.dataset.npcIdx);
+        const action = target.dataset.npcAction;
+        if (isNaN(idx)) return;
+        if (action === 'talk') {
+          this.game.closePerception();
+          // 定向触发该 NPC 的遭遇，不再从房间池随机抽取
+          setTimeout(() => this.game.speakToNpc(idx), 200);
+        } else if (action === 'trade') {
+          this.game.addLog('💬 「交易」功能将在后续版本开放。', 'system');
+        } else if (action === 'askTeacher') {
+          this.game.closePerception();
+          setTimeout(() => this.game.askTeacher(), 200);
+        }
+        return;
+      }
     });
   }
 
