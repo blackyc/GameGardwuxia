@@ -442,8 +442,12 @@ export class Game {
     pm.onBeforeSwitch = (pageId) => {
       if (pageId === 'wuxue') this.renderer.renderWuxue();
       else if (pageId === 'xingnang') this.renderer.renderInventory();
-      else if (pageId === 'yutu') this.renderer.renderMap();
-      else if (pageId === 'renwu') this.renderer.renderQuests();
+      else if (pageId === 'yutu') {
+        // 确保 map-card 可见（main.css 默认 display:none，需 .visible 类）
+        const mc = document.getElementById('map-card');
+        if (mc) mc.classList.add('visible');
+        this.renderer.renderMap();
+      } else if (pageId === 'renwu') this.renderer.renderQuests();
     };
     // 换页后更新当前页标记
     pm.onAfterSwitch = (pageId) => {
@@ -478,9 +482,14 @@ export class Game {
   }
 
   startGameAfterStartup() {
-    // 恢复 #app 可见性（IntroScene 完成或老存档跳过开场）
+    // ⚠️ 第一步：立即恢复 #app 可见性（必须最先执行，后续任何失败都不影响）
     const appEl = document.getElementById('app');
-    if (appEl) appEl.style.visibility = '';
+    if (appEl) appEl.style.visibility = 'visible';
+    // 兑底：直接给 body 设 data-scene，以防 _pageManager 未就绪
+    const loc = this.state.location || '应天府·十字街口';
+    const seg = (loc.split('·')[0] || '应天府').trim();
+    document.body.dataset.scene = seg;
+    
     this.timer.start();
     this.renderer.updateLocationIcon();
     const s = this.state;

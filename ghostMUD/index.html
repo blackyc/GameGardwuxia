@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/src/styles/themes/night.css">
   <link rel="stylesheet" href="/src/styles/responsive.css">
   <link rel="stylesheet" href="/src/styles/intro.css">
+  <link rel="stylesheet" href="/src/styles/topbar.css">
   <link rel="stylesheet" href="/src/styles/app_v3.css">
 </head>
 <body>
@@ -15,6 +16,18 @@
 
 <!-- 写意水彩背景层（场景动态配色驱动） -->
 <div id="scene-bg"></div>
+
+<!-- ════════════ 顶部工具条（参考猫国建设者） ════════════ -->
+<nav id="top-bar">
+  <span class="topbar-title">诡 仙 录</span>
+  <span class="topbar-spacer"></span>
+  <button class="topbar-btn" data-topbar="save" title="保存进度">保存</button>
+  <button class="topbar-btn" data-topbar="options" title="选项">选项</button>
+  <button class="topbar-btn" data-topbar="reset" title="重置">重置</button>
+  <button class="topbar-btn" data-topbar="delete" title="删档">删档</button>
+  <button class="topbar-btn" data-topbar="app" title="APP">APP</button>
+  <span class="topbar-ver" id="topbar-ver">Ver 1.0.0</span>
+</nav>
 
 <div id="app">
 

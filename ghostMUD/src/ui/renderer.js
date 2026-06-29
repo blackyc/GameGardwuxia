@@ -47,9 +47,9 @@ export class Renderer {
    */
   updateUI(zone) {
     const data = getData();
-    if (!data.REALMS || data.REALMS.length === 0) {
-      console.error('[Renderer] REALMS data not loaded!');
-      return;
+    const hasRealms = data.REALMS && data.REALMS.length > 0;
+    if (!hasRealms) {
+      console.warn('[Renderer] REALMS data not loaded yet — skipping realm-dependent panels');
     }
 
     if (zone === undefined) {
@@ -91,6 +91,7 @@ export class Renderer {
   updateCharPanel() {
     const s = this.game.state;
     const data = getData();
+    if (!data.REALMS || data.REALMS.length === 0) return;
     const currentRealm = data.REALMS[s.realm] || data.REALMS[0];
     const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
 
@@ -118,6 +119,7 @@ export class Renderer {
   updateStatusPanel() {
     const s = this.game.state;
     const data = getData();
+    if (!data.REALMS || data.REALMS.length === 0) return;
     const currentRealm = data.REALMS[s.realm] || data.REALMS[0];
     const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
 

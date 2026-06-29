@@ -106,8 +106,7 @@ body[data-scene="焰心教"] #scene-bg {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  /* 防止开场引导前游戏内容闪现 */
-  visibility: hidden;
+  /* 防止开场引导前游戏内容闪现（由 main.js 纯 JS 控制，避免 CSS 覆盖不可靠） */
   display: block !important;
   gap: 0 !important;
   animation: none !important;

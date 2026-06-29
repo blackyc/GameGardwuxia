@@ -63,14 +63,29 @@ export class IntroScene {
     this._buildStage();
     this.stage.classList.add('active');
 
-    // 幕1
-    await this.act1Prologue();
-    if (this._aborted) return this._cleanup();
-    // 幕2
-    this.rolled = rollIdentities(3);
-    await this.act2OriginReveal();
-    if (this._aborted) return this._cleanup();
-    // 幕3 在玩家选择后由 _onOriginPicked 触发，再继续幕4
+    // 🔇 静默开场：开场期间所有 WebAudio 合成音（板鼓/大锣/惊堂木/风声）静默，只保留 BGM
+    audio.setMuted(true);
+
+    // 🔒 兜底：若 25 秒内开幕式无进展，强制跳过
+    // （7 幕打完约 18-22 秒 + 玩家点击时间，20 秒过短会误杀）
+    this._safetyTimer = setTimeout(() => {
+      console.warn('[Intro] 安全兜底触发 — 帷幕未能拉起，跳过开场');
+      this._skip();
+    }, 25000);
+
+    try {
+      // 幕1
+      await this.act1Prologue();
+      if (this._aborted) return this._cleanup();
+      // 幕2
+      this.rolled = rollIdentities(3);
+      await this.act2OriginReveal();
+      if (this._aborted) return this._cleanup();
+      // 幕3 在玩家选择后由 _onOriginPicked 触发，再继续幕4
+    } catch (e) {
+      console.error('[Intro] 开场崩溃，强制跳过', e);
+      this._skip();
+    }
   }
 
   // ════════════════════════════════════════
@@ -81,6 +96,10 @@ export class IntroScene {
     nar.classList.remove('small');
     nar.style.display = '';
     const text = '正德年间，世有修行之人。\n吐纳灵气，参悟大道。\n然每破一境，便近祂一分。\n世人未必知晓——这是在敲谁的门。\n你的命数，自今日掷下。';
+    // 先立即完整显示一遍（避免开场被误认为黑屏）
+    nar.textContent = text;
+    await sleep(400);
+    // 再以打字机效果重写一遍（动态感）
     await this.tw.typeTo(nar, text, {
       speed: 130,
       onChar: () => audio.playBangu(),
@@ -387,8 +406,9 @@ export class IntroScene {
   _skip() {
     console.log('[Intro] 用户跳过开场');
     this._aborted = true;
+    if (this._safetyTimer) { clearTimeout(this._safetyTimer); this._safetyTimer = null; }
     this.tw.cancel();
-    audio.stopAll();
+    try { audio.stopAll(); } catch (e) { console.warn('[Intro] stopAll failed', e); }
     this._finish();
   }
 
@@ -405,19 +425,30 @@ export class IntroScene {
     this.game.state.introSeen = true;
     try { this.game.storage.save(this.game.state); } catch (e) { console.warn('[Intro] 存档失败', e); }
 
+    if (this._safetyTimer) { clearTimeout(this._safetyTimer); this._safetyTimer = null; }
     this._cleanup();
-    // 通知 game 进入主循环
-    if (typeof this.game.onIntroComplete === 'function') {
-      this.game.onIntroComplete();
-    } else {
-      // 兜底：直接启动散修流程
-      this.game.startGameAsRogue();
+    // 🔇 开场结束：恢复 SFX 为可用状态（默认仍静音，开选项后可开）
+    try { audio.setMuted(false); } catch (e) { console.warn('[Intro] setMuted 失败（非致命）', e); }
+    // 通知 game 进入主循环（无论如何都要执行）
+    try {
+      if (typeof this.game.onIntroComplete === 'function') {
+        this.game.onIntroComplete();
+      } else {
+        // 兜底：直接启动散修流程
+        this.game.startGameAsRogue();
+      }
+    } catch (e) {
+      console.error('[Intro] 进入主循环失败！尝试兜底', e);
+      try { this.game.startGameAsRogue(); } catch (e2) {
+        console.error('[Intro] 完全无法启动', e2);
+      }
     }
   }
 
   _cleanup() {
     if (this.stage) {
       this.stage.classList.remove('active');
+      this.stage.style.display = 'none'; // 立即隐藏，备 setTimeout 异步删除节点
       setTimeout(() => { if (this.stage) this.stage.remove(); this.stage = null; }, 300);
     }
     audio.stopAll();

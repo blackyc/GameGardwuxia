@@ -2690,4 +2690,5 @@ exits: { 上: '巧工坊·木匠铺后院' },
 
 };
 
-module.exports = CITY_ROOMS;
+window.CITY_ROOMS = CITY_ROOMS;
+if (typeof module !== 'undefined' && module.exports) module.exports = CITY_ROOMS;
