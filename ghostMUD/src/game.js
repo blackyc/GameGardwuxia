@@ -28,6 +28,7 @@ import { HijackEngine } from './battle_hijack.js';
 import { InterveneEngine } from './battle_intervene.js';
 // 开场 cinematic（批次H · T7.1/T7.2）
 import { IntroScene } from './ui/intro_scene.js';
+import { rollIdentities, applyIdentity } from './data/identity_data.js';
 import audio from './audio/AudioManager.js';
 
 // 时辰名映射
@@ -154,15 +155,50 @@ export class Game {
     this._registerTimers();
     this._setupPageManager();
 
-    // 开场判断：有存档且已看过开场 → 直接进主循环；否则启动 IntroScene
-    if (this.state.introSeen) {
+    // 开场判断：有存档且已看过开场且有身世 → 直接进主循环；否则跳过 IntroScene
+    // TODO: IntroScene 暂时跳过，后续 UI 完善后恢复
+    if (this.state.introSeen && this.state.innateName) {
       this.startGameAfterStartup();
     } else {
-      // 首次进入或无存档 → 播放开场 cinematic
-      this.intro = new IntroScene();
-      this.intro.start(this);
+      // 首次进入或旧存档无身世：自动 roll 身世 + 选问剑峰，跳过开场动画
+      this._skipIntroDirect();
     }
     console.log('[Game] init() completed. Timer intervals:', this.timer._intervals.size);
+  }
+
+  /**
+   * 跳过 IntroScene，直接应用随机身世 + 问剑峰门派，进入主循环
+   * TODO: 后续 IntroScene UI 完善后恢复开场动画
+   */
+  _skipIntroDirect() {
+    console.log('[Game] 跳过 IntroScene，直接进入游戏');
+    const s = this.state;
+
+    // 随机 roll 1 个身世并应用
+    try {
+      const rolled = rollIdentities(1);
+      if (rolled.length > 0) {
+        applyIdentity(this, rolled[0].id);
+        console.log('[Game] 自动身世:', rolled[0].name);
+      }
+    } catch (e) {
+      console.warn('[Game] 身世应用失败，使用默认', e);
+    }
+
+    // 自动选问剑峰
+    try {
+      this.joinFaction('问剑峰');
+      console.log('[Game] 自动门派: 问剑峰');
+    } catch (e) {
+      console.warn('[Game] joinFaction 失败', e);
+    }
+
+    // 标记已看过开场
+    s.introSeen = true;
+    try { this.storage.save(s); } catch (e) { console.warn('[Game] 存档失败', e); }
+
+    // 进入主循环（含新手引导）
+    this.onIntroComplete();
   }
 
   /**
@@ -171,9 +207,26 @@ export class Game {
    */
   onIntroComplete() {
     console.log('[Game] Intro complete, entering main loop');
+    const s = this.state;
     // 若 IntroScene 中选了门派，joinFaction 已被调用；
     // 若跳过未选门派，保持散修起点
+    // 门派新手引导触发
+    if (s.faction && s.faction !== '散修') {
+      this.startFactionTutorial(s.faction);
+    }
     this.startGameAfterStartup();
+  }
+
+  /**
+   * 启动门派新手引导
+   * 目前只实现问剑峰黄金三章，其他门派暂跳过
+   */
+  startFactionTutorial(faction) {
+    if (faction === '问剑峰' && window.WENJIANFENG_TUTORIAL_CH1) {
+      // 调用第一章教程脚本
+      window.WENJIANFENG_TUTORIAL_CH1.start(this);
+    }
+    // 其他门派暂无新手引导，直接进入自由游戏
   }
 
   // ============ 双境界体系 ============
@@ -502,8 +555,13 @@ export class Game {
       this.addLog('正德年间，世有修行之人。吐纳灵气，参悟大道。然修炼一途，每破一境便近祂一分——世人却未必知晓这是在敲谁的门。', 'system');
       this.addLog('你从应天府某条暗巷中醒来——你是谁？不重要。重要的是：你还活着。', 'system');
     }
-    this.addLog('🕯 挂机已启动。前路莫测，望君保重。', 'system');
-    this.addLog('💡 城中探索将遇奇遇，野外险地方有敌袭。搜索可得金银器物。输入「帮助」查看命令。', 'system');
+    // 如果正在新手引导，跳过通用提示
+    if (s.tutorialPhase) {
+      // 新手引导中，不显示通用提示
+    } else {
+      this.addLog('烛火摇曳。你开始了修行之路。', 'system');
+      this.addLog('💡 城中探索将遇奇遇，野外险地方有敌袭。搜索可得金银器物。输入「帮助」查看命令。', 'system');
+    }
     if (s.faction === '散修' || !s.faction) {
       this.addLog('⚡ 你尚未拜入任何帮派——在不同的城区探索，可能遇到各帮派的接引人。', 'system');
     }
@@ -683,6 +741,12 @@ export class Game {
     if (target.includes('竹林深处') && !this.isZiHour()) {
       this.addLog('竹林深处此刻不通。', 'system');
       return;
+    }
+
+    // 新手引导移动拦截：巡礼阶段由教程脚本控制移动
+    if (s.tutorialPhase && window.WENJIANFENG_TUTORIAL_CH1) {
+      const handled = window.WENJIANFENG_TUTORIAL_CH1.onMove(this, target);
+      if (handled) return;
     }
 
     s.location = target;
@@ -918,6 +982,29 @@ export class Game {
     // 加入/切换帮派：人物面板 + 境况面板 + 武学面板都需刷新
     this.renderer.updateUI(['char', 'status', 'wuxue']);
     if (this.currentTab === 'wuxue') this.renderer.renderWuxue();
+
+    // 门派HQ传送：加入门派后自动传送到对应HQ
+    const FACTION_HQ = {
+      '问剑峰': '问剑峰·山门',
+      '血禅寺': '血禅寺·大殿',
+      '药王谷': '药王坊·义诊堂',
+      '焰心教': '赤炎居·香火铺',
+      '忘尘宗': '梵音堂·经书坊',
+      '紫霞山': '紫微阁·星象铺',
+      '逍遥驿': '逍遥馆·客栈天字房',
+      '镜阁': '影壁街·纸扎铺',
+      '归墟': '阴司牢·外层',
+      '青囊庐': '百草堂·药铺后院',
+      '傀坊': '巧工坊·木匠铺后院',
+    };
+    if (FACTION_HQ[name]) {
+      s.location = FACTION_HQ[name];
+      // 将HQ加入已探索列表
+      if (!s.explored.includes(s.location)) {
+        s.explored.push(s.location);
+      }
+      this.addLog('你被带到了 ' + s.location.split('·').pop() + '。', 'system');
+    }
   }
 
   // ============ 武学系统 ============
