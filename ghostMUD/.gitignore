@@ -1,0 +1,24 @@
+# Browser debug profiles
+.cdp-profile/
+.cdp-profile2/
+
+# Node
+node_modules/
+
+# Vite cache
+*.vite/
+
+# Build artifacts (keep dist/ for deployment)
+# dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Temp screenshots
+work/_screenshot_*.png
