@@ -155,23 +155,37 @@ export class Game {
     this._registerTimers();
     this._setupPageManager();
 
-    // 开场判断：有存档且已看过开场且有身世 → 直接进主循环；否则跳过 IntroScene
-    // TODO: IntroScene 暂时跳过，后续 UI 完善后恢复
+    // 开场判断：有存档且已看过开场且有身世 → 直接进主循环；否则启动 IntroScene
     if (this.state.introSeen && this.state.innateName) {
       this.startGameAfterStartup();
     } else {
-      // 首次进入或旧存档无身世：自动 roll 身世 + 选问剑峰，跳过开场动画
-      this._skipIntroDirect();
+      // 首次进入或旧存档无身世：启动开场 Cinematic（身世选择 + 门派选择）
+      this._startIntroScene();
     }
     console.log('[Game] init() completed. Timer intervals:', this.timer._intervals.size);
   }
 
   /**
-   * 跳过 IntroScene，直接应用随机身世 + 问剑峰门派，进入主循环
-   * TODO: 后续 IntroScene UI 完善后恢复开场动画
+   * 启动 IntroScene 开场 Cinematic（7幕：身世叙事→三选一Roll→门派选择→帷幕拉开）
+   * 若 IntroScene 崩溃，自动 fallback 到 _skipIntroDirect()
+   */
+  _startIntroScene() {
+    console.log('[Game] 启动 IntroScene 开场');
+    try {
+      this._introScene = new IntroScene();
+      this._introScene.start(this);
+    } catch (e) {
+      console.error('[Game] IntroScene 启动失败，fallback 到直接进入', e);
+      this._skipIntroDirect();
+    }
+  }
+
+  /**
+   * Fallback：跳过 IntroScene，直接应用随机身世 + 问剑峰门派，进入主循环
+   * 仅在 IntroScene 崩溃时使用
    */
   _skipIntroDirect() {
-    console.log('[Game] 跳过 IntroScene，直接进入游戏');
+    console.log('[Game] Fallback: 跳过 IntroScene，直接进入游戏');
     const s = this.state;
 
     // 随机 roll 1 个身世并应用
