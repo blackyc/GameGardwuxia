@@ -5,8 +5,10 @@
  * 不修改 battle_async.js，由 BattleEngine 在 _checkHijack 中委托调用。
  *
  * 数据依赖：
- *   window.COMBAT_HIJACK — 畸变概率表、叙事模板、功法替换映射、祂的战诀
- *   window.CORRUPTION    — 六宗门×5级畸变链（CORRUPTION_DATA）
+ *   COMBAT_HIJACK — 畸变概率表、叙事模板、功法替换映射、祂的战诀
+ *   CORRUPTION_DATA — 六宗门×5级畸变链
+ *
+ *   通过 data_loader.getData() 从卷宗获取。
  *
  * 使用方式：
  *   import { HijackEngine } from './battle_hijack.js';
@@ -15,6 +17,8 @@
  *
  * 叙事风格：冷静、疏离、像在写解剖报告。越冷越恐怖。
  */
+
+import { getData } from './data/data_loader.js';
 
 // ============================================================
 //  常量
@@ -69,9 +73,16 @@ export class HijackEngine {
     this.be = battleEngine;
     this.game = battleEngine.game;
     /** @type {COMBAT_HIJACK} 畸变数据引用 */
-    this.HIJACK = (typeof window !== 'undefined' && window.COMBAT_HIJACK) ? window.COMBAT_HIJACK : null;
+    this.HIJACK = null;
     /** @type {CORRUPTION_DATA} 灵修畸变链引用 */
-    this.CORRUPTION = (typeof window !== 'undefined' && window.CORRUPTION_DATA) ? window.CORRUPTION_DATA : null;
+    this.CORRUPTION = null;
+    try {
+      const dl = getData();
+      this.HIJACK = dl.COMBAT_HIJACK || null;
+      this.CORRUPTION = dl.CORRUPTION_DATA || null;
+    } catch(e) {
+      console.warn('[HijackEngine] 卷宗数据未就绪:', e.message);
+    }
     /** 当前战斗中战诀覆写状态 */
     this._chartOverrideActive = false;
     this._entityChartKey = null;

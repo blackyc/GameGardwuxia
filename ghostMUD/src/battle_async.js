@@ -15,6 +15,8 @@
  * 不修改 game.js，通过引用 game 实例操作
  */
 
+import { getData } from './data/data_loader.js';
+
 // ============================================================
 //  常量 & 查表
 // ============================================================
@@ -61,10 +63,11 @@ const HIJACK_BASE_RATE = [0, 0.03, 0.08, 0.15, 0.25, 0.40];
 //  辅助函数
 // ============================================================
 
-/** 从 window.COMBAT_SKILLS_V3 查找技能，fallback 到简单对象 */
+/** 从卷宗数据中查找技能，fallback 到简单对象 */
 function getSkillData(skillId) {
-  if (window.COMBAT_SKILLS_V3) {
-    const found = window.COMBAT_SKILLS_V3.find(s => s.id === skillId);
+  const data = getData();
+  if (data.COMBAT_SKILLS_V3) {
+    const found = data.COMBAT_SKILLS_V3.find(s => s.id === skillId);
     if (found) return found;
   }
   // fallback：构造一个最小可用技能

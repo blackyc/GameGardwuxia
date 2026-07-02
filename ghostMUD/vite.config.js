@@ -17,7 +17,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    // work/ 下文件通过 <script> 标签经典加载，禁止 Vite 扫描
+    // work/ 工具脚本和 public/data/ 数据文件通过 <script> 标签经典加载，禁止 Vite 扫描
     entries: ['src/main.js']
   }
 });

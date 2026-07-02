@@ -1,4 +1,4 @@
-﻿# Ghost MUD v2.0 · TODO 执行排期表
+# Ghost MUD v2.0 · TODO 执行排期表
 
 > **📦 已归档（2026-06-23）**：本文档的全部内容（Phase 0-8）已并入
 > `docs/refactor_task_tracker.md`，重组为该文档的 **T6-T12 阶段**。

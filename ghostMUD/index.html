@@ -235,66 +235,44 @@
   </div>
 </div>
 
-<!-- 数据层：全局变量加载（保持原始文件不动）-->
-<script src="/work/rebuild_enemies_items_realms.js"></script>
-<script src="/work/rebuild_atmosphere.js"></script>
-<script src="/work/rebuild_rooms_city.js"></script>
-<script src="/work/rebuild_rooms_wild.js"></script>
-<script src="/work/rebuild_dungeon_rooms.js"></script>
-<script src="/work/rebuild_skill_descriptions_1.js"></script>
-<script src="/work/rebuild_skill_descriptions_2.js"></script>
-<script src="/work/integration_v2.js"></script>
-
-<!-- Phase 8 数据层：双修体系 -->
-<script src="/work/rebuild_meridians.js"></script>
-<script src="/work/rebuild_seals.js"></script>
-<script src="/work/rebuild_builds_drops_corruption.js"></script>
-<script src="/work/corruption_system.js"></script>
-<script src="/work/jianghu_events.js"></script>
-<script src="/work/cross_path_quests.js"></script>
-<script src="/work/rebuild_skill_descriptions_ling.js"></script>
+<!-- 数据层：全局变量加载（已迁移至 public/data/）-->
+<script src="/data/rebuild_enemies_items_realms.js"></script>
+<script src="/data/rebuild_atmosphere.js"></script>
+<script src="/data/rebuild_rooms_city.js"></script>
+<script src="/data/rebuild_rooms_wild.js"></script>
+<script src="/data/rebuild_dungeon_rooms.js"></script>
+<script src="/data/rebuild_skill_descriptions_1.js"></script>
+<script src="/data/rebuild_skill_descriptions_2.js"></script>
 
 <!-- 问剑峰门派HQ + 新手引导（T7.3） -->
-<script src="/work/rebuild_rooms_wenjianfeng.js"></script>
-<script src="/work/wenjianfeng_tutorial_ch1.js"></script>
+<script src="/data/rebuild_rooms_wenjianfeng.js"></script>
+<script src="/data/wenjianfeng_tutorial_ch1.js"></script>
+
+<!-- 集成桥接层：合并所有房间数据到 LOCATIONS -->
+<script src="/data/integration_v2.js"></script>
+
+<!-- Phase 8 数据层：双修体系 -->
+<script src="/data/rebuild_meridians.js"></script>
+<script src="/data/rebuild_seals.js"></script>
+<script src="/data/rebuild_builds_drops_corruption.js"></script>
+<script src="/data/corruption_system.js"></script>
+<script src="/data/jianghu_events.js"></script>
+<script src="/data/cross_path_quests.js"></script>
+<script src="/data/rebuild_skill_descriptions_ling.js"></script>
 
 <!-- 行功战斗系统数据层 -->
-<script src="/work/rebuild_combat_gong.js"></script>
-<script src="/work/rebuild_combat_atb.js"></script>
-<script src="/work/rebuild_combat_hijack.js"></script>
+<script src="/data/rebuild_combat_gong.js"></script>
+<script src="/data/rebuild_combat_atb.js"></script>
+<script src="/data/rebuild_combat_hijack.js"></script>
+
+<!-- 帮派招募NPC遭遇数据 -->
+<script src="/data/ghost_faction_recruiter_encounters.js"></script>
 
 <!-- 行功战斗系统 v3.0 数据层 -->
-<script src="/work/combat_skills_v3.js"></script>
+<script src="/data/combat_skills_v3.js"></script>
 
 <!-- 桥接层：将 const/let 声明的全局变量挂到 window，供 ES6 模块读取 -->
-<script>
-  // rebuild_*.js 中用 const 声明的变量不会自动挂到 window
-  // 需要手动桥接，data_loader.js 才能通过 window.xxx 读取
-  [
-    'PREREQ_TYPES', 'REALMS', 'ENEMIES', 'ITEMS', 'LOOT_TABLES',
-    'ATMOSPHERE_ITEMS',
-    'CITY_ROOMS', 'WILD_ROOMS', 'DUNGEON_ROOMS',
-    'GHOST_SKILL_TREES_1', 'GHOST_SKILL_TREES_2',
-    // Phase 8 双修体系
-    'MERIDIANS', 'SEALS', 'SEAL_CATEGORIES',
-    'BUILDS', 'MERIDIAN_DROPS', 'CORRUPTION',
-    'CORRUPTION_TIERS', 'CORRUPTION_DATA',
-    'JIANGHU_NPCS', 'JIANGHU_EVENTS', 'JIANGHU_SIDELINES',
-    'CROSS_PATH_QUESTS', 'LING_SKILL_DATA',
-    // 行功战斗系统
-    'XINGGONG', 'ATB_SYSTEM', 'COMBAT_HIJACK',
-    // 问剑峰门派HQ
-    'WENJIANFENG_ROOMS'
-  ].forEach(function(name) {
-    try {
-      if (eval('typeof ' + name) !== 'undefined') {
-        window[name] = eval(name);
-      }
-    } catch(e) { console.warn('[Bridge] Variable ' + name + ' not found: ' + e.message); }
-  });
-  if (typeof getDesc === 'function') window.getDesc = getDesc;
-  if (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined') window.FACTION_RECRUITER_ENCOUNTERS = FACTION_RECRUITER_ENCOUNTERS;
-</script>
+<!-- 数据文件各自在文件末尾将变量注册到 window.__DATA_REGISTRY，无需 eval bridge -->
 
 <script src="/diagnose.js"></script>
 

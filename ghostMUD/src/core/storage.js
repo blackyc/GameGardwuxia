@@ -1,4 +1,4 @@
-﻿/**
+/**
  * storage.js — 存档系统
  * 参考猫国建设者 game.js 的 save/load + IDataStorageAware
  * 使用 localStorage 序列化/反序列化游戏状态

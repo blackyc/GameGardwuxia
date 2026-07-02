@@ -1,4 +1,4 @@
-﻿// 诊断脚本：检查卷宗加载和核心模块
+// 诊断脚本：检查卷宗加载和核心模块
 window.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     console.log('=== ghostMUD Diagnostic ===');

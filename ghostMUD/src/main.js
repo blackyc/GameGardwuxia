@@ -1,4 +1,4 @@
-﻿/**
+/**
  * main.js — 应用入口
  * Vite ES6 模块入口点
  */
@@ -29,7 +29,7 @@ audio.startBgm();
 
 /** 核心启动：初始化 PageManager + Game */
 function boot() {
-  if (typeof window.LOCATIONS === 'undefined') {
+  if (!window.__DATA_REGISTRY || !window.__DATA_REGISTRY.LOCATIONS) {
     console.error('[Main] 卷宗文件未加载！');
     const la = document.getElementById('log-area');
     if (la) la.innerHTML = '<div class="log-entry system">⚠ 卷宗加载失败！请刷新页面重试。</div>';

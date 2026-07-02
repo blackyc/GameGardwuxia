@@ -94,11 +94,17 @@ ghostMUD/
 │       ├── responsive.css
 │       └── themes/night.css  # 夜间主题
 │
-├── work/                     # 数据生成/迁移脚本与原始数据
-│   ├── rebuild_*.js          # 重建后的数据文件（由 index.html 加载）
+├── public/data/             # 运行时数据文件（由 index.html <script> 加载）
+│   ├── rebuild_*.js          # 重建后的数据文件（境界/敌人/房间/技能等）
 │   ├── integration_v2.js     # 数据适配层（统一数据契约）
+│   ├── combat_skills_v3.js   # 行功战斗系统 v3.0 技能数据
+│   └── corruption_system.js  # 灵修畸变系统
+│
+├── work/                     # 临时工具脚本（不参与运行时加载）
 │   ├── ghost_*.js/json       # 原始世界观/系统设计数据
-│   └── test_*.js/py          # 集成与回归测试
+│   ├── scan_*.js             # 数据扫描/验证脚本
+│   ├── test_*.js             # 集成与回归测试
+│   └── transform.js          # 数据转换工具
 │
 ├── docs/                     # 设计文档
 │   ├── worldview.md          # 核心世界观
@@ -124,11 +130,11 @@ ghostMUD/
 
 ### 第 1 层：全局数据脚本（`index.html` 内）
 
-通过普通 `<script>` 标签顺序加载 `work/rebuild_*.js`，这些文件用 `const` / `var` 声明全局变量：
+通过普通 `<script>` 标签顺序加载 `public/data/*.js`，这些文件用 `const` / `var` 声明全局变量：
 
 ```html
-<script src="/work/rebuild_enemies_items_realms.js"></script>
-<script src="/work/rebuild_rooms_city.js"></script>
+<script src="/data/rebuild_enemies_items_realms.js"></script>
+<script src="/data/rebuild_rooms_city.js"></script>
 <!-- ... -->
 ```
 

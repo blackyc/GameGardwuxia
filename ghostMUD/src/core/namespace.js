@@ -1,4 +1,4 @@
-﻿/**
+/**
  * namespace.js — GhostMUD 全局命名空间
  * 参考猫国建设者的 window.game 模式，但用 ES6 Module 替代全局变量
  */

@@ -22,10 +22,8 @@ import { ResourcePool } from './core/respool.js';
 import { Storage } from './core/storage.js';
 import { InputManager } from './ui/input.js';
 import { Renderer } from './ui/renderer.js';
-// 行功战斗系统 v3.0
-import { BattleEngine } from './battle_async.js';
-import { HijackEngine } from './battle_hijack.js';
-import { InterveneEngine } from './battle_intervene.js';
+// 战斗门面层（从 Game 拆出，代理 startCombat/combatAction/skill 等）
+import { CombatFacade } from './combat_facade.js';
 // 开场 cinematic（批次H · T7.1/T7.2）
 import { IntroScene } from './ui/intro_scene.js';
 import { rollIdentities, applyIdentity } from './data/identity_data.js';
@@ -72,8 +70,8 @@ export class Game {
     this.MAP_POS = MAP_POS;
     this.MAP_CONN = MAP_CONN;
     // 双境界体系：WU_REALMS / LING_REALMS 引用
-    this.WU_REALMS = window.WU_REALMS || [];
-    this.LING_REALMS = window.LING_REALMS || [];
+    this.WU_REALMS = this.data.WU_REALMS || [];
+    this.LING_REALMS = this.data.LING_REALMS || [];
     // getDesc：使用三层描述系统，fallback 到原始 getDesc（处理特殊对象）
     this._rawGetDesc = getDesc || ((obj) => obj?.desc || '');
     this.getDesc = (obj) => {
@@ -85,13 +83,11 @@ export class Game {
     this.currentTab = null;
     this.mapOpen = false;
 
-    // 行功战斗系统 v3.0 引擎实例
-    this.battleEngine = null;    // 战斗时创建实例
-    this.hijackEngine = null;
-    this.interveneEngine = null;
+    // 战斗门面（代理所有战斗相关方法）
+    this.combat = new CombatFacade(this);
 
     // 游戏状态
-    const r0 = (window.WU_REALMS || REALMS)[0]; // 默认武修路径
+    const r0 = (this.WU_REALMS.length > 0 ? this.WU_REALMS : REALMS)[0]; // 默认武修路径
     this.state = {
       path: 'wu', // 修行路径：'wu'（武修）| 'ling'（灵修）
       realm: 0,
@@ -236,9 +232,10 @@ export class Game {
    * 目前只实现问剑峰黄金三章，其他门派暂跳过
    */
   startFactionTutorial(faction) {
-    if (faction === '问剑峰' && window.WENJIANFENG_TUTORIAL_CH1) {
+    const dl = getData();
+    if (faction === '问剑峰' && dl.WENJIANFENG_TUTORIAL_CH1) {
       // 调用第一章教程脚本
-      window.WENJIANFENG_TUTORIAL_CH1.start(this);
+      dl.WENJIANFENG_TUTORIAL_CH1.start(this);
     }
     // 其他门派暂无新手引导，直接进入自由游戏
   }
@@ -266,7 +263,7 @@ export class Game {
    * @returns {string} 当前路径对应的中文术语
    */
   getTerm(key) {
-    const tm = window.TERM_MAP;
+    const tm = this.data.TERM_MAP;
     if (!tm || !tm[this.state.path] || !tm[this.state.path][key]) return key;
     return tm[this.state.path][key];
   }
@@ -758,9 +755,12 @@ export class Game {
     }
 
     // 新手引导移动拦截：巡礼阶段由教程脚本控制移动
-    if (s.tutorialPhase && window.WENJIANFENG_TUTORIAL_CH1) {
-      const handled = window.WENJIANFENG_TUTORIAL_CH1.onMove(this, target);
-      if (handled) return;
+    if (s.tutorialPhase) {
+      const dl = getData();
+      if (dl.WENJIANFENG_TUTORIAL_CH1) {
+        const handled = dl.WENJIANFENG_TUTORIAL_CH1.onMove(this, target);
+        if (handled) return;
+      }
     }
 
     s.location = target;
@@ -827,7 +827,8 @@ export class Game {
     let pool = this.NPC_ENCOUNTERS[room];
 
     // 帮派招募NPC
-    const factionPool = (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined') ? (window.FACTION_RECRUITER_ENCOUNTERS || FACTION_RECRUITER_ENCOUNTERS)[room] : null;
+    const dl = getData();
+    const factionPool = dl.FACTION_RECRUITER_ENCOUNTERS[room] || null;
 
     if ((!pool || pool.length === 0) && factionPool && factionPool.length > 0 && this.state.faction === '散修' && Math.random() < 0.4) {
       pool = factionPool;
@@ -1021,88 +1022,13 @@ export class Game {
     }
   }
 
-  // ============ 武学系统 ============
-
-  getSkillName(skillId) {
-    const allFactions = { ...this.FACTIONS };
-    if (this.ROGUE_SKILLS) allFactions['散修'] = this.ROGUE_SKILLS;
-    for (const [fname, fdata] of Object.entries(allFactions)) {
-      if (!fdata.skills) continue;
-      const sk = fdata.skills.find(s => s.id === skillId);
-      if (sk) return sk.name;
-    }
-    return skillId;
-  }
-
-  getSkillData(skillId) {
-    const allFactions = { ...this.FACTIONS };
-    if (this.ROGUE_SKILLS) allFactions['散修'] = this.ROGUE_SKILLS;
-    for (const [fname, fdata] of Object.entries(allFactions)) {
-      if (!fdata.skills) continue;
-      const sk = fdata.skills.find(s => s.id === skillId);
-      if (sk) return sk;
-    }
-    return null;
-  }
-
-  skillDetail(skillId) {
-    const sk = this.getSkillData(skillId);
-    const s = this.state;
-    if (!sk) { this.addLog('武学典籍缺失。', 'system'); return; }
-    const learned = s.skills[skillId];
-    this.addLog('━━ 「' + sk.name + '」 ━━', 'special');
-    this.addLog('类型：' + sk.type + ' | ' + (learned ? '已学 Lv.' + learned.level + ' EXP:' + Math.floor(learned.exp) : '未解锁'), 'info');
-    if (sk.description) this.addLog(sk.description, 'event');
-    if (sk.performs && sk.performs.length > 0) {
-      this.addLog('绝招：', 'special');
-      sk.performs.forEach(p => {
-        this.addLog('  「' + p.name + '」—— ' + (p.description || ''), 'info');
-      });
-    }
-    this.switchTab('wuxue');
-  }
-
-  practiceSkill(skillId) {
-    const s = this.state;
-    const sk = this.getSkillData(skillId);
-    if (!sk) return;
-    if (!s.skills[skillId]) { this.addLog('你尚未习得此武学。', 'system'); return; }
-    const cost = 10 + s.skills[skillId].level * 3;
-    if (this.getMoney() < cost) { this.addLog(this.getMoneyName() + '不足！修炼需要 ' + cost + ' ' + this.getMoneyName() + '。', 'combat'); return; }
-    if (s.daoxin < 5) { this.addLog('道心涣散，无法专注修炼。', 'combat'); return; }
-    this.spendMoney(cost);
-    s.daoxin = Math.max(0, s.daoxin - 5);
-    const expGain = 10 + Math.floor(Math.random() * 20);
-    s.skills[skillId].exp += expGain;
-    const needExp = s.skills[skillId].level * 50;
-    if (s.skills[skillId].exp >= needExp) {
-      s.skills[skillId].exp -= needExp;
-      s.skills[skillId].level++;
-      this.addLog('🌟 「' + sk.name + '」突破至 Lv.' + s.skills[skillId].level + '！', 'breakthrough');
-    } else {
-      this.addLog('🧘 修炼「' + sk.name + '」EXP+' + expGain + '（' + Math.floor(s.skills[skillId].exp) + '/' + needExp + '）消耗 ' + cost + ' ' + this.getMoneyName(), 'info');
-    }
-    if (['sword','blade','cuff','strike','finger','staff','whip','claw','spear','hammer'].includes(sk.type)) {
-      s.equippedSkill = skillId;
-    }
-    // 修炼武学：灵石/道心/技能变化，更新人物面板 + 进度条 + 武学面板
-    this.renderer.updateUI(['char', 'status', 'progress', 'wuxue']);
-  }
-
-  equipSkill(skillId) {
-    if (!this.state.skills[skillId]) { this.addLog('尚未习得此武学。', 'system'); return; }
-    this.state.equippedSkill = skillId;
-    this.addLog('⚔ 装配「' + this.getSkillName(skillId) + '」为战斗主修武学。', 'info');
-    // 装配武学只影响人物/境况面板
-    this.renderer.updateUI(['char', 'status']);
-  }
-
-  unequipSkill() {
-    this.state.equippedSkill = null;
-    this.addLog('卸下装配武学。', 'info');
-    // 卸下武学只影响人物/境况面板
-    this.renderer.updateUI(['char', 'status']);
-  }
+  // ============ 武学/战斗代理（委托 CombatFacade）============
+  getSkillName(skillId) { return this.combat.getSkillName(skillId); }
+  getSkillData(skillId) { return this.combat.getSkillData(skillId); }
+  skillDetail(skillId) { return this.combat.skillDetail(skillId); }
+  practiceSkill(skillId) { return this.combat.practiceSkill(skillId); }
+  equipSkill(skillId) { return this.combat.equipSkill(skillId); }
+  unequipSkill() { return this.combat.unequipSkill(); }
 
   // ============ 拜师系统 ============
 
@@ -1164,341 +1090,14 @@ export class Game {
     this.renderer.updateUI(['char', 'status', 'wuxue']);
   }
 
-  // ============ 战斗系统 ============
-
-  triggerEncounter(loc) {
-    const name = pickEnemy(loc.danger);
-    const data = this.ENEMIES ? this.ENEMIES[name] : getData().ENEMIES[name];
-    if (!data) return;
-    const dl = data.desc.length > 80 ? data.desc.substring(0, 80) + '…' : data.desc;
-    this.addLog('⚔ 遭遇 <b style="color:#c05555;">' + name + '</b> —— ' + dl, 'combat');
-    this.startCombat(name, data);
-  }
-
-  startCombat(name, data) {
-    // 行功战斗系统 v3.0：检查是否有战诀数据
-    const chart = this.state.chart || (window.XINGGONG && window.XINGGONG[this.state.faction]);
-    if (chart && window.COMBAT_SKILLS_V3) {
-      // 使用新战斗引擎
-      this.battleEngine = new BattleEngine(this);
-      this.hijackEngine = new HijackEngine(this.battleEngine);
-      this.interveneEngine = new InterveneEngine(this.battleEngine);
-
-      // 设置回调
-      this.battleEngine._onLog = (text, type) => this.addLog(text, type);
-      this.battleEngine._onUpdate = () => this.renderer.updateCombatUI();
-      this.battleEngine._onEnd = (victory) => this.endCombat(victory);
-
-      // 启动战斗
-      this.state.combat = { enemyName: name, enemyData: data };
-      document.getElementById('combat-modal').classList.add('active');
-      this.battleEngine.startCombat(data, chart);
-    } else {
-      // fallback 到旧引擎
-      this._legacyStartCombat(name, data);
-    }
-  }
-
-  /**
-   * 战斗行动代理 — 新引擎优先，旧引擎 fallback
-   * action: 'attack'|'skill'|'defend'|'flee'|'variant'|'potion'|'retreat'
-   */
-  combatAction(action) {
-    if (this.battleEngine && this.battleEngine.battleState && this.battleEngine.battleState.active) {
-      // 转发到新引擎
-      const be = this.battleEngine;
-      switch (action) {
-        case 'attack': {
-          // 自动出招：找第一个 CD 就绪的槽位
-          for (let i = 0; i < 5; i++) {
-            if (be.battleState.slotUnlocked[i] && be.battleState.cooldowns[i] <= 0) {
-              be.autoCast(i);
-              return;
-            }
-          }
-          // 没有 CD 就绪的技能，调息
-          this.addLog('⏳ 所有招式都在冷却中…', 'combat');
-          break;
-        }
-        case 'skill': {
-          // 显示绝招/技能选择面板
-          this.showPerforms();
-          return;
-        }
-        case 'defend': {
-          // 新引擎中 defend = 调息（恢复真气）
-          this.addLog('🧘 凝神调息，真气回复。', 'combat');
-          break;
-        }
-        case 'flee': {
-          // 尝试撤退
-          if (this.interveneEngine) {
-            this.interveneEngine.doRetreat();
-          } else {
-            this.addLog('🏃 无法撤退！', 'combat');
-          }
-          break;
-        }
-        case 'variant': {
-          // 畸变干预
-          if (this.interveneEngine) {
-            const presets = this.interveneEngine.getAvailableInterventions();
-            if (presets && presets.variant) {
-              this.interveneEngine.doVariant(presets.variant[0]?.id);
-            }
-          }
-          break;
-        }
-        case 'potion': {
-          // 丹药干预
-          if (this.interveneEngine) {
-            this.interveneEngine.doPotion(null);
-          }
-          break;
-        }
-        case 'retreat': {
-          // 撤退干预
-          if (this.interveneEngine) {
-            this.interveneEngine.doRetreat();
-          }
-          break;
-        }
-        default:
-          // 未知动作，尝试旧引擎
-          this._legacyCombatAction(action);
-          break;
-      }
-    } else {
-      // 旧引擎 fallback
-      this._legacyCombatAction(action);
-    }
-  }
-
-  _legacyStartCombat(name, data) {
-    this.state.roundCount = 0;
-    this.state.performCooldowns = {};
-    this.state.combat = {
-      enemyName: name, enemyHp: data.hp, enemyMaxHp: data.hp,
-      enemyAtk: data.atk, enemyDef: data.def, enemyData: data
-    };
-    document.getElementById('combat-modal').classList.add('active');
-    this.renderer.updateCombatUI();
-  }
-
-  _legacyCombatAction(action) {
-    if (!this.state.combat) return;
-    const c = this.state.combat, s = this.state;
-    switch (action) {
-      case 'attack': {
-        let skillBonus = 0;
-        if (s.equippedSkill && s.skills[s.equippedSkill]) {
-          skillBonus = s.skills[s.equippedSkill].level * 2;
-        }
-        const dmg = Math.max(1, s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0) + skillBonus + Math.floor(Math.random() * 10) + s.realm * 2 - c.enemyDef);
-        c.enemyHp -= dmg;
-        this.addLog('⚔ 你挥出一击，造成 ' + dmg + ' 点伤害！' + (skillBonus > 0 ? '（武学加成+' + skillBonus + '）' : ''), 'combat');
-        break;
-      }
-      case 'skill': {
-        this.showPerforms();
-        return;
-      }
-      case 'defend': {
-        let defBonus = 0;
-        if (s.equippedSkill && s.skills[s.equippedSkill]) {
-          const skData = this.getSkillData(s.equippedSkill);
-          if (skData && skData.defenseBonus) defBonus = Math.floor(skData.defenseBonus * s.skills[s.equippedSkill].level / 100);
-        }
-        s.hp = Math.min(s.maxHp, s.hp + Math.floor(s.maxHp * 0.1) + defBonus);
-        this.addLog('🛡 凝神守势，稳固体魄，恢复少量生命。' + (defBonus > 0 ? '（武学防御+' + defBonus + '）' : ''), 'combat');
-        break;
-      }
-      case 'flee': {
-        let dodgeBonus = 0;
-        for (const [skId, skState] of Object.entries(s.skills)) {
-          const skData = this.getSkillData(skId);
-          if (skData && skData.type === 'dodge') {
-            dodgeBonus = Math.max(dodgeBonus, skState.level * 0.03);
-          }
-        }
-        if (Math.random() < 0.4 + s.realm * 0.05 + dodgeBonus) {
-          this.addLog('🏃 抓住间隙，成功脱身！' + (dodgeBonus > 0 ? '（轻功+成）' : ''), 'info');
-          this.endCombat(false);
-          return;
-        } else {
-          this.addLog('🏃 遁走失败！', 'combat');
-        }
-        break;
-      }
-    }
-    if (c.enemyHp <= 0) {
-      s.roundCount++;
-      const exp = c.enemyData.exp + (c.enemyData.boss ? 50 : 0);
-      const gold = c.enemyData.gold;
-      s.cultivation += exp;
-      if (c.enemyData.dropsSpirit) { this.addSpiritStones(gold); }
-      else { this.addMoney(gold); }
-      this.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
-      if (!c.enemyData.dropsSpirit) this.addLog('   得 ' + exp + ' 修为，' + gold + ' ' + this.getMoneyName(), 'item');
-      else this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
-      if (c.enemyData.boss && c.enemyData.special) {
-        this.addLog('?? ' + c.enemyData.special, 'special');
-      }
-      this.checkQuestProgress('kill', c.enemyName);
-      this.endCombat(true);
-      return;
-    }
-    s.roundCount++;
-    const eDmg = Math.max(1, c.enemyAtk + Math.floor(Math.random() * 8) - s.defense - (s.equipment.armor ? s.equipment.armor.def : 0));
-    s.hp -= eDmg;
-    this.addLog('👊 ' + c.enemyName + ' 反击，造成 ' + eDmg + ' 点伤害！', 'combat');
-    if (s.hp <= 0) { s.hp = 0; this.gameOver('力战不敌，殒命于此'); return; }
-    this.renderer.updateCombatUI();
-  }
-
-  showPerforms() {
-    const s = this.state;
-    const c = s.combat;
-    if (!c) return;
-    const list = document.getElementById('perform-list');
-    if (!list) return;
-
-    const available = [];
-    const allFactions = { ...this.FACTIONS };
-    if (this.ROGUE_SKILLS) allFactions['散修'] = this.ROGUE_SKILLS;
-
-    for (const [skillId, skillState] of Object.entries(s.skills)) {
-      const sk = this.getSkillData(skillId);
-      if (!sk || !sk.performs) continue;
-      sk.performs.forEach(p => {
-        const minLvl = p.requirements ? parseInt((String(p.requirements).match(/(\d+)/) || ['0'])[0]) || 0 : 0;
-        if (skillState.level >= minLvl) {
-          available.push({ perform: p, skillName: sk.name, skillId, level: skillState.level });
-        }
-      });
-    }
-
-    if (available.length === 0) {
-      list.innerHTML = '<div style="color:#6e5c50;text-align:center;padding:8px">尚无可用绝招。修炼武学以解锁绝招。</div>';
-    } else {
-      const morale = Math.floor(s.daoxin / 2);
-      let html = '<div style="font-size:10px;color:#6e5c50;margin-bottom:4px">气势：' + morale + '（道心）| 回合：' + (s.roundCount || 1) + '</div>';
-      available.forEach(({perform, skillName, skillId, level}) => {
-        const cd = s.performCooldowns[perform.id];
-        const cdLeft = cd ? Math.max(0, perform.cooldown - (s.roundCount - cd)) : 0;
-        const onCd = cdLeft > 0;
-        const moraleCost = perform.moraleCost || perform.qiCost || 25;
-        html += '<div class="perform-item' + (onCd ? ' on-cd' : '') + '" data-perform="' + perform.id + '"><div class="pname">' + perform.name + ' <span style="font-size:10px;color:#5a4a68">(' + skillName + ' Lv.' + level + ')</span></div><div class="pdesc">' + (perform.description || '').substring(0, 60) + '</div><div class="pcost">气势 ' + moraleCost + ' | CD ' + perform.cooldown + '回合' + (onCd ? ' | ⏳冷却中(' + cdLeft + '回合)' : '') + '</div></div>';
-      });
-      list.innerHTML = html;
-
-      // 绑定点击
-      list.querySelectorAll('[data-perform]').forEach(el => {
-        if (!el.classList.contains('on-cd')) {
-          el.addEventListener('click', () => this.usePerform(el.dataset.perform));
-        }
-      });
-    }
-
-    document.getElementById('perform-area').style.display = 'block';
-    document.querySelector('#combat-modal .combat-actions').style.display = 'none';
-  }
-
-  hidePerforms() {
-    document.getElementById('perform-area').style.display = 'none';
-    document.querySelector('#combat-modal .combat-actions').style.display = 'grid';
-  }
-
-  usePerform(performId) {
-    if (!this.state.combat) return;
-    const s = this.state, c = s.combat;
-
-    const allFactions = { ...this.FACTIONS };
-    if (this.ROGUE_SKILLS) allFactions['散修'] = this.ROGUE_SKILLS;
-    let performData = null, skillData = null;
-    for (const [fname, fdata] of Object.entries(allFactions)) {
-      if (!fdata.skills) continue;
-      for (const sk of fdata.skills) {
-        if (!sk.performs) continue;
-        const p = sk.performs.find(p => p.id === performId);
-        if (p) { performData = p; skillData = sk; break; }
-      }
-      if (performData) break;
-    }
-    if (!performData) return;
-
-    const moraleCost = performData.moraleCost || performData.qiCost || 25;
-    const morale = Math.floor(s.daoxin / 2);
-    if (morale < moraleCost) {
-      this.addLog('气势不足！（需要 ' + moraleCost + '，当前 ' + morale + '）', 'combat');
-      return;
-    }
-
-    const lastUsed = s.performCooldowns[performId];
-    if (lastUsed && s.roundCount - lastUsed < (performData.cooldown || 4)) {
-      this.addLog('绝招冷却中…', 'combat');
-      return;
-    }
-
-    s.performCooldowns[performId] = s.roundCount;
-    s.daoxin = Math.max(0, s.daoxin - Math.floor(moraleCost / 2));
-
-    const skillLvl = s.skills[skillData.id] ? s.skills[skillData.id].level : 1;
-    const baseDmg = s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0) + skillLvl * 2;
-    const dmgMultiplier = 1.2 + skillLvl * 0.02;
-    const dmg = Math.max(1, Math.floor(baseDmg * dmgMultiplier) + Math.floor(Math.random() * 20) + s.realm * 3 - c.enemyDef);
-    c.enemyHp -= dmg;
-
-    this.addLog('🔥 施展「' + performData.name + '」！造成 ' + dmg + ' 点伤害！', 'combat');
-    if (performData.effects) this.addLog('   ' + performData.effects, 'event');
-
-    if (c.enemyHp <= 0) {
-      s.roundCount++;
-      const exp = c.enemyData.exp + (c.enemyData.boss ? 50 : 0);
-      const gold = c.enemyData.gold;
-      s.cultivation += exp;
-      if (c.enemyData.dropsSpirit) { this.addSpiritStones(gold); }
-      else { this.addMoney(gold); }
-      this.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
-      if (!c.enemyData.dropsSpirit) this.addLog('   得 ' + exp + ' 修为，' + gold + ' ' + this.getMoneyName(), 'item');
-      else this.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
-      this.endCombat(true);
-      return;
-    }
-
-    this._legacyEnemyTurn();
-    this.hidePerforms();
-    this.renderer.updateCombatUI();
-  }
-
-  _legacyEnemyTurn() {
-    const s = this.state, c = s.combat;
-    if (!c) return;
-    const eDmg = Math.max(1, c.enemyAtk + Math.floor(Math.random() * 8) - s.defense - (s.equipment.armor ? s.equipment.armor.def : 0));
-    s.hp -= eDmg;
-    s.roundCount++;
-    this.addLog('👊 ' + c.enemyName + ' 反击，造成 ' + eDmg + ' 点伤害！', 'combat');
-    if (s.hp <= 0) { s.hp = 0; this.gameOver('力战不敌，殒命于此'); return; }
-  }
-
-  endCombat(victory) {
-    // 清理新引擎实例（避免重入：BattleEngine.endCombat 会回调此方法）
-    if (this.battleEngine) {
-      const be = this.battleEngine;
-      this.battleEngine = null;
-      this.hijackEngine = null;
-      this.interveneEngine = null;
-      // 如果 BattleEngine 尚未停止，停止它
-      if (be.battleState && be.battleState.active) {
-        be.endCombat(victory);
-      }
-    }
-    this.state.combat = null;
-    document.getElementById('combat-modal').classList.remove('active');
-    // 战斗结束：多种状态可能变化，全量刷新
-    this.renderer.updateUI();
-    if (victory) this.checkBreakthrough();
-  }
+  // ============ 战斗代理（委托 CombatFacade）============
+  triggerEncounter(loc) { return this.combat.triggerEncounter(loc); }
+  startCombat(name, data) { return this.combat.startCombat(name, data); }
+  combatAction(action) { return this.combat.combatAction(action); }
+  showPerforms() { return this.combat.showPerforms(); }
+  hidePerforms() { return this.combat.hidePerforms(); }
+  usePerform(performId) { return this.combat.usePerform(performId); }
+  endCombat(victory) { return this.combat.endCombat(victory); }
 
   applyReward(rewardStr) {
     const s = this.state;
@@ -1865,9 +1464,8 @@ export class Game {
         if (enc.title) npcs.push({ name: enc.title, desc: this.getDesc(enc), type: 'encounter', index: i });
       });
     }
-    const factionPool = (typeof FACTION_RECRUITER_ENCOUNTERS !== 'undefined')
-      ? (window.FACTION_RECRUITER_ENCOUNTERS || FACTION_RECRUITER_ENCOUNTERS)[s.location]
-      : null;
+    const dl2 = getData();
+    const factionPool = dl2.FACTION_RECRUITER_ENCOUNTERS[s.location] || null;
     if (factionPool && factionPool.length > 0 && s.faction === '散修') {
       factionPool.forEach((enc, i) => {
         if (enc.title) npcs.push({ name: enc.title, desc: '（帮派接引人）', type: 'recruiter', index: i });
