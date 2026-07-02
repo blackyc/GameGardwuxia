@@ -15,6 +15,9 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Local node runtime (use system node instead)
+.tools/
+
 # Editor
 *.swp
 *.swo
