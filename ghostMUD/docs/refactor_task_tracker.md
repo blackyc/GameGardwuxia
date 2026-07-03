@@ -227,6 +227,28 @@
 | **T13.5** | BOSS 战诀 + NPC 模板 | BOSS 专属战诀（非随机技能，有章法可预判）；流派模板（剑宗/拳禅/枪阵/暗杀/辅助/宗师/虫巢/血肉/虚空 9 套） | 4h | T13.1, T13.2 | ⏳ |
 | **T13.6** | 战斗系统桥接 + 兼容 | `startCombat()` 路由：行功模式 vs 经典回合制（不删除旧代码，双模并存）；设置中可选模式 | 6h | T13.2-T13.5 | ⏳ |
 
+### 阶段 14：Game 类持续拆解（P2 - 架构改进）🔄
+
+> **目标**：将 2078 行的 Game 类拆为多个服务模块，每个模块持 game 引用，Game 保留一行代理方法。
+> **原则**：每次拆解后构建通过 + 产物代理调用链完整 + 删除临时脚本。
+
+| ID | 任务名 | 输出 | 原行数 | 累计行数 | 状态 |
+|----|--------|------|--------|----------|------|
+| **T14.1** | CombatFacade 拆解 | `src/combat_facade.js`（468行），13个战斗方法 | 2078→1671 | -407行 -19.5% | ✅ |
+| **T14.2** | QuestService 拆解 | `src/quest_service.js`（130行），4个任务方法 | 1671→1584 | -87行 | ✅ |
+| **T14.3** | MovementService 拆解 | `src/movement_service.js`（3.8KB），3个移动方法 | 1584→1501 | -83行 | ✅ |
+| **T14.4** | NpcService 拆解 | `src/npc_service.js`（4.6KB），6个NPC方法 | 1501→1397 | -104行 | ✅ |
+| **T14.5** | SearchService 拆解 | `src/search_service.js`（3.3KB），2个搜索方法 | 1397→1335 | -62行 | ✅ |
+| **T14.6** | FactionService 拆解 | `src/faction_service.js`（3.4KB），joinFaction | 1335→1255 | -80行 | ✅ |
+| **T14.7** | TeacherService 拆解 | `src/teacher_service.js`（3.4KB），3个拜师方法 | 1255→1204 | -51行 | ✅ |
+| **T14.8** | PerceptionService 拆解 | `src/perception_service.js`（4.5KB），4个感知方法 | 1204→1088 | -116行 | ✅ |
+| **T14.9** | ActionService 拆解 | `src/action_service.js`（5.9KB），7个日常动作方法 | 1088→973 | -115行 | ✅ |
+| **T14.10** | ItemService 拆解 | `src/item_service.js`，useItem | 973→933 | -40行 | ✅ |
+| **T14.11** | GameOverService 拆解 | `src/game_over_service.js`，gameOver + processCommand | 933→870 | -63行 | ✅ |
+| **T14.12** | 剩余方法清理 | 28个核心方法（构造/init/tick/经济工具/双轨）保留在Game中 | — | — | ⏳ 评估中 |
+
+> **累计进度**：2078 → 870 行（**-1208行，-58.1%**），已拆出 11 个服务模块，38 模块构建通过。剩余 28 个核心方法（构造/init/tick/经济工具/双轨）保留在 Game 中。
+
 ---
 
 ## 四、执行顺序与依赖图

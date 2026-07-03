@@ -24,6 +24,26 @@ import { InputManager } from './ui/input.js';
 import { Renderer } from './ui/renderer.js';
 // 战斗门面层（从 Game 拆出，代理 startCombat/combatAction/skill 等）
 import { CombatFacade } from './combat_facade.js';
+// 任务服务层（从 Game 拆出，代理 startQuest/checkQuestProgress/completeQuest/applyReward）
+import { QuestService } from './quest_service.js';
+// 移动服务层（从 Game 拆出，代理 explore/dirName/quickTravel）
+import { MovementService } from './movement_service.js';
+// NPC 服务层（从 Game 拆出，代理 triggerNPCEncounter/speakToNpc/npcChoice/closeNPC）
+import { NpcService } from './npc_service.js';
+// 搜索服务层（从 Game 拆出，代理 searchArea/pickItemByType）
+import { SearchService } from './search_service.js';
+// 帮派服务层（从 Game 拆出，代理 joinFaction）
+import { FactionService } from './faction_service.js';
+// 拜师服务层（从 Game 拆出，代理 isAtFactionHQ/learnFromTeacher/askTeacher）
+import { TeacherService } from './teacher_service.js';
+// 感知服务层（从 Game 拆出，代理 peek/getRoomPerception/openPerception/closePerception）
+import { PerceptionService } from './perception_service.js';
+// 日常动作服务层（从 Game 拆出，代理 switchTab/cultivate/train/rest/talk/askAround/practiceMenu）
+import { ActionService } from './action_service.js';
+// 物品服务层（从 Game 拆出，代理 useItem）
+import { ItemService } from './item_service.js';
+// 游戏结束/命令处理服务层
+import { GameOverService } from './game_over_service.js';
 // 开场 cinematic（批次H · T7.1/T7.2）
 import { IntroScene } from './ui/intro_scene.js';
 import { rollIdentities, applyIdentity } from './data/identity_data.js';
@@ -85,6 +105,26 @@ export class Game {
 
     // 战斗门面（代理所有战斗相关方法）
     this.combat = new CombatFacade(this);
+    // 任务服务（代理所有任务相关方法）
+    this.quests = new QuestService(this);
+    // 移动服务（代理所有移动相关方法）
+    this.movement = new MovementService(this);
+    // NPC 服务（代理所有 NPC 遭遇相关方法）
+    this.npc = new NpcService(this);
+    // 搜索服务（代理所有搜索相关方法）
+    this.search = new SearchService(this);
+    // 帮派服务（代理帮派相关方法）
+    this.faction = new FactionService(this);
+    // 拜师服务（代理拜师相关方法）
+    this.teacher = new TeacherService(this);
+    // 感知服务（代理感知相关方法）
+    this.perception = new PerceptionService(this);
+    // 日常动作服务（代理日常动作相关方法）
+    this.action = new ActionService(this);
+    // 物品服务（代理物品使用）
+    this.item = new ItemService(this);
+    // 游戏结束/命令处理服务
+    this.gameOverSvc = new GameOverService(this);
 
     // 游戏状态
     const r0 = (this.WU_REALMS.length > 0 ? this.WU_REALMS : REALMS)[0]; // 默认武修路径
@@ -151,37 +191,23 @@ export class Game {
     this._registerTimers();
     this._setupPageManager();
 
-    // 开场判断：有存档且已看过开场且有身世 → 直接进主循环；否则启动 IntroScene
+    // 开场判断：有存档且已看过开场且有身世 → 直接进主循环；否则跳过 IntroScene
+    // TODO: IntroScene 暂时跳过，后续 UI 完善后恢复
     if (this.state.introSeen && this.state.innateName) {
       this.startGameAfterStartup();
     } else {
-      // 首次进入或旧存档无身世：启动开场 Cinematic（身世选择 + 门派选择）
-      this._startIntroScene();
+      // 首次进入或旧存档无身世：自动 roll 身世 + 选问剑峰，跳过开场动画
+      this._skipIntroDirect();
     }
     console.log('[Game] init() completed. Timer intervals:', this.timer._intervals.size);
   }
 
   /**
-   * 启动 IntroScene 开场 Cinematic（7幕：身世叙事→三选一Roll→门派选择→帷幕拉开）
-   * 若 IntroScene 崩溃，自动 fallback 到 _skipIntroDirect()
-   */
-  _startIntroScene() {
-    console.log('[Game] 启动 IntroScene 开场');
-    try {
-      this._introScene = new IntroScene();
-      this._introScene.start(this);
-    } catch (e) {
-      console.error('[Game] IntroScene 启动失败，fallback 到直接进入', e);
-      this._skipIntroDirect();
-    }
-  }
-
-  /**
-   * Fallback：跳过 IntroScene，直接应用随机身世 + 问剑峰门派，进入主循环
-   * 仅在 IntroScene 崩溃时使用
+   * 跳过 IntroScene，直接应用随机身世 + 问剑峰门派，进入主循环
+   * TODO: 后续 IntroScene UI 完善后恢复开场动画
    */
   _skipIntroDirect() {
-    console.log('[Game] Fallback: 跳过 IntroScene，直接进入游戏');
+    console.log('[Game] 跳过 IntroScene，直接进入游戏');
     const s = this.state;
 
     // 随机 roll 1 个身世并应用
@@ -728,299 +754,20 @@ export class Game {
     }
   }
 
-  // ============ 移动系统 ============
+  // ============ 移动代理（委托 MovementService）============
+  explore(dir) { return this.movement.explore(dir); }
+  dirName(d) { return this.movement.dirName(d); }
+  quickTravel(loc) { return this.movement.quickTravel(loc); }
 
-  explore(dir) {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法移动！请先结束当前互动。', 'combat'); return; }
-    if (this.state.isCultivating) { this.addLog('你正在修炼，无法移动。输入「修炼」结束再行。', 'system'); return; }
-    const s = this.state;
-    // 移动打断修炼/休憩
-    let interrupted = '';
-    if (s.isResting) { s.isResting = false; interrupted = '休憩'; }
-    if (s.isCultivating) { s.isCultivating = false; interrupted = interrupted ? '修炼和休憩' : '修炼'; }
-    if (interrupted) this.addLog('🚶 你站起身，结束了' + interrupted + '。', 'info');
-    const loc = this.LOCATIONS[s.location];
-    if (!loc) { this.addLog('此处地脉紊乱，感知不到方位…', 'system'); return; }
+  // ============ NPC 代理（委托 NpcService）============
+  triggerNPCEncounter(active) { return this.npc.triggerNPCEncounter(active); }
+  speakToNpc(npcIndex) { return this.npc.speakToNpc(npcIndex); }
+  _presentEncounter(enc) { return this.npc._presentEncounter(enc); }
+  npcChoice(index) { return this.npc.npcChoice(index); }
+  closeNPC() { return this.npc.closeNPC(); }
 
-    const DIR_CN = { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出' };
-    const cnDir = DIR_CN[dir] || dir;
-    const target = loc.connections[cnDir] || loc.connections[dir];
-    if (!target) { this.addLog('前方的路不见了。也许从来就没有过。', 'system'); return; }
-    if (!this.LOCATIONS[target]) { this.addLog('那个地方……你记不起是哪里了。明明刚刚还记得。', 'system'); return; }
-
-    // 竹林深处子时判定：非子时不得进入竹林深处
-    if (target.includes('竹林深处') && !this.isZiHour()) {
-      this.addLog('竹林深处此刻不通。', 'system');
-      return;
-    }
-
-    // 新手引导移动拦截：巡礼阶段由教程脚本控制移动
-    if (s.tutorialPhase) {
-      const dl = getData();
-      if (dl.WENJIANFENG_TUTORIAL_CH1) {
-        const handled = dl.WENJIANFENG_TUTORIAL_CH1.onMove(this, target);
-        if (handled) return;
-      }
-    }
-
-    s.location = target;
-    if (!s.explored.includes(target)) s.explored.push(target);
-    const nl = this.LOCATIONS[target];
-    // 更新场景配色
-    if (this._pageManager) {
-      const scene = this._pageManager.resolveScene(target);
-      this._pageManager.setScene(scene);
-    }
-    this.addLog('🚶 向' + this.dirName(dir) + '方行去…', 'info');
-    this.addLog('📍 抵达 <b>' + target + '</b> —— ' + this.getRoomDesc(target), 'info');
-
-    // Room events
-    if (nl.events && nl.events.length > 0 && Math.random() < 0.5) {
-      this.addLog(nl.events[Math.floor(Math.random() * nl.events.length)], 'event');
-    }
-
-    // Encounter system
-    if (nl.danger <= 2) {
-      if (Math.random() < 0.35) this.triggerNPCEncounter(false);
-    } else if (nl.danger >= 5) {
-      if (Math.random() < nl.danger * 0.15) this.triggerEncounter(nl);
-    } else {
-      if (Math.random() < 0.2) {
-        Math.random() < 0.5 ? this.triggerNPCEncounter(false) : this.triggerEncounter(nl);
-      }
-    }
-
-    if (nl.boss && Math.random() < 0.3) this.addLog('⚠ 此地弥漫着危险的气息——强敌就在附近…', 'combat');
-
-    this.renderer.updateLocationIcon();
-    this.renderer.renderMap();
-    this.checkQuestProgress('go', target);
-    // 移动后：位置 + 面板数值 + 进度条 + 地图都需刷新（可能遭遇战斗/NPC）
-    this.renderer.updateUI();
-
-    // 自动存档
-    this.storage.save(this.state);
-  }
-
-  dirName(d) {
-    return { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出',
-             '北':'北', '南':'南', '东':'东', '西':'西', '上':'上', '下':'下', '入':'入', '出':'出' }[d] || d;
-  }
-
-  quickTravel(loc) {
-    // 地图点击快速旅行
-    const s = this.state;
-    if (s.combat || s.npcEncounter) return;
-    // 只允许旅行到已探明地点
-    if (!s.explored.includes(loc)) return;
-    s.location = loc;
-    this.addLog('🗺 快速前往 <b>' + loc + '</b>', 'info');
-    this.renderer.renderMap();
-    // 快速旅行：位置信息 + 境况面板中的位置字段
-    this.renderer.updateUI(['location', 'status']);
-  }
-
-  // ============ NPC 遭遇系统 ============
-
-  triggerNPCEncounter(active) {
-    const room = this.state.location;
-    let pool = this.NPC_ENCOUNTERS[room];
-
-    // 帮派招募NPC
-    const dl = getData();
-    const factionPool = dl.FACTION_RECRUITER_ENCOUNTERS[room] || null;
-
-    if ((!pool || pool.length === 0) && factionPool && factionPool.length > 0 && this.state.faction === '散修' && Math.random() < 0.4) {
-      pool = factionPool;
-    } else if (!pool || pool.length === 0) {
-      if (active) this.addLog('此处荒无人烟，你环顾四周却不见半个人影。换个热闹的地方试试？', 'system');
-      return;
-    }
-
-    const enc = pool[Math.floor(Math.random() * pool.length)];
-    this._presentEncounter(enc);
-  }
-
-  /**
-   * 定向与指定 NPC 交谈（感知面板点击特定人物时调用）。
-   * 直接触发该 NPC 的遭遇，不再从房间池随机抽取。
-   * @param {number} npcIndex - NPC_ENCOUNTERS[room] 中的索引
-   */
-  speakToNpc(npcIndex) {
-    const room = this.state.location;
-    const pool = this.NPC_ENCOUNTERS[room];
-    if (!pool || npcIndex >= pool.length) {
-      this.addLog('此人已经不在此处了…', 'system');
-      return;
-    }
-    this._presentEncounter(pool[npcIndex]);
-  }
-
-  /** 内部：展示 NPC 遭遇模态框（共享，被 triggerNPCEncounter / speakToNpc 调用） */
-  _presentEncounter(enc) {
-    this.state.npcEncounter = enc;
-    document.getElementById('npc-title').textContent = '👥 ' + enc.title;
-    document.getElementById('npc-desc').textContent = this.getDesc(enc);
-    const choicesDiv = document.getElementById('npc-choices');
-    choicesDiv.innerHTML = enc.results.map((r, i) =>
-      '<button class="modal-choice" data-npc-choice="' + i + '">' + r.choice + '</button>'
-    ).join('');
-    choicesDiv.querySelectorAll('[data-npc-choice]').forEach(btn => {
-      btn.addEventListener('click', () => this.npcChoice(parseInt(btn.dataset.npcChoice)));
-    });
-    document.getElementById('npc-modal').classList.add('active');
-  }
-
-  npcChoice(index) {
-    const enc = this.state.npcEncounter;
-    if (!enc) return;
-    const result = enc.results[index];
-    if (!result) return;
-    const s = this.state;
-
-    // 帮派招募NPC
-    if (enc.npc_type === 'faction_recruiter' && enc.faction) {
-      if (result.questStart) this.startQuest(result.questStart);
-      if (result.log) this.addLog(result.log, 'npc');
-      this.closeNPC();
-      return;
-    }
-
-    // Process effects
-    if (result.effect) {
-      const parts = result.effect.split(';');
-      for (const part of parts) {
-        const [key, val] = part.split(':');
-        if (key === 'spend_gold') this.spendMoney(parseInt(val));
-        else if (key === 'lose_gold') { const cur = this.getMoney(); this.addMoney(-Math.min(cur, parseInt(val))); }
-        else if (key === 'check_atk') {
-          if (s.attack >= parseInt(val)) {
-            this.addLog(result.successLog || '成功！', 'npc');
-            if (result.successReward) this.applyReward(result.successReward);
-          } else {
-            this.addLog(result.failLog || '失败…', 'npc');
-          }
-        } else if (key === 'check_agility') {
-          if (Math.random() < 0.6) {
-            this.addLog(result.successLog || '成功！', 'npc');
-            if (result.successReward) this.applyReward(result.successReward);
-          } else {
-            this.addLog(result.failLog || '失败…', 'npc');
-          }
-        } else if (['heal','hp','daoxin','gain_gold','gain_cultivation','random_item','random_technique'].indexOf(key) >= 0) {
-          this.applyReward(part);
-        }
-      }
-    }
-
-    if (result.reward) this.applyReward(result.reward);
-    if (result.failReward) this.applyReward(result.failReward);
-
-    const logText = result.log || result.successLog || '';
-    if (logText && !logText.startsWith('成功') && !logText.startsWith('失败')) {
-      this.addLog(logText, 'npc');
-    }
-
-    if (result.questStart || enc.questTrigger) {
-      this.startQuest(result.questStart || enc.questTrigger);
-    }
-
-    this.closeNPC();
-  }
-
-  closeNPC() {
-    this.state.npcEncounter = null;
-    document.getElementById('npc-modal').classList.remove('active');
-    // NPC 交互可能改变多种状态，全量刷新
-    this.renderer.updateUI();
-  }
-
-  // ============ 帮派系统 ============
-
-  joinFaction(name) {
-    const s = this.state;
-    const oldFaction = s.faction;
-    s.faction = name;
-    s.skills = {};
-    s.factionRep = 0;
-
-    const ceremonies = {
-      '忘尘宗': '🙏 「忘尘即是归宗。从今日起，你即忘尘宗弟子。忘我，忘尘，忘一切——连自己正在忘也一并忘记。入我忘尘，心即是空。」',
-      '问剑峰': '☯ 「问剑峰上无日月，唯有霞光七色万年如一。从今日起，你的气脉即是山峰的支脉。道生一，一生二，二生三，三生万物——万物最后都会被霞光洗净。」',
-      '紫霞山': '🐜 「紫霞山之中，千丝万缕皆有声息。从今日起，世间每一句话都落在你的耳中。听得越多，越难分辨——哪些是别人的话，哪些是丝的声音。」',
-      '焰心教': '🔥 「焰心教的圣火已在你丹田种下。从今日起，你的血是流动的焰——烧自己，也烧敌人。圣火不灭，焚身证道。」',
-      '逍遥驿': '🎨 「逍遥驿不收弟子，只收过客。从今日起，天下之大，唯自由不可拘。他日你若想回头，驿门永远开着。」',
-      '药王谷': '☠ 「药王谷的丹房为你敞开。从今日起，万毒皆你可控之物。剂量定生死——毒即是药，药即是毒。只是偶尔，毒会自己加一味。」',
-      '血禅寺': '🩸 「血禅寺的戒刀在你掌心划了一道。从今日起，你的血与禅合而为一。猎头的路，只进不退——除非你不再是你。」',
-      '镜阁': '🔱 「镜阁之中，万镜同照。从今日起，对手的手段皆可映回。只是照得越久，镜中之人越不像是你。」',
-      '归墟': '🌑 「归墟——世界的尽头，亦是始处。从今日起，你行走在生与死的边界。归墟不收活人——但你也不是全然活着。」',
-      '青囊庐': '💚 「青囊庐悬壶济世。从今日起，你的手即是救人之手。只是救回来的人，偶尔会说自己不该醒来。」',
-      '傀坊': '🤖 「傀坊的机关为你转了起来。从今日起，108具傀儡任你驱使。只是其中一具，你造的时候不记得给它写了什么——但它动了。」',
-      '散修': '⚡ 「你重新踏上了散修的路。天下之大，无拘无束。但无人告诉你——散修看得最多，也最容易看见不该看见的东西。」'
-    };
-    const msg = ceremonies[name] || ('⚡ 「你已加入' + name + '。前路漫漫，江湖险恶，望君保重。」');
-    if (oldFaction !== '散修' && oldFaction !== name) {
-      this.addLog('⚠ 你脱离了' + oldFaction + '，加入了' + name + '。', 'system');
-    }
-    this.addLog(msg, 'breakthrough');
-
-    // 入帮自动获取入门技能
-    if (name !== '散修') {
-      const faction = this.FACTIONS[name];
-      if (faction && faction.skills) {
-        const starterSkills = faction.skills.filter(sk => sk.minLevel === 0);
-        if (starterSkills.length > 0) {
-          this.addLog('📖 拜入' + name + '，习得入门武学：', 'special');
-          starterSkills.forEach(sk => {
-            if (!s.skills[sk.id]) {
-              s.skills[sk.id] = { level: 1, exp: 0 };
-              this.addLog('   「' + sk.name + '」Lv.1', 'info');
-            }
-          });
-        }
-      }
-    } else {
-      if (this.ROGUE_SKILLS && this.ROGUE_SKILLS.skills) {
-        const rSkills = this.ROGUE_SKILLS.skills.filter(sk => sk.minLevel === 0);
-        if (rSkills.length > 0) {
-          this.addLog('📖 自行研习基础功法：', 'special');
-          rSkills.forEach(sk => {
-            if (!s.skills[sk.id]) {
-              s.skills[sk.id] = { level: 1, exp: 0 };
-              this.addLog('   「' + sk.name + '」Lv.1', 'info');
-            }
-          });
-        }
-      }
-    }
-
-    // 加入/切换帮派：人物面板 + 境况面板 + 武学面板都需刷新
-    this.renderer.updateUI(['char', 'status', 'wuxue']);
-    if (this.currentTab === 'wuxue') this.renderer.renderWuxue();
-
-    // 门派HQ传送：加入门派后自动传送到对应HQ
-    const FACTION_HQ = {
-      '问剑峰': '问剑峰·山门',
-      '血禅寺': '血禅寺·大殿',
-      '药王谷': '药王坊·义诊堂',
-      '焰心教': '赤炎居·香火铺',
-      '忘尘宗': '梵音堂·经书坊',
-      '紫霞山': '紫微阁·星象铺',
-      '逍遥驿': '逍遥馆·客栈天字房',
-      '镜阁': '影壁街·纸扎铺',
-      '归墟': '阴司牢·外层',
-      '青囊庐': '百草堂·药铺后院',
-      '傀坊': '巧工坊·木匠铺后院',
-    };
-    if (FACTION_HQ[name]) {
-      s.location = FACTION_HQ[name];
-      // 将HQ加入已探索列表
-      if (!s.explored.includes(s.location)) {
-        s.explored.push(s.location);
-      }
-      this.addLog('你被带到了 ' + s.location.split('·').pop() + '。', 'system');
-    }
-  }
+  // ============ 帮派代理（委托 FactionService）============
+  joinFaction(name) { return this.faction.joinFaction(name); }
 
   // ============ 武学/战斗代理（委托 CombatFacade）============
   getSkillName(skillId) { return this.combat.getSkillName(skillId); }
@@ -1030,65 +777,10 @@ export class Game {
   equipSkill(skillId) { return this.combat.equipSkill(skillId); }
   unequipSkill() { return this.combat.unequipSkill(); }
 
-  // ============ 拜师系统 ============
-
-  isAtFactionHQ(locationName, factionName) {
-    const hqMap = {
-      '忘尘宗': ['忘尘峰'],
-      '问剑峰': ['问剑峰·剑冢'],
-      '紫霞山': ['紫霞山·盘丝窟', '汴河地下暗渠', '樊楼后院', '御街古井'],
-      '焰心教': ['光明顶·焰心殿'],
-      '逍遥驿': ['逍遥驿·车马院'],
-      '药王谷': ['鼓楼西·地下丹房'],
-      '血禅寺': ['血禅寺'],
-      '镜阁': ['镜阁·万镜堂', '樊楼·镜室'],
-      '归墟': ['归墟洞', '未命名'],
-      '青囊庐': ['青囊庐', '未命名'],
-      '傀坊': ['傀坊', '未命名']
-    };
-    const hqs = hqMap[factionName] || [];
-    return hqs.includes(locationName);
-  }
-
-  learnFromTeacher(teacherName) {
-    const s = this.state;
-    if (s.faction === '散修') { this.addLog('散修无师自通，自行研习即可。', 'system'); return; }
-    const faction = this.FACTIONS[s.faction];
-    if (!faction) return;
-    const teacher = (faction.teachers || []).find(t => t.name === teacherName);
-    if (!teacher) { this.addLog('此人不在本帮。', 'system'); return; }
-
-    const teaches = Array.isArray(teacher.teaches) ? teacher.teaches : [];
-    const teachableSkills = [];
-    teaches.forEach(skillNameId => {
-      const sk = faction.skills.find(sk => sk.name === skillNameId);
-      if (sk && !s.skills[sk.id]) teachableSkills.push(sk);
-    });
-
-    if (teachableSkills.length === 0) {
-      this.addLog(teacherName + '：「你所会已不在我之下，去找更高层的师傅吧。」', 'npc');
-      return;
-    }
-
-    const teacherTier = faction.teachers.indexOf(teacher);
-    const costs = [20, 80, 200];
-    const cost = costs[Math.min(teacherTier, 2)] || 80;
-
-    if (this.getMoney() < cost) {
-      this.addLog(teacherName + '：「束脩不足。' + cost + this.getMoneyName() + '，这是规矩。」', 'npc');
-      return;
-    }
-
-    this.spendMoney(cost);
-    s.factionRep += 10;
-    teachableSkills.forEach(sk => {
-      s.skills[sk.id] = { level: 1, exp: 0 };
-      this.addLog('📖 向' + teacherName + '习得「' + sk.name + '」！', 'special');
-    });
-    this.addLog('💰 支付束脩 ' + cost + ' ' + this.getMoneyName() + '。', 'item');
-    // 拜师学习：灵石/门忠/技能变化
-    this.renderer.updateUI(['char', 'status', 'wuxue']);
-  }
+  // ============ 拜师代理（委托 TeacherService）============
+  isAtFactionHQ(locationName, factionName) { return this.teacher.isAtFactionHQ(locationName, factionName); }
+  learnFromTeacher(teacherName) { return this.teacher.learnFromTeacher(teacherName); }
+  askTeacher() { return this.teacher.askTeacher(); }
 
   // ============ 战斗代理（委托 CombatFacade）============
   triggerEncounter(loc) { return this.combat.triggerEncounter(loc); }
@@ -1099,173 +791,16 @@ export class Game {
   usePerform(performId) { return this.combat.usePerform(performId); }
   endCombat(victory) { return this.combat.endCombat(victory); }
 
-  applyReward(rewardStr) {
-    const s = this.state;
-    const parts = rewardStr.split(';');
-    for (const part of parts) {
-      const [key, val] = part.split(':');
-      if (key === 'gain_gold') this.addMoney(parseInt(val));
-      else if (key === 'gain_cultivation') s.cultivation += parseInt(val);
-      else if (key === 'gain_spirit') this.addSpiritStones(parseInt(val));
-      else if (key === 'daoxin') s.daoxin = Math.min(s.maxDaoXin, s.daoxin + parseInt(val));
-      else if (key === 'heal' || key === 'hp') s.hp = Math.min(s.maxHp, s.hp + (parseInt(val) || 30));
-      else if (key === 'random_item') {
-        const it = this.ITEMS[Math.floor(Math.random() * this.ITEMS.length)];
-        s.inventory.push({ ...it });
-        this.addLog('📦 获得：<b>' + it.name + '</b>', 'item');
-      } else if (key === 'random_technique') {
-        const techItems = this.ITEMS.filter(it => it.type === 'technique');
-        if (techItems.length > 0) {
-          const ti = techItems[Math.floor(Math.random() * techItems.length)];
-          s.inventory.push({ ...ti });
-          this.addLog('📖 获得功法：<b>' + ti.name + '</b>', 'special');
-        }
-      }
-    }
-  }
+  applyReward(rewardStr) { return this.quests.applyReward(rewardStr); }
 
-  // ============ 搜索系统 ============
+  // ============ 搜索代理（委托 SearchService）============
+  searchArea() { return this.search.searchArea(); }
+  pickItemByType(type) { return this.search.pickItemByType(type); }
 
-  searchArea() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法搜寻！', 'system'); return; }
-    const room = this.state.location;
-    const data = this.ROOM_SEARCH[room];
-    if (!data) { this.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system'); return; }
-
-    if (Math.random() > data.searchChance) {
-      this.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system');
-      // 搜索无果：无状态变化，无需刷新
-      return;
-    }
-
-    const pool = data.results.filter(r => r.chance < 1.0 || r.type === 'nothing');
-    const totalWeight = pool.reduce((sum, r) => sum + (r.chance || 1), 0);
-    let rand = Math.random() * totalWeight;
-    let picked = pool[pool.length - 1];
-
-    for (const r of pool) {
-      rand -= (r.chance || 1);
-      if (rand <= 0) { picked = r; break; }
-    }
-
-    const s = this.state;
-
-    if (picked.type === 'money') {
-      const [min, max] = picked.amount.split('-').map(Number);
-      const amt = min + Math.floor(Math.random() * (max - min + 1));
-      this.addMoney(amt);
-      this.addLog('💰 ' + picked.desc + '（+' + amt + ' ' + this.getMoneyName() + '）', 'item');
-    } else if (picked.type === 'spirit') {
-      const [min, max] = picked.amount.split('-').map(Number);
-      const amt = min + Math.floor(Math.random() * (max - min + 1));
-      this.addSpiritStones(amt);
-      const spiritName = (s.path === 'ling' || s.knowsSpiritStones) ? '灵石' : '不知名的石头';
-      this.addLog('?? ' + picked.desc + '（+' + amt + ' ' + spiritName + '）', 'item');
-    } else if (picked.type === 'daoxin') {
-      s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (picked.amount || 10));
-      this.addLog('🧘 ' + picked.desc, 'info');
-    } else if (picked.type === 'hp') {
-      s.hp = Math.min(s.maxHp, s.hp + (picked.amount || 15));
-      this.addLog('💊 ' + picked.desc, 'item');
-    } else if (picked.type === 'cultivation') {
-      s.cultivation += (picked.amount || 10);
-      this.addLog('✨ ' + picked.desc, 'info');
-    } else if (picked.type === 'find_type') {
-      const it = this.pickItemByType(picked.itemType);
-      if (it) {
-        s.inventory.push({ ...it });
-        this.addLog('📦 ' + picked.desc.replace('了点东西', '：<b>' + it.name + '</b>').replace('了', '了：<b>' + it.name + '</b>'), 'item');
-      } else {
-        this.addLog('🔍 ' + picked.desc, 'system');
-      }
-    } else {
-      this.addLog('🔍 ' + picked.desc, 'system');
-    }
-
-    this.checkQuestProgress('find', null);
-    // 搜索有结果：灵石/背包/HP/道心等可能变化
-    this.renderer.updateUI(['char', 'status', 'progress', 'bag', 'quest']);
-  }
-
-  pickItemByType(type) {
-    if (type === 'random') return this.ITEMS[Math.floor(Math.random() * this.ITEMS.length)];
-    const pool = this.ITEMS.filter(i => i.type === type);
-    if (pool.length === 0) return this.ITEMS[Math.floor(Math.random() * this.ITEMS.length)];
-    return pool[Math.floor(Math.random() * pool.length)];
-  }
-
-  // ============ 任务系统 ============
-
-  startQuest(questId) {
-    const s = this.state;
-    if (s.activeQuests.includes(questId) || s.completedQuests.includes(questId)) return;
-    s.activeQuests.push(questId);
-    s.questStages[questId] = 0;
-    const q = this.QUESTS.find(q => q.id === questId);
-    if (q) {
-      this.addLog('📜 接受任务：<b>' + q.name + '</b>', 'quest');
-      this.addLog('   ' + q.desc, 'quest');
-      this.addLog('   阶段 1/' + q.stages.length + '：' + q.stages[0].desc, 'quest');
-    }
-    // 接受任务：任务列表 + 人物面板任务计数
-    this.renderer.updateUI(['quest', 'char']);
-  }
-
-  checkQuestProgress(type, target) {
-    const s = this.state;
-    for (const qId of s.activeQuests) {
-      const q = this.QUESTS.find(q => q.id === qId);
-      if (!q) continue;
-      const stage = s.questStages[qId] || 0;
-      if (stage >= q.stages.length) continue;
-      const curStage = q.stages[stage];
-
-      let advance = false;
-      if (curStage.type === 'go' && type === 'go') advance = true;
-      else if (curStage.type === 'kill' && type === 'kill') advance = true;
-      else if (curStage.type === 'encounter' && type === 'kill') advance = true;
-      else if (curStage.type === 'find' && type === 'find') advance = true;
-      else if (curStage.type === 'collect' && type === 'find') advance = true;
-      else if (curStage.type === 'investigate' && type === 'go') advance = true;
-      else if (curStage.type === 'return' && type === 'go') advance = true;
-      else if (curStage.type === 'talk' && type === 'go') advance = true;
-      else if ((curStage.type === 'dialogue' || curStage.type === 'deliver' || curStage.type === 'find_clue') && type === 'go') advance = true;
-      else if (curStage.type === 'choice' && type === 'go') advance = true;
-      else if (curStage.type === 'escort' && type === 'go') advance = true;
-
-      if (advance || (curStage.repeat && type === 'kill')) {
-        s.questStages[qId] = stage + 1;
-        if (stage + 1 < q.stages.length) {
-          this.addLog('📜 任务「' + q.name + '」更新：' + q.stages[stage + 1].desc, 'quest');
-        } else {
-          this.completeQuest(qId);
-        }
-      }
-    }
-  }
-
-  completeQuest(questId) {
-    const s = this.state;
-    const q = this.QUESTS.find(q => q.id === questId);
-    if (!q) return;
-
-    this.addLog('🏆 任务完成：<b>' + q.name + '</b>！', 'breakthrough');
-
-    if (q.rewards.spiritStones) { this.addSpiritStones(q.rewards.spiritStones); this.addLog('   获得 ' + q.rewards.spiritStones + ' 灵石', 'item'); }
-    if (q.rewards.copperCoins) { s.copperCoins += q.rewards.copperCoins; this.addLog('   获得 ' + q.rewards.copperCoins + ' 文铜钱', 'item'); }
-    if (q.rewards.cultivation) { s.cultivation += q.rewards.cultivation; this.addLog('   获得 ' + q.rewards.cultivation + ' 修为', 'item'); }
-    if (q.rewards.technique) { if (!s.techniques.includes(q.rewards.technique)) { s.techniques.push(q.rewards.technique); this.addLog('   习得功法：' + q.rewards.technique, 'special'); } }
-    if (q.rewards.equipment) { s.inventory.push({ name: q.rewards.equipment, type: 'equipment', desc: '任务奖励', slot: 'weapon', atk: 10 }); this.addLog('   获得装备：' + q.rewards.equipment, 'special'); }
-    if (q.rewards.item) { s.inventory.push({ name: q.rewards.item, type: 'special', desc: '任务奖励' }); this.addLog('   获得：' + q.rewards.item, 'item'); }
-    if (q.rewards.faction) this.joinFaction(q.rewards.faction);
-    if (q.rewards.factionRep) { s.factionRep += q.rewards.factionRep; this.addLog('   门忠 +' + q.rewards.factionRep, 'info'); }
-
-    s.activeQuests = s.activeQuests.filter(id => id !== questId);
-    s.completedQuests.push(questId);
-    this.checkBreakthrough();
-    // 完成任务：多种奖励可能改变多种状态，全量刷新
-    this.renderer.updateUI();
-  }
+  // ============ 任务代理（委托 QuestService）============
+  startQuest(questId) { return this.quests.startQuest(questId); }
+  checkQuestProgress(type, target) { return this.quests.checkQuestProgress(type, target); }
+  completeQuest(questId) { return this.quests.completeQuest(questId); }
 
   // ============ 地图 ============
 
@@ -1289,392 +824,42 @@ export class Game {
 
   // ============ 日常动作 ============
 
-  switchTab(tab) {
-    // 如果点击的是当前已打开的 tab，则关闭它（toggle 模式）
-    if (this.currentTab === tab) {
-      this.currentTab = null;
-      this.tabManager._currentTab = null;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('visible'));
-      return;
-    }
-    this.currentTab = tab;
-    this.tabManager.switchTo(tab);
-    // 自动滚动到 tab 面板区域
-    setTimeout(() => {
-      const panel = document.getElementById('panel-' + tab);
-      if (panel && panel.classList.contains('visible')) {
-        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    }, 100);
-  }
+  switchTab(tab) { return this.action.switchTab(tab); }
 
-  cultivate() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法修炼！', 'combat'); return; }
-    if (this.state.isResting) { this.addLog('休憩中无法修炼。先结束休憩吧。', 'system'); return; }
-    const s = this.state;
-    s.isCultivating = !s.isCultivating;
-    if (s.isCultivating) {
-      this.addLog(s.path === 'ling'
-        ? '🧘 你盘膝而坐，神识沉入丹田。灵力开始在经脉中自行周天——在此期间无法移动。再输入「修炼」可结束。'
-        : '💪 你摆开架势，拳招行云流水般打将出来。汗水浸湿衣襟，丹田却愈发火热——练功无法同时移动。再输入「修炼」可收功。', 'info');
-    } else {
-      this.addLog('✅ 你收了架势。风从远处吹来，带走一身热意。', 'info');
-    }
-    // 修炼 toggle：状态切换，需更新 UI 显示当前模式
-    this.renderer.updateUI(['progress', 'char', 'status']);
-  }
+  cultivate() { return this.action.cultivate(); }
 
-  train() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法练功！', 'combat'); return; }
-    if (this.state.isCultivating || this.state.isResting) { this.addLog('你已在修炼/休憩中，先结束当前状态再练功。', 'system'); return; }
-    const s = this.state;
-    s.cultivation += (s.path === 'ling' ? 3 : 2);
-    s.trainCounter++;
-    // 每10次练功扣道心：武修-1（练武乏了），灵修-3（危险）
-    if (s.trainCounter % 10 === 0) {
-      const daoLoss = s.path === 'ling' ? 3 : 1;
-      s.daoxin = Math.max(0, s.daoxin - daoLoss);
-      this.addLog(s.path === 'ling'
-        ? '🌀 灵力运转过剧，经脉灼痛——什么东西在窥视。修为+3（道心-' + daoLoss + '）'
-        : '💪 连练十趟，筋骨愈发扎实，但你有些疲惫。修为+2（道心-' + daoLoss + '）', 'info');
-    } else {
-      this.addLog(s.path === 'ling'
-        ? '🌀 你凝神运功，灵力在经脉中流转一周。修为+3'
-        : '💪 你原地打了一套拳，筋骨微热。修为+2', 'info');
-    }
-    this.renderer.updateUI(['progress', 'char', 'status']);
-  }
+  train() { return this.action.train(); }
 
-  rest() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法休憩！', 'combat'); return; }
-    if (this.state.isCultivating) { this.addLog('修炼中无法休憩。先结束修炼吧。', 'system'); return; }
-    const s = this.state;
-    s.isResting = !s.isResting;
-    this.addLog(s.isResting ? '💤 你寻了一处角落蜷起身子…' : '🔔 休憩结束，继续前行。', 'info');
-    // 休憩切换：挂机状态显示变化
-    this.renderer.updateUI(['progress', 'char', 'status']);
-  }
+  rest() { return this.action.rest(); }
 
-  talk() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法与人交谈！', 'combat'); return; }
-    const s = this.state;
-    const loc = this.LOCATIONS[s.location];
-    if (loc.danger >= 5) { this.addLog('此地凶险万分，不是闲谈之所。趁未被发觉，速离为妙。', 'system'); return; }
-    this.addLog('💬 你环顾四周，上前搭话…', 'info');
-    this.triggerNPCEncounter(true);
-  }
+  talk() { return this.action.talk(); }
 
-  askAround() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法打听！', 'combat'); return; }
-    const s = this.state;
-    const loc = this.LOCATIONS[s.location];
-    if (!loc) return;
-    if (loc.danger >= 5) { this.addLog('此地无人可问，唯有寂寞如雪。', 'system'); return; }
+  askAround() { return this.action.askAround(); }
 
-    const nearby = loc.connections ? Object.entries(loc.connections).filter(e => this.LOCATIONS[e[1]]).map(e => ({dir: e[0], name: e[1], loc: this.LOCATIONS[e[1]]})) : [];
-    const rumors = [];
+  peek() { return this.perception.peek(); }
 
-    if (nearby.length > 0) {
-      const n1 = nearby[Math.floor(Math.random() * nearby.length)];
-      rumors.push('「往' + this.dirName(n1.dir) + '走，能到<b>' + n1.name + '</b>。」一个路人给你指了指路。');
-      if (n1.loc.danger >= 5) rumors.push('「' + n1.name + '那边最近不太平，听说了没？好几个江湖客进去就没回来。」路人压低声音说道。');
-    }
+  getRoomPerception() { return this.perception.getRoomPerception(); }
 
-    if (s.activeQuests.length > 0) {
-      const q = this.QUESTS.find(q => q.id === s.activeQuests[0]);
-      if (q) {
-        const stage = s.questStages[q.id] || 0;
-        if (stage < q.stages.length) rumors.push('你在打听中想起了手头的任务：<b>' + q.name + '</b>——' + q.stages[Math.min(stage, q.stages.length - 1)].desc);
-      }
-    }
+  openPerception() { return this.perception.openPerception(); }
 
-    rumors.push('「听说顺天府有个卦师，什么消息都能算出来——只要出得起价。」');
-    rumors.push('「城中有处秘地，藏有黄金万两。但没人找得到——据说要道心足够稳才能看见。」');
-    rumors.push('「最近城里的灵脉波动很不对劲。路边的野猫都跑了。晚上别走小巷。」');
-    rumors.push('「城外废墟里埋着不少好东西。但也在那些东西的视线里。别独自去。」');
-    rumors.push('「最近夜里不安生，暗街一带最好绕道走——那不是给人走的路。」');
+  closePerception() { return this.perception.closePerception(); }
 
-    const encPool = this.NPC_ENCOUNTERS[s.location];
-    if (encPool && encPool.length > 0) {
-      const questEnc = encPool.filter(e => e.questTrigger || (e.results && e.results.some(r => r.questStart)));
-      if (questEnc.length > 0) rumors.push('「此地似乎有人能给你些活计。跟人<b>交谈</b>看看？」');
-    }
+  practiceMenu() { return this.action.practiceMenu(); }
 
-    this.addLog('👂 ' + rumors[Math.floor(Math.random() * rumors.length)], 'info');
-    // 打听：无状态变化，无需刷新 UI
-  }
-
-  peek() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法窥探！', 'combat'); return; }
-    const s = this.state;
-    const loc = this.LOCATIONS[s.location];
-    if (!loc) { this.addLog('眼前一片虚无…', 'system'); return; }
-
-    const obs = [];
-    const dangerDesc = loc.danger <= 1 ? '街巷安宁，偶有路人经过。' :
-      loc.danger <= 2 ? '隐约有些江湖人在街边低声交谈。' :
-      loc.danger <= 3 ? '暗处有几双眼睛在打量你。' :
-      loc.danger <= 4 ? '空气凝重，远处传来不寻常的动静。' :
-      '此地杀气弥漫，处处危机。';
-    obs.push(dangerDesc);
-
-    if (loc.connections) {
-      const dirs = Object.entries(loc.connections);
-      if (dirs.length > 0) obs.push('可见通路：' + dirs.map(d => '<b>' + d[1] + '</b>（' + this.dirName(d[0]) + '）').join('、'));
-    }
-
-    if (loc.boss) obs.push('⚠ 远处强大的气息…有一名高手盘踞此地。');
-    if (this.ROOM_SEARCH[s.location]) obs.push('搜索此处约有<b>' + Math.floor(this.ROOM_SEARCH[s.location].searchChance * 100) + '%</b>概率有所发现。');
-    if (this.NPC_ENCOUNTERS[s.location] && this.NPC_ENCOUNTERS[s.location].length > 0) obs.push('附近有<b>' + this.NPC_ENCOUNTERS[s.location].length + '</b>种可能的奇遇。输入「交谈」试试。');
-    if (s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction)) obs.push('🏫 你正在本派据点——可向师傅<b>拜师</b>学习新武学！');
-
-    this.addLog('👀 你凝神观察四周…', 'system');
-    obs.forEach(o => this.addLog('   ' + o, 'info'));
-    // 窥探：无状态变化，无需刷新 UI
-  }
-
-  /**
-   * 感知系统（T9.2）—— 玩家审视当前房间的认知行为。
-   * 返回交互全景对象，由 renderer.renderPerception() 渲染为感知面板。
-   *
-   * 这是"认知压缩"而非"UI 折叠"：感知把房间内分散的信息
-   * （通路/NPC/搜索点/可交谈对象/场景道具）整合成一张可交互的全景图。
-   * 武修/灵修感知返回内容可不同（双轨伏笔，本版按 path 给灵修额外提示）。
-   *
-   * @returns {object} { title, scene, connections[], npcs[], searchPoints[], props[], extras[] }
-   */
-  getRoomPerception() {
-    const s = this.state;
-    const loc = this.LOCATIONS[s.location];
-    if (!loc) return { title: s.location, connections: [], npcs: [], searchPoints: [], props: [], extras: ['眼前一片虚无…'] };
-
-    // 1. 通路：{方向 → 房间名}
-    const connections = loc.connections
-      ? Object.entries(loc.connections)
-          .filter(([dir, name]) => this.LOCATIONS[name])
-          .map(([dir, name]) => ({ dir, dirCn: this.dirName(dir), name, explored: s.explored.includes(name) }))
-      : [];
-
-    // 2. 在场人物：NPC_ENCOUNTERS + 帮派接引人
-    const npcs = [];
-    const pool = this.NPC_ENCOUNTERS[s.location];
-    if (pool && pool.length > 0) {
-      pool.forEach((enc, i) => {
-        if (enc.title) npcs.push({ name: enc.title, desc: this.getDesc(enc), type: 'encounter', index: i });
-      });
-    }
-    const dl2 = getData();
-    const factionPool = dl2.FACTION_RECRUITER_ENCOUNTERS[s.location] || null;
-    if (factionPool && factionPool.length > 0 && s.faction === '散修') {
-      factionPool.forEach((enc, i) => {
-        if (enc.title) npcs.push({ name: enc.title, desc: '（帮派接引人）', type: 'recruiter', index: i });
-      });
-    }
-
-    // 拜师标记：在宗门HQ且已有帮派时可拜师学新武学
-    const canAskTeacher = s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction);
-
-    // 3. 可搜索点：ROOM_SEARCH 存在即有
-    const searchPoints = [];
-    if (this.ROOM_SEARCH[s.location]) {
-      searchPoints.push({ name: '此地可搜索', desc: '约 ' + Math.floor(this.ROOM_SEARCH[s.location].searchChance * 100) + '% 概率有所发现' });
-    }
-
-    // 4. 场景道具：房间自身的 items（氛围道具，非背包物品）
-    const props = [];
-    if (loc.items && Array.isArray(loc.items)) {
-      loc.items.slice(0, 6).forEach((it) => {
-        if (it.name) props.push({ name: it.name, desc: this.getDesc(it) });
-      });
-    }
-
-    // 5. 额外提示（danger/boss/宗门据点/灵修伏笔）
-    const extras = [];
-    if (loc.boss) extras.push('⚠ 远处强大的气息…有一名高手盘踞此地。');
-    if (s.faction && s.faction !== '散修' && this.isAtFactionHQ(s.location, s.faction)) {
-      extras.push('🏫 你正在本派据点——可向师傅拜师学习新武学！');
-    }
-    // 灵修双轨伏笔：感知可察觉凡人察觉不到的东西
-    if (s.path === 'ling') {
-      extras.push('🌀 你以神识扫过此地——空气中有一丝微弱的灵气波动，若有若无。');
-    }
-
-    return { title: s.location, danger: loc.danger, connections, npcs, searchPoints, props, extras, canAskTeacher };
-  }
-
-  /** 打开感知面板（由感知菱形徽章调用） */
-  openPerception() {
-    if (this.state.combat || this.state.npcEncounter) {
-      this.addLog('当前无法感知！', 'combat');
-      return;
-    }
-    const data = this.getRoomPerception();
-    this.renderer.renderPerception(data);
-  }
-
-  /** 关闭感知面板 */
-  closePerception() {
-    const panel = document.getElementById('perception-panel');
-    if (panel) panel.classList.remove('open');
-  }
-
-  practiceMenu() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法练武！', 'combat'); return; }
-    const s = this.state;
-    const learned = Object.keys(s.skills);
-    if (learned.length === 0) { this.addLog('你尚未掌握任何武学。先拜入帮派习得入门武学吧。', 'system'); return; }
-    this.addLog('📖 可修炼武学：', 'info');
-    learned.forEach(sid => {
-      const sn = this.getSkillName(sid);
-      const lv = s.skills[sid].level;
-      const exp = s.skills[sid].exp;
-      const need = lv * 50;
-      const cost = 10 + lv * 3;
-      this.addLog('  「' + sn + '」Lv.' + lv + ' EXP:' + Math.floor(exp) + '/' + need + ' 修炼消耗:' + cost + ' ' + this.getMoneyName(), 'info');
-    });
-    this.addLog('💡 在「武学」面板中点击技能进行修炼。', 'system');
-  }
-
-  askTeacher() {
-    if (this.state.combat || this.state.npcEncounter) { this.addLog('当前无法拜师！', 'combat'); return; }
-    const s = this.state;
-    if (s.faction === '散修') { this.addLog('散修无师自通——自行研习便是。', 'system'); return; }
-    if (!this.isAtFactionHQ(s.location, s.faction)) { this.addLog('此处非本帮据点，无法拜师。去帮派总部看看吧。', 'system'); return; }
-    const faction = this.FACTIONS[s.faction];
-    if (!faction || !faction.teachers) { this.addLog('宗派名录异常。', 'system'); return; }
-    this.addLog('🏫 ' + s.faction + '师傅列表：', 'info');
-    faction.teachers.forEach(t => {
-      const teaches = Array.isArray(t.teaches) ? t.teaches.length + '项武学' : '多项';
-      this.addLog('  「' + t.name + '」—— ' + t.title + ' （授' + teaches + '）', 'info');
-    });
-    this.addLog('💡 在「武学」面板中点击师傅名字旁的「拜师」按钮。', 'system');
-    this.switchTab('wuxue');
-  }
+  // askTeacher 代理已在拜师代理区域定义
 
   // ============ 物品系统 ============
 
-  useItem(index) {
-    const s = this.state;
-    if (s.combat) { this.addLog('交战中无法使用物品！', 'combat'); return; }
-    if (index >= s.inventory.length) return;
-    const item = s.inventory[index];
-
-    if (item.type === 'consumable') {
-      if (item.effect === 'daoxin') s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (item.value || 20));
-      else if (item.effect === 'hp') s.hp = Math.min(s.maxHp, s.hp + (item.value || 30));
-      else if (item.effect === 'cultivation') s.cultivation += (item.value || 30);
-      else if (item.effect === 'breakthrough') s.cultivation += this.getRealms()[Math.min(s.realm + 1, this.getRealms().length - 1)].cost * 0.4;
-      else s.hp = Math.min(s.maxHp, s.hp + 20);
-      this.addLog('💊 使用 ' + item.name + '。', 'item');
-      s.inventory.splice(index, 1);
-    } else if (item.type === 'equip' || item.type === 'equipment') {
-      if (item.slot === 'weapon') {
-        if (s.equipment.weapon) s.inventory.push(s.equipment.weapon);
-        s.equipment.weapon = item;
-      } else if (item.slot === 'armor') {
-        if (s.equipment.armor) s.inventory.push(s.equipment.armor);
-        s.equipment.armor = item;
-      }
-      s.inventory.splice(index, 1);
-      this.addLog('⚡ 装备 ' + item.name + '！', 'special');
-    } else if (item.type === 'technique') {
-      if (!s.techniques.includes(item.name)) {
-        s.techniques.push(item.name);
-        this.addLog('📖 研习 ' + item.name + '！', 'special');
-      }
-      s.inventory.splice(index, 1);
-    } else if (item.type === 'stone') {
-      if (item.name === '不知名的石头' && !s.knowsSpiritStones) {
-        this.addLog('?? 你端详着这块温润的石头……说不上来是什么，但触手生凉。也许该找人鉴定一下。', 'special');
-      } else {
-        this.addSpiritStones(item.value || 5);
-        s.inventory.splice(index, 1);
-        this.addLog('?? 汲取 ' + item.name + '，获得 ' + (item.value || 5) + ' 灵石。', 'item');
-      }
-    } else if (item.type === 'special') {
-      this.addLog('?? ' + item.name + '——一件特殊之物，尚不知其用途。', 'special');
-    }
-    // 使用物品：背包/属性/HP/道心可能变化
-    this.renderer.updateUI(['char', 'status', 'progress', 'bag']);
-    this.checkBreakthrough();
-  }
+  useItem(index) { return this.item.useItem(index); }
 
   // ============ 游戏结束 ============
 
-  gameOver(reason) {
-    this.timer.stop();
-    this.state.combat = null;
-    this.state.npcEncounter = null;
-    document.getElementById('combat-modal').classList.remove('active');
-    document.getElementById('npc-modal').classList.remove('active');
-
-    const s = this.state;
-    const t = Math.floor((Date.now() - s.gameStart) / 1000);
-    const mins = Math.floor(t / 60), secs = t % 60;
-
-    const ov = document.createElement('div');
-    ov.className = 'modal-overlay';
-    ov.innerHTML = '<div class="modal-box"><h2>💀 ' + reason + '</h2>' +
-      '<p>最终境界：' + this.getRealms()[s.realm].name + '</p>' +
-      '<p>斩杀：' + s.killCount + ' | ' + this.getMoneyName() + '：' + this.formatMoney() + '</p>' +
-      '<p>任务完成：' + s.completedQuests.length + '</p>' +
-      '<p>所学：' + (s.techniques.length > 0 ? s.techniques.join('、') : '无') + '</p>' +
-      '<p>修行时长：' + mins + '分' + secs + '秒 | 总修为：' + s.totalCultivation + '</p>' +
-      '<p>探索区域：' + s.explored.length + ' / ' + Object.keys(this.LOCATIONS).length + '</p>' +
-      '<button class="btn-restart" id="btn-restart">再入江湖</button></div>';
-    document.body.appendChild(ov);
-
-    document.getElementById('btn-restart').addEventListener('click', () => {
-      this.storage.clear();
-      location.reload();
-    });
-
-    this.renderer.updateUI();
-  }
+  gameOver(reason) { return this.gameOverSvc.gameOver(reason); }
 
   // ============ 命令处理 ============
 
-  processCommand(cmd) {
-    if (['北', 'north', 'n', '向北'].includes(cmd)) this.explore('north');
-    else if (['南', 'south', 's', '向南'].includes(cmd)) this.explore('south');
-    else if (['东', 'east', 'e', '向东'].includes(cmd)) this.explore('east');
-    else if (['西', 'west', 'w', '向西'].includes(cmd)) this.explore('west');
-    else if (['修炼', '修行', '打坐', 'meditate', 'cultivate'].includes(cmd)) this.cultivate();
-    else if (['练功', '练拳', 'pushup', 'train', '站桩'].includes(cmd)) this.train();
-    else if (['搜寻', '搜索', 'search', '探索'].includes(cmd)) this.searchArea();
-    else if (['休憩', '休息', 'rest'].includes(cmd)) this.rest();
-    else if (['交谈', '谈话', 'talk', '聊聊', '聊天', '搭话'].includes(cmd)) this.talk();
-    else if (['打听', '问询', 'ask', '消息', '问路'].includes(cmd)) this.askAround();
-    else if (['观察', '窥探', 'peek', '瞭望', 'look', '看'].includes(cmd)) this.peek();
-    else if (['练武', '修炼武学', 'practice'].includes(cmd)) this.practiceMenu();
-    else if (['拜师', 'teacher'].includes(cmd)) this.askTeacher();
-    else if (['地图', 'map'].includes(cmd)) this.toggleMap();
-    else if (['境况', '状态', 'status', 'stats'].includes(cmd)) this.switchTab('status');
-    else if (['行囊', '背包', '包裹', 'inventory', 'inv', 'bag'].includes(cmd)) this.switchTab('bag');
-    else if (['任务', 'quest', 'quests', 'mission'].includes(cmd)) this.switchTab('quest');
-    else if (['人物', 'char'].includes(cmd)) this.switchTab('char');
-    else if (['武学', 'wuxue', 'skill', 'skills'].includes(cmd)) this.switchTab('wuxue');
-    else if (['位置', 'location', 'loc'].includes(cmd)) {
-      const loc = this.LOCATIONS[this.state.location];
-      this.addLog('📍 当前位置：<b>' + this.state.location + '</b>', 'info');
-      if (loc) { this.addLog('   ' + this.getDesc(loc), 'info'); this.addLog('   危险：' + '★'.repeat(loc.danger || 0), 'info'); }
-    } else if (['帮助', 'help', '?', '？', 'h'].includes(cmd)) {
-      this.addLog('┏━━ 江 湖 须 知 ━━┓', 'system');
-      this.addLog('┃ 🧭 移动：北/南/东/西', 'system');
-      this.addLog('┃ 🧘 修炼 · 💪 练功 · 🔍 搜索 · 💤 休憩 · 💬 交谈 · 👂 打听 · 👀 窥探', 'system');
-      this.addLog('┃ 🙇 拜师 · 📖 练武 · 🏯 武学', 'system');
-      this.addLog('┃ 🗺 地图 · 📋 境况 · 📦 包裹', 'system');
-      this.addLog('┃ 👤 人物 · 📜 任务：查看修为/任务', 'system');
-      this.addLog('┃ 📖 探索：' + this.state.explored.length + '/' + Object.keys(this.LOCATIONS).length + ' 间', 'system');
-      this.addLog('┃ 💡 在城里「交谈」遇奇遇、「打听」得情报', 'system');
-      this.addLog('┃ 💡 「搜索」有概率得金银器物', 'system');
-      this.addLog('┗━━━━━━━━━━━━━━━━┛', 'system');
-    } else {
-      this.addLog('不明指令：' + cmd + '。输入"帮助"查看可用命令。', 'system');
-    }
-    this.renderer.updateUI();
-  }
+  processCommand(cmd) { return this.gameOverSvc.processCommand(cmd); }
+
 
   // ============ 日志 ============
 
