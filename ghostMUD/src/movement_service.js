@@ -53,8 +53,11 @@ export class MovementService {
     if (s.tutorialPhase) {
       const dl = getData();
       if (dl.WENJIANFENG_TUTORIAL_CH1) {
-        const handled = dl.WENJIANFENG_TUTORIAL_CH1.onMove(g, target);
-        if (handled) return;
+        const locationBeforeTutorial = s.location;
+        const allowed = dl.WENJIANFENG_TUTORIAL_CH1.onMove(g, target);
+        // false = 教程明确拦截；位置已改变 = 教程状态机已完成这次移动。
+        if (allowed === false) return;
+        if (s.location !== locationBeforeTutorial) return;
       }
     }
 

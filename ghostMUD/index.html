@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/src/styles/intro.css">
   <link rel="stylesheet" href="/src/styles/topbar.css">
   <link rel="stylesheet" href="/src/styles/app_v3.css">
+  <link rel="stylesheet" href="/src/styles/jianghu.css">
 </head>
 <body>
 <div id="noise-overlay"></div>
@@ -33,49 +34,54 @@
 
   <!-- ════════════ 页面 1 · 江湖（主游戏页） ════════════ -->
   <section class="page active" data-page="jianghu">
-    <!-- 灰蓝半透卡：房间信息+在场NPC -->
-    <div class="room-card" id="room-card">
-      <div class="room-name"><span id="location-region" class="location-region"></span><span id="location-name">十字街口</span></div>
-      <div class="room-divider"></div>
-      <div class="room-desc" id="location-desc"></div>
-      <div class="room-npcs" id="room-npcs"></div>
-    </div>
+    <!-- 区域 1：房间名。 -->
+    <header class="location-banner" aria-label="当前房间">
+      <span id="location-region" class="location-region"></span>
+      <span id="location-name">十字街口</span>
+    </header>
 
-    <!-- 菱形徽章：高频操作 -->
-    <div class="diamond-row">
-      <button class="diamond-badge" data-action="perceive">
-        <span class="diamond-hook"></span>
-        <span class="label">感知</span>
-        <span class="diamond-tassel"></span>
-      </button>
-      <button class="diamond-badge" data-action="cultivate-menu">
-        <span class="diamond-hook"></span>
-        <span class="label">修行</span>
-        <span class="diamond-tassel"></span>
-      </button>
-      <button class="diamond-badge" data-action="rest">
-        <span class="diamond-hook"></span>
-        <span class="label">休憩</span>
-        <span class="diamond-tassel"></span>
-      </button>
-    </div>
+    <!-- 区域 2：场景叙事、人物卡、操作和感知交互全景。 -->
+    <main class="jianghu-main-zone" aria-label="场景与交互">
+      <div class="room-card" id="room-card">
+        <div class="room-desc" id="location-desc"></div>
+        <div class="room-npcs" id="room-npcs"></div>
+      </div>
 
-    <!-- 修行子选项（默认隐藏） -->
-    <div class="cultivate-submenu" id="cultivate-submenu" style="display:none">
-      <button class="action-btn" data-action="meditate"><span class="icon">🧘</span>入定</button>
-      <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
-    </div>
+      <div class="scene-feed" id="scene-feed" aria-live="polite"></div>
 
-    <!-- 最近日志（最近3条） -->
-    <div class="recent-log">
-      <div class="recent-log-header">─ 最近日志 ─────────────</div>
-      <div id="log-area"></div>
-    </div>
+      <div class="diamond-row" aria-label="常用操作">
+        <button class="diamond-badge" data-action="perceive" title="感知当前场景">
+          <span class="diamond-hook"></span>
+          <span class="label">感知</span>
+          <span class="diamond-tassel"></span>
+        </button>
+        <button class="diamond-badge" data-action="cultivate-menu" title="展开修行选项">
+          <span class="diamond-hook"></span>
+          <span class="label">修行</span>
+          <span class="diamond-tassel"></span>
+        </button>
+        <button class="diamond-badge" data-action="rest" title="休憩恢复">
+          <span class="diamond-hook"></span>
+          <span class="label">休憩</span>
+          <span class="diamond-tassel"></span>
+        </button>
+      </div>
 
-    <!-- 感知面板（宣纸贴纸感 in-page 展开区） -->
-    <div class="perception-panel" id="perception-panel">
-      <div class="perception-inner" id="perception-inner"></div>
-    </div>
+      <div class="cultivate-submenu" id="cultivate-submenu" style="display:none">
+        <button class="action-btn" data-action="meditate"><span class="icon">🧘</span>入定</button>
+        <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
+      </div>
+
+      <div class="perception-panel" id="perception-panel">
+        <div class="perception-inner" id="perception-inner"></div>
+      </div>
+    </main>
+
+    <!-- 区域 3：MUD 控制台，只承载行动结果和状态变化。 -->
+    <section class="recent-log" aria-label="最近日志">
+      <div class="recent-log-header">最近日志</div>
+      <div id="log-area" aria-live="polite"></div>
+    </section>
   </section>
 
   <!-- ════════════ 页面 2 · 武学 ════════════ -->
@@ -97,7 +103,6 @@
       <div class="card-body" style="text-align:center">
         <button class="action-btn" data-action="practiceMenu" style="min-width:120px"><span class="icon">📖</span>练武</button>
       </div>
-    </div>
     </div>
   </section>
 

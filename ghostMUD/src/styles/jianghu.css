@@ -1,0 +1,405 @@
+/* Jianghu page v4: image2-backed three-zone layout.
+ * 1 = room title, 2 = narrative/characters/interactions, 3 = MUD console.
+ */
+
+body[data-page="jianghu"]::before,
+body[data-page="jianghu"]::after {
+  display: none;
+}
+
+body[data-page="jianghu"] #noise-overlay {
+  opacity: 0.12;
+}
+
+/* 顶栏当前只是无行为占位件，不让它继续侵占主画布。 */
+#top-bar {
+  display: none !important;
+}
+
+body[data-page="jianghu"] #scene-bg {
+  background-color: #eeece2;
+  background-image: url('/ui/jianghu-mobile-bg.jpg');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.page[data-page="jianghu"] {
+  top: 0;
+  padding: 0;
+  overflow: hidden;
+  color: #25231f;
+}
+
+/* Zone 1: room title plaque. */
+.location-banner {
+  position: absolute;
+  z-index: 4;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  min-height: 80px;
+  padding: 10px 52px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 242, 231, 0.96);
+  border: 2px solid rgba(55, 58, 55, 0.72);
+  outline: 1px solid rgba(55, 58, 55, 0.28);
+  outline-offset: -6px;
+  box-shadow: 0 2px 0 rgba(45, 48, 45, 0.2);
+}
+
+.location-banner .location-region {
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: #5e6d68;
+  letter-spacing: 3px;
+}
+
+.location-banner #location-name {
+  display: block;
+  max-width: 100%;
+  color: #171916;
+  font-family: 'STKaiti', 'KaiTi', 'FangSong', serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 2px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Zone 2: the only home for scene prose and interactions. */
+.jianghu-main-zone {
+  position: absolute;
+  z-index: 3;
+  top: 12.5dvh;
+  left: 0;
+  right: 0;
+  height: 60.5dvh;
+  padding: 16px 16px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  background: rgba(246, 244, 234, 0.97);
+  border-top: 1px solid rgba(55, 58, 55, 0.6);
+  border-bottom: 1px solid rgba(55, 58, 55, 0.5);
+}
+
+.page[data-page="jianghu"] .room-card {
+  margin: 0;
+  padding: 14px 15px;
+  background: rgba(212, 216, 207, 0.52);
+  border: 1px solid rgba(65, 70, 66, 0.32);
+  border-radius: 3px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.page[data-page="jianghu"] .room-desc {
+  color: #2f302c;
+  font-family: 'STKaiti', 'KaiTi', 'FangSong', serif;
+  font-size: 15px;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.page[data-page="jianghu"] .room-npcs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.room-npc-card {
+  min-width: 0;
+  padding: 8px 9px;
+  background: rgba(237, 228, 177, 0.7);
+  border: 1px solid rgba(55, 58, 55, 0.7);
+  box-shadow: inset 0 0 0 2px rgba(250, 248, 232, 0.65);
+}
+
+.room-npc-card strong,
+.room-npc-card span {
+  display: block;
+}
+
+.room-npc-card strong {
+  color: #25231f;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+.room-npc-card span {
+  margin-top: 3px;
+  color: #5e5a50;
+  font-size: 11px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.scene-feed {
+  max-height: 150px;
+  margin-top: 10px;
+  overflow-y: auto;
+  color: #36342e;
+  font-family: 'STKaiti', 'KaiTi', 'FangSong', serif;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.scene-entry {
+  padding: 4px 2px;
+}
+
+.scene-entry + .scene-entry {
+  border-top: 1px dotted rgba(58, 58, 52, 0.18);
+}
+
+.scene-entry.dialogue {
+  color: #536b5e;
+}
+
+.page[data-page="jianghu"] .diamond-row {
+  margin: 14px 0 4px;
+  padding: 12px 8px 20px;
+  justify-content: space-around;
+  gap: 16px;
+  border: 0;
+}
+
+.page[data-page="jianghu"] .diamond-badge {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  background: rgba(243, 236, 202, 0.88);
+  border-color: #8e8152;
+  outline-color: rgba(142, 129, 82, 0.55);
+  box-shadow: inset 0 0 0 2px rgba(255, 253, 235, 0.72), 0 2px 5px rgba(44, 42, 34, 0.2);
+}
+
+.page[data-page="jianghu"] .diamond-badge .label {
+  color: #24231f;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.page[data-page="jianghu"] .cultivate-submenu {
+  padding: 8px 0 12px;
+}
+
+.page[data-page="jianghu"] .cultivate-submenu .action-btn {
+  min-width: 108px;
+  min-height: 44px;
+  background: rgba(239, 229, 178, 0.9);
+  border: 1px solid rgba(55, 58, 55, 0.7);
+  border-radius: 2px;
+  color: #27251f;
+}
+
+.page[data-page="jianghu"] .perception-panel {
+  margin-top: 8px;
+}
+
+.page[data-page="jianghu"] .perception-panel.open {
+  max-height: none;
+}
+
+.page[data-page="jianghu"] .perception-inner {
+  max-height: none;
+  margin: 0;
+  padding: 14px 12px;
+  overflow: visible;
+  background: rgba(243, 239, 220, 0.97);
+  border: 1px solid rgba(55, 58, 55, 0.72);
+  outline: 1px solid rgba(55, 58, 55, 0.24);
+  outline-offset: -4px;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+/* Zone 3: action console, visually separate from scene prose. */
+.page[data-page="jianghu"] .recent-log {
+  position: absolute;
+  z-index: 3;
+  top: 73dvh;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 18px 10px;
+  overflow: hidden;
+  background: rgba(245, 243, 232, 0.985);
+  border-top: 1px solid rgba(55, 58, 55, 0.58);
+}
+
+.page[data-page="jianghu"] .recent-log-header {
+  margin: 0 0 5px;
+  color: #5e5950;
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 4px;
+}
+
+.page[data-page="jianghu"] .recent-log #log-area {
+  max-height: none;
+  height: calc(100% - 18px);
+  overflow-y: auto;
+  color: #4e352d;
+  font-family: 'STKaiti', 'KaiTi', 'FangSong', serif;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry {
+  padding: 3px 0;
+  border: 0;
+  animation: none;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry:nth-last-child(n + 6) {
+  display: none;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry.system,
+.page[data-page="jianghu"] #log-area .log-entry.info {
+  color: #4f4b42;
+  font-style: normal;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry.event,
+.page[data-page="jianghu"] #log-area .log-entry.combat,
+.page[data-page="jianghu"] #log-area .log-entry.breakthrough {
+  color: #9c2e25;
+}
+
+@media (max-width: 767px) {
+  #top-bar,
+  #input-wrap {
+    display: none !important;
+  }
+
+  #bottom-nav {
+    background: rgba(239, 235, 220, 0.95);
+    border-top-color: rgba(55, 58, 55, 0.55);
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .page[data-page="jianghu"] {
+    top: 0 !important;
+  }
+
+  .nav-btn {
+    color: #66635b;
+  }
+
+  .nav-btn.active {
+    color: #8f241d;
+    background: rgba(185, 49, 36, 0.08);
+  }
+
+  .nav-btn .nav-icon {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 360px) {
+  .location-banner {
+    left: 14px;
+    right: 14px;
+    padding-inline: 42px;
+  }
+
+  .jianghu-main-zone {
+    padding-inline: 12px;
+  }
+
+  .page[data-page="jianghu"] .room-desc {
+    font-size: 14px;
+  }
+}
+
+/* Desktop follows the spec: Jianghu remains on the left while a selected tool page opens right. */
+@media (min-width: 768px) {
+  body[data-page="jianghu"] #scene-bg,
+  body:not([data-page="jianghu"]) #scene-bg {
+    background-color: #e8e6dc;
+    background-image: none;
+  }
+
+  .page[data-page="jianghu"] {
+    display: block !important;
+    top: 0;
+    left: 0;
+    right: 33.334%;
+    bottom: calc(var(--nav-height) + 48px);
+    max-width: none;
+    margin: 0;
+  }
+
+  .page.active:not([data-page="jianghu"]) {
+    top: 0;
+    left: 66.666%;
+    right: 0;
+    bottom: 0;
+    max-width: none;
+    margin: 0;
+    padding: 14px 16px 24px;
+    background: rgba(238, 235, 224, 0.94);
+    border-left: 1px solid rgba(55, 58, 55, 0.45);
+  }
+
+  #bottom-nav {
+    right: 33.334%;
+  }
+
+  #input-wrap {
+    left: 0;
+    height: 48px;
+    width: 66.666%;
+    max-width: none;
+    transform: none;
+    padding: 6px 12px;
+    background: rgba(239, 235, 220, 0.96);
+    border-top: 1px solid rgba(55, 58, 55, 0.45);
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  #cmd-input {
+    height: 34px;
+    background: rgba(250, 248, 238, 0.9);
+    border: 1px solid rgba(55, 58, 55, 0.45);
+    color: #2f302c;
+  }
+
+  #input-prompt {
+    color: #76694c;
+  }
+
+  .location-banner {
+    left: 8%;
+    right: 8%;
+  }
+
+  .jianghu-main-zone,
+  .page[data-page="jianghu"] .recent-log {
+    left: 5%;
+    right: 5%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-entry,
+  .page[data-page="jianghu"] #log-area .log-entry {
+    animation: none;
+  }
+}

@@ -115,6 +115,7 @@ export class PageManager {
   /** 实际应用页面切换（更新 .active class），不播动画 */
   _applyPage(pageId, fireEvent) {
     this.currentPage = pageId;
+    document.body.dataset.page = pageId;
     document.querySelectorAll('.page').forEach((p) => {
       p.classList.toggle('active', p.dataset.page === pageId);
     });

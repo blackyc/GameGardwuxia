@@ -244,12 +244,17 @@ export class Renderer {
     const desc = this.game.getRoomDesc ? this.game.getRoomDesc(s.location) : (data.getDesc(data.LOCATIONS[s.location]) || '未知之地');
     this._setText('location-desc', desc);
 
-    // 在场NPC（显示在房间卡内，薄荷绿/珊瑚橘文字）
+    // 在场 NPC 以人物卡呈现，交互入口收在感知全景内。
     const npcsEl = document.getElementById('room-npcs');
     if (npcsEl) {
       const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
       if (perc && perc.npcs && perc.npcs.length > 0) {
-        npcsEl.innerHTML = perc.npcs.map(n => '<span class="room-npc">· ' + n.name + '</span>').join('');
+        npcsEl.innerHTML = perc.npcs.map(n =>
+          '<article class="room-npc-card">'
+          + '<strong>' + n.name + '</strong>'
+          + '<span>' + (n.desc || '此人正留意着周遭。') + '</span>'
+          + '</article>'
+        ).join('');
       } else {
         npcsEl.innerHTML = '';
       }
@@ -339,8 +344,12 @@ export class Renderer {
       return;
     }
 
+    const skillSections = factionData.skills.some(item => Array.isArray(item.skills))
+      ? factionData.skills
+      : [{ name: '本门武学', skills: factionData.skills }];
+
     let html = '';
-    for (const section of factionData.skills) {
+    for (const section of skillSections) {
       const sectionId = 'skill-section-' + section.name.replace(/\s/g, '');
       const hasLearned = section.skills.some(sk => s.skills[sk.id]);
       html += '<div class="skill-section">';
@@ -418,9 +427,11 @@ export class Renderer {
     if (data.MAP_CONN) {
       for (const conn of data.MAP_CONN) {
         const [a, b] = conn;
-        const pa = toPx(data.MAP_POS[a]);
-        const pb = toPx(data.MAP_POS[b]);
-        if (!pa || !pb) continue;
+        const posA = data.MAP_POS[a];
+        const posB = data.MAP_POS[b];
+        if (!posA || !posB) continue;
+        const pa = toPx(posA);
+        const pb = toPx(posB);
         const explored = s.explored.includes(a) && s.explored.includes(b);
         const dx = pb.x - pa.x;
         const dy = pb.y - pa.y;
@@ -506,6 +517,17 @@ export class Renderer {
 
   /** 添加日志 */
   addLog(text, type) {
+    if (type === 'scene' || type === 'dialogue') {
+      const feed = document.getElementById('scene-feed');
+      if (!feed) return;
+      const sceneEntry = document.createElement('div');
+      sceneEntry.className = 'scene-entry ' + type;
+      sceneEntry.innerHTML = text;
+      feed.appendChild(sceneEntry);
+      while (feed.children.length > 8) feed.removeChild(feed.firstChild);
+      feed.scrollTop = feed.scrollHeight;
+      return;
+    }
     const area = document.getElementById('log-area');
     const el = document.createElement('div');
     el.className = 'log-entry ' + (type || '');

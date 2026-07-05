@@ -30,6 +30,8 @@ export class InputManager {
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
+      // 感知面板有自己的委托器，通用处理器不再重复消费。
+      if (btn.closest('#perception-panel')) return;
       const action = btn.dataset.action;
       switch (action) {
         case 'explore':

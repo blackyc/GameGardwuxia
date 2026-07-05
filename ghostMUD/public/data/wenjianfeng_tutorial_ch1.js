@@ -249,7 +249,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
     if (scene.onEnter) scene.onEnter(game);
     if (scene.npcDialog) {
       scene.npcDialog.forEach(function(d) {
-        game.addLog(d.text, d.speaker === 'narrator' ? 'system' : 'npc');
+        game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
       });
     }
     if (scene.moveHint) {
@@ -299,7 +299,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
         var freeDialogs = this.freeTimeDialogs[target];
         // 触发晚饭事件
         this.dinnerEvent.dialog.forEach(function(d) {
-          game.addLog(d.text, d.speaker === 'narrator' ? 'system' : 'npc');
+          game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
         });
         this.dinnerEvent.afterDinner(game);
         return true;
@@ -308,7 +308,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
       var dialogs = this.freeTimeDialogs[target];
       if (dialogs) {
         dialogs.forEach(function(d) {
-          game.addLog(d.text, d.speaker === 'narrator' ? 'system' : 'npc');
+          game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
         });
       }
       return true; // 自由活动允许任何移动
@@ -331,7 +331,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
     var dialogs = this.freeTimeDialogs[room];
     if (dialogs) {
       dialogs.forEach(function(d) {
-        game.addLog(d.text, d.speaker === 'narrator' ? 'system' : 'npc');
+        game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
       });
     }
   },
