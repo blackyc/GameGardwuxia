@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md
 
-> 最后更新：2026-07-06 H2
+> 最后更新：2026-07-06 H3
 > 状态来源：代码验证 + 构建结果 + 运行时检查
 > 不得从设计文档或历史声明复制"已完成"状态
 
@@ -11,11 +11,11 @@
 | Node | v24.18.0（本地 `.tools/node-v24.18.0-win-x64`） |
 | npm | 11.16.0 |
 | 构建工具 | Vite 5.4.21 |
-| 构建结果 | 成功，39 模块，JS 135.43 KB (gzip 52.37 KB)，CSS 47.69 KB (gzip 11.05 KB) |
+| 构建结果 | 成功，40 模块，JS 136.70 KB (gzip 53.34 KB)，CSS 47.69 KB (gzip 11.05 KB) |
 | 构建警告 | 0 条（HR-101 修复） |
 | 启动命令 | `npm run dev` |
 | 预览命令 | `npm run preview` |
-| 测试命令 | `npm test`（32 项全通过） |
+| 测试命令 | `npm test`（36 项全通过） |
 
 ## 2. 仓库状态
 
@@ -23,7 +23,7 @@
 |---|---|
 | Git | 已初始化，分支 `ghostmud`，远程 `origin/ghostmud` |
 | `.gitignore` | 已配置：`node_modules/`、`.tools/`、`dist/`、`.cdp-profile*/`、`work/_*` 临时文件、`*.bak` |
-| 基线 commit | `27a2d43` HR-000 + `068ab16` HR-101/102/103 |
+| 基线 commit | `27a2d43` HR-000 + `068ab16` HR-101/102/103 + `f3610ab` H3 |
 
 ## 3. 功能状态（按状态词典定义）
 
@@ -55,12 +55,12 @@
 ### 数据已存在
 | 数据 | 数量 | 消费状态 |
 |---|---|---|
-| 房间 | 203（67 个裸 ID 违反 ADR-0001） | 可加载 |
+| 房间 | 203（0 个裸 ID，全部遵守 ADR-0001） | 可加载 |
 | NPC 遭遇 | 209 | 可加载 |
 | 敌人 | 60 | 可加载 |
 | 物品 | 120 | 可加载 |
 | 任务 | 15 | 可加载 |
-| 宗门 | 11（设计称 12，差 1 未决） | 可加载 |
+| 宗门 | 11（设计称 12，差 1 = 肉慈斋注册遗漏，ADR-0005 记录） | 可加载 |
 | 技能 | 70 | 可加载 |
 | 刻印 | 35 | 零消费 |
 | Build | 9 | 零消费 |
@@ -72,12 +72,29 @@
 |---|---|---|---|
 | P0-感知双触发 | `.perc-path` 同时被通用处理器和感知面板消费 | 已修复 | `input.js` 添加 `closest('#perception-panel')` 拦截 |
 | P0-武学页报错 | 扁平技能数组未兼容 | 已修复 | `renderer.js` 添加 `.some(Array.isArray)` 兼容 |
-| P0-舆图报错 | 4 条 `东郊` 连接无坐标 | 已容错 | `renderer.js` 添加 `if (!posA \|\| !posB) continue`；根因是 `rebuild_rooms_wild.js` connections 重复键覆盖（H3 修复） |
+| P0-舆图报错 | 4 条 `东郊` 连接无坐标 | **已修复** | H3: 裸 ID 迁移后连接引用全部正常；`renderer.js` 容错保留 |
 | P1-教程移动 | `ch1_done` 返回 true 吞移动 | 已修复 | `movement_service.js` 修正 |
 | P1-时辰映射 | 寅时(gameTime=2)归入夜，ADR 规定归清晨 | **已修复** | HR-102: `game.js` 寅时从 `desc_night` 移至 `desc_morning` |
 | P1-diagnose 404 | `/diagnose.js` 非 module，dist 不含 | **已修复** | HR-101: 从 `index.html` 移除引用，`diagnose.js` 移至 `work/` |
 
-## 5. 文档权威链
+### H3 验收门禁
+
+| 门禁 | 状态 | 证据 |
+|---|---|---|
+| 数据清单只有一个事实源 | ✅ | `manifest.js` 为唯一权威，`generate-script-tags.cjs` 校验同步 |
+| 所有连接目标存在 | ✅ | 测试验证零断裂连接 |
+| 裸 ID 数量 = 0 | ✅ | 测试验证 67→0，房间总数 203 不变 |
+| 旧 location 存档可迁移 | ✅ | `ROOM_ID_MIGRATION` 67 条映射，`game.js` load 时自动迁移 |
+| 三层描述覆盖率报告可生成 | ✅ | `work/h3_desc_coverage.cjs` 命令可执行 |
+| 宗门差异决策记录 | ✅ | ADR-0005 记录肉慈斋注册遗漏 |
+
+### 健康度
+
+| 里程碑 | 目标 | 当前 | 状态 |
+|---|---:|---:|---|
+| H0+H1 | 52+ | 52 | ✅ |
+| H2 | 62+ | 62 | ✅ |
+| H3 | 72+ | 72 | ✅ |
 
 1. 本文件 + `health_recovery_execution_guide.md`（当前执行指导）
 2. `docs/adr/0001-0004-t7-3-decisions.md`（Accepted ADR）
