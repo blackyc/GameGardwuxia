@@ -9,8 +9,8 @@ node_modules/.vite/
 # Vite cache
 *.vite/
 
-# Build artifacts (keep dist/ for deployment)
-# dist/
+# Build artifacts
+ dist/
 
 # OS
 .DS_Store
@@ -26,3 +26,16 @@ Thumbs.db
 
 # Temp screenshots
 work/_screenshot_*.png
+
+# Temp backup files
+*.bak
+*.tmp
+
+# Temp validation/test scripts in work/
+work/_*.cjs
+work/_*.js
+work/_*.bak
+
+# Analysis screenshots (evidence tracked via commits)
+analysis/ui-regression/*/console.txt
+analysis/ui-regression/*/assertions.txt
