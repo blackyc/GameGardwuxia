@@ -419,7 +419,7 @@ test('payload \u4e3a\u975e\u5bf9\u8c61 JSON \u4e0d\u5d29\u6e83\uff0c\u8fd4\u56de
 
 // ── 6. Unknown version handling ───────────────────
 
-test('\u672a\u77e5\u7248\u672c\u4e0d\u5d29\u6e83\uff0c\u5c1d\u8bd5\u517c\u5bb9\u52a0\u8f7d', () => {
+test('\u672a\u77e5\u7248\u672c\u4e0d\u5d29\u6e83\uff0c\u5c1d\u8bd5\u5907\u4efd\u6062\u590d', () => {
   const ls = createMockLocalStorage();
   const mod = loadStorageModule(ls);
   const futurePayload = {
@@ -428,12 +428,38 @@ test('\u672a\u77e5\u7248\u672c\u4e0d\u5d29\u6e83\uff0c\u5c1d\u8bd5\u517c\u5bb9\u
     state: makeV2Payload().state,
   };
   ls.setItem('ghostmud_save_v2', JSON.stringify(futurePayload));
+  // \u4e5f\u5199\u4e00\u4efd\u5907\u4efd\uff08\u7248\u672c 2\uff09\u4f9b\u6062\u590d
+  const backupPayload = {
+    version: 2,
+    timestamp: Date.now() - 1000,
+    state: makeV2Payload().state,
+  };
+  ls.setItem('ghostmud_save_v2_backup', JSON.stringify(backupPayload));
 
   const storage = new mod.Storage();
   const loaded = storage.load();
 
-  assert.ok(loaded, 'unknown version should attempt compatible load');
-  assert.strictEqual(loaded.realm, 1, 'unknown version fields should load normally');
+  // P1-5 \u4fee\u590d\uff1a\u672a\u77e5\u7248\u672c\u5e94\u4ece\u5907\u4efd\u6062\u590d\uff0c\u800c\u975e\u517c\u5bb9\u52a0\u8f7d
+  assert.ok(loaded, '\u5907\u4efd\u6062\u590d\u5e94\u8fd4\u56de\u72b6\u6001');
+  assert.strictEqual(loaded.realm, 1, '\u5907\u4efd\u6570\u636e\u5b57\u6bb5\u5e94\u6b63\u5e38');
+});
+
+test('\u672a\u77e5\u7248\u672c\u65e0\u5907\u4efd\u65f6\u8fd4\u56de null', () => {
+  const ls = createMockLocalStorage();
+  const mod = loadStorageModule(ls);
+  const futurePayload = {
+    version: 99,
+    timestamp: Date.now(),
+    state: makeV2Payload().state,
+  };
+  ls.setItem('ghostmud_save_v2', JSON.stringify(futurePayload));
+  // \u4e0d\u5199\u5907\u4efd
+
+  const storage = new mod.Storage();
+  const loaded = storage.load();
+
+  // P1-5 \u4fee\u590d\uff1a\u672a\u77e5\u7248\u672c\u65e0\u5907\u4efd\u65f6\u8fd4\u56de null\uff0c\u4e0d\u5b00\u5b88\u517c\u5bb9
+  assert.strictEqual(loaded, null, '\u672a\u77e5\u7248\u672c\u65e0\u5907\u4efd\u5e94\u8fd4\u56de null');
 });
 
 // ── 7. Backup mechanism ───────────────────────────
@@ -795,5 +821,8 @@ if (failed > 0) {
   console.log('\n\u5931\u8d25\u9879:');
   failures.forEach(f => console.log(`  \u2022 ${f.name}: ${f.error}`));
 }
+
+
+process.exit(failed > 0 ? 1 : 0);
 
 module.exports = { passed, failed, failures };

@@ -182,12 +182,22 @@ export class Game {
         console.log('[H3 Migration] Migrating location:', saved.location, '→', ROOM_ID_MIGRATION[saved.location]);
         saved.location = ROOM_ID_MIGRATION[saved.location];
       }
-      // Also migrate any location references in quest progress
-      if (saved.questProgress) {
-        for (const qid in saved.questProgress) {
-          const qp = saved.questProgress[qid];
-          if (qp && qp.location && ROOM_ID_MIGRATION[qp.location]) {
-            qp.location = ROOM_ID_MIGRATION[qp.location];
+      // Also migrate any location references in quest stages
+      // P1-3 修复：Storage 已将 questProgress 重命名为 questStages，这里检查 questStages
+      if (saved.questStages) {
+        for (const qid in saved.questStages) {
+          const qs = saved.questStages[qid];
+          if (qs && typeof qs === 'object' && qs.location && ROOM_ID_MIGRATION[qs.location]) {
+            qs.location = ROOM_ID_MIGRATION[qs.location];
+          }
+          // questStages 可能是嵌套结构，递归检查 location 字段
+          if (qs && typeof qs === 'object') {
+            for (const stageKey in qs) {
+              const stage = qs[stageKey];
+              if (stage && typeof stage === 'object' && stage.location && ROOM_ID_MIGRATION[stage.location]) {
+                stage.location = ROOM_ID_MIGRATION[stage.location];
+              }
+            }
           }
         }
       }
@@ -205,6 +215,19 @@ export class Game {
     this._registerTabs();
     this._registerTimers();
     this._setupPageManager();
+
+    // P1-1 修复：页面离开时立即保存
+    window.addEventListener('beforeunload', () => {
+      this.flushSave();
+    });
+
+    // P1-1 修复：定期自动保存（每 30 秒）
+    setInterval(() => {
+      if (this._dirty) {
+        this._dirty = false;
+        try { this.saveGame(); } catch (e) { console.warn('[Game] 定期自动保存失败', e); }
+      }
+    }, 30000);
 
     // 开场判断：有存档且已看过开场且有身世 → 直接进主循环；否则跳过 IntroScene
     // TODO: IntroScene 暂时跳过，后续 UI 完善后恢复
@@ -788,8 +811,8 @@ export class Game {
   getSkillData(skillId) { return this.combat.getSkillData(skillId); }
   skillDetail(skillId) { return this.combat.skillDetail(skillId); }
   practiceSkill(skillId) { return this.combat.practiceSkill(skillId); }
-  equipSkill(skillId) { return this.combat.equipSkill(skillId); }
-  unequipSkill() { return this.combat.unequipSkill(); }
+  equipSkill(skillId) { const r = this.combat.equipSkill(skillId); this.markDirty(); return r; }
+  unequipSkill() { const r = this.combat.unequipSkill(); this.markDirty(); return r; }
 
   // ============ 拜师代理（委托 TeacherService）============
   isAtFactionHQ(locationName, factionName) { return this.teacher.isAtFactionHQ(locationName, factionName); }
@@ -803,18 +826,18 @@ export class Game {
   showPerforms() { return this.combat.showPerforms(); }
   hidePerforms() { return this.combat.hidePerforms(); }
   usePerform(performId) { return this.combat.usePerform(performId); }
-  endCombat(victory) { return this.combat.endCombat(victory); }
+  endCombat(victory) { const r = this.combat.endCombat(victory); this.markDirty(); return r; }
 
   applyReward(rewardStr) { return this.quests.applyReward(rewardStr); }
 
   // ============ 搜索代理（委托 SearchService）============
   searchArea() { return this.search.searchArea(); }
-  pickItemByType(type) { return this.search.pickItemByType(type); }
+  pickItemByType(type) { const r = this.search.pickItemByType(type); this.markDirty(); return r; }
 
   // ============ 任务代理（委托 QuestService）============
-  startQuest(questId) { return this.quests.startQuest(questId); }
+  startQuest(questId) { const r = this.quests.startQuest(questId); this.markDirty(); return r; }
   checkQuestProgress(type, target) { return this.quests.checkQuestProgress(type, target); }
-  completeQuest(questId) { return this.quests.completeQuest(questId); }
+  completeQuest(questId) { const r = this.quests.completeQuest(questId); this.markDirty(); return r; }
 
   // ============ 地图 ============
 
@@ -864,7 +887,7 @@ export class Game {
 
   // ============ 物品系统 ============
 
-  useItem(index) { return this.item.useItem(index); }
+  useItem(index) { const r = this.item.useItem(index); this.markDirty(); return r; }
 
   // ============ 游戏结束 ============
 
@@ -884,6 +907,40 @@ export class Game {
    */
   saveGame() {
     return this.storage.save(this.state);
+  }
+
+  /**
+   * P1-1 修复：标记状态已变更，延迟保存
+   * 在关键状态变更后调用，避免每次操作都写 localStorage
+   */
+  _dirty = false;
+  _autoSaveTimer = null;
+
+  markDirty() {
+    this._dirty = true;
+    // 延迟 2 秒批量保存，避免高频操作（如练功连点）频繁写入
+    if (this._autoSaveTimer) return;
+    this._autoSaveTimer = setTimeout(() => {
+      this._autoSaveTimer = null;
+      if (this._dirty) {
+        this._dirty = false;
+        try { this.saveGame(); } catch (e) { console.warn('[Game] 自动保存失败', e); }
+      }
+    }, 2000);
+  }
+
+  /**
+   * P1-1 修复：立即保存并清除脏标记
+   */
+  flushSave() {
+    if (this._autoSaveTimer) {
+      clearTimeout(this._autoSaveTimer);
+      this._autoSaveTimer = null;
+    }
+    if (this._dirty) {
+      this._dirty = false;
+      try { this.saveGame(); } catch (e) { console.warn('[Game] flushSave 失败', e); }
+    }
   }
 
   // ============ 日志 ============

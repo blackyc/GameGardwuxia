@@ -419,4 +419,7 @@ if (failed > 0) {
   failures.forEach(f => console.log(`  • ${f.name}: ${f.error}`));
 }
 
+
+process.exit(failed > 0 ? 1 : 0);
+
 module.exports = { passed, failed, failures };

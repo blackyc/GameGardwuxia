@@ -95,8 +95,8 @@ export class MovementService {
     g.checkQuestProgress('go', target);
     g.renderer.updateUI();
 
-    // 自动存档
-    g.saveGame();
+    // P1-1 修复：移动后标记脏状态（延迟批量保存）
+    g.markDirty();
   }
 
   /**

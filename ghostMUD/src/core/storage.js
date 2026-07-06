@@ -41,11 +41,18 @@ export class Storage {
         state: this._serialize(state),
       };
 
-      // 写入前先备份当前值
+      // 写入前先备份当前值——但只备份有效（可解析）的存档
+      // P0 修复：不备份损坏的主档，防止覆盖有效备份
       try {
         const current = localStorage.getItem(STORAGE_KEY);
         if (current !== null) {
-          localStorage.setItem(BACKUP_KEY, current);
+          try {
+            JSON.parse(current); // 验证可解析
+            localStorage.setItem(BACKUP_KEY, current);
+          } catch {
+            // 主档已损坏，不备份——保留现有 backup（可能是有效的）
+            console.warn('[Storage] 主档已损坏，跳过备份以保留现有有效备份');
+          }
         }
       } catch (backupErr) {
         // 备份失败不阻止保存，但记录警告
@@ -78,20 +85,32 @@ export class Storage {
       try {
         payload = JSON.parse(raw);
       } catch (parseErr) {
-        // JSON 解析失败：保存损坏数据，返回 null
+        // JSON 解析失败：保存损坏数据，尝试从备份恢复
         console.error('[Storage] JSON 解析失败，存档损坏:', parseErr.message);
         try {
           localStorage.setItem(CORRUPT_KEY, raw);
         } catch (e) { /* 忽略 */ }
+        // P0 修复：尝试从备份恢复
+        const backupState = this._tryLoadBackup();
+        if (backupState) {
+          console.log('[Storage] 主档损坏，已从备份恢复');
+          return backupState;
+        }
         return null;
       }
 
       // 检查 payload 结构
-      if (!payload || typeof payload !== 'object' || !payload.state) {
+      if (!payload || typeof payload !== 'object' || !payload.state || typeof payload.state !== 'object') {
         console.error('[Storage] 存档结构无效');
         try {
           localStorage.setItem(CORRUPT_KEY, raw);
         } catch (e) { /* 忽略 */ }
+        // P0 修复：主档损坏时尝试从备份恢复
+        const backupState = this._tryLoadBackup();
+        if (backupState) {
+          console.log('[Storage] 主档损坏，已从备份恢复');
+          return backupState;
+        }
         return null;
       }
 
@@ -102,9 +121,14 @@ export class Storage {
       if (fileVersion === 1) {
         state = this._migrateV1ToV2(state);
       } else if (fileVersion !== this._version) {
-        // 未知版本：尝试兼容加载，记录警告
-        this._warnings.push(`未知存档版本 ${fileVersion}，尝试兼容加载`);
-        console.warn(`[Storage] 未知存档版本 ${fileVersion}，尝试兼容加载`);
+        // P1-5 修复：未知版本不静默加载，尝试备份恢复
+        console.warn(`[Storage] 未知存档版本 ${fileVersion}`);
+        const backupState = this._tryLoadBackup();
+        if (backupState) {
+          console.log('[Storage] 未知版本，已从备份恢复');
+          return backupState;
+        }
+        return null;
       }
 
       // schema 校验与修复
@@ -167,17 +191,38 @@ export class Storage {
   importSave(jsonString) {
     try {
       const payload = JSON.parse(jsonString);
-      if (!payload || typeof payload !== 'object' || !payload.state) {
+      if (!payload || typeof payload !== 'object' || !payload.state || typeof payload.state !== 'object') {
         console.error('[Storage] 导入失败：无效的存档结构');
         return false;
       }
+      // P1-5 修复：版本检查与迁移
+      let state = payload.state;
+      const fileVersion = payload.version;
+      if (fileVersion === 1) {
+        state = this._migrateV1ToV2(state);
+      } else if (fileVersion !== this._version) {
+        console.error(`[Storage] 导入失败：未知存档版本 ${fileVersion}`);
+        return false;
+      }
+      // P1-5 修复：完整 schema 校验后再写入
+      state = this._validateAndRepair(state);
+      const validatedPayload = {
+        version: this._version,
+        timestamp: payload.timestamp || Date.now(),
+        state: state,
+      };
       // 先备份当前存档
       const current = localStorage.getItem(STORAGE_KEY);
       if (current !== null) {
-        localStorage.setItem(BACKUP_KEY, current);
+        try {
+          JSON.parse(current);
+          localStorage.setItem(BACKUP_KEY, current);
+        } catch {
+          // 当前主档损坏，不备份
+        }
       }
-      // 写入新存档
-      localStorage.setItem(STORAGE_KEY, jsonString);
+      // 写入校验后的存档
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(validatedPayload));
       return true;
     } catch (e) {
       console.error('[Storage] 导入失败:', e);
@@ -188,6 +233,32 @@ export class Storage {
   // ════════════════════════════════════════
   //  内部方法
   // ════════════════════════════════════════
+
+  /**
+   * P0 修复：尝试从备份加载有效存档
+   * 备份可能是 v1 或 v2，都需要经过迁移和校验
+   * @returns {object|null}
+   */
+  _tryLoadBackup() {
+    try {
+      const raw = localStorage.getItem(BACKUP_KEY);
+      if (!raw) return null;
+      const payload = JSON.parse(raw);
+      if (!payload || !payload.state || typeof payload.state !== 'object') return null;
+      let state = payload.state;
+      if (payload.version === 1) {
+        state = this._migrateV1ToV2(state);
+      } else if (payload.version !== this._version) {
+        console.warn(`[Storage] 备份版本 ${payload.version} 未知，尝试兼容加载`);
+      }
+      state = this._validateAndRepair(state);
+      console.log('[Storage] 从备份恢复成功');
+      return state;
+    } catch (e) {
+      console.error('[Storage] 备份恢复失败:', e);
+      return null;
+    }
+  }
 
   /**
    * 按 schema 白名单序列化状态（忽略 transient 和 schema 外的字段）

@@ -282,6 +282,67 @@ test('所有 connections 目标存在于 LOCATIONS（零断裂）', () => {
   assert.strictEqual(broken.length, 0, `发现 ${broken.length} 个断裂连接:\n${broken.slice(0, 20).join('\n')}`);
 });
 
+// ── H3 修复：重复 connections 键检测 ──────────────
+// JS 对象字面量中重复的键会被静默覆盖，导致地图拓扑断裂
+// 本测试用正则扫描源码（而非求值后检查），能发现被覆盖的连接
+test('connections 对象无重复方向键（源码级）', () => {
+  const dataDir = path.join(__dirname, '..', 'public', 'data');
+  const files = fs.readdirSync(dataDir).filter(f => f.endsWith('.js'));
+  const dups = [];
+
+  for (const file of files) {
+    const src = fs.readFileSync(path.join(dataDir, file), 'utf8');
+    const connRegex = /connections\s*:\s*\{([^}]*)\}/g;
+    let match;
+
+    while ((match = connRegex.exec(src)) !== null) {
+      const block = match[1];
+      const lineNum = src.substring(0, match.index).split('\n').length;
+
+      const keyRegex = /(?:'([^']+)'|"([^"]+)"|([^\s:,'"]+))\s*:/g;
+      const keys = [];
+      let km;
+      while ((km = keyRegex.exec(block)) !== null) {
+        keys.push(km[1] || km[2] || km[3]);
+      }
+
+      const counts = {};
+      for (const k of keys) counts[k] = (counts[k] || 0) + 1;
+
+      const fileDups = Object.entries(counts).filter(([k, c]) => c > 1);
+      if (fileDups.length > 0) {
+        // 找房间名
+        let roomName = '未知';
+        const before = src.substring(0, match.index);
+        const nameMatches = [...before.matchAll(/name\s*:\s*['"`]([^'"`]+)['"`]/g)];
+        if (nameMatches.length > 0) roomName = nameMatches[nameMatches.length - 1][1];
+
+        for (const [dir, count] of fileDups) {
+          dups.push(`${file}:${lineNum} ${roomName} ${dir}×${count}`);
+        }
+      }
+    }
+  }
+
+  assert.strictEqual(dups.length, 0,
+    `发现 ${dups.length} 处重复连接键（JS 对象静默覆盖）：\n  ${dups.slice(0, 10).join('\n  ')}${dups.length > 10 ? '\n  ...' : ''}`
+  );
+});
+// P2: manifest vs index.html order check
+const { execSync } = require('child_process');
+test('manifest.js and index.html script order match', () => {
+  try {
+    execSync('node work/generate-script-tags.cjs', {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'pipe',
+    });
+  } catch (e) {
+    assert.fail('manifest vs index.html mismatch: ' + (e.stdout ? e.stdout.toString() : e.message));
+  }
+});
+
+
+
 // ── 结果汇总 ──────────────────────────────────────
 console.log('━'.repeat(50));
 console.log(`数据校验结果: ${passed} 通过, ${failed} 失败`);
@@ -289,5 +350,7 @@ if (failed > 0) {
   console.log('\n失败项:');
   failures.forEach(f => console.log(`  • ${f.name}: ${f.error}`));
 }
+
+process.exit(failed > 0 ? 1 : 0);
 
 module.exports = { passed, failed, failures };

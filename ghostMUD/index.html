@@ -241,40 +241,28 @@
 </div>
 
 <!-- 数据层：全局变量加载（已迁移至 public/data/）-->
-<script src="/data/rebuild_enemies_items_realms.js"></script>
-<script src="/data/rebuild_atmosphere.js"></script>
-<script src="/data/rebuild_rooms_city.js"></script>
-<script src="/data/rebuild_rooms_wild.js"></script>
-<script src="/data/rebuild_dungeon_rooms.js"></script>
-<script src="/data/rebuild_skill_descriptions_1.js"></script>
-<script src="/data/rebuild_skill_descriptions_2.js"></script>
-
-<!-- 问剑峰门派HQ + 新手引导（T7.3） -->
-<script src="/data/rebuild_rooms_wenjianfeng.js"></script>
-<script src="/data/wenjianfeng_tutorial_ch1.js"></script>
-
-<!-- 集成桥接层：合并所有房间数据到 LOCATIONS -->
-<script src="/data/integration_v2.js"></script>
-
-<!-- Phase 8 数据层：双修体系 -->
-<script src="/data/rebuild_meridians.js"></script>
-<script src="/data/rebuild_seals.js"></script>
-<script src="/data/rebuild_builds_drops_corruption.js"></script>
-<script src="/data/corruption_system.js"></script>
-<script src="/data/jianghu_events.js"></script>
-<script src="/data/cross_path_quests.js"></script>
-<script src="/data/rebuild_skill_descriptions_ling.js"></script>
-
-<!-- 行功战斗系统数据层 -->
-<script src="/data/rebuild_combat_gong.js"></script>
-<script src="/data/rebuild_combat_atb.js"></script>
-<script src="/data/rebuild_combat_hijack.js"></script>
-
-<!-- 帮派招募NPC遭遇数据 -->
-<script src="/data/ghost_faction_recruiter_encounters.js"></script>
-
-<!-- 行功战斗系统 v3.0 数据层 -->
-<script src="/data/combat_skills_v3.js"></script>
+    <script src="/data/rebuild_enemies_items_realms.js"></script>
+        <script src="/data/rebuild_atmosphere.js"></script>
+        <script src="/data/rebuild_rooms_city.js"></script>
+        <script src="/data/rebuild_rooms_wild.js"></script>
+        <script src="/data/rebuild_dungeon_rooms.js"></script>
+        <script src="/data/rebuild_skill_descriptions_1.js"></script>
+        <script src="/data/rebuild_skill_descriptions_2.js"></script>
+        <script src="/data/rebuild_rooms_wenjianfeng.js"></script>
+        <script src="/data/wenjianfeng_tutorial_ch1.js"></script>
+        <script src="/data/integration_v2.js"></script>
+        <script src="/data/rebuild_meridians.js"></script>
+        <script src="/data/rebuild_seals.js"></script>
+        <script src="/data/rebuild_builds_drops_corruption.js"></script>
+        <script src="/data/corruption_system.js"></script>
+        <script src="/data/jianghu_events.js"></script>
+        <script src="/data/cross_path_quests.js"></script>
+        <script src="/data/rebuild_skill_descriptions_ling.js"></script>
+        <script src="/data/rebuild_combat_gong.js"></script>
+        <script src="/data/rebuild_combat_atb.js"></script>
+        <script src="/data/rebuild_combat_hijack.js"></script>
+        <script src="/data/combat_skills_v3.js"></script>
+        <script src="/data/ghost_faction_recruiter_encounters.js"></script>
 
 <!-- 桥接层：将 const/let 声明的全局变量挂到 window，供 ES6 模块读取 -->
 <!-- 数据文件各自在文件末尾将变量注册到 window.__DATA_REGISTRY，无需 eval bridge -->

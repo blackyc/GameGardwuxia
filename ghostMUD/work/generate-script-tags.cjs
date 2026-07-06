@@ -48,8 +48,18 @@ const htmlSet = new Set(htmlFiles);
 const onlyManifest = [...manifestSet].filter(f => !htmlSet.has(f));
 const onlyHtml = [...htmlSet].filter(f => !manifestSet.has(f));
 
-if (onlyManifest.length === 0 && onlyHtml.length === 0) {
-  console.log('\n✅ Manifest 与 index.html 完全同步');
+// P2 修复：顺序检查
+let orderMismatch = false;
+const minLen = Math.min(manifestFiles.length, htmlFiles.length);
+for (let i = 0; i < minLen; i++) {
+  if (manifestFiles[i] !== htmlFiles[i]) {
+    orderMismatch = true;
+    break;
+  }
+}
+
+if (onlyManifest.length === 0 && onlyHtml.length === 0 && !orderMismatch) {
+  console.log('\n✅ Manifest 与 index.html 完全同步（含顺序）');
 } else {
   if (onlyManifest.length > 0) {
     console.log('\n⚠️  Manifest 有但 index.html 缺少:');
@@ -58,6 +68,13 @@ if (onlyManifest.length === 0 && onlyHtml.length === 0) {
   if (onlyHtml.length > 0) {
     console.log('\n⚠️  index.html 有但 Manifest 缺少:');
     onlyHtml.forEach(f => console.log(`    - ${f}`));
+  }
+  if (orderMismatch) {
+    console.log('\n⚠️  顺序不一致:');
+    console.log('    Manifest 顺序:');
+    manifestFiles.forEach((f, i) => console.log(`      ${i+1}. ${f}`));
+    console.log('    index.html 顺序:');
+    htmlFiles.forEach((f, i) => console.log(`      ${i+1}. ${f}`));
   }
 
   // 生成正确的 script 块
@@ -86,4 +103,7 @@ if (onlyManifest.length === 0 && onlyHtml.length === 0) {
   } else {
     console.log('\n运行 `node work/generate-script-tags.cjs --fix` 自动同步');
   }
+  
+  // P2 修复：校验失败时非零退出
+  process.exit(1);
 }
