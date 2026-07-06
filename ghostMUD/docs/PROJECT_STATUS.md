@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md
 
-> 最后更新：2026-07-06 H4A
+> 最后更新：2026-07-06 H4B
 > 状态来源：代码验证 + 构建结果 + 运行时检查
 > 不得从设计文档或历史声明复制"已完成"状态
 
@@ -11,11 +11,11 @@
 | Node | v24.18.0（本地 `.tools/node-v24.18.0-win-x64`） |
 | npm | 11.16.0 |
 | 构建工具 | Vite 5.4.21 |
-| 构建结果 | 成功，41 模块，JS 140.95 KB (gzip 54.41 KB)，CSS 47.69 KB (gzip 11.05 KB) |
+| 构建结果 | 成功，41 模块，JS 143.11 KB (gzip 55.01 KB)，CSS 47.69 KB (gzip 11.05 KB) |
 | 构建警告 | 0 条（HR-101 修复） |
 | 启动命令 | `npm run dev` |
 | 预览命令 | `npm run preview` |
-| 测试命令 | `npm test`（69 项全通过） |
+| 测试命令 | `npm test`（72 项全通过） |
 
 ## 2. 仓库状态
 
@@ -23,7 +23,7 @@
 |---|---|
 | Git | 已初始化，分支 `ghostmud`，远程 `origin/ghostmud` |
 | `.gitignore` | 已配置：`node_modules/`、`.tools/`、`dist/`、`.cdp-profile*/`、`work/_*` 临时文件、`*.bak` |
-| 基线 commit | `27a2d43` HR-000 + `068ab16` HR-101/102/103 + `f3610ab` H3 + `fedb32b` H4A |
+| 基线 commit | `27a2d43` HR-000 + `068ab16` HR-101/102/103 + `f3610ab` H3 + `fedb32b` H4A + `84c6079` H4B |
 
 ## 3. 功能状态（按状态词典定义）
 
@@ -111,6 +111,20 @@
 | 基线 | 43 | 43 |
 | H0+H1 | 52+ | 52 |
 | H2 | 62+ | 62 |
-| H3+H4 | 72+ | 80 (H3=72, H4A=80) |
+| H3+H4 | 72+ | 75 (H3=72, H4B=75) |
 | H5 | 80+ | — |
 | H6+H7 | 85+ | — |
+
+### H4B 审计修复明细
+
+| 审计项 | 级别 | 修复内容 | commit |
+|---|---|---|---|
+| 损坏主档覆盖备份 | P0 | `storage.load()` 损坏 JSON 时先尝试 `_tryLoadBackup()` | `84c6079` |
+| 存档触发不完整 | P1-1 | `markDirty()`/`flushSave()` + 10个关键方法 + `beforeunload` + 30s 定时 | `84c6079` |
+| 54处重复连接键 | P1-2 | `h3_dup_conn_fix.cjs` 修复 + 测试新增源码级检测 | `84c6079` |
+| questProgress迁移失效 | P1-3 | `game.js` load 路径检查 `questStages` | `84c6079` |
+| 测试退出码不生效 | P1-4 | 3个测试文件加 `process.exit(failed>0?1:0)` | `84c6079` |
+| importSave无校验 | P1-5 | 完整 payload 结构校验 + 版本检查 + 迁移 + schema | `84c6079` |
+| manifest双源不检查顺序 | P2-1 | `generate-script-tags.cjs` 顺序检查 + 非零退出 | `84c6079` |
+| 未知版本静默兼容 | P2-2 | 未来版本拒绝加载，尝试备份恢复 | `84c6079` |
+| index.html顺序不同步 | P2-3 | `--fix` 同步为 manifest 顺序 | `84c6079` |
