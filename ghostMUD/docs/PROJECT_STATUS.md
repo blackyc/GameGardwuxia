@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md
 
-> 最后更新：2026-07-06 H3
+> 最后更新：2026-07-06 H4A
 > 状态来源：代码验证 + 构建结果 + 运行时检查
 > 不得从设计文档或历史声明复制"已完成"状态
 
@@ -11,11 +11,11 @@
 | Node | v24.18.0（本地 `.tools/node-v24.18.0-win-x64`） |
 | npm | 11.16.0 |
 | 构建工具 | Vite 5.4.21 |
-| 构建结果 | 成功，40 模块，JS 136.70 KB (gzip 53.34 KB)，CSS 47.69 KB (gzip 11.05 KB) |
+| 构建结果 | 成功，41 模块，JS 140.95 KB (gzip 54.41 KB)，CSS 47.69 KB (gzip 11.05 KB) |
 | 构建警告 | 0 条（HR-101 修复） |
 | 启动命令 | `npm run dev` |
 | 预览命令 | `npm run preview` |
-| 测试命令 | `npm test`（36 项全通过） |
+| 测试命令 | `npm test`（69 项全通过） |
 
 ## 2. 仓库状态
 
@@ -23,7 +23,7 @@
 |---|---|
 | Git | 已初始化，分支 `ghostmud`，远程 `origin/ghostmud` |
 | `.gitignore` | 已配置：`node_modules/`、`.tools/`、`dist/`、`.cdp-profile*/`、`work/_*` 临时文件、`*.bak` |
-| 基线 commit | `27a2d43` HR-000 + `068ab16` HR-101/102/103 + `f3610ab` H3 |
+| 基线 commit | `27a2d43` HR-000 + `068ab16` HR-101/102/103 + `f3610ab` H3 + `fedb32b` H4A |
 
 ## 3. 功能状态（按状态词典定义）
 
@@ -39,7 +39,7 @@
 | 搜索 | `searchArea` 可执行 | — |
 | NPC 对话 | `speakToNpc` 可执行 | — |
 | 经典回合制战斗 | `CombatFacade` 默认走旧战斗 | 新行功引擎不可达 |
-| 存档 | 单槽 localStorage `ghostmud_save_v2` version 1 | 无迁移/备份/校验/导入导出 |
+| 存档 | 单槽 localStorage `ghostmud_save_v2` version 2，schema 校验+备份+损坏处理+导入导出 |
 
 ### 引擎已存在
 | 功能 | 事实依据 | 不可达原因 |
@@ -111,6 +111,6 @@
 | 基线 | 43 | 43 |
 | H0+H1 | 52+ | 52 |
 | H2 | 62+ | 62 |
-| H3+H4 | 72+ | 72 (H3) / H4 进行中 |
+| H3+H4 | 72+ | 80 (H3=72, H4A=80) |
 | H5 | 80+ | — |
 | H6+H7 | 85+ | — |
