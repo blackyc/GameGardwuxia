@@ -145,6 +145,77 @@ body[data-page="jianghu"] #scene-bg {
   overflow: hidden;
 }
 
+/* 方位通路方向栏：常驻显示东南西北 */
+.page[data-page="jianghu"] .exit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 4px;
+  padding: 6px 8px 8px;
+  background: rgba(232, 228, 210, 0.55);
+  border: 1px solid rgba(55, 58, 55, 0.22);
+  border-radius: 2px;
+}
+
+.page[data-page="jianghu"] .exit-bar:empty {
+  display: none;
+}
+
+.exit-bar-title {
+  width: 100%;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 11px;
+  color: rgba(90, 86, 80, 0.55);
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.exit-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  padding: 5px 10px;
+  background: rgba(243, 236, 202, 0.7);
+  border: 1px solid rgba(85, 80, 55, 0.35);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.exit-btn:hover {
+  background: rgba(255, 248, 220, 0.92);
+  border-color: rgba(85, 80, 55, 0.7);
+  transform: translateY(-1px);
+}
+
+.exit-btn:active {
+  transform: translateY(0);
+}
+
+.exit-btn.unexplored {
+  opacity: 0.5;
+}
+
+.exit-dir {
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3a3830;
+  line-height: 1;
+}
+
+.exit-name {
+  font-size: 10px;
+  color: #6a6660;
+  margin-top: 2px;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .scene-feed {
   max-height: 150px;
   margin-top: 10px;

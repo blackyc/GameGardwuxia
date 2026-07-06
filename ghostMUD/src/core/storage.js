@@ -41,17 +41,27 @@ export class Storage {
         state: this._serialize(state),
       };
 
-      // 写入前先备份当前值——但只备份有效（可解析）的存档
-      // P0 修复：不备份损坏的主档，防止覆盖有效备份
+      // 写入前先备份当前值——但只备份有效（可解析且结构完整）的存档
+      // P0 修复：JSON.parse 成功不代表存档有效，必须验证 payload 结构
       try {
         const current = localStorage.getItem(STORAGE_KEY);
         if (current !== null) {
+          let isValidForBackup = false;
           try {
-            JSON.parse(current); // 验证可解析
-            localStorage.setItem(BACKUP_KEY, current);
+            const parsed = JSON.parse(current);
+            // 备份前完整校验：必须有 version、state，且 state 是对象
+            isValidForBackup = parsed &&
+              typeof parsed === 'object' &&
+              typeof parsed.version === 'number' &&
+              parsed.state &&
+              typeof parsed.state === 'object';
           } catch {
-            // 主档已损坏，不备份——保留现有 backup（可能是有效的）
-            console.warn('[Storage] 主档已损坏，跳过备份以保留现有有效备份');
+            // 主档 JSON 损坏，不备份
+          }
+          if (isValidForBackup) {
+            localStorage.setItem(BACKUP_KEY, current);
+          } else {
+            console.warn('[Storage] 主档无效（缺少 state/version），跳过备份以保留现有有效备份');
           }
         }
       } catch (backupErr) {
@@ -253,6 +263,18 @@ export class Storage {
       }
       state = this._validateAndRepair(state);
       console.log('[Storage] 从备份恢复成功');
+      // P0 修复：从备份恢复后，原子重建主档，避免下次保存覆盖有效 backup
+      try {
+        const rebuildPayload = JSON.stringify({
+          version: this._version,
+          timestamp: Date.now(),
+          state: this._serialize(state),
+        });
+        localStorage.setItem(STORAGE_KEY, rebuildPayload);
+        console.log('[Storage] 已从备份重建主档');
+      } catch (rebuildErr) {
+        console.warn('[Storage] 重建主档失败（不影响本次恢复）:', rebuildErr);
+      }
       return state;
     } catch (e) {
       console.error('[Storage] 备份恢复失败:', e);

@@ -55,6 +55,7 @@ export class ActionService {
       g.addLog('✅ 你收了架势。风从远处吹来，带走一身热意。', 'info');
     }
     g.renderer.updateUI(['progress', 'char', 'status']);
+    g.markDirty();
   }
 
   train() {
@@ -76,6 +77,7 @@ export class ActionService {
         : '💪 你原地打了一套拳，筋骨微热。修为+2', 'info');
     }
     g.renderer.updateUI(['progress', 'char', 'status']);
+    g.markDirty();
   }
 
   rest() {
@@ -86,6 +88,7 @@ export class ActionService {
     s.isResting = !s.isResting;
     g.addLog(s.isResting ? '💤 你寻了一处角落蜷起身子…' : '🔔 休憩结束，继续前行。', 'info');
     g.renderer.updateUI(['progress', 'char', 'status']);
+    g.markDirty();
   }
 
   talk() {

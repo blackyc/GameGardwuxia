@@ -13,6 +13,10 @@
  */
 
 import { getData } from './data/data_loader.js';
+import { getEntryAccess } from './entry_condition.js';
+
+// 方位键集合：这些 key 归入「方位通路」（方向栏），其余归入「探索入口」（感知面板）
+const CARDINAL_DIRS = new Set(['北', '南', '东', '西', '上', '下', '出', 'north', 'south', 'east', 'west', 'up', 'down', 'out']);
 
 export class PerceptionService {
   /** @param {import('./game.js').Game} game */
@@ -37,7 +41,9 @@ export class PerceptionService {
     obs.push(dangerDesc);
 
     if (loc.connections) {
-      const dirs = Object.entries(loc.connections);
+      const dirs = Object.entries(loc.connections).filter(([, name]) => {
+        return g.LOCATIONS[name] && getEntryAccess(g, name).visible;
+      });
       if (dirs.length > 0) obs.push('可见通路：' + dirs.map(d => '<b>' + d[1] + '</b>（' + g.dirName(d[0]) + '）').join('、'));
     }
 
@@ -60,12 +66,18 @@ export class PerceptionService {
     const loc = g.LOCATIONS[s.location];
     if (!loc) return { title: s.location, connections: [], npcs: [], searchPoints: [], props: [], extras: ['眼前一片虚无…'] };
 
-    // 1. 通路
-    const connections = loc.connections
+    // 1. 通路分类：方位通路（方向栏）vs 探索入口（感知面板）
+    const allConns = loc.connections
       ? Object.entries(loc.connections)
-          .filter(([dir, name]) => g.LOCATIONS[name])
-          .map(([dir, name]) => ({ dir, dirCn: g.dirName(dir), name, explored: s.explored.includes(name) }))
+          .filter(([, name]) => g.LOCATIONS[name])
+          .map(([dir, name]) => {
+            const access = getEntryAccess(g, name);
+            return { dir, dirCn: g.dirName(dir), name, explored: s.explored.includes(name), ...access };
+          })
+          .filter(connection => connection.visible)
       : [];
+    const cardinalExits = allConns.filter(c => CARDINAL_DIRS.has(c.dir));
+    const connections = allConns.filter(c => !CARDINAL_DIRS.has(c.dir));
 
     // 2. 在场人物
     const npcs = [];
@@ -109,7 +121,7 @@ export class PerceptionService {
       extras.push('🌀 你以神识扫过此地——空气中有一丝微弱的灵气波动，若有若无。');
     }
 
-    return { title: s.location, danger: loc.danger, connections, npcs, searchPoints, props, extras, canAskTeacher };
+    return { title: s.location, danger: loc.danger, cardinalExits, connections, npcs, searchPoints, props, extras, canAskTeacher };
   }
 
   /** 打开感知面板 */

@@ -259,6 +259,35 @@ export class Renderer {
         npcsEl.innerHTML = '';
       }
     }
+
+    // 方位通路：渲染到方向栏
+    this.renderExitBar();
+  }
+
+  /**
+   * 渲染方位通路方向栏（区域2常驻）
+   * 显示东南西北等方位连接，与感知面板的探索入口分层。
+   */
+  renderExitBar() {
+    const bar = document.getElementById('exit-bar');
+    if (!bar) return;
+    const s = this.game.state;
+    const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
+    if (!perc || !perc.cardinalExits || perc.cardinalExits.length === 0) {
+      bar.innerHTML = '';
+      bar.style.display = 'none';
+      return;
+    }
+    bar.style.display = 'flex';
+    bar.innerHTML = '<div class="exit-bar-title">── 此处联通 ──</div>' + perc.cardinalExits.map(c => {
+      const marker = c.explored ? '→' : '？';
+      const label = c.explored ? this.displayName(c.name) : '？？？';
+      const cls = c.explored ? 'exit-btn' : 'exit-btn unexplored';
+      return '<button class="' + cls + '" data-action="explore" data-dir="' + c.dir + '">'
+        + '<span class="exit-dir">' + c.dirCn + '</span>'
+        + '<span class="exit-name">' + label + '</span>'
+        + '</button>';
+    }).join('');
   }
 
   /** 渲染背包 */
@@ -548,9 +577,9 @@ export class Renderer {
     if (!panel) return;
     let html = '';
 
-    // 通路
+    // 探索入口（非方位通路）
     if (data.connections && data.connections.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 通路</div>';
+      html += '<div class="perc-section"><div class="perc-head">> 隐处可探</div>';
       data.connections.forEach((c) => {
         const marker = c.explored ? '→' : '？';
         const url = c.explored ? '' : ' style="color:var(--ink-soft);opacity:0.6"';

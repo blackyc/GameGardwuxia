@@ -224,8 +224,8 @@ export class Game {
     // P1-1 修复：定期自动保存（每 30 秒）
     setInterval(() => {
       if (this._dirty) {
-        this._dirty = false;
-        try { this.saveGame(); } catch (e) { console.warn('[Game] 定期自动保存失败', e); }
+        const ok = this.saveGame();
+        if (ok) this._dirty = false;
       }
     }, 30000);
 
@@ -472,6 +472,7 @@ export class Game {
     this.getRealms(); // 刷新 REALMS 别名
     this.addLog('修行路径已切换至：' + (newPath === 'wu' ? '武修' : '灵修'), 'system');
     this.renderer.updateUI();
+    this.markDirty();
   }
 
   /**
@@ -651,6 +652,7 @@ export class Game {
 
   idleTick() {
     if (this.state.combat || this.state.npcEncounter) return;
+    if (this.state.combat || this.state.npcEncounter) return;
     const s = this.state;
     if (s.isResting) {
       s.hp = Math.min(s.maxHp, s.hp + 3);
@@ -691,6 +693,8 @@ export class Game {
 
     // 挂机循环中只有修为/道心/HP 变化，只需更新进度条和数值面板
     this.renderer.updateUI(['progress', 'char', 'status']);
+    // P1 修复：挂机 tick 状态变更后标记脏
+    this.markDirty();
   }
 
   daoxinTick() {
@@ -726,6 +730,8 @@ export class Game {
     }
     // 道心定时扣减：只需更新进度条和数值面板
     this.renderer.updateUI(['progress', 'char', 'status']);
+    // P1 修复：道心变更后标记脏
+    this.markDirty();
   }
 
   triggerIdleEvent() {
@@ -747,6 +753,8 @@ export class Game {
     const e = ev[Math.floor(Math.random() * ev.length)];
     this.addLog(e.text, 'event');
     e.effect();
+    // P1 修复：idle event 修改状态后标记脏
+    this.markDirty();
   }
 
   checkBreakthrough() {
@@ -789,6 +797,8 @@ export class Game {
         if (s.daoxin <= 0) this.gameOver('冲关失败，道心崩裂');
       }
     }
+    // P1 修复：突破检查后标记脏
+    this.markDirty();
   }
 
   // ============ 移动代理（委托 MovementService）============
@@ -797,31 +807,31 @@ export class Game {
   quickTravel(loc) { return this.movement.quickTravel(loc); }
 
   // ============ NPC 代理（委托 NpcService）============
-  triggerNPCEncounter(active) { return this.npc.triggerNPCEncounter(active); }
-  speakToNpc(npcIndex) { return this.npc.speakToNpc(npcIndex); }
+  triggerNPCEncounter(active) { const r = this.npc.triggerNPCEncounter(active); this.markDirty(); return r; }
+  speakToNpc(npcIndex) { const r = this.npc.speakToNpc(npcIndex); this.markDirty(); return r; }
   _presentEncounter(enc) { return this.npc._presentEncounter(enc); }
   npcChoice(index) { return this.npc.npcChoice(index); }
   closeNPC() { return this.npc.closeNPC(); }
 
   // ============ 帮派代理（委托 FactionService）============
-  joinFaction(name) { return this.faction.joinFaction(name); }
+  joinFaction(name) { const r = this.faction.joinFaction(name); this.markDirty(); return r; }
 
   // ============ 武学/战斗代理（委托 CombatFacade）============
   getSkillName(skillId) { return this.combat.getSkillName(skillId); }
   getSkillData(skillId) { return this.combat.getSkillData(skillId); }
   skillDetail(skillId) { return this.combat.skillDetail(skillId); }
-  practiceSkill(skillId) { return this.combat.practiceSkill(skillId); }
+  practiceSkill(skillId) { const r = this.combat.practiceSkill(skillId); this.markDirty(); return r; }
   equipSkill(skillId) { const r = this.combat.equipSkill(skillId); this.markDirty(); return r; }
   unequipSkill() { const r = this.combat.unequipSkill(); this.markDirty(); return r; }
 
   // ============ 拜师代理（委托 TeacherService）============
   isAtFactionHQ(locationName, factionName) { return this.teacher.isAtFactionHQ(locationName, factionName); }
-  learnFromTeacher(teacherName) { return this.teacher.learnFromTeacher(teacherName); }
-  askTeacher() { return this.teacher.askTeacher(); }
+  learnFromTeacher(teacherName) { const r = this.teacher.learnFromTeacher(teacherName); this.markDirty(); return r; }
+  askTeacher() { const r = this.teacher.askTeacher(); this.markDirty(); return r; }
 
   // ============ 战斗代理（委托 CombatFacade）============
   triggerEncounter(loc) { return this.combat.triggerEncounter(loc); }
-  startCombat(name, data) { return this.combat.startCombat(name, data); }
+  startCombat(name, data) { const r = this.combat.startCombat(name, data); this.markDirty(); return r; }
   combatAction(action) { return this.combat.combatAction(action); }
   showPerforms() { return this.combat.showPerforms(); }
   hidePerforms() { return this.combat.hidePerforms(); }
@@ -836,7 +846,7 @@ export class Game {
 
   // ============ 任务代理（委托 QuestService）============
   startQuest(questId) { const r = this.quests.startQuest(questId); this.markDirty(); return r; }
-  checkQuestProgress(type, target) { return this.quests.checkQuestProgress(type, target); }
+  checkQuestProgress(type, target) { const r = this.quests.checkQuestProgress(type, target); this.markDirty(); return r; }
   completeQuest(questId) { const r = this.quests.completeQuest(questId); this.markDirty(); return r; }
 
   // ============ 地图 ============
@@ -891,7 +901,7 @@ export class Game {
 
   // ============ 游戏结束 ============
 
-  gameOver(reason) { return this.gameOverSvc.gameOver(reason); }
+  gameOver(reason) { const r = this.gameOverSvc.gameOver(reason); this.markDirty(); this.flushSave(); return r; }
 
   // ============ 命令处理 ============
 
@@ -923,8 +933,23 @@ export class Game {
     this._autoSaveTimer = setTimeout(() => {
       this._autoSaveTimer = null;
       if (this._dirty) {
-        this._dirty = false;
-        try { this.saveGame(); } catch (e) { console.warn('[Game] 自动保存失败', e); }
+        // P1 修复：仅在保存成功后清除 dirty，失败时保留以使下次重试
+        const ok = this.saveGame();
+        if (ok) {
+          this._dirty = false;
+        } else {
+          console.warn('[Game] 自动保存失败，脏标记保留以待重试');
+          // 安排 5 秒后重试
+          if (!this._retryTimer) {
+            this._retryTimer = setTimeout(() => {
+              this._retryTimer = null;
+              if (this._dirty) {
+                const retryOk = this.saveGame();
+                if (retryOk) this._dirty = false;
+              }
+            }, 5000);
+          }
+        }
       }
     }, 2000);
   }
@@ -938,8 +963,13 @@ export class Game {
       this._autoSaveTimer = null;
     }
     if (this._dirty) {
-      this._dirty = false;
-      try { this.saveGame(); } catch (e) { console.warn('[Game] flushSave 失败', e); }
+      // P1 修复：仅在保存成功后清除 dirty
+      const ok = this.saveGame();
+      if (ok) {
+        this._dirty = false;
+      } else {
+        console.warn('[Game] flushSave 失败，脏标记保留');
+      }
     }
   }
 

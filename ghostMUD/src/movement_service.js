@@ -13,6 +13,7 @@
  */
 
 import { getData } from './data/data_loader.js';
+import { getEntryAccess } from './entry_condition.js';
 
 export class MovementService {
   /** @param {import('./game.js').Game} game */
@@ -39,9 +40,14 @@ export class MovementService {
 
     const DIR_CN = { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出' };
     const cnDir = DIR_CN[dir] || dir;
-    const target = loc.connections[cnDir] || loc.connections[dir];
+    const target = loc.connections?.[cnDir] || loc.connections?.[dir];
     if (!target) { g.addLog('前方的路不见了。也许从来就没有过。', 'system'); return; }
     if (!g.LOCATIONS[target]) { g.addLog('那个地方……你记不起是哪里了。明明刚刚还记得。', 'system'); return; }
+    const access = getEntryAccess(g, target);
+    if (!access.allowed) {
+      g.addLog(access.message, 'system');
+      return;
+    }
 
     // 竹林深处子时判定：非子时不得进入竹林深处
     if (target.includes('竹林深处') && !g.isZiHour()) {
@@ -61,6 +67,7 @@ export class MovementService {
       }
     }
 
+    if (access.successMessage) g.addLog(access.successMessage, 'special');
     s.location = target;
     if (!s.explored.includes(target)) s.explored.push(target);
     const nl = g.LOCATIONS[target];
@@ -115,6 +122,11 @@ export class MovementService {
     const s = g.state;
     if (s.combat || s.npcEncounter) return;
     if (!s.explored.includes(loc)) return;
+    const access = getEntryAccess(g, loc);
+    if (!access.allowed) {
+      g.addLog(access.message, 'system');
+      return;
+    }
     s.location = loc;
     g.addLog('🗺 快速前往 <b>' + loc + '</b>', 'info');
     g.renderer.renderMap();
