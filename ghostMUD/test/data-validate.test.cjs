@@ -232,6 +232,56 @@ test('WU_REALMS 和 LING_REALMS 都存在', () => {
   assert.ok(REG.LING_REALMS.length > 0, `LING_REALMS 数量为 ${REG.LING_REALMS.length}`);
 });
 
+// H3-1: 裸 ID 房间数为 0（所有房间 ID 必须含 '·'）
+test('所有房间 ID 遵守 大区·房间名 格式（裸 ID = 0）', () => {
+  const rooms = REG.LOCATIONS;
+  const bareIds = Object.keys(rooms).filter(id => !id.includes('\u00b7') && !id.startsWith('yt_'));
+  assert.strictEqual(bareIds.length, 0, `发现 ${bareIds.length} 个裸 ID: ${bareIds.slice(0, 10).join(', ')}${bareIds.length > 10 ? '...' : ''}`);
+});
+
+// H3-2: index.html 与 manifest.js 文件列表同步
+const indexPath = path.join(__dirname, '..', 'index.html');
+const indexHtml = fs.readFileSync(indexPath, 'utf8');
+const htmlScripts = [...indexHtml.matchAll(/<script\s+src="\/data\/([^"]+)"><\/script>/g)].map(m => m[1]);
+const manifestFiles = MANIFEST.map(e => e.file);
+
+test('index.html <script> 标签与 DATA_MANIFEST 同步', () => {
+  const onlyManifest = manifestFiles.filter(f => !htmlScripts.includes(f));
+  const onlyHtml = htmlScripts.filter(f => !manifestFiles.includes(f));
+  assert.strictEqual(onlyManifest.length, 0, `Manifest 有但 index.html 缺少: ${onlyManifest.join(', ')}`);
+  assert.strictEqual(onlyHtml.length, 0, `index.html 有但 Manifest 缺少: ${onlyHtml.join(', ')}`);
+});
+
+// H3-3: 三层描述覆盖率报告可生成（不要求有值，只要求命令可执行）
+test('三层描述覆盖率报告可生成', () => {
+  const rooms = REG.LOCATIONS;
+  const total = Object.keys(rooms).length;
+  const hasVague = Object.values(rooms).filter(r => r.desc_vague).length;
+  const hasPercept = Object.values(rooms).filter(r => r.desc_percept).length;
+  const hasClear = Object.values(rooms).filter(r => r.desc_clear).length;
+  // 只验证能算出数字，不要求覆盖率
+  assert.ok(typeof hasVague === 'number' && typeof hasPercept === 'number' && typeof hasClear === 'number', '覆盖率计算失败');
+  assert.ok(total > 0, '总房间数应 > 0');
+  console.log(`    三层描述: vague=${hasVague}/${total}, percept=${hasPercept}/${total}, clear=${hasClear}/${total}`);
+});
+
+// H3-4: 所有 connections 目标存在于 LOCATIONS（迁移后应无断裂连接）
+test('所有 connections 目标存在于 LOCATIONS（零断裂）', () => {
+  const rooms = REG.LOCATIONS;
+  const broken = [];
+  for (const [id, room] of Object.entries(rooms)) {
+    if (!room.connections) continue;
+    for (const [dir, target] of Object.entries(room.connections)) {
+      if (typeof target !== 'string') continue;
+      if (target.startsWith('yt_')) continue;
+      if (!(target in rooms)) {
+        broken.push(`${id} →[${dir}]→ ${target}`);
+      }
+    }
+  }
+  assert.strictEqual(broken.length, 0, `发现 ${broken.length} 个断裂连接:\n${broken.slice(0, 20).join('\n')}`);
+});
+
 // ── 结果汇总 ──────────────────────────────────────
 console.log('━'.repeat(50));
 console.log(`数据校验结果: ${passed} 通过, ${failed} 失败`);

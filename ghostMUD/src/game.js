@@ -16,6 +16,7 @@
  */
 
 import { collectData, getData, pickEnemy } from './data/data_loader.js';
+import { ROOM_ID_MIGRATION } from './data/room_id_migration.js';
 import { Timer } from './core/timer.js';
 import { TabManager } from './core/tabmanager.js';
 import { ResourcePool } from './core/respool.js';
@@ -176,6 +177,20 @@ export class Game {
     // 尝试加载存档
     const saved = this.storage.load();
     if (saved) {
+      // H3 Migration: migrate old bare room IDs to namespaced IDs
+      if (saved.location && ROOM_ID_MIGRATION[saved.location]) {
+        console.log('[H3 Migration] Migrating location:', saved.location, '→', ROOM_ID_MIGRATION[saved.location]);
+        saved.location = ROOM_ID_MIGRATION[saved.location];
+      }
+      // Also migrate any location references in quest progress
+      if (saved.questProgress) {
+        for (const qid in saved.questProgress) {
+          const qp = saved.questProgress[qid];
+          if (qp && qp.location && ROOM_ID_MIGRATION[qp.location]) {
+            qp.location = ROOM_ID_MIGRATION[qp.location];
+          }
+        }
+      }
       Object.assign(this.state, saved);
       this.addLog('📂 存档已加载。', 'system');
     }

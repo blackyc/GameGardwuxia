@@ -95,18 +95,18 @@ if (typeof WENJIANFENG_ROOMS !== 'undefined') {
 // ============================================================
 var _ID_MAP = {
   // 城门
-  'yt_north_gate': '太平门',
-  'yt_east_gate': '正阳门',
-  'yt_south_gate': '聚宝门',
-  'yt_west_gate': '石城门',
+  'yt_north_gate': '应天府·太平门',
+  'yt_east_gate': '应天府·正阳门',
+  'yt_south_gate': '应天府·聚宝门',
+  'yt_west_gate': '应天府·石城门',
 
   // 应天府城区街道
-  'yt_scholar_st': '成贤街',
-  'yt_north_st': '北大街',
-  'yt_south_st': '南大街',
-  'yt_silk_st': '绫庄巷',
-  'yt_west_st': '西大街',
-  'yt_east_st': '东大街',
+  'yt_scholar_st': '应天府·成贤街',
+  'yt_north_st': '应天府·北大街',
+  'yt_south_st': '应天府·南大街',
+  'yt_silk_st': '应天府·绫庄巷',
+  'yt_west_st': '应天府·西大街',
+  'yt_east_st': '应天府·东大街',
 
   // 鸡鸣寺
   'yt_jiming_gate': '鸡鸣寺·山门',
@@ -169,31 +169,31 @@ var _ID_MAP = {
 //    为 BFS 地图连通性提供完整的拓扑
 // ============================================================
 var _SUBURB_DESC = {
-  '东郊': {
+  '应天府·东郊': {
     desc: '听人说，这应天府东郊，驿道自此渐窄。路面从青石板过渡为夯土——也许是走的人多了，道旁散落着几间茶棚和歇脚的茅亭，看着都有些年头了。',
     desc_awakened: '应天府东郊，驿道至此渐窄，路面由青石板过渡为夯土。道旁散落着几间茶棚和歇脚的茅亭。'
   },
-  '东北郊': {
+  '应天府·东北郊': {
     desc: '应天府东北郊——地势渐高，往北隐约能望见钟山的黛色轮廓。荒地间零星几座土坟，坟头草歪向同一方向，似乎是风吹的，也许是别的什么。',
     desc_awakened: '应天府东北郊，地势渐高，往北能望见钟山黛色轮廓。荒地间零星几座土坟，坟头草歪向同一方向——不是风吹的。'
   },
-  '西北郊': {
+  '应天府·西北郊': {
     desc: '应天府西北郊，驿道穿过一片低矮的丘陵。路边有座废弃的砖窑，窑口黑漆漆地张着——打更人说，他曾在子时见过窑口里亮了一下，也许是看花了眼。',
     desc_awakened: '应天府西北郊，驿道穿过一片低矮的丘陵。路边有座废弃的砖窑，窑口黑漆漆地张着。'
   },
-  '东南郊': {
+  '应天府·东南郊': {
     desc: '应天府东南郊，官道两侧是水田和桑林。远处秦淮河的反光时隐时现，空气里似乎飘着一股水腥气，也许是稻田里沤着的。',
     desc_awakened: '应天府东南郊，官道两侧是水田和桑林。远处秦淮河的反光时隐时现，空气里飘着水腥气。'
   },
-  '西南郊': {
+  '应天府·西南郊': {
     desc: '应天府西南郊，路面渐趋泥泞。路边立着一块倒了一半的界碑——字迹已不可辨，谁知道上面原来写的什么。摸上去，石面似乎比寻常界碑凉了一截。',
     desc_awakened: '应天府西南郊，路面渐趋泥泞。路边立着一块倒了一半的界碑，字迹已不可辨——刻痕不是风雨磨掉的，是指甲刮花的。'
   },
-  '北郊': {
+  '应天府·北郊': {
     desc: '应天府北郊——官道在此分岔，一条往玄武湖，一条往幕府山。岔路口有棵枯死的榆树，但枝头挂着一根新绿的藤，也许是春天的事。老辈人讲，这棵榆树枯了十几年了，从没发过芽。',
     desc_awakened: '应天府北郊，官道在此分岔，一条往玄武湖，一条往幕府山。岔路口有棵枯死的榆树——枯了十几年了，但枝头挂着一根新绿的藤，不是从树干里长出来的。'
   },
-  '南郊': {
+  '应天府·南郊': {
     desc: '应天府南郊——大路往南延伸入雨花台方向的丘陵。路边有几家骡马店，招牌被风吹得啪啪响。往来商贩都避着走，据他们说，这附近天黑后不太安宁。',
     desc_awakened: '应天府南郊，大路往南延伸入雨花台方向的丘陵。路边有几家骡马店，招牌被风吹得啪啪响。'
   }
@@ -221,13 +221,13 @@ for (var _si = 0; _si < _SUBURB_NAMES.length; _si++) {
   };
 }
 
-_ID_MAP['yt_suburb_e'] = '东郊';
-_ID_MAP['yt_suburb_ne'] = '东北郊';
-_ID_MAP['yt_suburb_nw'] = '西北郊';
-_ID_MAP['yt_suburb_se'] = '东南郊';
-_ID_MAP['yt_suburb_sw'] = '西南郊';
-_ID_MAP['yt_suburb_n'] = '北郊';
-_ID_MAP['yt_suburb_s'] = '南郊';
+_ID_MAP['yt_suburb_e'] = '应天府·东郊';
+_ID_MAP['yt_suburb_ne'] = '应天府·东北郊';
+_ID_MAP['yt_suburb_nw'] = '应天府·西北郊';
+_ID_MAP['yt_suburb_se'] = '应天府·东南郊';
+_ID_MAP['yt_suburb_sw'] = '应天府·西南郊';
+_ID_MAP['yt_suburb_n'] = '应天府·北郊';
+_ID_MAP['yt_suburb_s'] = '应天府·南郊';
 
 // ============================================================
 // 4. 标准化所有房间的 connections（yt_* ID → 中文房间名）
@@ -571,7 +571,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 2. 东大街 ← 应天东门
-    '东大街': {
+    '应天府·东大街': {
       searchChance: 0.4,
       results: [
         { type: 'money', amount: '5-30', desc: '你在歪脖子柳树根下的石缝里捡到几枚铜钱，铜钱上有一层绿色的锈——柳树泌的。', chance: 0.35 },
@@ -584,7 +584,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 3. 西大街 ← 应天西门
-    '西大街': {
+    '应天府·西大街': {
       searchChance: 0.4,
       results: [
         { type: 'find_type', itemType: 'consumable', desc: '当铺门口的石阶下，你翻到一枚灵石残片——大概是哪个走投无路的人当掉后遗落的。', chance: 0.25 },
@@ -597,7 +597,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 4. 南大街 ← 应天南门
-    '南大街': {
+    '应天府·南大街': {
       searchChance: 0.4,
       results: [
         { type: 'find_type', itemType: 'consumable', desc: '梧桐树下，红衣小囡蹲过的地方，你捡到一枚灵石残片——她大概不知道这是什么。', chance: 0.25 },
@@ -611,7 +611,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 5. 北大街 ← 应天北门
-    '北大街': {
+    '应天府·北大街': {
       searchChance: 0.4,
       results: [
         { type: 'find_type', itemType: 'consumable', desc: '书铺门口的石阶下，你翻到一枚灵石残片——大概是哪位赶考书生遗落的盘缠。', chance: 0.25 },
@@ -623,7 +623,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 6. 正阳门 ← 应天东门
-    '正阳门': {
+    '应天府·正阳门': {
       searchChance: 0.45,
       results: [
         { type: 'money', amount: '5-30', desc: '城门洞里的石板缝中，你摸到几枚铜钱——穿堂风吹得它们冰凉。', chance: 0.35 },
@@ -636,7 +636,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 7. 石城门 ← 应天西门
-    '石城门': {
+    '应天府·石城门': {
       searchChance: 0.45,
       results: [
         { type: 'find_type', itemType: 'consumable', desc: '城门石阶下，你翻到一枚灵石残片——石头城的石头灵气比别处浓，残片中的灵力尚存。', chance: 0.25 },
@@ -649,7 +649,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 8. 聚宝门 ← 聚宝门
-    '聚宝门': {
+    '应天府·聚宝门': {
       searchChance: 0.45,
       results: [
         { type: 'find_type', itemType: 'random', desc: '聚宝门的城砖缝里，你摸到了一件说不上来的物事——城门聚宝，什么都有可能。', chance: 0.12 },
@@ -657,7 +657,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 9. 太平门 ← 应天北门
-    '太平门': {
+    '应天府·太平门': {
       searchChance: 0.45,
       results: [
         { type: 'find_type', itemType: 'consumable', desc: '城门外的驿道旁，你捡到一枚灵石残片——大概是北行修士遗落的。', chance: 0.25 },
@@ -669,7 +669,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 10. 钟楼街 ← 鼓楼
-    '钟楼街': {
+    '应天府·钟楼街': {
       searchChance: 0.4,
       results: [
         { type: 'money', amount: '5-30', desc: '钟楼街的石板缝里，你捡到几枚铜钱——铜钱上沾着陈年的钟锈。', chance: 0.35 },
@@ -682,7 +682,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 11. 鼓楼街 ← 鼓楼
-    '鼓楼街': {
+    '应天府·鼓楼街': {
       searchChance: 0.4,
       results: [
         { type: 'money', amount: '5-30', desc: '鼓楼根下的石板缝里，你摸到几枚铜钱——铜钱上有鼓声震出来的裂纹。', chance: 0.35 },
@@ -695,7 +695,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 12. 醉仙楼 ← 樊楼
-    '醉仙楼': {
+    '应天府·醉仙楼': {
       searchChance: 0.4,
       results: [
         { type: 'money', amount: '5-30', desc: '你在醉仙楼后厨的泔水桶旁捡到几枚铜钱——大概是食客掏赏钱时掉落的。', chance: 0.35 },
@@ -708,7 +708,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 13. 聚宝当铺 ← 地坛旧货摊
-    '聚宝当铺': {
+    '应天府·聚宝当铺': {
       searchChance: 0.4,
       results: [
         { type: 'find_type', itemType: 'equipment', desc: '你在当铺的死当柜子后面，翻出一件蒙尘的法器——无人赎回的死当里，偶尔有好东西。', chance: 0.18 },
@@ -787,7 +787,7 @@ var ROOM_SEARCH = {};
       ]
     },
     // 20. 夫子庙 ← 樊楼
-    '夫子庙': {
+    '应天府·夫子庙': {
       searchChance: 0.4,
       results: [
         { type: 'money', amount: '5-30', desc: '夫子庙前的石阶上，你捡到几枚铜钱——大概是香客布施时掉落的。', chance: 0.35 },
@@ -975,7 +975,7 @@ var QUESTS = [
     name: '初识红尘',
     desc: '在应天府四处转转，熟悉这座城。一个游历之人，先从脚下开始。',
     stages: [
-      { desc: '到醉仙楼打听消息', location: '醉仙楼', action: 'talk', target: '跑堂', reward: { exp: 20, money: 30 } },
+      { desc: '到醉仙楼打听消息', location: '应天府·醉仙楼', action: 'talk', target: '跑堂', reward: { exp: 20, money: 30 } },
       { desc: '前往秦淮河画舫码头探查', location: '秦淮河·画舫码头', action: 'arrive', reward: { exp: 50, money: 50 } }
     ]
   },
@@ -995,8 +995,8 @@ var QUESTS = [
     name: '城门的秘密',
     desc: '正阳门的守兵最近夜不能寐——城门每到子时就响，但门外空无一人。',
     stages: [
-      { desc: '到正阳门与城门守兵交谈', location: '正阳门', action: 'talk', target: '城门守兵王大', reward: { exp: 20 } },
-      { desc: '夜间在正阳门守候', location: '正阳门', action: 'arrive', reward: { exp: 40 } },
+      { desc: '到正阳门与城门守兵交谈', location: '应天府·正阳门', action: 'talk', target: '城门守兵王大', reward: { exp: 20 } },
+      { desc: '夜间在正阳门守候', location: '应天府·正阳门', action: 'arrive', reward: { exp: 40 } },
       { desc: '将发现报告给应天府衙', location: '应天府衙·正堂', action: 'arrive', reward: { exp: 80, money: 100 } }
     ]
   },
@@ -1005,8 +1005,8 @@ var QUESTS = [
     name: '书铺异闻',
     desc: '北大街书铺的旧书里，据说每一本都多了一页——那一页上写的东西，不是过去，也不是现在。',
     stages: [
-      { desc: '到北大街书铺找老李', location: '北大街', action: 'talk', target: '书铺老李', reward: { exp: 20 } },
-      { desc: '在书铺中找到那本"多页书"', location: '北大街', action: 'search', reward: { exp: 40, item: '多页书' } },
+      { desc: '到北大街书铺找老李', location: '应天府·北大街', action: 'talk', target: '书铺老李', reward: { exp: 20 } },
+      { desc: '在书铺中找到那本"多页书"', location: '应天府·北大街', action: 'search', reward: { exp: 40, item: '多页书' } },
       { desc: '去国子监请教', location: '国子监·彝伦堂', action: 'arrive', reward: { exp: 50 } }
     ]
   },
@@ -1026,8 +1026,8 @@ var QUESTS = [
     name: '古井怪谈',
     desc: '古井巷的老井夜半会传出哭声——巷子里的住户说，那声音是从井底往上爬的。',
     stages: [
-      { desc: '前往古井巷查看老井', location: '古井巷', action: 'arrive', reward: { exp: 25 } },
-      { desc: '深夜在古井巷守候', location: '古井巷', action: 'arrive', reward: { exp: 70 } }
+      { desc: '前往古井巷查看老井', location: '应天府·古井巷', action: 'arrive', reward: { exp: 25 } },
+      { desc: '深夜在古井巷守候', location: '应天府·古井巷', action: 'arrive', reward: { exp: 70 } }
     ]
   },
   {
@@ -1094,9 +1094,9 @@ var QUESTS = [
     name: '药铺寻药',
     desc: '回春堂的老大夫说，义庄附近有一种只在尸气滋养下生长的药引——尸苔花。需要有人敢去采。',
     stages: [
-      { desc: '到回春堂药铺接任务', location: '回春堂药铺', action: 'arrive', reward: { exp: 20 } },
+      { desc: '到回春堂药铺接任务', location: '应天府·回春堂药铺', action: 'arrive', reward: { exp: 20 } },
       { desc: '前往义庄乱葬岗寻找尸苔花', location: '义庄·乱葬岗', action: 'search', reward: { exp: 40 } },
-      { desc: '将药引送回回春堂', location: '回春堂药铺', action: 'arrive', reward: { exp: 40, money: 150, item: '回春丹' } }
+      { desc: '将药引送回回春堂', location: '应天府·回春堂药铺', action: 'arrive', reward: { exp: 40, money: 150, item: '回春丹' } }
     ]
   },
   {
