@@ -96,7 +96,7 @@ export class MovementService {
     g.renderer.updateUI();
 
     // 自动存档
-    g.storage.save(g.state);
+    g.saveGame();
   }
 
   /**

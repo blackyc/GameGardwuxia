@@ -308,16 +308,16 @@ test('五页切换: index.html 定义了 5 个 data-page 页面', () => {
 });
 
 // 9. 存档 save/load/hasSave/clear 逻辑验证
-test('存档: Storage 类实现 save/load/hasSave/clear', () => {
+test('存档: Storage 类实现 save/load/hasSave/clear/getBackup/exportSave/importSave', () => {
   const storageCode = fs.readFileSync(path.join(SRC_DIR, 'core', 'storage.js'), 'utf8');
-  const requiredMethods = ['save(', 'load(', 'hasSave(', 'clear('];
+  const requiredMethods = ['save(', 'load(', 'hasSave(', 'clear(', 'getBackup(', 'exportSave(', 'importSave('];
   for (const method of requiredMethods) {
     assert.ok(storageCode.includes(method), `Storage 缺少方法: ${method}`);
   }
 });
 
 test('存档: localStorage 模拟存档读写', () => {
-  // 模拟 Storage 的 save/load 行为
+  // 模拟 Storage 的 save/load 行为（v2 格式）
   const mockStorage = {
     _data: {},
     setItem(k, v) { this._data[k] = String(v); },
@@ -326,8 +326,9 @@ test('存档: localStorage 模拟存档读写', () => {
   };
   
   const STORAGE_KEY = 'ghostmud_save_v2';
-  const testState = { realm: 3, cultivation: 500, hp: 120, location: '应天府·十字街口' };
-  const payload = { version: 1, timestamp: Date.now(), state: testState };
+  const BACKUP_KEY = 'ghostmud_save_v2_backup';
+  const testState = { realm: 3, cultivation: 500, hp: 120, location: '应天府·十字街口', path: 'wu' };
+  const payload = { version: 2, timestamp: Date.now(), state: testState };
   
   // save
   mockStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -336,6 +337,7 @@ test('存档: localStorage 模拟存档读写', () => {
   // load
   const raw = mockStorage.getItem(STORAGE_KEY);
   const loaded = JSON.parse(raw);
+  assert.strictEqual(loaded.version, 2, '读档后 version 应为 2');
   assert.strictEqual(loaded.state.realm, 3, '读档后 realm 不匹配');
   assert.strictEqual(loaded.state.cultivation, 500, '读档后 cultivation 不匹配');
   assert.strictEqual(loaded.state.location, '应天府·十字街口', '读档后 location 不匹配');
@@ -373,6 +375,19 @@ test('Game 类: 初始状态包含必要字段', () => {
   for (const field of requiredStateFields) {
     assert.ok(gameCode.includes(`${field}:`), `Game.state 缺少字段: ${field}`);
   }
+});
+
+test('Game 类: saveGame() 统一保存入口', () => {
+  const gameCode = fs.readFileSync(path.join(SRC_DIR, 'game.js'), 'utf8');
+  assert.ok(gameCode.includes('saveGame()'), 'Game 缺少 saveGame() 方法');
+  assert.ok(gameCode.includes('this.storage.save(this.state)'), 'saveGame 应调用 this.storage.save(this.state)');
+});
+
+test('存档: save_schema.js 定义了 SCHEMA_VERSION 和 SAVE_SCHEMA', () => {
+  const schemaCode = fs.readFileSync(path.join(SRC_DIR, 'core', 'save_schema.js'), 'utf8');
+  assert.ok(schemaCode.includes('SCHEMA_VERSION'), 'save_schema.js 缺少 SCHEMA_VERSION');
+  assert.ok(schemaCode.includes('SAVE_SCHEMA'), 'save_schema.js 缺少 SAVE_SCHEMA');
+  assert.ok(schemaCode.includes('export'), 'save_schema.js 应使用 export 导出');
 });
 
 // 11. 构建产物验证（如果 dist 存在）

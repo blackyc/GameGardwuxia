@@ -246,7 +246,7 @@ export class Game {
 
     // 标记已看过开场
     s.introSeen = true;
-    try { this.storage.save(s); } catch (e) { console.warn('[Game] 存档失败', e); }
+    try { this.saveGame(); } catch (e) { console.warn('[Game] 存档失败', e); }
 
     // 进入主循环（含新手引导）
     this.onIntroComplete();
@@ -874,6 +874,17 @@ export class Game {
 
   processCommand(cmd) { return this.gameOverSvc.processCommand(cmd); }
 
+
+  // ============ 存档 ============
+
+  /**
+   * 统一保存入口
+   * 所有存档操作都通过此方法，确保经过 schema 白名单和备份机制
+   * @returns {boolean} 是否保存成功
+   */
+  saveGame() {
+    return this.storage.save(this.state);
+  }
 
   // ============ 日志 ============
 

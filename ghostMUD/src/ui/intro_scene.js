@@ -423,7 +423,7 @@ export class IntroScene {
       applyIdentity(this.game, 'shijing_guer');
     }
     this.game.state.introSeen = true;
-    try { this.game.storage.save(this.game.state); } catch (e) { console.warn('[Intro] 存档失败', e); }
+    try { this.game.saveGame(); } catch (e) { console.warn('[Intro] 存档失败', e); }
 
     if (this._safetyTimer) { clearTimeout(this._safetyTimer); this._safetyTimer = null; }
     this._cleanup();
