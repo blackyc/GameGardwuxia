@@ -10,7 +10,7 @@ node_modules/.vite/
 *.vite/
 
 # Build artifacts
- dist/
+dist/
 
 # OS
 .DS_Store

@@ -466,11 +466,10 @@ export class Game {
   /**
    * 获取房间描述（按时辰变体）
    * 时辰分段：
-   * - gameTime 0,1,2（子丑寅）：入夜 → desc_night
-   * - gameTime 3,4（卯辰）：清晨 → desc_morning
+   * - gameTime 0,1,11（子丑亥）：入夜 → desc_night
+   * - gameTime 2,3,4（寅卯辰）：清晨 → desc_morning
    * - gameTime 5,6,7（巳午未）：正午 → desc_noon
    * - gameTime 8,9,10（申酉戌）：黄昏 → desc_dusk
-   * - gameTime 11（亥）：入夜 → desc_night
    */
   getRoomDesc(roomId) {
     const room = this.LOCATIONS[roomId];
@@ -484,11 +483,11 @@ export class Game {
     const t = this.state.gameTime;
     let descField = null;
 
-    if (t === 0 || t === 1 || t === 2 || t === 11) {
-      // 子丑寅亥 → 入夜
+    if (t === 0 || t === 1 || t === 11) {
+      // 子丑亥 → 入夜
       descField = 'desc_night';
-    } else if (t === 3 || t === 4) {
-      // 卯辰 → 清晨
+    } else if (t === 2 || t === 3 || t === 4) {
+      // 寅卯辰 → 清晨
       descField = 'desc_morning';
     } else if (t === 5 || t === 6 || t === 7) {
       // 巳午未 → 正午

@@ -72,10 +72,10 @@
 |---|---|---|---|
 | P0-感知双触发 | `.perc-path` 同时被通用处理器和感知面板消费 | 已修复 | `input.js` 添加 `closest('#perception-panel')` 拦截 |
 | P0-武学页报错 | 扁平技能数组未兼容 | 已修复 | `renderer.js` 添加 `.some(Array.isArray)` 兼容 |
-| P0-舆图报错 | 4 条 `东郊` 连接无坐标 | 已容错 | `renderer.js` 添加 `if (!posA \|\| !posB) continue` |
+| P0-舆图报错 | 4 条 `东郊` 连接无坐标 | 已容错 | `renderer.js` 添加 `if (!posA \|\| !posB) continue`；根因是 `rebuild_rooms_wild.js` connections 重复键覆盖（H3 修复） |
 | P1-教程移动 | `ch1_done` 返回 true 吞移动 | 已修复 | `movement_service.js` 修正 |
-| P1-时辰映射 | 寅时(gameTime=2)归入夜，ADR 规定归清晨 | **未修复** | `game.js:488` `t===2` 归 `desc_night` |
-| P1-diagnose 404 | `/diagnose.js` 非 module，dist 不含 | **未修复** | `index.html:282` |
+| P1-时辰映射 | 寅时(gameTime=2)归入夜，ADR 规定归清晨 | **已修复** | HR-102: `game.js` 寅时从 `desc_night` 移至 `desc_morning` |
+| P1-diagnose 404 | `/diagnose.js` 非 module，dist 不含 | **已修复** | HR-101: 从 `index.html` 移除引用，`diagnose.js` 移至 `work/` |
 
 ## 5. 文档权威链
 
