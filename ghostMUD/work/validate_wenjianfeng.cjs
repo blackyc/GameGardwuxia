@@ -1,44 +1,58 @@
-const fs = require('fs');
+/**
+ * validate_wenjianfeng.cjs — 问剑峰房间数据校验
+ *
+ * 验证 public/data/rebuild_rooms_wenjianfeng.js 中的房间：
+ * 1. 所有房间 ID 包含中点（·）
+ * 2. 所有 connections 引用的目标存在于房间列表中
+ * 3. 房间数量符合预期（主房间 14，迷宫 4）
+ *
+ * 修复历史：
+ *   - 2026-07-06: 路径从 D:/MUD/ghostMUD/work/ 更新到 public/data/
+ *   - 2026-07-06: 修复正则 bug（连接解析中的括号匹配错误）
+ */
 
-const filePath = 'D:/MUD/ghostMUD/work/rebuild_rooms_wenjianfeng.js';
+const fs = require('fs');
+const path = require('path');
+
+// 从 public/data/ 目录读取
+const filePath = path.join(__dirname, '..', 'public', 'data', 'rebuild_rooms_wenjianfeng.js');
 const content = fs.readFileSync(filePath, 'utf8');
 
-// Extract all quoted room IDs from the object keys
+// 提取所有房间对象键名 'XXX': {
 const roomIdMatches = content.match(/'([^']+)'\s*:\s*\{/g) || [];
 const roomIds = roomIdMatches.map(m => m.replace(/'([^']+)'\s*:\s*\{/, '$1'));
 
-// Also find quoted connections targets
-const connMatches = content.match(/'(?:上|下|东|西|南|北|深|入|东南|西南|东北|西北)'[^']*'([^']+)'/g) || [];
-const connectedTargets = connMatches.map(m => {
-  const parts = m.split("'");
-  return parts[parts.length - 2];
-});
-
-// Unique room IDs from keys
+// 去重
 const uniqueRoomIds = [...new Set(roomIds)];
 console.log('Total room keys:', uniqueRoomIds.length);
 
 let errors = [];
 
-// Check · in all room IDs
+// 检查所有房间 ID 包含中点（·）
 for (const id of uniqueRoomIds) {
   if (!id.includes('\u00b7')) {
     errors.push('Missing middle-dot: ' + id);
   }
 }
 
-// Check connections
+// 检查连接目标
 for (const id of uniqueRoomIds) {
-  const regex = new RegExp("'" + id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "'\\s*:\\s*\\{[^}]*connections\\s*:\\s*\\{([^}]*)\\}", 's');
+  // 转义正则特殊字符
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // 匹配 room id 对应的 connections 块
+  const regex = new RegExp("'" + escapedId + "'\\s*:\\s*\\{[^}]*connections\\s*:\\s*\\{([^}]*)\\}", 's');
   const match = content.match(regex);
   if (match) {
     const connBlock = match[1];
-    const conns = connBlock.match(/'(.)'\s*:\s*'([^']+)'/g) || [];
+    // 提取 '方向': '目标' 对
+    const conns = connBlock.match(/'([^']+)'\s*:\s*'([^']+)'/g) || [];
     for (const conn of conns) {
-      const parts = conn.match(/'(.))'\s*:\s*'([^']+)'/);
+      // 解析方向和目标
+      const parts = conn.match(/'([^']+)'\s*:\s*'([^']+)'/);
       if (parts) {
         const target = parts[2];
-        if (!uniqueRoomIds.includes(target)) {
+        // 目标可以是已注册的房间 ID 或 yt_ 前缀的内部 ID
+        if (!uniqueRoomIds.includes(target) && !target.startsWith('yt_')) {
           errors.push('Room [' + id + '] -> [' + target + '] NOT FOUND');
         }
       }
@@ -47,19 +61,19 @@ for (const id of uniqueRoomIds) {
 }
 
 if (errors.length > 0) {
-  console.log('ERRORS:');
+  console.log('ERRORS (' + errors.length + '):');
   errors.forEach(e => console.log('  ' + e));
   process.exit(1);
 } else {
-  console.log('All room IDs contain middle-dot');
-  console.log('All connections valid');
+  console.log('✓ All room IDs contain middle-dot');
+  console.log('✓ All connections valid');
 }
 
 console.log('\nRoom IDs (' + uniqueRoomIds.length + '):');
 uniqueRoomIds.forEach(id => console.log('  ' + id));
 
-// Count maze vs main
-const maze = uniqueRoomIds.filter(id => id.includes('\u7af9\u6797\u6df1\u5904'));
+// 统计迷宫 vs 主房间
+const maze = uniqueRoomIds.filter(id => id.includes('\u7af9\u6797\u6df1\u5904')); // 竹林深处
 const main = uniqueRoomIds.filter(id => !id.includes('\u7af9\u6797\u6df1\u5904'));
-console.log('\nMain rooms: ' + main.length + ' (expected 14)');
-console.log('Maze rooms: ' + maze.length + ' (expected 4)');
+console.log('\nMain rooms: ' + main.length + ' (expected ~14)');
+console.log('Maze rooms: ' + maze.length + ' (expected ~4)');

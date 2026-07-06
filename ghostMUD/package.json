@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node test/run-all.cjs",
+    "test:data": "node test/data-validate.test.cjs",
+    "test:smoke": "node test/smoke.test.cjs"
   },
   "keywords": ["mud", "text-game", "liaozhai", "roguelike"],
   "author": "",
