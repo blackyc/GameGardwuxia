@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const DATA_DIR = path.join(__dirname, '..', 'public', 'data');
+const DATA_DIR = path.join(__dirname, '..', '..', 'public', 'data');
 const MANIFEST = [
   'rebuild_enemies_items_realms.js','rebuild_atmosphere.js','rebuild_rooms_city.js',
   'rebuild_rooms_wild.js','rebuild_dungeon_rooms.js','rebuild_skill_descriptions_1.js',

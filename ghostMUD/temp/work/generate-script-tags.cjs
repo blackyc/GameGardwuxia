@@ -1,7 +1,7 @@
 /**
  * generate-script-tags.cjs — 从 manifest.js 生成 index.html 中的 <script> 标签块
  *
- * 用法: node work/generate-script-tags.cjs
+ * 用法: node temp/work/generate-script-tags.cjs
  *
  * 从 src/data/manifest.js 的 DATA_MANIFEST 提取文件列表，
  * 生成与 index.html 中一致的 <script> 标签块，并校验是否同步。
@@ -101,7 +101,7 @@ if (onlyManifest.length === 0 && onlyHtml.length === 0 && !orderMismatch) {
     fs.writeFileSync(indexPath, newHtml);
     console.log('\n✅ index.html 已更新');
   } else {
-    console.log('\n运行 `node work/generate-script-tags.cjs --fix` 自动同步');
+    console.log('\n运行 `node temp/work/generate-script-tags.cjs --fix` 自动同步');
   }
   
   // P2 修复：校验失败时非零退出

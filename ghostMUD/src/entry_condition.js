@@ -36,7 +36,7 @@ function realmIndex(game, name) {
 
 /**
  * Evaluate one room-entry prerequisite against the current game state.
- * Existing data follows docs/shared_constraint_v3.md section 7.2:
+ * Existing data follows docs/游戏主要设计.md 入口条件:
  * numeric skill, realm and daoxin requirements are minimum thresholds.
  */
 export function meetsEntryPrerequisite(game, rule) {

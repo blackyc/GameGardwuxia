@@ -1,6 +1,7 @@
 # Browser debug profiles
 .cdp-profile/
 .cdp-profile2/
+temp/local_tooling/
 
 # Node
 node_modules/
@@ -11,12 +12,13 @@ node_modules/.vite/
 
 # Build artifacts
 dist/
+temp/build_artifacts/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Local node runtime (use system node instead)
+# Local node runtime
 .tools/
 
 # Editor
@@ -24,18 +26,6 @@ Thumbs.db
 *.swo
 *~
 
-# Temp screenshots
-work/_screenshot_*.png
-
 # Temp backup files
 *.bak
 *.tmp
-
-# Temp validation/test scripts in work/
-work/_*.cjs
-work/_*.js
-work/_*.bak
-
-# Analysis screenshots (evidence tracked via commits)
-analysis/ui-regression/*/console.txt
-analysis/ui-regression/*/assertions.txt

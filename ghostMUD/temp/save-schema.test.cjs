@@ -4,7 +4,7 @@
  * H4A: 测试存档 schema、v1→v2 迁移、损坏处理、备份机制、导入导出。
  * 使用 mock localStorage 隔离，不污染真实存档。
  *
- * 运行方式: node test/save-schema.test.cjs
+ * 运行方式: node temp/save-schema.test.cjs
  */
 
 const assert = require('assert');

@@ -84,14 +84,14 @@ export class PerceptionService {
     const pool = g.NPC_ENCOUNTERS[s.location];
     if (pool && pool.length > 0) {
       pool.forEach((enc, i) => {
-        if (enc.title) npcs.push({ name: enc.title, desc: g.getDesc(enc), type: 'encounter', index: i });
+        if (enc.title) npcs.push({ name: enc.title, desc: g.getDesc(enc), type: 'encounter', index: i, dialogueTier: this._npcDialogueTier(enc) });
       });
     }
     const dl2 = getData();
     const factionPool = dl2.FACTION_RECRUITER_ENCOUNTERS[s.location] || null;
     if (factionPool && factionPool.length > 0 && s.faction === '散修') {
       factionPool.forEach((enc, i) => {
-        if (enc.title) npcs.push({ name: enc.title, desc: '（帮派接引人）', type: 'recruiter', index: i });
+        if (enc.title) npcs.push({ name: enc.title, desc: '（帮派接引人）', type: 'recruiter', index: i, dialogueTier: 'story' });
       });
     }
 
@@ -125,6 +125,15 @@ export class PerceptionService {
   }
 
   /** 打开感知面板 */
+  _npcDialogueTier(enc) {
+    const explicit = enc?.dialogueTier || enc?.storyTier || enc?.tier;
+    if (explicit) return explicit;
+    const results = Array.isArray(enc?.results) ? enc.results : [];
+    if (enc?.questTrigger || results.some(r => r.questStart)) return 'story';
+    const text = [enc?.title, enc?.name, this.game.getDesc(enc), enc?.dialogue].filter(Boolean).join(' ');
+    return /鬼|诡|魇|灵|血|梦|影|妖|魔/.test(text) ? 'uncanny' : '';
+  }
+
   openPerception() {
     const g = this.game;
     if (g.state.combat || g.state.npcEncounter) {

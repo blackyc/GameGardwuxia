@@ -4,7 +4,7 @@
  * 验证所有 public/data/*.js 数据文件的完整性和一致性。
  * 使用 Node 内置 assert 模块，无外部依赖。
  *
- * 运行方式: node test/data-validate.test.cjs
+ * 运行方式: node temp/data-validate.test.cjs
  */
 
 const assert = require('assert');
@@ -332,7 +332,7 @@ test('connections 对象无重复方向键（源码级）', () => {
 const { execSync } = require('child_process');
 test('manifest.js and index.html script order match', () => {
   try {
-    execSync('node work/generate-script-tags.cjs', {
+    execSync('node temp/work/generate-script-tags.cjs', {
       cwd: path.join(__dirname, '..'),
       stdio: 'pipe',
     });

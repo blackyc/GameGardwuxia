@@ -13,11 +13,10 @@ export default defineConfig({
     port: 5173,
     open: true,
     watch: {
-      ignored: ['**/work/**', '**/docs/**', '**/_*.js']
+      ignored: ['**/temp/**', '**/aidoc/**', '**/_*.js']
     }
   },
   optimizeDeps: {
-    // work/ 工具脚本和 public/data/ 数据文件通过 <script> 标签经典加载，禁止 Vite 扫描
     entries: ['src/main.js']
   }
 });

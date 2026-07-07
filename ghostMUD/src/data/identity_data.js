@@ -1,8 +1,8 @@
 /**
  * identity_data.js — 身份（身世）系统数据
  *
- * 数据来源：docs/identity_system.md（权威文档，14 种身世 / 5 维影响矩阵）
- * 宗门名权威：docs/narrative_design.md（12 标准宗门名）
+ * 数据来源：docs/游戏主要设计.md；历史来源见 aidoc/archive_20260707/docs/identity_system.md
+ * 宗门名权威：docs/游戏主要设计.md；历史来源见 aidoc/archive_20260707/docs/narrative_design.md
  *
  * 提供：
  *   - IDENTITIES[]       14 种身世完整定义

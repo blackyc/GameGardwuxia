@@ -54,6 +54,41 @@ export class InputManager {
         case 'talk':
           this.game.talk();
           break;
+        case 'focusNpc': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          if (!Number.isNaN(idx)) {
+            this.game.focusedNpcIndex = idx;
+            this.game.focusedNpcType = type;
+            const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
+            const npc = perc && perc.npcs ? perc.npcs.find(n => Number(n.index) === idx && ((n.type || 'encounter') === type)) : null;
+            if (npc) this.game.addLog('你看向' + npc.name + '。', 'info');
+            this.game.renderer.updateUI('location');
+          }
+          break;
+        }
+        case 'closeNpcFocus':
+          this.game.focusedNpcIndex = null;
+          this.game.focusedNpcType = null;
+          this.game.renderer.updateUI('location');
+          break;
+        case 'talkNpc': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          if (!Number.isNaN(idx)) this.game.speakToNpc(idx, type);
+          break;
+        }
+        case 'npcObserve': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
+          const npc = perc && perc.npcs ? perc.npcs.find(n => Number(n.index) === idx && ((n.type || 'encounter') === type)) : null;
+          if (npc) this.game.addLog('你细看' + npc.name + '，把此人的神态记在心里。', 'info');
+          break;
+        }
+        case 'npcDisabled':
+          this.game.addLog('「' + (btn.dataset.label || '此项') + '」尚未开放。', 'system');
+          break;
         case 'askAround':
           this.game.askAround();
           break;
@@ -141,6 +176,20 @@ export class InputManager {
     }
 
     // 绝招返回
+    document.addEventListener('click', (e) => {
+      const control = e.target.closest('[data-dialogue-action]');
+      if (!control) return;
+      const action = control.dataset.dialogueAction;
+      if (action === 'history') {
+        this.game.npc.toggleDialogueHistory();
+      } else if (action === 'next') {
+        this.game.npc.nextDialogueLine();
+      } else if (action === 'history-close') {
+        this.game.npc.toggleDialogueHistory(false);
+      } else if (action === 'close') {
+        this.game.closeNPC();
+      }
+    });
     const performBack = document.getElementById('perform-back-btn');
     if (performBack) {
       performBack.addEventListener('click', () => this.game.hidePerforms());
@@ -198,13 +247,14 @@ export class InputManager {
 
       // NPC 子选项（交谈→定向遭遇 / 交易→待开放 / 拜师→askTeacher）
       if (target.classList.contains('perc-subbtn')) {
-        const idx = parseInt(target.dataset.npcIdx);
+        const idx = parseInt(target.dataset.npcIdx, 10);
+        const type = target.dataset.npcType || 'encounter';
         const action = target.dataset.npcAction;
         if (isNaN(idx)) return;
         if (action === 'talk') {
           this.game.closePerception();
           // 定向触发该 NPC 的遭遇，不再从房间池随机抽取
-          setTimeout(() => this.game.speakToNpc(idx), 200);
+          setTimeout(() => this.game.speakToNpc(idx, type), 200);
         } else if (action === 'trade') {
           this.game.addLog('💬 「交易」功能将在后续版本开放。', 'system');
         } else if (action === 'askTeacher') {

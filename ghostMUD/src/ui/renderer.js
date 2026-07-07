@@ -248,18 +248,49 @@ export class Renderer {
     const npcsEl = document.getElementById('room-npcs');
     if (npcsEl) {
       const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
-      if (perc && perc.npcs && perc.npcs.length > 0) {
-        npcsEl.innerHTML = perc.npcs.map(n =>
-          '<article class="room-npc-card">'
-          + '<strong>' + n.name + '</strong>'
-          + '<span>' + (n.desc || '此人正留意着周遭。') + '</span>'
-          + '</article>'
-        ).join('');
+      const list = perc && perc.npcs ? perc.npcs : [];
+      if (list.length > 0) {
+        const focusedIndex = Number.isInteger(this.game.focusedNpcIndex) ? this.game.focusedNpcIndex : null;
+        const focusedType = this.game.focusedNpcType || null;
+        const focused = focusedIndex === null ? null : list.find(n => {
+          const sameIndex = Number(n.index) === focusedIndex;
+          return sameIndex && (!focusedType || !n.type || n.type === focusedType);
+        });
+        if (focusedIndex !== null && !focused) {
+          this.game.focusedNpcIndex = null;
+          this.game.focusedNpcType = null;
+        }
+        const buttons = list.map(n => {
+          const idx = Number(n.index);
+          const type = n.type || 'encounter';
+          const selected = focused && Number(focused.index) === idx && (focused.type || 'encounter') === type ? ' active' : '';
+          return '<button type="button" class="room-npc-card' + selected + '" data-action="focusNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">'
+            + '<span class="npc-name">' + this._esc(n.name) + '</span>'
+            + this._npcCue(n)
+            + '</button>';
+        }).join('');
+        let dossier = '';
+        if (focused) {
+          const idx = Number(focused.index);
+          const type = focused.type || 'encounter';
+          dossier = '<section class="npc-dossier" id="npc-dossier">'
+            + '<div class="npc-dossier-head"><span class="npc-dossier-title">' + this._esc(focused.name) + '</span>'
+            + '<button type="button" class="npc-dossier-close" data-action="closeNpcFocus">收起</button></div>'
+            + '<p class="npc-dossier-desc">' + this._esc(focused.desc || '此人正留意着周遭。') + '</p>'
+            + '<div class="npc-dossier-actions">'
+            + '<button type="button" data-action="talkNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
+            + '<button type="button" data-action="npcObserve" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">观察</button>'
+            + '<button type="button" class="muted" data-action="npcDisabled" data-label="送礼">送礼</button>'
+            + '<button type="button" class="muted" data-action="npcDisabled" data-label="切磋">切磋</button>'
+            + '</div></section>';
+        }
+        npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>' + dossier;
       } else {
+        this.game.focusedNpcIndex = null;
+        this.game.focusedNpcType = null;
         npcsEl.innerHTML = '';
       }
     }
-
     // 方位通路：渲染到方向栏
     this.renderExitBar();
   }
@@ -594,15 +625,17 @@ export class Renderer {
     if (data.npcs && data.npcs.length > 0) {
       html += '<div class="perc-section"><div class="perc-head">> 在场人物</div>';
       data.npcs.forEach((n, i) => {
-        let subBtns = '<button class="perc-subbtn" data-npc-action="talk" data-npc-idx="' + i + '">交谈</button>'
-          + '<button class="perc-subbtn" data-npc-action="trade" data-npc-idx="' + i + '">交易</button>';
+        const idx = Number.isInteger(n.index) ? n.index : i;
+        const type = n.type || 'encounter';
+        let subBtns = '<button class="perc-subbtn" data-npc-action="talk" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
+          + '<button class="perc-subbtn" data-npc-action="trade" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交易</button>';
         // 拜师按钮仅在宗门HQ且已有帮派时显示
         if (data.canAskTeacher) {
-          subBtns += '<button class="perc-subbtn" data-npc-action="askTeacher" data-npc-idx="' + i + '">拜师</button>';
+          subBtns += '<button class="perc-subbtn" data-npc-action="askTeacher" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">拜师</button>';
         }
-        html += '<div class="perc-item perc-npc" data-npc-idx="' + i + '">'
-          + '<span class="perc-npc-name">' + n.name + '</span> '
-          + '<span style="font-size:11px;color:var(--ink-soft)">' + (n.desc || '') + '</span>'
+        html += '<div class="perc-item perc-npc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">'
+          + '<span class="perc-npc-name">' + this._esc(n.name) + '</span>'
+          + this._npcCue(n)
           + '<span class="perc-npc-actions">' + subBtns + '</span></div>';
       });
       html += '</div>';
@@ -652,6 +685,23 @@ export class Renderer {
   }
 
   // === 内部工具 ===
+  _esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[ch]));
+  }
+
+  _npcCue(n) {
+    if (!n) return '';
+    const tier = n.dialogueTier || n.storyTier || n.tier || '';
+    if (tier === 'epic' || tier === 'story') return '<span class="npc-cue story" aria-label="重要对话">卷</span>';
+    if (tier === 'uncanny') return '<span class="npc-cue uncanny" aria-label="异样对话">墨</span>';
+    return '';
+  }
   _setText(id, text) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;

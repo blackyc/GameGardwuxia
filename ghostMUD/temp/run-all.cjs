@@ -1,10 +1,10 @@
 /**
  * run-all.cjs — 统一测试运行器
  *
- * 执行所有 test/*.test.cjs 文件，汇总结果。
+ * 执行所有 temp/*.test.cjs 文件，汇总结果。
  * 任何失败返回非零退出码。
  *
- * 运行方式: node test/run-all.cjs
+ * 运行方式: node temp/run-all.cjs
  */
 
 const fs = require('fs');

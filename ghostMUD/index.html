@@ -45,6 +45,7 @@
       <div class="room-card" id="room-card">
         <div class="room-desc" id="location-desc"></div>
         <div class="room-npcs" id="room-npcs"></div>
+        <div class="npc-focus" id="npc-focus"></div>
       </div>
 
       <!-- 方位通路：东南西北等方位连接，常驻显示 -->
@@ -210,13 +211,31 @@
   <input type="text" id="cmd-input" placeholder="输入命令…" autocomplete="off">
 </div>
 
-<!-- NPC Encounter Modal -->
-<div class="modal" id="npc-modal">
-  <div class="modal-box">
-    <h3 class="npc-title" id="npc-title">奇遇</h3>
-    <div class="modal-desc" id="npc-desc"></div>
-    <div class="modal-choices" id="npc-choices"></div>
-    <button class="modal-close" id="npc-close-btn">走开</button>
+<!-- Ink Dialogue Layer -->
+<div class="dialogue-layer" id="npc-modal" aria-hidden="true">
+  <div class="dialogue-scroll" role="dialog" aria-modal="true" aria-labelledby="npc-title">
+    <div class="dialogue-portrait" aria-hidden="true">
+      <span id="dialogue-portrait-initial">人</span>
+    </div>
+    <div class="dialogue-body">
+      <div class="dialogue-topline">
+        <span class="dialogue-seal" id="npc-title">奇遇</span>
+        <button type="button" class="dialogue-history-btn" data-dialogue-action="history">言路</button>
+      </div>
+      <div class="dialogue-text-wrap">
+        <div class="dialogue-speaker" id="dialogue-speaker"></div>
+        <div class="modal-desc dialogue-text" id="npc-desc"></div>
+      </div>
+      <div class="dialogue-history-drawer" id="dialogue-history-drawer" hidden>
+        <div class="dialogue-history-head">
+          <span>本场言路</span>
+          <button type="button" data-dialogue-action="history-close">收起</button>
+        </div>
+        <div class="dialogue-history-list" id="dialogue-history-list"></div>
+      </div>
+      <div class="modal-choices dialogue-choices" id="npc-choices"></div>
+      <button type="button" class="modal-close dialogue-close" id="npc-close-btn">收起画卷</button>
+    </div>
   </div>
 </div>
 

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const DATA_DIR = path.join(__dirname, '..', 'public', 'data');
+const DATA_DIR = path.join(__dirname, '..', '..', 'public', 'data');
 const MANIFEST = [
   { file: 'rebuild_enemies_items_realms.js' },
   { file: 'rebuild_atmosphere.js' },

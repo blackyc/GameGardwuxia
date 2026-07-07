@@ -8,7 +8,7 @@
  *
  * 使用 Node 内置 assert 模块，无外部依赖。
  *
- * 运行方式: node test/smoke.test.cjs
+ * 运行方式: node temp/smoke.test.cjs
  */
 
 const assert = require('assert');

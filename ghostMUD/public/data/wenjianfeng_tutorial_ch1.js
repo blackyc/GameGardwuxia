@@ -1,7 +1,7 @@
 // ============================================================
 // Ghost MUD v2.0 · 问剑峰新手引导 · 第一章·上山
 // 生成: 2026-07-01
-// 设计文档: docs/narrative/wenjianfeng_tutorial_golden3.md §5
+// 设计文档: docs/剧情文案.md；历史来源见 aidoc/archive_20260707/docs/narrative/wenjianfeng_tutorial_golden3.md
 // 引擎依赖: game.js startFactionTutorial → ch1_arrival
 // 加载方式: <script> 标签全局加载, 暴露 window.WENJIANFENG_TUTORIAL_CH1
 // ============================================================

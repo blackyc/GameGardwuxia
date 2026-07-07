@@ -474,3 +474,390 @@ body[data-page="jianghu"] #scene-bg {
     animation: none;
   }
 }
+
+/* V1 ink dialogue refactor */
+.page[data-page="jianghu"] .diamond-badge {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.page[data-page="jianghu"] .diamond-badge::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255, 253, 229, 0.88), rgba(184, 177, 130, 0.7) 56%, rgba(113, 110, 84, 0.56));
+  border: 1px solid rgba(83, 78, 58, 0.38);
+  box-shadow: inset 0 0 0 2px rgba(247, 244, 220, 0.52), 0 1px 2px rgba(32, 30, 24, 0.16);
+  z-index: 0;
+}
+
+.page[data-page="jianghu"] .diamond-badge .label {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 0 rgba(255, 255, 242, 0.78), 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.page[data-page="jianghu"] .room-npcs {
+  display: block;
+}
+
+.room-npc-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.room-npc-card {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 39px;
+  color: #25231f;
+  font: 700 16px/1.2 'STKaiti', 'KaiTi', serif;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.room-npc-card:hover,
+.room-npc-card.active {
+  background: rgba(246, 235, 184, 0.92);
+  border-color: rgba(38, 42, 39, 0.82);
+  transform: translateY(-1px);
+}
+
+.room-npc-card .npc-name,
+.room-npc-card .npc-cue {
+  display: inline-flex;
+  margin-top: 0;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
+}
+
+.room-npc-card .npc-name {
+  color: #24231f;
+}
+
+.npc-cue {
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(130, 72, 45, 0.42);
+  color: #7e382b;
+  background: rgba(244, 226, 174, 0.8);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.npc-cue.uncanny {
+  color: #425e56;
+  border-color: rgba(51, 92, 81, 0.44);
+  background: rgba(207, 224, 210, 0.74);
+}
+
+.npc-dossier {
+  margin-top: 10px;
+  padding: 10px 11px 11px;
+  background: rgba(238, 232, 207, 0.76);
+  border: 1px solid rgba(55, 58, 55, 0.46);
+  box-shadow: inset 0 0 0 2px rgba(255, 253, 234, 0.38);
+}
+
+.npc-dossier-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.npc-dossier-title {
+  color: #2f2b22;
+  font: 700 17px/1.2 'STKaiti', 'KaiTi', serif;
+}
+
+.npc-dossier-close {
+  padding: 3px 8px;
+  color: #665f50;
+  background: rgba(255, 250, 229, 0.52);
+  border: 1px solid rgba(86, 80, 67, 0.34);
+  font-size: 12px;
+}
+
+.npc-dossier-desc {
+  margin: 0 0 9px;
+  color: #4c473d;
+  font: 14px/1.65 'STKaiti', 'KaiTi', 'FangSong', serif;
+  text-align: justify;
+}
+
+.npc-dossier-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.npc-dossier-actions button {
+  min-height: 34px;
+  padding: 5px 4px;
+  color: #24231f;
+  background: rgba(236, 220, 146, 0.86);
+  border: 1px solid rgba(55, 58, 55, 0.68);
+  box-shadow: inset 0 0 0 2px rgba(255, 252, 224, 0.54);
+  font: 700 14px/1.1 'STKaiti', 'KaiTi', serif;
+}
+
+.npc-dossier-actions button.muted {
+  color: rgba(58, 55, 47, 0.58);
+  background: rgba(224, 218, 196, 0.55);
+}
+
+.perc-npc .npc-cue {
+  vertical-align: middle;
+}
+
+.dialogue-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(22, 24, 23, 0.48);
+  backdrop-filter: blur(1px);
+}
+
+.dialogue-layer.active {
+  display: flex;
+}
+
+.dialogue-scroll {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(86px, 24%) minmax(0, 1fr);
+  width: min(640px, 94vw);
+  max-height: min(78vh, 690px);
+  padding: 16px;
+  color: #2c2a24;
+  background: linear-gradient(135deg, rgba(238, 232, 214, 0.98), rgba(224, 218, 195, 0.98));
+  border: 1px solid rgba(48, 49, 45, 0.68);
+  box-shadow: inset 0 0 0 3px rgba(255, 253, 233, 0.62), 0 18px 46px rgba(0, 0, 0, 0.34);
+}
+
+.dialogue-scroll::before,
+.dialogue-scroll::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: rgba(65, 66, 59, 0.32);
+}
+
+.dialogue-scroll::before { top: 8px; }
+.dialogue-scroll::after { bottom: 8px; }
+
+.dialogue-portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 164px;
+  margin-right: 14px;
+  background: radial-gradient(circle, rgba(246, 240, 218, 0.9), rgba(192, 205, 190, 0.48));
+  border: 1px solid rgba(67, 71, 66, 0.42);
+  border-radius: 50% 50% 46% 46%;
+  box-shadow: inset 0 0 24px rgba(82, 92, 84, 0.18);
+}
+
+.dialogue-portrait span {
+  color: rgba(45, 48, 43, 0.62);
+  font: 700 44px/1 'STKaiti', 'KaiTi', serif;
+}
+
+.dialogue-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialogue-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialogue-seal {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 3px 12px;
+  color: #f7eee0;
+  background: #89382d;
+  border: 1px solid rgba(64, 33, 29, 0.58);
+  box-shadow: inset 0 0 0 1px rgba(255, 237, 209, 0.22);
+  font: 700 17px/1.2 'STKaiti', 'KaiTi', serif;
+}
+
+.dialogue-history-btn,
+.dialogue-history-head button,
+.dialogue-close {
+  color: #4c4537;
+  background: rgba(248, 242, 218, 0.68);
+  border: 1px solid rgba(77, 72, 61, 0.44);
+  font: 13px/1.2 'STKaiti', 'KaiTi', serif;
+}
+
+.dialogue-history-btn,
+.dialogue-history-head button {
+  padding: 5px 9px;
+}
+
+.dialogue-text-wrap {
+  min-height: 132px;
+  padding: 12px 13px;
+  background: rgba(249, 246, 230, 0.54);
+  border: 1px solid rgba(83, 82, 72, 0.28);
+  box-shadow: inset 0 0 20px rgba(120, 122, 103, 0.1);
+}
+
+.dialogue-speaker {
+  margin-bottom: 5px;
+  color: #74613c;
+  font: 700 13px/1.2 'STKaiti', 'KaiTi', serif;
+}
+
+.dialogue-text {
+  color: #292823;
+  font: 16px/1.78 'STKaiti', 'KaiTi', 'FangSong', serif;
+  text-align: justify;
+  white-space: pre-wrap;
+}
+
+.dialogue-history-drawer {
+  max-height: 210px;
+  overflow: hidden;
+  padding: 10px;
+  background: rgba(35, 35, 32, 0.08);
+  border: 1px solid rgba(63, 63, 57, 0.28);
+}
+
+.dialogue-history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #5b4f3f;
+  font: 700 13px/1.2 'STKaiti', 'KaiTi', serif;
+}
+
+.dialogue-history-list {
+  max-height: 150px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.history-line {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 8px;
+  padding: 5px 0;
+  color: #3d3930;
+  font: 13px/1.5 'STKaiti', 'KaiTi', serif;
+  border-top: 1px dotted rgba(80, 78, 70, 0.2);
+}
+
+.history-line:first-child {
+  border-top: 0;
+}
+
+.history-line.player b {
+  color: #6d4b35;
+}
+
+.history-line.npc b {
+  color: #526d5c;
+}
+
+.dialogue-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dialogue-choices .modal-choice {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 12px;
+  color: #24231f;
+  background: rgba(230, 213, 135, 0.88);
+  border: 1px solid rgba(46, 49, 45, 0.74);
+  box-shadow: inset 0 0 0 2px rgba(255, 251, 219, 0.52);
+  font: 700 15px/1.35 'STKaiti', 'KaiTi', serif;
+  text-align: left;
+}
+
+.dialogue-choices .modal-choice:hover {
+  background: rgba(247, 229, 145, 0.96);
+}
+
+.dialogue-next {
+  text-align: center !important;
+}
+
+.dialogue-finish,
+.dialogue-close {
+  align-self: flex-end;
+  text-align: center !important;
+}
+
+.dialogue-close {
+  min-height: 32px;
+  padding: 6px 13px;
+}
+
+@media (max-width: 520px) {
+  .dialogue-layer {
+    padding: 12px;
+  }
+
+  .dialogue-scroll {
+    grid-template-columns: 72px minmax(0, 1fr);
+    width: 96vw;
+    max-height: 82vh;
+    padding: 12px;
+  }
+
+  .dialogue-portrait {
+    min-height: 128px;
+    margin-right: 10px;
+  }
+
+  .dialogue-portrait span {
+    font-size: 36px;
+  }
+
+  .dialogue-text-wrap {
+    min-height: 118px;
+    padding: 10px;
+  }
+
+  .dialogue-text {
+    font-size: 15px;
+    line-height: 1.72;
+  }
+
+  .npc-dossier-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

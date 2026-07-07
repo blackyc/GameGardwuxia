@@ -1,15 +1,17 @@
 {
   "name": "ghostmud",
   "version": "2.0.0",
-  "description": "聊斋仙途·文字MUD — 重构版",
+  "description": "诡仙归文字 MUD 重构版",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node test/run-all.cjs",
-    "test:data": "node test/data-validate.test.cjs",
-    "test:smoke": "node test/smoke.test.cjs"
+    "test": "node temp/run-all.cjs",
+    "test:data": "node temp/data-validate.test.cjs",
+    "test:smoke": "node temp/smoke.test.cjs",
+    "test:entry": "node temp/entry-condition.test.cjs",
+    "test:save": "node temp/save-schema.test.cjs"
   },
   "keywords": ["mud", "text-game", "liaozhai", "roguelike"],
   "author": "",
