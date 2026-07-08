@@ -61,6 +61,7 @@ export const SAVE_SCHEMA = {
   activeQuests:       { type: 'array',   default: [],          nullable: false },
   completedQuests:    { type: 'array',   default: [],          nullable: false },
   questStages:        { type: 'object',  default: {},          nullable: false },
+  npcMemory:          { type: 'object',  default: {},          nullable: false },
 
   // ═══ 帮派/技能系统 ═══
   faction:            { type: 'string',  default: '散修',      nullable: false },

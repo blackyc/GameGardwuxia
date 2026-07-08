@@ -50,6 +50,10 @@ export const DATA_MANIFEST = [
     vars: ['WENJIANFENG_ROOMS'],
   },
   {
+    file: 'wenjianfeng_npc_dialogues.js',
+    vars: ['WENJIANFENG_NPC_DIALOGUES'],
+  },
+  {
     file: 'wenjianfeng_tutorial_ch1.js',
     vars: ['WENJIANFENG_TUTORIAL_CH1'],
   },

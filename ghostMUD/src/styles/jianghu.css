@@ -861,3 +861,11 @@ body[data-page="jianghu"] #scene-bg {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+.npc-dossier-memory {
+  margin: 0 0 7px;
+  color: #775539;
+  font: 700 12px/1.3 'STKaiti', 'KaiTi', serif;
+  letter-spacing: 1px;
+}

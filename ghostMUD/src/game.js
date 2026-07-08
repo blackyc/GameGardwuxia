@@ -49,6 +49,7 @@ import { GameOverService } from './game_over_service.js';
 import { IntroScene } from './ui/intro_scene.js';
 import { rollIdentities, applyIdentity } from './data/identity_data.js';
 import audio from './audio/AudioManager.js';
+import { getNpcMemory, describeNpcRelation } from './npc_memory.js';
 
 // 时辰名映射
 const TIME_NAMES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
@@ -158,6 +159,7 @@ export class Game {
       activeQuests: [],
       completedQuests: [],
       questStages: {},
+      npcMemory: {},
       // 帮派/技能系统
       faction: '散修',
       skills: {},
@@ -812,6 +814,8 @@ export class Game {
   _presentEncounter(enc) { return this.npc._presentEncounter(enc); }
   npcChoice(index) { return this.npc.npcChoice(index); }
   closeNPC() { return this.npc.closeNPC(); }
+  getNpcMemory(encOrKey) { return getNpcMemory(this.state, encOrKey); }
+  describeNpcRelation(encOrKey) { return describeNpcRelation(this.getNpcMemory(encOrKey)); }
 
   // ============ 帮派代理（委托 FactionService）============
   joinFaction(name) { const r = this.faction.joinFaction(name); this.markDirty(); return r; }

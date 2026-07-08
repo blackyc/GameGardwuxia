@@ -47,6 +47,7 @@ export function collectData() {
     WILD_ROOMS: data.WILD_ROOMS || {},
     DUNGEON_ROOMS: data.DUNGEON_ROOMS || {},
     WENJIANFENG_ROOMS: data.WENJIANFENG_ROOMS || {},
+    WENJIANFENG_NPC_DIALOGUES: data.WENJIANFENG_NPC_DIALOGUES || null,
     // 集成层
     LOCATIONS: data.LOCATIONS || {},
     ROOM_SEARCH: data.ROOM_SEARCH || {},

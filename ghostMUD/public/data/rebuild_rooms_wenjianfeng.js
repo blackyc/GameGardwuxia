@@ -23,7 +23,6 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_zhixing',
         name: '值星弟子',
         desc: '一个年轻弟子，剑横在身前，站得笔直。面皮有些嫩，大概十五六岁。',
-        dialogue: '口令！……哦，是你。进去吧。今天的口令是「残月」——昨天是「满弓」，周师兄定的。'
       }
     ],
     items: []
@@ -56,13 +55,11 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_canjian',
         name: '残剑师姐',
         desc: '一个身形修长的女子，剑未出鞘，斜挂腰间。面容冷淡，眉目如刀刻。她站在剑坪中央，一动不动。',
-        dialogue: '……（她微微点了一下头，没有说话。也许她不说话。也许她只是不跟你说话。）'
       },
       {
         id: 'wenjianfeng_liushishu',
         name: '柳师叔',
         desc: '一个须发半白的老者，坐在廊下石凳上，面前摆着一盘棋。黑白子都由他一个人下。',
-        dialogue: '你走那边——对，将死了。多谢。'
       }
     ],
     items: [
@@ -86,19 +83,16 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_laocai',
         name: '老蔡',
         desc: '一个圆脸的中年人，围着围裙，手里永远拿着锅铲或菜刀。看着和气，但凶起来嗓门极大。',
-        dialogue: '多吃点，练剑费力气。上次周碛饿晕在剑坪上——别跟他说是我说的。'
       },
       {
         id: 'wenjianfeng_xiaohe',
         name: '小荷',
         desc: '一个十四岁的丫头，手上沾满面粉，一直在揉面。',
-        dialogue: '老蔡说再揉两年就能出师了。你觉得他在骗我，但我不敢问。'
       },
       {
         id: 'wenjianfeng_tieniu',
         name: '铁牛',
         desc: '一个壮得像座山的年轻人，沉默寡言，一直在搬东西。',
-        dialogue: '……（铁牛看了你一眼，点了点头，继续搬米。）'
       }
     ],
     items: []
@@ -120,7 +114,6 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_laoyu',
         name: '盲眼老妪',
         desc: '一个白发老妪坐在池边石板上，眼窝深陷，似盲。衣衫洗得发白，浆得很干净。她的手搭在膝上，指节粗大。',
-        dialogue: '你的剑鞘没擦干净。第三次了。……你问我怎么知道？我闻得到的。'
       }
     ],
     items: []
@@ -142,13 +135,11 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_laoshu',
         name: '劳叔',
         desc: '一个清瘦的中年人，坐在竹棚下削竹丝。手极稳，刀极快。他不抬头看人。',
-        dialogue: '新来的。你走偏了。左脚往左三寸——那根竹子我留着做剑鞘的。'
       },
       {
         id: 'wenjianfeng_shitou',
         name: '石头',
         desc: '一个壮实的哑巴，光着膀子在劈柴。一斧下去，木桩裂成两半。',
-        dialogue: '……（石头看了你一眼，咧嘴笑了笑，继续劈柴。他说不了话。）'
       }
     ],
     items: [
@@ -172,7 +163,6 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_aqing',
         name: '阿青',
         desc: '一个扎着双髻的姑娘，蹲在地上拿树枝戳蛇。脸上有泥。',
-        dialogue: '你认识蛇胆草吗？……不是这种。上次我采错了，师兄拉了一天肚子。'
       }
     ],
     items: []
@@ -194,7 +184,6 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_jianweng',
         name: '剑翁',
         desc: '一个独眼老人，身形枯瘦，坐在断剑丛中。右眼蒙着黑布，左眼半阖。手边一把扫帚。',
-        dialogue: '多了。……我知道。回去的时候注意脚下。'
       }
     ],
     items: [
@@ -218,13 +207,11 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_gelao',
         name: '藏剑阁老',
         desc: '一个干瘦的老人，坐在门口的竹椅上打盹。头一点一点的，像在点头。但他什么都没答应。',
-        dialogue: '……（阁老没有睁眼。但你碰到右边书架时他立刻说了一声「不是那边」。）'
       },
       {
         id: 'wenjianfeng_muxiansheng',
         name: '穆先生',
         desc: '一个面色苍白的书生，坐在窗边读书。衣衫整洁，像山下人。他偶尔咳嗽。',
-        dialogue: '山下……三年前的事了。不太记得了。你问这些做什么？'
       }
     ],
     items: [
@@ -375,6 +362,7 @@ const WENJIANFENG_ROOMS = {
 };
 
 // 暴露到全局
+
 if (typeof window !== 'undefined') window.WENJIANFENG_ROOMS = WENJIANFENG_ROOMS;
 if (typeof module !== 'undefined') module.exports = WENJIANFENG_ROOMS;
 

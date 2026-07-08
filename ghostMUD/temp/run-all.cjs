@@ -31,6 +31,15 @@ let totalFailed = 0;
 const allFailures = [];
 const results = [];
 
+function parseCounts(output, defaultFailed) {
+  const passMatch = output.match(/(\d+)\s+(?:通过|passed)/i);
+  const failMatch = output.match(/(\d+)\s+(?:失败|failed)/i);
+  return {
+    passed: passMatch ? parseInt(passMatch[1], 10) : 0,
+    failed: failMatch ? parseInt(failMatch[1], 10) : defaultFailed
+  };
+}
+
 for (const testFile of testFiles) {
   const testName = path.basename(testFile, '.test.cjs');
   console.log('\n' + '┌' + '─'.repeat(58) + '┐');
@@ -50,11 +59,9 @@ for (const testFile of testFiles) {
     process.stdout.write(output);
 
     // 尝试从输出中解析结果
-    const passMatch = output.match(/(\d+)\s+通过/);
-    const failMatch = output.match(/(\d+)\s+失败/);
-    
-    const p = passMatch ? parseInt(passMatch[1]) : 0;
-    const f = failMatch ? parseInt(failMatch[1]) : 0;
+    const counts = parseCounts(output, 0);
+    const p = counts.passed;
+    const f = counts.failed;
     
     totalPassed += p;
     totalFailed += f;
@@ -66,11 +73,9 @@ for (const testFile of testFiles) {
     process.stdout.write(output);
     if (stderr) process.stderr.write(stderr);
 
-    const passMatch = output.match(/(\d+)\s+通过/);
-    const failMatch = output.match(/(\d+)\s+失败/);
-    
-    const p = passMatch ? parseInt(passMatch[1]) : 0;
-    const f = failMatch ? parseInt(failMatch[1]) : 1;
+    const counts = parseCounts(output, 1);
+    const p = counts.passed;
+    const f = counts.failed;
     
     totalPassed += p;
     totalFailed += f;

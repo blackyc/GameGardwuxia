@@ -11,9 +11,16 @@
     "test:data": "node temp/data-validate.test.cjs",
     "test:smoke": "node temp/smoke.test.cjs",
     "test:entry": "node temp/entry-condition.test.cjs",
-    "test:save": "node temp/save-schema.test.cjs"
+    "test:save": "node temp/save-schema.test.cjs",
+    "test:ui": "node temp/ui-contract.test.cjs",
+    "test:npc-memory": "node temp/npc-memory.test.cjs"
   },
-  "keywords": ["mud", "text-game", "liaozhai", "roguelike"],
+  "keywords": [
+    "mud",
+    "text-game",
+    "liaozhai",
+    "roguelike"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {

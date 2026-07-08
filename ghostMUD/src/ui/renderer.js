@@ -273,9 +273,11 @@ export class Renderer {
         if (focused) {
           const idx = Number(focused.index);
           const type = focused.type || 'encounter';
+          const relationLine = focused.relationLabel ? '<div class="npc-dossier-memory">印象：' + this._esc(focused.relationLabel) + '</div>' : '';
           dossier = '<section class="npc-dossier" id="npc-dossier">'
             + '<div class="npc-dossier-head"><span class="npc-dossier-title">' + this._esc(focused.name) + '</span>'
             + '<button type="button" class="npc-dossier-close" data-action="closeNpcFocus">收起</button></div>'
+            + relationLine
             + '<p class="npc-dossier-desc">' + this._esc(focused.desc || '此人正留意着周遭。') + '</p>'
             + '<div class="npc-dossier-actions">'
             + '<button type="button" data-action="talkNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'

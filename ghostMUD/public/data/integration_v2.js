@@ -1059,6 +1059,60 @@ var ROOM_SEARCH = {};
 // ============================================================
 // 8. 生成 NPC_ENCOUNTERS
 // ============================================================
+// ============================================================
+// 7.5 Apply curated Wenjianfeng NPC dialogue data (V1.3)
+// ============================================================
+(function() {
+  function _applyWenjianfengNpcDialogues() {
+    if (typeof WENJIANFENG_NPC_DIALOGUES === 'undefined' || !WENJIANFENG_NPC_DIALOGUES) return;
+    var entries = WENJIANFENG_NPC_DIALOGUES.entries || WENJIANFENG_NPC_DIALOGUES;
+    if (!Array.isArray(entries)) return;
+
+    function findNpc(room, entry) {
+      if (!room.npcs) room.npcs = [];
+      var npcId = entry.npcId || entry.id || (entry.ensure && entry.ensure.id);
+      var npcName = entry.npcName || entry.name || (entry.ensure && entry.ensure.name);
+      for (var i = 0; i < room.npcs.length; i++) {
+        var npc = room.npcs[i];
+        if (!npc) continue;
+        if (npcId && npc.id === npcId) return npc;
+        if (npcName && npc.name === npcName) return npc;
+      }
+      return null;
+    }
+
+    function ensureNpc(room, entry) {
+      var existing = findNpc(room, entry);
+      if (existing) return existing;
+      if (!entry.ensure) return null;
+      var npc = {
+        id: entry.ensure.id,
+        name: entry.ensure.name,
+        desc: entry.ensure.desc || ''
+      };
+      room.npcs.push(npc);
+      return npc;
+    }
+
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i];
+      if (!entry || !entry.room) continue;
+      var room = LOCATIONS[entry.room];
+      if (!room) continue;
+      if (!room.npcs) room.npcs = [];
+      var npc = ensureNpc(room, entry) || findNpc(room, entry);
+      if (!npc) continue;
+      npc.dialogueTier = entry.dialogueTier || entry.storyTier || entry.tier || npc.dialogueTier || 'story';
+      npc.dialogueLines = entry.dialogueLines || entry.lines || entry.script || npc.dialogueLines || [];
+      npc.dialogueChoices = entry.dialogueChoices || entry.choices || npc.dialogueChoices || [];
+      npc.dialogueVariants = entry.dialogueVariants || entry.variants || npc.dialogueVariants || [];
+      npc.memoryKey = entry.memoryKey || entry.npcMemoryKey || entry.id || npc.memoryKey || npc.id || npc.name;
+    }
+  }
+
+  _applyWenjianfengNpcDialogues();
+})();
+
 var NPC_ENCOUNTERS = {};
 
 (function() {
@@ -1089,6 +1143,32 @@ var NPC_ENCOUNTERS = {};
       default:       choiceText = '🗣 闲聊几句'; break;
     }
     return { choice: choiceText, log: text, effect: effect, reward: reward };
+  }
+
+  function _normalizeDialogueResult(r) {
+    if (!r) return _toEngineResult({});
+    if (r.choice || r.log || r.nextLines || r.followupLines || r.lines || r.script || r.reward || r.effect) {
+      var normalized = {
+        choice: r.choice || r.text || '\u95f2\u804a\u51e0\u53e5',
+        log: r.log || r.text || '',
+        effect: r.effect || null,
+        reward: r.reward || null
+      };
+      var followup = r.nextLines || r.followupLines || r.lines || r.script;
+      if (followup) normalized.nextLines = followup;
+      if (r.questStart) normalized.questStart = r.questStart;
+      if (r.questTrigger) normalized.questTrigger = r.questTrigger;
+      if (r.successLog) normalized.successLog = r.successLog;
+      if (r.failLog) normalized.failLog = r.failLog;
+      if (r.successReward) normalized.successReward = r.successReward;
+      if (r.failReward) normalized.failReward = r.failReward;
+      if (r.relationship) normalized.relationship = r.relationship;
+      if (r.npcMemory) normalized.npcMemory = r.npcMemory;
+      if (r.memory) normalized.memory = r.memory;
+      if (r.relation) normalized.relation = r.relation;
+      return normalized;
+    }
+    return _toEngineResult(r);
   }
 
   var _merchants = [
@@ -1147,15 +1227,27 @@ var NPC_ENCOUNTERS = {};
           results.push({ type: 'money', text: npcName + '给了你一些盘缠。获得' + _rand(10, 40) + '文钱。' });
         }
 
-        encounters.push({
+        var dialogueLines = npc.dialogueLines || npc.lines || npc.script || null;
+        if (!dialogueLines && npc.dialogue) {
+          dialogueLines = [{ speaker: npcName, text: npc.dialogue }];
+        }
+        var dialogueResults = (Array.isArray(npc.dialogueChoices) && npc.dialogueChoices.length > 0) ? npc.dialogueChoices : results;
+        var encounter = {
           id: npc.id || ('npc_' + j),
           name: npcName,
-          title: npcName,    // 引擎模态读 enc.title；与 name 并存以兼容旧引用
+          title: npcName,
+          memoryKey: npc.memoryKey || npc.id || npcName,
           desc: npc.desc || '',
           desc_awakened: npc.desc_awakened || '',
-          trigger: '交谈',
-          results: results.map(_toEngineResult)
-        });
+          trigger: '\u4ea4\u8c08',
+          results: dialogueResults.map(_normalizeDialogueResult)
+        };
+        if (dialogueLines) encounter.dialogueLines = dialogueLines;
+        if (Array.isArray(npc.dialogueVariants) && npc.dialogueVariants.length > 0) encounter.dialogueVariants = npc.dialogueVariants;
+        if (npc.dialogueTier || npc.storyTier || npc.tier || dialogueLines) {
+          encounter.dialogueTier = npc.dialogueTier || npc.storyTier || npc.tier || 'story';
+        }
+        encounters.push(encounter);
       }
     }
 

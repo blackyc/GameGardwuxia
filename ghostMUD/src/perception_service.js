@@ -84,7 +84,15 @@ export class PerceptionService {
     const pool = g.NPC_ENCOUNTERS[s.location];
     if (pool && pool.length > 0) {
       pool.forEach((enc, i) => {
-        if (enc.title) npcs.push({ name: enc.title, desc: g.getDesc(enc), type: 'encounter', index: i, dialogueTier: this._npcDialogueTier(enc) });
+        if (enc.title) npcs.push({
+          name: enc.title,
+          desc: g.getDesc(enc),
+          type: 'encounter',
+          index: i,
+          memoryKey: enc.memoryKey || enc.id || enc.title,
+          relationLabel: g.describeNpcRelation ? g.describeNpcRelation(enc) : '',
+          dialogueTier: this._npcDialogueTier(enc)
+        });
       });
     }
     const dl2 = getData();

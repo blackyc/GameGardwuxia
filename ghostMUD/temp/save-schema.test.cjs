@@ -244,7 +244,7 @@ test('SAVE_SCHEMA \u5305\u542b\u6240\u6709\u5fc5\u8981\u5b57\u6bb5', () => {
     'attack', 'defense', 'mp', 'maxMp',
     'location', 'inventory', 'equipment', 'techniques',
     'killCount', 'explored',
-    'activeQuests', 'completedQuests', 'questStages',
+    'activeQuests', 'completedQuests', 'questStages', 'npcMemory',
     'faction', 'skills', 'equippedSkill', 'factionRep',
     'spiritStones', 'copperCoins', 'knowsSpiritStones',
     'innate', 'innateName', 'innateMods', 'unlocks', 'factionRepMods',
@@ -545,6 +545,7 @@ test('\u4fdd\u5b58\u540e\u52a0\u8f7d\uff0c\u5173\u952e\u5b57\u6bb5\u5b8c\u5168\u
   state.activeQuests = ['q1', 'q2'];
   state.completedQuests = ['q0'];
   state.questStages = { q1: { stage: 2 }, q2: { stage: 1 } };
+  state.npcMemory = { wenjianfeng_suxiaotang: { meetings: 2, interactions: 1, affinity: 3, flags: { guided: true }, notes: ['带路'] } };
   state.faction = FACTION_WJF;
   state.skills = { basic_sword: { level: 3, exp: 50 } };
   state.equippedSkill = 'basic_sword';
@@ -600,6 +601,7 @@ test('\u4fdd\u5b58\u540e\u52a0\u8f7d\uff0c\u5173\u952e\u5b57\u6bb5\u5b8c\u5168\u
   jsonEqual(loaded.activeQuests, ['q1', 'q2'], 'activeQuests mismatch');
   jsonEqual(loaded.completedQuests, ['q0'], 'completedQuests mismatch');
   jsonEqual(loaded.questStages, { q1: { stage: 2 }, q2: { stage: 1 } }, 'questStages mismatch');
+  jsonEqual(loaded.npcMemory, { wenjianfeng_suxiaotang: { meetings: 2, interactions: 1, affinity: 3, flags: { guided: true }, notes: ['带路'] } }, 'npcMemory mismatch');
   assert.strictEqual(loaded.faction, FACTION_WJF, 'faction mismatch');
   jsonEqual(loaded.skills, { basic_sword: { level: 3, exp: 50 } }, 'skills mismatch');
   assert.strictEqual(loaded.equippedSkill, 'basic_sword', 'equippedSkill mismatch');

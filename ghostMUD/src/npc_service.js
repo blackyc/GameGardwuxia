@@ -1,3 +1,5 @@
+import { noteNpcSeen, applyNpcChoiceMemory } from './npc_memory.js';
+
 import { getData } from './data/data_loader.js';
 
 export class NpcService {
@@ -9,6 +11,7 @@ export class NpcService {
     this.dialogueSettled = false;
     this.dialogueLines = [];
     this.dialogueLineIndex = 0;
+    this.dialogueVariant = null;
   }
 
   triggerNPCEncounter(active) {
@@ -46,9 +49,11 @@ export class NpcService {
   _presentEncounter(enc) {
     const g = this.game;
     g.state.npcEncounter = enc;
+    noteNpcSeen(g.state, enc, { room: g.state.location, gameTime: g.state.gameTime });
     this.dialogueHistory = [];
     this.dialogueHistoryOpen = false;
     this.dialogueSettled = false;
+    this.dialogueVariant = this._selectDialogueVariant(enc);
     this.dialogueLines = this._openingLines(enc);
     this.dialogueLineIndex = 0;
 
@@ -74,9 +79,11 @@ export class NpcService {
     const g = this.game;
     const enc = g.state.npcEncounter;
     if (!enc) return;
-    const result = enc.results && enc.results[index];
+    const results = this._dialogueResults(enc);
+    const result = results && results[index];
     if (!result) return;
     const s = g.state;
+    applyNpcChoiceMemory(s, enc, result, { room: s.location, gameTime: s.gameTime });
     const title = this._title(enc);
 
     this._appendLine('你', result.choice || '沉默片刻。', 'player');
@@ -132,6 +139,7 @@ export class NpcService {
     this.dialogueSettled = false;
     this.dialogueLines = [];
     this.dialogueLineIndex = 0;
+    this.dialogueVariant = null;
     const modal = document.getElementById('npc-modal');
     if (modal) {
       modal.classList.remove('active');
@@ -162,7 +170,7 @@ export class NpcService {
     if (!enc) return;
     const line = this.dialogueLines[this.dialogueLineIndex] || this._line(this._title(enc), '对方沉默了片刻。', 'npc');
     const hasNext = this.dialogueLineIndex < this.dialogueLines.length - 1;
-    const results = this.dialogueSettled ? [] : (enc.results || []);
+    const results = this.dialogueSettled ? [] : this._dialogueResults(enc);
     this._renderDialogue(enc, line, hasNext ? [] : results, hasNext);
   }
 
@@ -210,10 +218,52 @@ export class NpcService {
     ).join('');
   }
 
+  _dialogueResults(enc) {
+    const source = this.dialogueVariant || {};
+    return source.results || source.dialogueChoices || source.choices || enc.results || [];
+  }
+
+  _selectDialogueVariant(enc) {
+    const variants = enc?.dialogueVariants || enc?.variants;
+    if (!Array.isArray(variants) || variants.length === 0) return null;
+    let fallback = null;
+    for (const variant of variants) {
+      if (!variant) continue;
+      if (variant.default) {
+        fallback = variant;
+        continue;
+      }
+      if (this._matchesDialogueWhen(variant.when)) return variant;
+    }
+    return fallback;
+  }
+
+  _matchesDialogueWhen(when) {
+    if (!when || typeof when !== 'object') return false;
+    for (const [key, expected] of Object.entries(when)) {
+      const actual = this._stateValue(key);
+      if (Array.isArray(expected)) {
+        if (!expected.includes(actual)) return false;
+      } else if (expected && typeof expected === 'object') {
+        if ('not' in expected && actual === expected.not) return false;
+        if ('exists' in expected && Boolean(actual) !== Boolean(expected.exists)) return false;
+        if ('equals' in expected && actual !== expected.equals) return false;
+      } else if (actual !== expected) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  _stateValue(path) {
+    return String(path).split('.').reduce((obj, key) => (obj == null ? undefined : obj[key]), this.game.state || {});
+  }
+
   _openingLines(enc) {
     const title = this._title(enc);
     const fallback = this.game.getDesc(enc) || enc.dialogue || '对方抬眼看向你，似乎正在等你开口。';
-    const raw = enc.dialogueLines || enc.lines || enc.script;
+    const source = this.dialogueVariant || {};
+    const raw = source.dialogueLines || source.lines || source.script || enc.dialogueLines || enc.lines || enc.script;
     return this._normalizeLines(raw, title, fallback);
   }
 

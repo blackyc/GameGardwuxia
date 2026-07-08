@@ -23,6 +23,7 @@ const MANIFEST = [
   { file: 'rebuild_skill_descriptions_1.js', vars: ['GHOST_SKILL_TREES_1'] },
   { file: 'rebuild_skill_descriptions_2.js', vars: ['GHOST_SKILL_TREES_2'] },
   { file: 'rebuild_rooms_wenjianfeng.js', vars: ['WENJIANFENG_ROOMS'] },
+  { file: 'wenjianfeng_npc_dialogues.js', vars: ['WENJIANFENG_NPC_DIALOGUES'] },
   { file: 'wenjianfeng_tutorial_ch1.js', vars: ['WENJIANFENG_TUTORIAL_CH1'] },
   { file: 'integration_v2.js', vars: ['LOCATIONS','MAP_POS','MAP_CONN','ROOM_SEARCH','NPC_ENCOUNTERS','FACTIONS','ROGUE_SKILLS','QUESTS','getDesc'] },
   { file: 'rebuild_meridians.js', vars: ['MERIDIANS'] },
