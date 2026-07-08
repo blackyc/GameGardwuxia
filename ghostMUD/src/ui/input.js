@@ -86,6 +86,12 @@ export class InputManager {
           if (npc) this.game.addLog('你细看' + npc.name + '，把此人的神态记在心里。', 'info');
           break;
         }
+        case 'sparNpc': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          if (!Number.isNaN(idx)) this.game.sparNpc(idx, type);
+          break;
+        }
         case 'npcDisabled':
           this.game.addLog('「' + (btn.dataset.label || '此项') + '」尚未开放。', 'system');
           break;

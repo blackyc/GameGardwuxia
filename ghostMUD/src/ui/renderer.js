@@ -283,7 +283,9 @@ export class Renderer {
             + '<button type="button" data-action="talkNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
             + '<button type="button" data-action="npcObserve" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">观察</button>'
             + '<button type="button" class="muted" data-action="npcDisabled" data-label="送礼">送礼</button>'
-            + '<button type="button" class="muted" data-action="npcDisabled" data-label="切磋">切磋</button>'
+            + (focused.canSpar
+              ? '<button type="button" data-action="sparNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">切磋</button>'
+              : '<button type="button" class="muted" data-action="npcDisabled" data-label="切磋">切磋</button>')
             + '</div></section>';
         }
         npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>' + dossier;
