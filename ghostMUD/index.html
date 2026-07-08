@@ -241,23 +241,49 @@
 
 <!-- Combat Modal -->
 <div class="modal" id="combat-modal">
-  <div class="modal-box">
+  <div class="modal-box combat-arena">
     <h3>⚔ 交 锋 ⚔</h3>
+    <!-- 对战双方 -->
     <div class="combat-vs">
-      <div class="side"><div class="name" id="combat-player-name">你</div><div class="desc">我方</div><div class="combat-hp-bar"><div class="combat-hp-fill" id="combat-player-hp" style="width:100%"></div></div><div class="combat-hp-text" id="combat-player-hp-text">100/100</div></div>
+      <div class="side">
+        <div class="name" id="combat-player-name">你</div>
+        <div class="combat-hp-bar"><div class="combat-hp-fill" id="combat-player-hp" style="width:100%"></div></div>
+        <div class="combat-hp-text" id="combat-player-hp-text">100/100</div>
+        <div class="combat-mp-bar"><div class="combat-mp-fill" id="combat-player-mp" style="width:100%"></div></div>
+        <div class="combat-mp-text" id="combat-player-mp-text">80/80</div>
+      </div>
       <div class="vs-text">VS</div>
-      <div class="side"><div class="name" style="color:#c05555" id="combat-enemy-name">?</div><div class="desc" id="combat-enemy-type">?</div><div class="combat-hp-bar"><div class="combat-hp-fill" id="combat-enemy-hp" style="width:100%"></div></div><div class="combat-hp-text" id="combat-enemy-hp-text">100/100</div></div>
+      <div class="side">
+        <div class="name" style="color:#c05555" id="combat-enemy-name">?</div>
+        <div class="combat-hp-bar"><div class="combat-hp-fill" id="combat-enemy-hp" style="width:100%"></div></div>
+        <div class="combat-hp-text" id="combat-enemy-hp-text">100/100</div>
+      </div>
     </div>
+    <!-- 行功五槽 -->
+    <div class="combat-slots" id="combat-slots">
+      <div class="combat-slot" data-slot="0"><div class="slot-label">起</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
+      <div class="combat-slot" data-slot="1"><div class="slot-label">承</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
+      <div class="combat-slot" data-slot="2"><div class="slot-label">转</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
+      <div class="combat-slot" data-slot="3"><div class="slot-label">合</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
+      <div class="combat-slot" data-slot="4"><div class="slot-label">归</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
+    </div>
+    <!-- 状态图标区 -->
+    <div class="combat-status-row">
+      <div class="status-icons" id="combat-player-status"></div>
+      <div class="status-icons" id="combat-enemy-status"></div>
+    </div>
+    <!-- 战斗日志 -->
+    <div class="combat-log" id="combat-log"></div>
+    <!-- 真气门禁选项（默认隐藏） -->
+    <div class="mpgate-panel" id="mpgate-panel" style="display:none">
+      <div class="mpgate-title" id="mpgate-title">真气不足！</div>
+      <div class="mpgate-options" id="mpgate-options"></div>
+    </div>
+    <!-- 干预按钮 -->
     <div class="combat-actions">
-      <button class="combat-btn" data-action="combat" data-combat="attack">⚔ 攻击</button>
-      <button class="combat-btn" data-action="combat" data-combat="skill">🔥 绝招</button>
-      <button class="combat-btn" data-action="combat" data-combat="defend">🛡 守势</button>
-      <button class="combat-btn" data-action="combat" data-combat="flee">🏃 遁走</button>
-    </div>
-    <div id="perform-area" style="display:none;margin-top:10px">
-      <div style="color:#c4886a;font-size:12px;letter-spacing:2px;margin-bottom:6px;text-align:center">▾ 选择绝招 ▾</div>
-      <div class="perform-list" id="perform-list"></div>
-      <button class="modal-close" style="margin-top:6px" id="perform-back-btn">返回</button>
+      <button class="combat-btn" data-action="combat" data-combat="flee">🏃 脱战</button>
+      <button class="combat-btn" data-action="combat" data-combat="variant">🔄 变式</button>
+      <button class="combat-btn" data-action="combat" data-combat="potion">💊 服药</button>
     </div>
   </div>
 </div>

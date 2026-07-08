@@ -811,6 +811,7 @@ export class Game {
   // ============ NPC 代理（委托 NpcService）============
   triggerNPCEncounter(active) { const r = this.npc.triggerNPCEncounter(active); this.markDirty(); return r; }
   speakToNpc(npcIndex) { const r = this.npc.speakToNpc(npcIndex, arguments[1]); this.markDirty(); return r; }
+  sparNpc(npcIndex, npcType) { const r = this.npc.sparNpc(npcIndex, npcType); this.markDirty(); return r; }
   _presentEncounter(enc) { return this.npc._presentEncounter(enc); }
   npcChoice(index) { return this.npc.npcChoice(index); }
   closeNPC() { return this.npc.closeNPC(); }

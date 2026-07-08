@@ -131,7 +131,18 @@ export class CombatFacade {
   startCombat(name, data) {
     const g = this.game;
     const dl = g._data || (g._data = getData());
-    const chart = g.state.chart || (dl.XINGGONG && dl.XINGGONG[g.state.faction]);
+    let chart = g.state.chart;
+    if (!chart && dl.COMBAT_SKILLS_V3) {
+      // 自动从技能数据中构造
+      const factionSkills = dl.COMBAT_SKILLS_V3.filter(sk => sk.faction === g.state.faction && sk.path === 'wu');
+      if (factionSkills.length >= 5) {
+        chart = {};
+        for (const sk of factionSkills) {
+          if (sk.slot) chart[sk.slot] = sk.id;
+        }
+        g.state.chart = chart; // 缓存
+      }
+    }
     if (chart && dl.COMBAT_SKILLS_V3) {
       // 使用新战斗引擎
       this.battleEngine = new BattleEngine(g);

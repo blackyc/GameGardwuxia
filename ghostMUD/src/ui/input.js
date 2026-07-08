@@ -260,6 +260,9 @@ export class InputManager {
         } else if (action === 'askTeacher') {
           this.game.closePerception();
           setTimeout(() => this.game.askTeacher(), 200);
+        } else if (action === 'spar') {
+          this.game.closePerception();
+          setTimeout(() => this.game.sparNpc(idx, type), 200);
         }
         return;
       }

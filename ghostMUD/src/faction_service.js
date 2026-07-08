@@ -9,6 +9,8 @@
  * - Game 保留一行代理方法
  */
 
+import { getData } from './data/data_loader.js';
+
 export class FactionService {
   /** @param {import('./game.js').Game} game */
   constructor(game) {
@@ -74,6 +76,35 @@ export class FactionService {
             }
           });
         }
+      }
+    }
+
+    // 设置行功图（chart）
+    const dl = getData();
+    if (dl.COMBAT_SKILLS_V3 && name !== '散修') {
+      const factionSkills = dl.COMBAT_SKILLS_V3.filter(sk => sk.faction === name && sk.path === 'wu');
+      const chart = {};
+      for (const sk of factionSkills) {
+        if (sk.slot && ['A','B','C','D','E'].includes(sk.slot)) {
+          chart[sk.slot] = sk.id;
+        }
+      }
+      if (Object.keys(chart).length === 5) {
+        s.chart = chart;
+        g.addLog(`行功图已展开：${name}·五式战诀`, 'special');
+      }
+    } else if (name === '散修' && dl.COMBAT_SKILLS_V3) {
+      // 散修：从通用技能中取 slot A-E
+      const rogueSkills = dl.COMBAT_SKILLS_V3.filter(sk => sk.faction === '散修' || !sk.faction);
+      const chart = {};
+      for (const sk of rogueSkills) {
+        if (sk.slot && ['A','B','C','D','E'].includes(sk.slot)) {
+          chart[sk.slot] = sk.id;
+        }
+      }
+      if (Object.keys(chart).length === 5) {
+        s.chart = chart;
+        g.addLog('行功图已展开：散修·五式通用战诀', 'special');
       }
     }
 

@@ -310,6 +310,92 @@ export class NpcService {
       "'": '&#39;'
     }[ch]));
   }
+
+  /**
+   * 与NPC切磋
+   * @param {number} npcIndex - NPC 在房间中的索引
+   * @param {string} npcType - NPC 类型 'encounter'|'room'
+   */
+  sparNpc(npcIndex, npcType = 'encounter') {
+    const g = this.game;
+    const s = g.state;
+
+    // 获取 NPC 数据
+    let npc = null;
+    if (npcType === 'room') {
+      const dl = getData();
+      const loc = dl.LOCATIONS[s.location];
+      if (loc && loc.npcs) {
+        // 从所有 NPC（包括 encounter 池的）中按索引查找
+        const allNpcs = [...(g.NPC_ENCOUNTERS[s.location] || []), ...(loc.npcs || [])];
+        npc = allNpcs[npcIndex];
+        if (!npc) {
+          // 直接从房间 NPC 中取
+          npc = loc.npcs[npcIndex];
+        }
+      }
+    } else {
+      const pool = g.NPC_ENCOUNTERS[s.location];
+      if (pool && npcIndex < pool.length) {
+        npc = pool[npcIndex];
+      }
+    }
+
+    if (!npc) {
+      g.addLog('此人已不在此处。', 'system');
+      return;
+    }
+
+    // 检查玩家是否有行功图
+    const dl = getData();
+    const chart = s.chart || (dl.XINGGONG && dl.XINGGONG[s.faction]);
+    if (!chart) {
+      g.addLog('你尚未习得任何行功战诀，无法切磋。', 'system');
+      return;
+    }
+
+    // 构造切磋用敌人数据
+    const enemyData = this._buildSparEnemy(npc);
+
+    g.addLog(`你向${npc.name}抱拳：「请指教！」`, 'event');
+    g.addLog(`${npc.name}拔剑而立：「好说。」`, 'event');
+
+    // 启动战斗
+    g.combat.startCombat(npc.name, enemyData);
+  }
+
+  /**
+   * 构造切磋用敌人数据
+   */
+  _buildSparEnemy(npc) {
+    // 值星弟子 — 新手级弱敌
+    const isZhixing = (npc.id || '').includes('zhixing') || npc.name.includes('值星');
+
+    if (isZhixing) {
+      return {
+        name: npc.name,
+        hp: 60,
+        atk: 6,
+        def: 2,
+        spd: 5,
+        exp: 8,
+        gold: 0,
+        // 值星弟子的简单行功图（用问剑峰的技能）
+        chart: { A: 1001, B: 1002, C: 1003, D: 1004, E: 1005 },
+      };
+    }
+
+    // 默认弱敌
+    return {
+      name: npc.name,
+      hp: 50,
+      atk: 5,
+      def: 1,
+      spd: 5,
+      exp: 5,
+      gold: 0,
+    };
+  }
 }
 
 export default NpcService;

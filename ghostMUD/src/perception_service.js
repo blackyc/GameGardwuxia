@@ -103,6 +103,25 @@ export class PerceptionService {
       });
     }
 
+    // 房间内固定 NPC（来自 LOCATIONS 数据）
+    const locData = dl2.LOCATIONS[s.location];
+    if (locData && locData.npcs && Array.isArray(locData.npcs)) {
+      locData.npcs.forEach((npc, i) => {
+        // 跳过已在 NPC_ENCOUNTERS 中的
+        if (npcs.some(n => n.name === npc.name)) return;
+        npcs.push({
+          name: npc.name,
+          desc: npc.desc || '',
+          type: 'room',
+          index: npcs.length,
+          memoryKey: npc.memoryKey || npc.id || npc.name,
+          relationLabel: g.describeNpcRelation ? g.describeNpcRelation(npc) : '',
+          dialogueTier: this._npcDialogueTier(npc),
+          canSpar: true  // 可切磋标记
+        });
+      });
+    }
+
     const canAskTeacher = s.faction && s.faction !== '散修' && g.isAtFactionHQ(s.location, s.faction);
 
     // 3. 可搜索点

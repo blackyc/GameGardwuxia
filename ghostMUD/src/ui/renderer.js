@@ -536,16 +536,107 @@ export class Renderer {
 
   /** 更新战斗 UI */
   updateCombatUI() {
-    const s = this.game.state;
-    if (!s.combat) return;
-    const c = s.combat;
+    const facade = this.game.combat;
+    const be = facade.battleEngine;
+    if (!be || !be.battleState || !be.battleState.active) {
+      // fallback 旧版
+      const s = this.game.state;
+      if (!s.combat) return;
+      const c = s.combat;
+      this._setText('combat-player-name', '你');
+      this._setText('combat-player-hp-text', Math.max(0, s.hp) + '/' + s.maxHp);
+      this._setStyle('combat-player-hp', 'width', Math.max(0, s.hp / s.maxHp * 100) + '%');
+      this._setText('combat-enemy-name', c.enemyName || c.name || '?');
+      this._setText('combat-enemy-hp-text', Math.max(0, c.enemyData?.hp || c.hp || 0) + '/' + (c.enemyData?.maxHp || c.enemyData?.hp || 100));
+      this._setStyle('combat-enemy-hp', 'width', Math.max(0, ((c.enemyData?.hp || c.hp || 0) / (c.enemyData?.maxHp || c.enemyData?.hp || 100)) * 100) + '%');
+      return;
+    }
+
+    const data = be.getBattleUIData();
+    if (!data) return;
+
+    // 玩家
     this._setText('combat-player-name', '你');
-    this._setText('combat-player-hp-text', Math.max(0, s.hp) + '/' + s.maxHp);
-    this._setStyle('combat-player-hp', 'width', Math.max(0, s.hp / s.maxHp * 100) + '%');
-    this._setText('combat-enemy-name', c.name);
-    this._setText('combat-enemy-type', c.type || '');
-    this._setText('combat-enemy-hp-text', Math.max(0, c.hp) + '/' + c.maxHp);
-    this._setStyle('combat-enemy-hp', 'width', Math.max(0, c.hp / c.maxHp * 100) + '%');
+    this._setText('combat-player-hp-text', Math.max(0, Math.floor(data.player.hp)) + '/' + data.player.maxHp);
+    this._setStyle('combat-player-hp', 'width', Math.max(0, data.player.hp / data.player.maxHp * 100) + '%');
+    this._setText('combat-player-mp-text', Math.max(0, Math.floor(data.player.mp)) + '/' + data.player.maxMp);
+    this._setStyle('combat-player-mp', 'width', Math.max(0, data.player.mp / data.player.maxMp * 100) + '%');
+
+    // 敌人
+    this._setText('combat-enemy-name', data.enemy.name);
+    this._setText('combat-enemy-hp-text', Math.max(0, Math.floor(data.enemy.hp)) + '/' + data.enemy.maxHp);
+    this._setStyle('combat-enemy-hp', 'width', Math.max(0, data.enemy.hp / data.enemy.maxHp * 100) + '%');
+
+    // 五槽
+    const slotLabels = ['起', '承', '转', '合', '归'];
+    const slotEls = document.querySelectorAll('.combat-slot');
+    slotEls.forEach((el, idx) => {
+      const slot = data.slots[idx];
+      el.querySelector('.slot-name').textContent = slot.skill ? slot.skill.name : '—';
+      el.querySelector('.slot-label').textContent = slotLabels[idx];
+      const cdEl = el.querySelector('.slot-cd');
+      if (slot.state === 'locked') {
+        el.className = 'combat-slot locked';
+        cdEl.textContent = '🔒';
+      } else if (slot.state === 'cooldown' || slot.state === 'almost') {
+        el.className = 'combat-slot ' + slot.state;
+        cdEl.textContent = slot.cd > 0 ? slot.cd.toFixed(1) + 's' : '';
+      } else if (slot.state === 'mpwarn') {
+        el.className = 'combat-slot mpwarn';
+        cdEl.textContent = '气不足';
+      } else if (slot.state === 'mpgate') {
+        el.className = 'combat-slot mpgate';
+        cdEl.textContent = '门禁!';
+      } else if (slot.state === 'current') {
+        el.className = 'combat-slot current';
+        cdEl.textContent = '▶';
+      } else {
+        el.className = 'combat-slot ready';
+        cdEl.textContent = '✓';
+      }
+    });
+
+    // 状态图标
+    const pStatus = document.getElementById('combat-player-status');
+    const eStatus = document.getElementById('combat-enemy-status');
+    if (pStatus) pStatus.innerHTML = (data.player.statusIcons || []).map(s => `<span class="status-icon">${s.icon}</span>`).join('');
+    if (eStatus) eStatus.innerHTML = (data.enemy.statusIcons || []).map(s => `<span class="status-icon">${s.icon}</span>`).join('');
+
+    // 战斗日志
+    const logEl = document.getElementById('combat-log');
+    if (logEl) {
+      logEl.innerHTML = (data.log || []).map(l => `<div class="combat-log-entry ${l.type || ''}">${l.text}</div>`).join('');
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // 真气门禁
+    const gatePanel = document.getElementById('mpgate-panel');
+    if (gatePanel) {
+      if (data.mpGate) {
+        gatePanel.style.display = 'block';
+        this._setText('mpgate-title', `真气不足！${data.mpGate.skill.name}需${data.mpGate.need}气，当前${data.mpGate.have}`);
+        const optsEl = document.getElementById('mpgate-options');
+        if (optsEl && !optsEl.dataset.bound) {
+          optsEl.dataset.bound = '1';
+          optsEl.innerHTML = `
+            <button class="mpgate-btn" data-gate="rest">调息 +30气</button>
+            <button class="mpgate-btn" data-gate="potion">服药 +40气</button>
+            <button class="mpgate-btn" data-gate="basic">平斩 -10气</button>
+            <button class="mpgate-btn" data-gate="force">强行运功</button>
+          `;
+          optsEl.querySelectorAll('.mpgate-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              be.resolveMpGate(btn.dataset.gate);
+              gatePanel.style.display = 'none';
+            });
+          });
+        }
+      } else {
+        gatePanel.style.display = 'none';
+        const optsEl = document.getElementById('mpgate-options');
+        if (optsEl) delete optsEl.dataset.bound;
+      }
+    }
   }
 
   /** 更新位置图标 */
@@ -631,6 +722,9 @@ export class Renderer {
         const type = n.type || 'encounter';
         let subBtns = '<button class="perc-subbtn" data-npc-action="talk" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
           + '<button class="perc-subbtn" data-npc-action="trade" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交易</button>';
+        if (n.canSpar) {
+          subBtns += '<button class="perc-subbtn" data-npc-action="spar" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">切磋</button>';
+        }
         // 拜师按钮仅在宗门HQ且已有帮派时显示
         if (data.canAskTeacher) {
           subBtns += '<button class="perc-subbtn" data-npc-action="askTeacher" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">拜师</button>';
