@@ -19,6 +19,7 @@ import { getData, pickEnemy } from './data/data_loader.js';
 import { BattleEngine } from './battle_async.js';
 import { HijackEngine } from './battle_hijack.js';
 import { InterveneEngine } from './battle_intervene.js';
+import { normalizeChart, getChartSlots } from './combat_contract.js';
 
 export class CombatFacade {
   /** @param {import('./game.js').Game} game */
@@ -133,7 +134,7 @@ export class CombatFacade {
     const dl = g._data || (g._data = getData());
     let chart = g.state.chart;
     if (!chart && dl.COMBAT_SKILLS_V3) {
-      // 自动从技能数据中构造
+      // 自动从技能数据中构造（取本门派前5个技能）
       const factionSkills = dl.COMBAT_SKILLS_V3.filter(sk => sk.faction === g.state.faction && sk.path === 'wu');
       if (factionSkills.length >= 5) {
         chart = {};
@@ -143,7 +144,9 @@ export class CombatFacade {
         g.state.chart = chart; // 缓存
       }
     }
-    if (chart && dl.COMBAT_SKILLS_V3) {
+    // 归一化 chart 格式
+    const normalizedChart = getChartSlots(chart);
+    if (normalizedChart && dl.COMBAT_SKILLS_V3) {
       // 使用新战斗引擎
       this.battleEngine = new BattleEngine(g);
       this.hijackEngine = new HijackEngine(this.battleEngine);
@@ -157,7 +160,7 @@ export class CombatFacade {
       // 启动战斗
       g.state.combat = { enemyName: name, enemyData: data };
       document.getElementById('combat-modal').classList.add('active');
-      this.battleEngine.startCombat(data, chart);
+      this.battleEngine.startCombat(data, normalizedChart);
     } else {
       // fallback 到旧引擎
       this._legacyStartCombat(name, data);

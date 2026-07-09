@@ -16,6 +16,7 @@
  */
 
 import { getData } from './data/data_loader.js';
+import { normalizeCombatSkill, getSkillCost, getCorruptionLevel, getWeaponAtk, getArmorDef } from './combat_contract.js';
 
 // ============================================================
 //  常量 & 查表
@@ -63,15 +64,15 @@ const HIJACK_BASE_RATE = [0, 0.03, 0.08, 0.15, 0.25, 0.40];
 //  辅助函数
 // ============================================================
 
-/** 从卷宗数据中查找技能，fallback 到简单对象 */
+/** 从卷宗数据中查找技能，归一化后返回 */
 function getSkillData(skillId) {
   const data = getData();
   if (data.COMBAT_SKILLS_V3) {
     const found = data.COMBAT_SKILLS_V3.find(s => s.id === skillId);
-    if (found) return found;
+    if (found) return normalizeCombatSkill(found);
   }
   // fallback：构造一个最小可用技能
-  return {
+  return normalizeCombatSkill({
     id: skillId || 0,
     name: `未知招式`,
     type: 'melee',
@@ -79,20 +80,27 @@ function getSkillData(skillId) {
     skillNum: 20,
     skillNumLvAdd: 0,
     cd: 2.0,
-    mana: 10,
+    mpCost: 10,
     target: 'enemy',
     targetNum: 1,
-    shiguNum: 0, lieshangNum: 0, yehuoNum: 0,
-    ningyuanNum: 0, pogangNum: 0, mihunNum: 0, nixueNum: 0,
+    duNum: 0, bleedNum: 0, burnNum: 0,
+    iceNum: 0, pogangNum: 0, mihunNum: 0, nixueNum: 0,
     tags: [],
     belong: 0,
-  };
+  });
 }
 
 /** 计算技能伤害 */
 function calcSkillDamage(skill, atk, def, realm) {
   const skillNum = skill.skillNum + (skill.skillNumLvAdd || 0) * realm;
   let dmg = skillNum * atk - def;
+  return Math.max(1, Math.floor(dmg));
+}
+
+/** 计算技能伤害（含武器加成） */
+function calcSkillDamageWithWeapon(skill, atk, weaponAtk, def, realm) {
+  const skillNum = skill.skillNum + (skill.skillNumLvAdd || 0) * realm;
+  let dmg = skillNum * (atk + weaponAtk) - def;
   return Math.max(1, Math.floor(dmg));
 }
 
@@ -156,8 +164,10 @@ export class BattleEngine {
 
     // 计算玩家属性
     const realm = s.realm || 0;
-    const atk = s.attack || 10;
-    const def = s.defense || 1;
+    const weaponAtk = getWeaponAtk(s);
+    const armorDef = getArmorDef(s);
+    const atk = (s.attack || 10) + weaponAtk;
+    const def = (s.defense || 1) + armorDef;
     const maxHp = s.maxHp || 100;
     const maxMp = s.maxMp || 80;
     const spd = 6.0 + realm;
@@ -1197,7 +1207,7 @@ export class BattleEngine {
    */
   _checkHijack(slot, skill) {
     const bs = this.battleState;
-    const corruptionLevel = this.state.corruption || 0;
+    const corruptionLevel = getCorruptionLevel(this.state);
     const baseRate = HIJACK_BASE_RATE[corruptionLevel] || 0;
 
     if (baseRate <= 0) return false;

@@ -16,6 +16,8 @@
  * 依赖：BattleEngine (battle_async.js)
  */
 
+import { findPresetChart, getChartSlots } from './combat_contract.js';
+
 // ============================================================
 //  常量
 // ============================================================
@@ -141,28 +143,21 @@ export class InterveneEngine {
   }
 
   /** @private 获取玩家预设战诀
-   *  从 game.state 中的预设系统读取
-   *  预期结构：game.state.chartPresets = { poixie: {A:..,B:..,...}, ... }
-   *  若不存在则返回 null
+   *  从 game.state.presetCharts 数组读取，兼容旧对象格式
    */
   _getPresetChart(chartId) {
-    const presets = this.game.state.chartPresets || this.game.state.charts || {};
-    return presets[chartId] || null;
+    return findPresetChart(this.game.state, chartId);
   }
 
   /** @private 获取玩家当前畸变等级 */
   _getCorruptionLevel() {
-    return this.game.state.corruption || this.game.state.corruptionLevel || 0;
+    return this.game.state.corruptionLevel ?? this.game.state.corruption ?? 0;
   }
 
   /** @private 设置畸变等级 */
   _setCorruptionLevel(level) {
     const clamped = Math.max(0, Math.min(5, level));
-    if (this.game.state.corruption !== undefined) {
-      this.game.state.corruption = clamped;
-    } else {
-      this.game.state.corruptionLevel = clamped;
-    }
+    this.game.state.corruptionLevel = clamped;
   }
 
   /** @private 获取玩家速度 */
@@ -203,7 +198,8 @@ export class InterveneEngine {
     }
 
     // 检查：目标战诀是否存在
-    const newChart = this._getPresetChart(chartId);
+    const preset = this._getPresetChart(chartId);
+    const newChart = preset ? (preset.slots || preset) : null;
     if (!newChart) {
       this._log(NARRATIVE.noChart, `info`);
       return { success: false, log: NARRATIVE.noChart, newChart: null };
@@ -502,9 +498,15 @@ export class InterveneEngine {
 
     // --- 变招 ---
     const presetCharts = [];
-    const presets = this.game.state.chartPresets || this.game.state.charts || {};
+    const presets = this.game.state.presetCharts || this.game.state.chartPresets || this.game.state.charts || null;
     for (const [id, cfg] of Object.entries(CHART_PRESETS)) {
-      const exists = !!presets[id];
+      // presetCharts 现在是数组格式 [{id, name, slots}]
+      let exists = false;
+      if (Array.isArray(presets)) {
+        exists = presets.some(p => p.id === id);
+      } else if (presets && typeof presets === 'object') {
+        exists = !!presets[id];
+      }
       const isCurrent = this._isCurrentChart(id, presets);
       presetCharts.push({
         id,
@@ -579,11 +581,19 @@ export class InterveneEngine {
   /** @private 判断当前战诀是否匹配某预设 */
   _isCurrentChart(chartId, presets) {
     const bs = this._bs();
-    if (!bs) return false;
-    const preset = presets[chartId];
+    if (!bs || !presets) return false;
+    // 兼容数组和对象两种格式
+    let preset = null;
+    if (Array.isArray(presets)) {
+      preset = presets.find(p => p.id === chartId);
+    } else {
+      preset = presets[chartId];
+    }
     if (!preset) return false;
+    // 提取slots
+    const presetSlots = preset.slots || preset;
     const current = bs.chart;
-    return Object.keys(preset).every(k => preset[k] === current[k]);
+    return Object.keys(presetSlots).every(k => presetSlots[k] === current[k]);
   }
 
   // ----------------------------------------------------------
