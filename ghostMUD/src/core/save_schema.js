@@ -84,6 +84,13 @@ export const SAVE_SCHEMA = {
   // ═══ 开场标记 ═══
   introSeen:          { type: 'boolean', default: false,       nullable: false },
 
+  // ═══ 教程/引路状态 ═══
+  tutorialPhase:      { type: 'string',  default: null,        nullable: true  },
+  tutorialStep:       { type: 'number',  default: 0,           nullable: false },
+  guideCompanion:     { type: 'string',  default: null,        nullable: true  },
+  tutorialSeenRooms:  { type: 'object',  default: {},          nullable: false },
+  wenjianfengDinnerDone: { type: 'boolean', default: false,    nullable: false },
+
   // ═══ 行功战斗系统 v3.0 ═══
   chart:              { type: 'object',  default: null,        nullable: true  },
   presetCharts:       { type: 'array',   default: [],          nullable: false },

@@ -869,3 +869,105 @@ body[data-page="jianghu"] #scene-bg {
   font: 700 12px/1.3 'STKaiti', 'KaiTi', serif;
   letter-spacing: 1px;
 }
+
+
+/* V1.5.1 UI hotfix: compact NPC tags and stronger ink-paper contrast. */
+body[data-page="jianghu"] #scene-bg {
+  background-color: #ded7c0;
+}
+
+.page[data-page="jianghu"] .jianghu-main-zone {
+  background: rgba(232, 224, 199, 0.94);
+}
+
+.page[data-page="jianghu"] .room-card {
+  background: rgba(225, 218, 193, 0.82);
+  border-color: rgba(48, 49, 44, 0.55);
+  box-shadow: inset 0 0 18px rgba(90, 82, 60, 0.08);
+}
+
+.page[data-page="jianghu"] .room-desc {
+  color: #232019;
+  font-size: 17px;
+  line-height: 1.72;
+  font-weight: 500;
+}
+
+.page[data-page="jianghu"] .room-npc-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px 10px;
+  max-width: 560px;
+}
+
+.page[data-page="jianghu"] .room-npc-card {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 82px;
+  max-width: 148px;
+  min-height: 31px;
+  padding: 5px 12px 6px;
+  color: #171612;
+  background: rgba(235, 216, 140, 0.92);
+  border: 2px solid rgba(44, 45, 40, 0.78);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 249, 206, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.page[data-page="jianghu"] .room-npc-card:hover,
+.page[data-page="jianghu"] .room-npc-card.active {
+  background: rgba(246, 224, 131, 0.98);
+  border-color: rgba(30, 31, 28, 0.9);
+}
+
+.page[data-page="jianghu"] .room-npc-card .npc-name {
+  max-width: 110px;
+  overflow: hidden;
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.page[data-page="jianghu"] .room-npc-card .npc-cue {
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  line-height: 15px;
+}
+
+.page[data-page="jianghu"] .npc-dossier {
+  background: rgba(232, 224, 197, 0.9);
+  border-color: rgba(50, 49, 43, 0.58);
+}
+
+.page[data-page="jianghu"] .npc-dossier-desc {
+  color: #28251f;
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+.page[data-page="jianghu"] .npc-dossier-actions button {
+  color: #171612;
+  background: rgba(229, 207, 117, 0.92);
+  border: 2px solid rgba(48, 47, 42, 0.72);
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 210, 0.5);
+}
+
+.page[data-page="jianghu"] .npc-dossier-actions button.muted {
+  opacity: 0.48;
+}
+
+.page[data-page="jianghu"] .scene-feed {
+  max-height: 74px;
+  color: #5e5344;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.page[data-page="jianghu"] .recent-log {
+  background: rgba(231, 224, 202, 0.98);
+  color: #2c2a24;
+}

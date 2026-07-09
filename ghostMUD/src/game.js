@@ -160,6 +160,12 @@ export class Game {
       completedQuests: [],
       questStages: {},
       npcMemory: {},
+      // 教程/引路状态
+      tutorialPhase: null,
+      tutorialStep: 0,
+      guideCompanion: null,
+      tutorialSeenRooms: {},
+      wenjianfengDinnerDone: false,
       // 帮派/技能系统
       faction: '散修',
       skills: {},

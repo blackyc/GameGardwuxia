@@ -81,21 +81,38 @@ export class PerceptionService {
 
     // 2. 在场人物
     const npcs = [];
+    const dl2 = getData();
+    const tutorial = dl2.WENJIANFENG_TUTORIAL_CH1;
+    const guide = tutorial && typeof tutorial.getGuideEncounter === 'function'
+      ? tutorial.getGuideEncounter(g, s.location)
+      : null;
+    if (guide && guide.title) {
+      npcs.push({
+        name: guide.title,
+        desc: g.getDesc(guide),
+        type: 'guide',
+        index: 0,
+        memoryKey: guide.memoryKey || guide.id || guide.title,
+        relationLabel: g.describeNpcRelation ? g.describeNpcRelation(guide) : '',
+        dialogueTier: 'story',
+        canSpar: false
+      });
+    }
     const pool = g.NPC_ENCOUNTERS[s.location];
     if (pool && pool.length > 0) {
       pool.forEach((enc, i) => {
-        if (enc.title) npcs.push({
+        if (enc.title && !npcs.some(n => n.name === enc.title)) npcs.push({
           name: enc.title,
           desc: g.getDesc(enc),
           type: 'encounter',
           index: i,
           memoryKey: enc.memoryKey || enc.id || enc.title,
           relationLabel: g.describeNpcRelation ? g.describeNpcRelation(enc) : '',
-          dialogueTier: this._npcDialogueTier(enc)
+          dialogueTier: this._npcDialogueTier(enc),
+          canSpar: enc.canSpar !== false
         });
       });
     }
-    const dl2 = getData();
     const factionPool = dl2.FACTION_RECRUITER_ENCOUNTERS[s.location] || null;
     if (factionPool && factionPool.length > 0 && s.faction === '散修') {
       factionPool.forEach((enc, i) => {
@@ -113,11 +130,11 @@ export class PerceptionService {
           name: npc.name,
           desc: npc.desc || '',
           type: 'room',
-          index: npcs.length,
+          index: i,
           memoryKey: npc.memoryKey || npc.id || npc.name,
           relationLabel: g.describeNpcRelation ? g.describeNpcRelation(npc) : '',
           dialogueTier: this._npcDialogueTier(npc),
-          canSpar: true  // 可切磋标记
+          canSpar: npc.canSpar !== false
         });
       });
     }

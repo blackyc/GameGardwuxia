@@ -179,13 +179,16 @@ export class CombatFacade {
       const be = this.battleEngine;
       switch (action) {
         case 'attack': {
+          // 战诀自动运转，手动攻击仅作调试入口
+          // autoCast 参数必须是 'A'~'E'，不是 0-4
+          const SLOTS = ['A', 'B', 'C', 'D', 'E'];
           for (let i = 0; i < 5; i++) {
             if (be.battleState.slotUnlocked[i] && be.battleState.cooldowns[i] <= 0) {
-              be.autoCast(i);
+              be.autoCast(SLOTS[i]);
               return;
             }
           }
-          g.addLog('⏳ 所有招式都在冷却中…', 'combat');
+          g.addLog('⏳ 战诀运转中，所有招式都在冷却…', 'combat');
           break;
         }
         case 'skill': {

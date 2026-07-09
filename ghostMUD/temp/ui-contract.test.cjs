@@ -55,6 +55,12 @@ test('jianghu CSS preserves mobile background segmentation contract', () => {
   assertCss(/\.page\[data-page="jianghu"\]\s+\.recent-log\s*\{[\s\S]*top:\s*73dvh/, 'zone 3 log anchor');
 });
 
+test('NPC card hotfix keeps name tags compact', () => {
+  assertCss(/\.page\[data-page="jianghu"\]\s+\.room-npc-list\s*\{[\s\S]*display:\s*flex[\s\S]*flex-wrap:\s*wrap/, 'NPC list uses compact wrapping tags');
+  assertCss(/\.page\[data-page="jianghu"\]\s+\.room-npc-card\s*\{[\s\S]*flex:\s*0 0 auto[\s\S]*max-width:\s*148px/, 'NPC card compact width');
+  assert.ok(renderer.includes('const canSpar = focused.canSpar !== false'), 'focused dossier must derive robust canSpar');
+});
+
 test('NPC cards expose only names until focused', () => {
   const buttonsStart = renderer.indexOf('const buttons = list.map');
   const dossierStart = renderer.indexOf("let dossier = ''", buttonsStart);

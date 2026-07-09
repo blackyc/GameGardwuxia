@@ -22,6 +22,105 @@ var WENJIANFENG_TUTORIAL_CH1 = {
     '问剑峰·弟子房',
   ],
 
+  // ============ V1.5.1 引路同伴：苏小棠 ============
+  guideNpcId: 'wenjianfeng_suxiaotang',
+  guideNpcName: '苏小棠',
+  guideLeaveRoom: '问剑峰·弟子房',
+
+  guideLines: {
+    '问剑峰·山门': '苏小棠坐在第十三级台阶上，朝你晃了晃手里的树枝。',
+    '问剑峰·剑阶': '苏小棠倒着走在前头，鞋跟一点一点蹭着石阶。',
+    '问剑峰·剑坪': '苏小棠站在剑坪边上，指给你看各处去路。',
+    '问剑峰·伙房': '苏小棠闻到锅气，脚步明显快了些。',
+    '问剑峰·洗剑池': '苏小棠压低声音，提醒你别碰池底断剑。',
+    '问剑峰·竹林': '苏小棠避开竹根，小声说劳叔听得见脚步。',
+    '问剑峰·药圃': '苏小棠拉你绕开几株药草，生怕你踩错。',
+    '问剑峰·藏剑阁': '苏小棠放轻脚步，示意你不要吵醒阁老。',
+    '问剑峰·剑冢': '苏小棠缩了缩脖子，站在你身后半步。',
+    '问剑峰·弟子房': '苏小棠把你送到门前，长长松了口气。',
+  },
+
+  guideTalk: {
+    '问剑峰·山门': [
+      { speaker: '苏小棠', text: '「新来的？」苏小棠从石阶上跳下来，打量你两眼。' },
+      { speaker: '苏小棠', text: '「我叫苏小棠。萧师叔让我带你认路，先记住今天的口令：残月。」' },
+    ],
+    '问剑峰·剑阶': [
+      { speaker: '苏小棠', text: '「这一段一百零八级。你要是走不动，就说一声。」' },
+      { speaker: '苏小棠', text: '「不过别太大声，我会假装没听见。」' },
+    ],
+    '问剑峰·剑坪': [
+      { speaker: '苏小棠', text: '「这里是剑坪。除了吃饭睡觉，大家基本都在这儿。」' },
+      { speaker: '苏小棠', text: '「伙房、洗剑池、竹林、药圃、藏剑阁、剑冢，全都从这边绕。」' },
+    ],
+    '问剑峰·伙房': [
+      { speaker: '苏小棠', text: '「老蔡做什么都好吃。他要是凶你，你别怕，他凶谁都那样。」' },
+    ],
+    '问剑峰·洗剑池': [
+      { speaker: '苏小棠', text: '「剑用完了来这里洗。池底那几把断剑别碰，会被骂。」' },
+    ],
+    '问剑峰·竹林': [
+      { speaker: '苏小棠', text: '「劳叔天天在里面削竹子。你别跟他比耐心，真的。」' },
+    ],
+    '问剑峰·药圃': [
+      { speaker: '苏小棠', text: '「阿青在这儿。她认识很多草，更多是她以为自己认识。」' },
+    ],
+    '问剑峰·藏剑阁': [
+      { speaker: '苏小棠', text: '「阁老在门口打盹。别吵他，虽然吵了他也未必醒。」' },
+    ],
+    '问剑峰·剑冢': [
+      { speaker: '苏小棠', text: '「剑翁住在最上面。他不下山吃饭，老蔡会送。以后可能轮到你。」' },
+    ],
+    '问剑峰·弟子房': [
+      { speaker: '苏小棠', text: '「这是弟子房。你住这间，我住隔壁，周碛住对面。」' },
+      { speaker: '苏小棠', text: '「走累了，剩下的你自己转悠吧！」' },
+    ],
+  },
+
+  isGuideActive: function(game, room) {
+    var s = game && game.state ? game.state : {};
+    var here = room || s.location;
+    return s.tutorialPhase === 'ch1_tour'
+      && s.guideCompanion === this.guideNpcId
+      && this.tourRoute.indexOf(here) >= 0;
+  },
+
+  getGuideHint: function(room) {
+    return this.guideLines[room] || '';
+  },
+
+  getGuideEncounter: function(game, room) {
+    if (!this.isGuideActive(game, room)) return null;
+    var here = room || game.state.location;
+    var lines = this.guideTalk[here] || [{ speaker: this.guideNpcName, text: '「跟上，我带你认路。」' }];
+    var routeIndex = this.tourRoute.indexOf(here);
+    var nextRoom = this.tourRoute[routeIndex + 1];
+    var nextName = nextRoom ? nextRoom.replace('问剑峰·', '') : '';
+    return {
+      id: this.guideNpcId + '_guide',
+      title: this.guideNpcName,
+      name: this.guideNpcName,
+      memoryKey: this.guideNpcId,
+      desc: '一个年轻女弟子，剑悬在身前，站得笔直。她正带你认路。',
+      dialogueTier: 'story',
+      canSpar: false,
+      dialogueLines: lines,
+      results: [{
+        choice: nextRoom ? '请她继续带路' : '向她道谢',
+        log: nextRoom ? '你请苏小棠继续带路。' : '你向苏小棠道谢。',
+        nextLines: [{
+          speaker: this.guideNpcName,
+          text: nextRoom ? ('「下一站是' + nextName + '。跟紧些。」') : '「走累了，剩下的你自己转悠吧！」'
+        }],
+        relationship: {
+          affinity: 1,
+          flags: ['suxiaotang_guided'],
+          note: '苏小棠记得你认真听她说路。'
+        }
+      }]
+    };
+  },
+
   // ============ 每个房间的剧情事件 ============
   scenes: {
 
@@ -236,6 +335,8 @@ var WENJIANFENG_TUTORIAL_CH1 = {
   start: function(game) {
     game.state.tutorialPhase = 'ch1_tour';
     game.state.tutorialStep = 0;
+    game.state.guideCompanion = this.guideNpcId;
+    game.state.tutorialSeenRooms = {};
     this.enterScene(game, 0);
   },
 
@@ -246,21 +347,27 @@ var WENJIANFENG_TUTORIAL_CH1 = {
     if (!scene) return;
     game.state.location = room;
     game.state.tutorialStep = step;
+    game.state.tutorialSeenRooms = game.state.tutorialSeenRooms || {};
+    game.state.tutorialSeenRooms[room] = true;
+    if (Array.isArray(game.state.explored) && game.state.explored.indexOf(room) < 0) {
+      game.state.explored.push(room);
+    }
     if (scene.onEnter) scene.onEnter(game);
-    if (scene.npcDialog) {
-      scene.npcDialog.forEach(function(d) {
-        game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
-      });
-    }
+
+    var hint = this.getGuideHint(room);
+    if (hint) game.addLog(hint, 'info');
     if (scene.moveHint) {
-      game.addLog(`💡 ` + scene.moveHint, 'system');
+      game.addLog('💡 ' + scene.moveHint, 'system');
     }
-    // 检查是否巡礼结束
+
+    // 完整人物台本不写入主场景区，改由苏小棠 NPC 的言路窗口承载。
     if (scene.onTourComplete) {
+      game.addLog('苏小棠：「走累了，剩下的你自己转悠吧！」', 'info');
+      game.state.guideCompanion = null;
       game.state.tutorialPhase = 'ch1_free';
-      game.addLog(`💡 自由活动：你可以去剑坪、伙房、洗剑池等地方逛逛。到了饭点去伙房吃晚饭。`, 'system');
+      game.addLog('💡 自由活动：你可以去剑坪、伙房、洗剑池等地方逛逛。到了饭点去伙房吃晚饭。', 'system');
     }
-    game.renderer.updateUI();
+    if (game.renderer && game.renderer.updateUI) game.renderer.updateUI();
   },
 
   // ============ 玩家移动时由 game.js 调用 ============
@@ -270,70 +377,41 @@ var WENJIANFENG_TUTORIAL_CH1 = {
     var step = game.state.tutorialStep || 0;
     var phase = game.state.tutorialPhase;
 
-    // === 巡礼阶段 ===
     if (phase === 'ch1_tour') {
       var nextRoom = this.tourRoute[step + 1];
       if (target === nextRoom) {
-        // 正确移动，进入下一步
         this.enterScene(game, step + 1);
         return true;
       }
-      // 目标不是下一站 —— 检查是否是合理的经过路径
-      // 允许移动到 tourRoute 中的任意房间（玩家可能在回头走）
       var routeIndex = this.tourRoute.indexOf(target);
       if (routeIndex >= 0 && routeIndex < step) {
-        // 玩家在往回走，允许但提醒
-        game.addLog(`苏小棠：「诶，我们刚从那边过来的呀——算了，你想看看也行。」`, 'npc');
+        game.addLog('苏小棠停在前头等你，示意你看完就跟上。', 'info');
         return true;
       }
-      // 非巡礼路线上的房间，阻止
-      game.addLog(`苏小棠：「这边这边！跟着我走！」`, 'npc');
+      game.addLog('苏小棠在前面招手，示意你先跟着她认路。', 'info');
       return false;
     }
 
-    // === 自由活动阶段 ===
     if (phase === 'ch1_free') {
-      // 检查是否进入伙房（触发晚饭）
-      if (target === this.dinnerEvent.trigger) {
-        // 显示自由活动对话（如果有）
-        var freeDialogs = this.freeTimeDialogs[target];
-        // 触发晚饭事件
-        this.dinnerEvent.dialog.forEach(function(d) {
-          game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
-        });
+      if (target === this.dinnerEvent.trigger && !game.state.wenjianfengDinnerDone) {
+        game.state.wenjianfengDinnerDone = true;
+        game.addLog('伙房里热气腾腾，老蔡给你盛了饭。苏小棠从你碗里夹走半块肉。', 'info');
         this.dinnerEvent.afterDinner(game);
         return true;
       }
-      // 其他区域：显示自由活动对话
-      var dialogs = this.freeTimeDialogs[target];
-      if (dialogs) {
-        dialogs.forEach(function(d) {
-          game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
-        });
-      }
-      return true; // 自由活动允许任何移动
-    }
-
-    // === 晚饭后/已完成 ===
-    if (phase === 'ch1_done') {
-      // 第一章已完成，允许自由移动
       return true;
     }
 
-    return false; // 未知阶段，不处理
+    if (phase === 'ch1_done') return true;
+    return false;
   },
 
   // ============ 玩家进入房间后调用（自由活动阶段）============
   // 由 game.js explore() 在移动完成后调用
   onEnterRoom: function(game, room) {
+    // V1.5.1：自由活动阶段不再把 NPC 台本自动灌入主场景区。
+    // 房间氛围由 room desc 负责，人物台本由 NPC 言路窗口负责。
     if (game.state.tutorialPhase !== 'ch1_free') return;
-    // 显示自由活动对话
-    var dialogs = this.freeTimeDialogs[room];
-    if (dialogs) {
-      dialogs.forEach(function(d) {
-        game.addLog(d.text, d.speaker === 'narrator' ? 'scene' : 'dialogue');
-      });
-    }
   },
 
 };

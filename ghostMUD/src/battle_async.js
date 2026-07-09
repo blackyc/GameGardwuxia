@@ -166,7 +166,7 @@ export class BattleEngine {
     const realm = s.realm || 0;
     const weaponAtk = getWeaponAtk(s);
     const armorDef = getArmorDef(s);
-    const atk = (s.attack || 10) + weaponAtk;
+    const atk = (s.attack || 10);
     const def = (s.defense || 1) + armorDef;
     const maxHp = s.maxHp || 100;
     const maxMp = s.maxMp || 80;
@@ -185,6 +185,7 @@ export class BattleEngine {
         maxMp,
         atk,
         def,
+        weaponAtk,
         spd,
         critProb: this._getPlayerCritProb(),
         critRate: this._getPlayerCritRate(),
@@ -358,7 +359,7 @@ export class BattleEngine {
 
     const sk = getSkillData(skId);
     const cdReady = bs.cooldowns[slot] <= 0;
-    const mpEnough = bs.player.mp >= (sk.mana || 0);
+    const mpEnough = bs.player.mp >= getSkillCost(sk);
 
     return { cdReady, mpEnough, skill: sk };
   }
@@ -440,12 +441,12 @@ export class BattleEngine {
 
     // 扣除真气
     if (isPlayer) {
-      const manaCost = sk.mana || 0;
+      const manaCost = getSkillCost(sk);
       bs.player.mp = Math.max(0, bs.player.mp - manaCost);
     }
 
     // 计算伤害
-    let dmg = calcSkillDamage(sk, attackerData.atk, defenderData.def, this.state.realm || 0);
+    let dmg = calcSkillDamageWithWeapon(sk, attackerData.atk, attackerData.weaponAtk || 0, defenderData.def, this.state.realm || 0);
 
     // 伤害类型检查（物理免疫）
     if (sk.dmgType === 'physical' && defenderData.physicalImmune) {
@@ -608,7 +609,7 @@ export class BattleEngine {
     bs.mpGateSkill = skill;
     bs.mpGateTimer = MP_GATE_TIMEOUT;
 
-    const need = skill.mana || 0;
+    const need = getSkillCost(skill);
     const have = Math.floor(bs.player.mp);
     this._addLog(`真气不足！${skill.name}需要${need}气，当前真气：${have}`, 'event');
 
@@ -670,12 +671,12 @@ export class BattleEngine {
       }
       case 'force': {
         const allMp = bs.player.mp;
-        const need = skill.mana || 1;
+        const need = getSkillCost(skill) || 1;
         const ratio = Math.min(1, allMp / need);
         bs.player.mp = 0;
         if (ratio > 0) {
           const skillNum = skill.skillNum + (skill.skillNumLvAdd || 0) * (this.state.realm || 0);
-          let dmg = Math.max(1, Math.floor(skillNum * bs.player.atk * ratio - bs.enemy.def));
+          let dmg = Math.max(1, Math.floor(skillNum * (bs.player.atk + (bs.player.weaponAtk || 0)) * ratio - bs.enemy.def));
           if (skill.dmgType === 'physical' && bs.enemy.physicalImmune) dmg = 0;
           bs.enemy.hp = Math.max(0, bs.enemy.hp - dmg);
           this._addLog(`强行出招·${skill.name}！伤害 ${dmg}（效率${Math.floor(ratio * 100)}%）`, 'combat');
@@ -984,49 +985,59 @@ export class BattleEngine {
    * @private
    */
   _applyStatusEffects(skill, attackerStatus, defenderStatus, isPlayer) {
+    // 统一从 skill.status 读取，不直接读旧字段名
+    const status = skill.status || {};
+    const shigu = status.shigu || 0;
+    const lieshang = status.lieshang || 0;
+    const yehuo = status.yehuo || 0;
+    const ningyuan = status.ningyuan || 0;
+    const pogang = status.pogang || 0;
+    const mihun = status.mihun || 0;
+    const nixue = status.nixue || 0;
+
     // 尸蛊
-    if (skill.shiguNum > 0) {
+    if (shigu > 0) {
       const stacks = Math.min(STATUS_CONFIG.shigu.maxStacks,
-        (defenderStatus.shigu || 0) + skill.shiguNum);
+        (defenderStatus.shigu || 0) + shigu);
       defenderStatus.shigu = stacks;
       if (stacks >= STATUS_CONFIG.shigu.maxStacks * 0.8) {
         this._addLog(`尸蛊已满——毒发在即！`, 'event');
       }
     }
     // 裂伤
-    if (skill.lieshangNum > 0) {
+    if (lieshang > 0) {
       const stacks = Math.min(STATUS_CONFIG.lieshang.maxStacks,
-        (defenderStatus.lieshang || 0) + skill.lieshangNum);
+        (defenderStatus.lieshang || 0) + lieshang);
       defenderStatus.lieshang = stacks;
     }
     // 业火
-    if (skill.yehuoNum > 0) {
+    if (yehuo > 0) {
       const stacks = Math.min(STATUS_CONFIG.yehuo.maxStacks,
-        (defenderStatus.yehuo || 0) + skill.yehuoNum);
+        (defenderStatus.yehuo || 0) + yehuo);
       defenderStatus.yehuo = stacks;
     }
     // 凝渊
-    if (skill.ningyuanNum > 0) {
+    if (ningyuan > 0) {
       const stacks = Math.min(STATUS_CONFIG.ningyuan.maxStacks,
-        (defenderStatus.ningyuan || 0) + skill.ningyuanNum);
+        (defenderStatus.ningyuan || 0) + ningyuan);
       defenderStatus.ningyuan = stacks;
     }
     // 破罡
-    if (skill.pogangNum > 0) {
+    if (pogang > 0) {
       const stacks = Math.min(STATUS_CONFIG.pogang.maxStacks,
-        (defenderStatus.pogang || 0) + skill.pogangNum);
+        (defenderStatus.pogang || 0) + pogang);
       defenderStatus.pogang = stacks;
     }
     // 迷魂
-    if (skill.mihunNum > 0) {
+    if (mihun > 0) {
       const stacks = Math.min(STATUS_CONFIG.mihun.maxStacks,
-        (defenderStatus.mihun || 0) + skill.mihunNum);
+        (defenderStatus.mihun || 0) + mihun);
       defenderStatus.mihun = stacks;
     }
     // 逆血
-    if (skill.nixueNum > 0) {
+    if (nixue > 0) {
       const stacks = Math.min(STATUS_CONFIG.nixue.maxStacks,
-        (defenderStatus.nixue || 0) + skill.nixueNum);
+        (defenderStatus.nixue || 0) + nixue);
       defenderStatus.nixue = stacks;
     }
 
@@ -1034,14 +1045,13 @@ export class BattleEngine {
     if (isPlayer && this.battleState.bonds) {
       const bondBonus = this._getBondBonus(skill);
       if (bondBonus > 0) {
-        // 概率额外+1层
-        if (skill.shiguNum > 0 && Math.random() < bondBonus) defenderStatus.shigu++;
-        if (skill.lieshangNum > 0 && Math.random() < bondBonus) defenderStatus.lieshang++;
-        if (skill.yehuoNum > 0 && Math.random() < bondBonus) defenderStatus.yehuo++;
-        if (skill.ningyuanNum > 0 && Math.random() < bondBonus) defenderStatus.ningyuan++;
-        if (skill.pogangNum > 0 && Math.random() < bondBonus) defenderStatus.pogang++;
-        if (skill.mihunNum > 0 && Math.random() < bondBonus) defenderStatus.mihun++;
-        if (skill.nixueNum > 0 && Math.random() < bondBonus) defenderStatus.nixue++;
+        if (shigu > 0 && Math.random() < bondBonus) defenderStatus.shigu++;
+        if (lieshang > 0 && Math.random() < bondBonus) defenderStatus.lieshang++;
+        if (yehuo > 0 && Math.random() < bondBonus) defenderStatus.yehuo++;
+        if (ningyuan > 0 && Math.random() < bondBonus) defenderStatus.ningyuan++;
+        if (pogang > 0 && Math.random() < bondBonus) defenderStatus.pogang++;
+        if (mihun > 0 && Math.random() < bondBonus) defenderStatus.mihun++;
+        if (nixue > 0 && Math.random() < bondBonus) defenderStatus.nixue++;
       }
     }
   }
@@ -1409,7 +1419,7 @@ export class BattleEngine {
       const cdReady = cd <= 0;
       const isCurrent = idx === bs.currentSlot;
       const isUnlocked = bs.slotUnlocked[idx];
-      const mpEnough = sk ? bs.player.mp >= (sk.mana || 0) : false;
+      const mpEnough = sk ? bs.player.mp >= getSkillCost(sk) : false;
 
       let state = 'locked';
       if (isUnlocked) {

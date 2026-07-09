@@ -35,6 +35,18 @@ export class NpcService {
     const g = this.game;
     const room = g.state.location;
     let pool = g.NPC_ENCOUNTERS[room];
+    if (npcType === 'guide') {
+      const dl = getData();
+      const guide = dl.WENJIANFENG_TUTORIAL_CH1 && typeof dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter === 'function'
+        ? dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter(g, room)
+        : null;
+      if (!guide) {
+        g.addLog('此人已经不在此处了。', 'system');
+        return;
+      }
+      this._presentEncounter(guide);
+      return;
+    }
     if (npcType === 'recruiter') {
       const dl = getData();
       pool = dl.FACTION_RECRUITER_ENCOUNTERS[room] || null;
@@ -319,20 +331,18 @@ export class NpcService {
   sparNpc(npcIndex, npcType = 'encounter') {
     const g = this.game;
     const s = g.state;
+    if (npcType === 'guide') {
+      g.addLog('苏小棠摆摆手：「先认路，回头再说。」', 'system');
+      return;
+    }
 
     // 获取 NPC 数据
     let npc = null;
     if (npcType === 'room') {
       const dl = getData();
       const loc = dl.LOCATIONS[s.location];
-      if (loc && loc.npcs) {
-        // 从所有 NPC（包括 encounter 池的）中按索引查找
-        const allNpcs = [...(g.NPC_ENCOUNTERS[s.location] || []), ...(loc.npcs || [])];
-        npc = allNpcs[npcIndex];
-        if (!npc) {
-          // 直接从房间 NPC 中取
-          npc = loc.npcs[npcIndex];
-        }
+      if (loc && Array.isArray(loc.npcs)) {
+        npc = loc.npcs[npcIndex];
       }
     } else {
       const pool = g.NPC_ENCOUNTERS[s.location];
@@ -355,25 +365,28 @@ export class NpcService {
     }
 
     // 构造切磋用敌人数据
+    const npcName = this._title(npc);
     const enemyData = this._buildSparEnemy(npc);
 
-    g.addLog(`你向${npc.name}抱拳：「请指教！」`, 'event');
-    g.addLog(`${npc.name}拔剑而立：「好说。」`, 'event');
+    g.addLog(`你向${npcName}抱拳：「请指教！」`, 'event');
+    g.addLog(`${npcName}拔剑而立：「好说。」`, 'event');
 
     // 启动战斗
-    g.combat.startCombat(npc.name, enemyData);
+    g.combat.startCombat(npcName, enemyData);
   }
 
   /**
    * 构造切磋用敌人数据
    */
   _buildSparEnemy(npc) {
+    const npcName = this._title(npc);
+    const npcId = npc?.id || '';
     // 值星弟子 — 新手级弱敌
-    const isZhixing = (npc.id || '').includes('zhixing') || npc.name.includes('值星');
+    const isZhixing = npcId.includes('zhixing') || npcName.includes('值星');
 
     if (isZhixing) {
       return {
-        name: npc.name,
+        name: npcName,
         hp: 60,
         atk: 6,
         def: 2,
@@ -387,7 +400,7 @@ export class NpcService {
 
     // 默认弱敌
     return {
-      name: npc.name,
+      name: npcName,
       hp: 50,
       atk: 5,
       def: 1,

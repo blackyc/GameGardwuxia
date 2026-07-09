@@ -274,6 +274,7 @@ export class Renderer {
           const idx = Number(focused.index);
           const type = focused.type || 'encounter';
           const relationLine = focused.relationLabel ? '<div class="npc-dossier-memory">印象：' + this._esc(focused.relationLabel) + '</div>' : '';
+          const canSpar = focused.canSpar !== false && type !== 'guide' && type !== 'recruiter';
           dossier = '<section class="npc-dossier" id="npc-dossier">'
             + '<div class="npc-dossier-head"><span class="npc-dossier-title">' + this._esc(focused.name) + '</span>'
             + '<button type="button" class="npc-dossier-close" data-action="closeNpcFocus">收起</button></div>'
@@ -283,7 +284,7 @@ export class Renderer {
             + '<button type="button" data-action="talkNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
             + '<button type="button" data-action="npcObserve" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">观察</button>'
             + '<button type="button" class="muted" data-action="npcDisabled" data-label="送礼">送礼</button>'
-            + (focused.canSpar
+            + (canSpar
               ? '<button type="button" data-action="sparNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">切磋</button>'
               : '<button type="button" class="muted" data-action="npcDisabled" data-label="切磋">切磋</button>')
             + '</div></section>';

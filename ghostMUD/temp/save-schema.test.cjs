@@ -249,6 +249,7 @@ test('SAVE_SCHEMA \u5305\u542b\u6240\u6709\u5fc5\u8981\u5b57\u6bb5', () => {
     'spiritStones', 'copperCoins', 'knowsSpiritStones',
     'innate', 'innateName', 'innateMods', 'unlocks', 'factionRepMods',
     'introSeen',
+    'tutorialPhase', 'tutorialStep', 'guideCompanion', 'tutorialSeenRooms', 'wenjianfengDinnerDone',
     'chart', 'presetCharts', 'corruptionLevel',
     'isResting', 'isCultivating', 'trainCounter', 'daoxinDecayCounter',
     'gameStart', 'gameTime', 'realTimeAccumulator',
@@ -559,6 +560,11 @@ test('\u4fdd\u5b58\u540e\u52a0\u8f7d\uff0c\u5173\u952e\u5b57\u6bb5\u5b8c\u5168\u
   state.unlocks = ['skill_a', 'skill_b'];
   state.factionRepMods = { '\u95ee\u5251\u5cf0': 5 };
   state.introSeen = true;
+  state.tutorialPhase = 'ch1_tour';
+  state.tutorialStep = 2;
+  state.guideCompanion = 'wenjianfeng_suxiaotang';
+  state.tutorialSeenRooms = { '问剑峰·山门': true, '问剑峰·剑阶': true };
+  state.wenjianfengDinnerDone = false;
   state.chart = { name: CHART_NAME };
   state.presetCharts = [{ name: CHART_NAME }, { name: '\u6218\u8bc0' + '2' }];
   state.corruptionLevel = 2;
@@ -615,6 +621,11 @@ test('\u4fdd\u5b58\u540e\u52a0\u8f7d\uff0c\u5173\u952e\u5b57\u6bb5\u5b8c\u5168\u
   jsonEqual(loaded.unlocks, ['skill_a', 'skill_b'], 'unlocks mismatch');
   jsonEqual(loaded.factionRepMods, { '\u95ee\u5251\u5cf0': 5 }, 'factionRepMods mismatch');
   assert.strictEqual(loaded.introSeen, true, 'introSeen mismatch');
+  assert.strictEqual(loaded.tutorialPhase, 'ch1_tour', 'tutorialPhase mismatch');
+  assert.strictEqual(loaded.tutorialStep, 2, 'tutorialStep mismatch');
+  assert.strictEqual(loaded.guideCompanion, 'wenjianfeng_suxiaotang', 'guideCompanion mismatch');
+  jsonEqual(loaded.tutorialSeenRooms, { '问剑峰·山门': true, '问剑峰·剑阶': true }, 'tutorialSeenRooms mismatch');
+  assert.strictEqual(loaded.wenjianfengDinnerDone, false, 'wenjianfengDinnerDone mismatch');
   jsonEqual(loaded.chart, { name: CHART_NAME }, 'chart mismatch');
   jsonEqual(loaded.presetCharts, [{ name: CHART_NAME }, { name: '\u6218\u8bc0' + '2' }], 'presetCharts mismatch');
   assert.strictEqual(loaded.corruptionLevel, 2, 'corruptionLevel mismatch');
