@@ -136,9 +136,30 @@ runTest('sparNpc 调用 combat_facade.startCombat', () => {
   if (!snippet.includes('startCombat')) throw new Error('sparNpc 未调用 startCombat');
 });
 
+runTest('sparNpc 不使用 XINGGONG[faction] 提前拦截战诀', () => {
+  const idx = NPC_SERVICE_SRC.indexOf('sparNpc');
+  const snippet = NPC_SERVICE_SRC.substring(idx, idx + 1600);
+  if (snippet.includes('XINGGONG') && snippet.includes('[s.faction]')) {
+    throw new Error('sparNpc 仍使用 XINGGONG[s.faction] 判断战诀');
+  }
+});
+
 runTest('combat_facade.startCombat 中使用 BattleEngine', () => {
   if (!FACADE_SRC.includes('BattleEngine')) throw new Error('startCombat 未使用 BattleEngine');
   if (!FACADE_SRC.includes('battle_async')) throw new Error('未导入 battle_async');
+});
+
+runTest('CombatFacade 有 V3 技能数据但无战诀时不静默 fallback', () => {
+  const idx = FACADE_SRC.indexOf('startCombat(name, data)');
+  const snippet = FACADE_SRC.substring(idx, idx + 1800);
+  if (!snippet.includes('else if (dl.COMBAT_SKILLS_V3)')) {
+    throw new Error('缺少 V3 数据存在但无战诀时的显式失败分支');
+  }
+  const fallbackIdx = snippet.indexOf('_legacyStartCombat');
+  const explicitFailIdx = snippet.indexOf('else if (dl.COMBAT_SKILLS_V3)');
+  if (fallbackIdx !== -1 && explicitFailIdx !== -1 && fallbackIdx < explicitFailIdx) {
+    throw new Error('旧引擎 fallback 仍可能先于显式失败分支触发');
+  }
 });
 
 runTest('combat_facade 中 autoCast 使用字母 slot', () => {

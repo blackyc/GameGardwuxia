@@ -161,9 +161,14 @@ export class CombatFacade {
       g.state.combat = { enemyName: name, enemyData: data };
       document.getElementById('combat-modal').classList.add('active');
       this.battleEngine.startCombat(data, normalizedChart);
+      return true;
+    } else if (dl.COMBAT_SKILLS_V3) {
+      g.addLog('你尚未习得任何行功战诀，无法开战。', 'system');
+      return false;
     } else {
-      // fallback 到旧引擎
+      // 仅在 V3 技能数据缺失时保留旧引擎兜底，避免缺战诀被静默伪装为可战斗。
       this._legacyStartCombat(name, data);
+      return true;
     }
   }
 

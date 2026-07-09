@@ -356,14 +356,6 @@ export class NpcService {
       return;
     }
 
-    // 检查玩家是否有行功图
-    const dl = getData();
-    const chart = s.chart || (dl.XINGGONG && dl.XINGGONG[s.faction]);
-    if (!chart) {
-      g.addLog('你尚未习得任何行功战诀，无法切磋。', 'system');
-      return;
-    }
-
     // 构造切磋用敌人数据
     const npcName = this._title(npc);
     const enemyData = this._buildSparEnemy(npc);

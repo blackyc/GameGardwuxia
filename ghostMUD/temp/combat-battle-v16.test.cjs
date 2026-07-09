@@ -112,6 +112,15 @@ runTest('门禁使用 getSkillCost 计算需求', () => {
   if (!snippet.includes('getSkillCost')) throw new Error('triggerMpGate 未使用 getSkillCost');
 });
 
+runTest('UI 门禁 need 使用 getSkillCost 统一入口', () => {
+  const idx = SRC.indexOf('mpGate:');
+  if (idx === -1) throw new Error('getBattleUIData 未返回 mpGate');
+  const snippet = SRC.substring(idx, idx + 260);
+  if (!snippet.includes('getSkillCost(bs.mpGateSkill)')) {
+    throw new Error('mpGate.need 未使用 getSkillCost');
+  }
+});
+
 runTest('门禁设置 mpGateTimer', () => {
   const idx = SRC.indexOf('triggerMpGate(skill)');
   if (idx === -1) throw new Error('triggerMpGate 定义未找到');

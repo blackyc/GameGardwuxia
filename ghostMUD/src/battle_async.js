@@ -1483,7 +1483,7 @@ export class BattleEngine {
       mpGate: bs.mpGatePending ? {
         skill: bs.mpGateSkill,
         timer: bs.mpGateTimer,
-        need: bs.mpGateSkill?.mana || 0,
+        need: getSkillCost(bs.mpGateSkill),
         have: Math.floor(bs.player.mp),
       } : null,
       // 干预
