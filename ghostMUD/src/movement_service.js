@@ -40,10 +40,11 @@ export class MovementService {
 
     const DIR_CN = { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出' };
     const cnDir = DIR_CN[dir] || dir;
-    const target = loc.connections?.[cnDir] || loc.connections?.[dir];
+    const connectionDir = loc.connections?.[cnDir] ? cnDir : dir;
+    const target = loc.connections?.[connectionDir];
     if (!target) { g.addLog('前方的路不见了。也许从来就没有过。', 'system'); return; }
     if (!g.LOCATIONS[target]) { g.addLog('那个地方……你记不起是哪里了。明明刚刚还记得。', 'system'); return; }
-    const access = getEntryAccess(g, target);
+    const access = g.routes?.getRouteAccess(connectionDir) || getEntryAccess(g, target);
     if (!access.allowed) {
       g.addLog(access.message, 'system');
       return;

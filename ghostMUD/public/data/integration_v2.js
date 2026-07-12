@@ -527,6 +527,25 @@ _ID_MAP['yt_suburb_s'] = '应天府·南郊';
 // ============================================================
 // 5. BFS 生成 MAP_POS（支持跨 cluster 连接矫正）
 // ============================================================
+(function() {
+  var room = LOCATIONS['应天府·聚宝门'];
+  if (!room || !room.connections || !room.connections['暗格']) return;
+  room.routeSketch = room.routeSketch || {};
+  room.routeSketch['暗格'] = {
+    id: 'route_jubao_hidden_cache',
+    label: '瓮城暗格',
+    kind: 'dungeon',
+    layout: { anchor: 'DEEP', lane: 1 },
+    discovery: {
+      type: 'perception',
+      hint: '城砖右下角有一线不该有的冷风。',
+      revealLabel: '循迹细察',
+      revealMessage: '你按住方砖右下角，砖缝无声错开，露出一处仅容一人蹲身的暗格。',
+      hiddenMessage: '你只看见一面寻常城墙，找不到任何入口。'
+    }
+  };
+})();
+
 var MAP_POS = {};
 var _visited = {};
 

@@ -67,11 +67,13 @@ export class PerceptionService {
     if (!loc) return { title: s.location, connections: [], npcs: [], searchPoints: [], props: [], extras: ['眼前一片虚无…'] };
 
     // 1. 通路分类：方位通路（方向栏）vs 探索入口（感知面板）
+    const routeByDirection = new Map((g.routes?.getRoutes() || []).map((route) => [route.direction, route]));
     const allConns = loc.connections
       ? Object.entries(loc.connections)
           .filter(([, name]) => g.LOCATIONS[name])
           .map(([dir, name]) => {
-            const access = getEntryAccess(g, name);
+            const route = routeByDirection.get(dir);
+            const access = route ? { visible: route.visible, allowed: route.clickable, message: route.blockedReason } : getEntryAccess(g, name);
             return { dir, dirCn: g.dirName(dir), name, explored: s.explored.includes(name), ...access };
           })
           .filter(connection => connection.visible)
@@ -165,7 +167,8 @@ export class PerceptionService {
       extras.push('🌀 你以神识扫过此地——空气中有一丝微弱的灵气波动，若有若无。');
     }
 
-    return { title: s.location, danger: loc.danger, cardinalExits, connections, npcs, searchPoints, props, extras, canAskTeacher };
+    const routeClues = g.routes?.getPerceptionClues() || [];
+    return { title: s.location, danger: loc.danger, cardinalExits, connections, npcs, searchPoints, props, extras, canAskTeacher, routeClues };
   }
 
   /** 打开感知面板 */
@@ -184,8 +187,22 @@ export class PerceptionService {
       g.addLog('当前无法感知！', 'combat');
       return;
     }
+    const sensed = g.routes?.senseCurrentRoom() || [];
+    if (sensed.length > 0) {
+      sensed.forEach((route) => g.addLog(route.discovery.hint, 'event'));
+      g.renderer.updateLocation();
+    }
     const data = this.getRoomPerception();
     g.renderer.renderPerception(data);
+  }
+
+  revealRoute(routeId) {
+    const g = this.game;
+    const result = g.routes?.revealRoute(routeId) || { ok: false, message: '此处没有可循的痕迹。' };
+    g.addLog(result.message, result.ok ? 'special' : 'system');
+    if (result.ok) g.renderer.updateLocation();
+    g.renderer.renderPerception(this.getRoomPerception());
+    return result;
   }
 
   /** 关闭感知面板 */

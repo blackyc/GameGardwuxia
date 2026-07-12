@@ -225,6 +225,12 @@ export class InputManager {
         return;
       }
 
+      const revealRoute = target.closest('[data-perc-action="reveal-route"]');
+      if (revealRoute) {
+        this.game.revealPerceptionRoute(revealRoute.dataset.routeId);
+        return;
+      }
+
       // 通路点击（探索）
       if (target.closest('.perc-path')) {
         const pathEl = target.closest('.perc-path');

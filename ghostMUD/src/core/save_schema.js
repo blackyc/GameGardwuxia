@@ -56,6 +56,7 @@ export const SAVE_SCHEMA = {
 
   // ═══ 已探索 ═══
   explored:           { type: 'array',   default: ['应天府·十字街口'], nullable: false },
+  routeDiscoveries:   { type: 'object',  default: {},          nullable: false },
 
   // ═══ 任务 ═══
   activeQuests:       { type: 'array',   default: [],          nullable: false },

@@ -216,6 +216,119 @@ body[data-page="jianghu"] #scene-bg {
   white-space: nowrap;
 }
 
+.page[data-page="jianghu"] .exit-bar.route-sketch {
+  display: block;
+  margin: 10px 0 6px;
+  padding: 10px;
+  background: rgba(232, 228, 210, 0.46);
+  border: 1px solid rgba(55, 58, 55, 0.28);
+  border-radius: 2px;
+}
+
+.route-sketch-title {
+  color: rgba(76, 71, 59, 0.68);
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 12px;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+.route-sketch-canvas {
+  position: relative;
+  min-height: 172px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.route-sketch-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.route-sketch-lines line {
+  stroke: rgba(67, 78, 72, 0.62);
+  stroke-width: 0.7;
+}
+
+.route-sketch-lines .route-sensed-line {
+  stroke: rgba(109, 92, 58, 0.65);
+  stroke-dasharray: 3 3;
+}
+
+.route-sketch-lines .route-sensed-mark {
+  fill: rgba(109, 92, 58, 0.86);
+}
+
+.route-node {
+  position: absolute;
+  left: var(--route-x, 50%);
+  top: var(--route-y, 50%);
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  text-align: center;
+  font-family: 'STKaiti', 'KaiTi', serif;
+}
+
+.route-current {
+  min-width: 92px;
+  padding: 8px 12px;
+  color: #173f42;
+  background: rgba(222, 237, 228, 0.94);
+  border: 2px solid #3a7773;
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 232, 0.76);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.route-destination {
+  min-width: 78px;
+  min-height: 40px;
+  padding: 7px 10px;
+  color: #332e22;
+  background: rgba(246, 238, 207, 0.93);
+  border: 2px solid rgba(76, 67, 47, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 230, 0.75);
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+button.route-destination {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.route-destination:hover {
+  border-color: #9b762e;
+  color: #5b4210;
+  background: rgba(250, 235, 178, 0.98);
+}
+
+button.route-destination:active {
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+.route-revealed {
+  border-color: #a27c2d;
+}
+
+.route-revealedLocked {
+  color: #706a5d;
+  background: rgba(218, 214, 199, 0.92);
+  border-color: rgba(88, 83, 73, 0.62);
+}
+
+.route-revealedLocked small {
+  display: block;
+  margin-top: 2px;
+  color: #827a69;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
 .scene-feed {
   max-height: 150px;
   margin-top: 10px;

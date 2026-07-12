@@ -7,6 +7,22 @@
 
 import { getData } from '../data/data_loader.js';
 
+function routePoint(route) {
+  const points = {
+    N: [50, 16], S: [50, 84], E: [82, 50], W: [18, 50],
+    NE: [80, 20], NW: [20, 20], SE: [80, 80], SW: [20, 80],
+    ABOVE: [50, 13], BELOW: [50, 87], DEEP: [80, 74], BACK: [20, 74]
+  };
+  if (route.layout?.anchor === 'AUTO') {
+    const automatic = [[18, 20], [50, 14], [82, 20], [18, 50], [82, 50], [18, 80], [50, 86], [82, 80]];
+    const [x, y] = automatic[Number(route.layout?.slot || 0) % automatic.length];
+    return { x, y };
+  }
+  const [baseX, baseY] = points[route.layout?.anchor] || points.E;
+  const lane = Number(route.layout?.lane || 0);
+  return { x: Math.max(10, Math.min(90, baseX + lane * 7)), y: Math.max(10, Math.min(90, baseY + lane * 7)) };
+}
+
 // 区域常量：定义所有可独立刷新的 UI 区域
 const ZONE_CHAR = 'char';       // 人物面板（境界、修为、道心、寿命、灵石、功法、任务数）
 const ZONE_STATUS = 'status';   // 境况面板（含帮派信息、攻防、HP、位置、击杀）
@@ -307,6 +323,41 @@ export class Renderer {
   renderExitBar() {
     const bar = document.getElementById('exit-bar');
     if (!bar) return;
+    const routes = this.game.routes?.getRoutes() || [];
+    const visibleRoutes = routes.filter((route) => route.visible);
+    const sensedRoutes = routes.filter((route) => route.state === 'sensed');
+    if (visibleRoutes.length === 0 && sensedRoutes.length === 0) {
+      bar.innerHTML = '';
+      bar.style.display = 'none';
+      return;
+    }
+
+    const currentName = this._esc(this.displayName(this.game.state.location));
+    const routeNodes = visibleRoutes.map((route) => {
+      const point = routePoint(route);
+      const style = `--route-x:${point.x}%;--route-y:${point.y}%;`;
+      const label = this._esc(route.label);
+      if (route.clickable) {
+        return `<button class="route-node route-destination route-${route.state}" data-action="explore" data-dir="${this._esc(route.direction)}" style="${style}">${label}</button>`;
+      }
+      return `<span class="route-node route-destination route-revealedLocked" style="${style}" title="${this._esc(route.blockedReason)}"><span>${label}</span><small>${this._esc(route.blockedReason || '此路暂不可通')}</small></span>`;
+    }).join('');
+    const lines = visibleRoutes.map((route) => {
+      const point = routePoint(route);
+      return `<line x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line>`;
+    }).join('');
+    const sensedMarks = sensedRoutes.map((route) => {
+      const point = routePoint(route);
+      return `<line class="route-sensed-line" x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line><circle class="route-sensed-mark" cx="${point.x}" cy="${point.y}" r="2.4"></circle>`;
+    }).join('');
+
+    bar.className = 'exit-bar route-sketch';
+    bar.style.display = 'block';
+    bar.innerHTML = '<div class="route-sketch-title">行迹</div>'
+      + '<div class="route-sketch-canvas">'
+      + `<svg class="route-sketch-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}${sensedMarks}</svg>`
+      + `<span class="route-node route-current">${currentName}</span>${routeNodes}</div>`;
+    return;
     const s = this.game.state;
     const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
     if (!perc || !perc.cardinalExits || perc.cardinalExits.length === 0) {
@@ -359,6 +410,15 @@ export class Renderer {
       return;
     }
     let html = '';
+
+    if (data.routeClues && data.routeClues.length > 0) {
+      html += '<div class="perc-section perc-route-clues"><div class="perc-head">> 感知所得</div>';
+      data.routeClues.forEach((clue) => {
+        html += '<div class="perc-item perc-route-clue"><span>' + this._esc(clue.hint) + '</span>'
+          + '<button class="perc-subbtn" data-perc-action="reveal-route" data-route-id="' + this._esc(clue.id) + '">' + this._esc(clue.revealLabel) + '</button></div>';
+      });
+      html += '</div>';
+    }
     if (s.activeQuests.length > 0) {
       html += '<div style="color:#c49a38;font-size:12px;letter-spacing:2px;margin-bottom:6px;">进行中</div>';
       for (const qId of s.activeQuests) {

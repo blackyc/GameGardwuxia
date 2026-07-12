@@ -39,6 +39,7 @@ import { FactionService } from './faction_service.js';
 import { TeacherService } from './teacher_service.js';
 // 感知服务层（从 Game 拆出，代理 peek/getRoomPerception/openPerception/closePerception）
 import { PerceptionService } from './perception_service.js';
+import { RouteService } from './route_service.js';
 // 日常动作服务层（从 Game 拆出，代理 switchTab/cultivate/train/rest/talk/askAround/practiceMenu）
 import { ActionService } from './action_service.js';
 // 物品服务层（从 Game 拆出，代理 useItem）
@@ -111,6 +112,7 @@ export class Game {
     this.quests = new QuestService(this);
     // 移动服务（代理所有移动相关方法）
     this.movement = new MovementService(this);
+    this.routes = new RouteService(this);
     // NPC 服务（代理所有 NPC 遭遇相关方法）
     this.npc = new NpcService(this);
     // 搜索服务（代理所有搜索相关方法）
@@ -156,6 +158,7 @@ export class Game {
       combat: null,
       npcEncounter: null,
       explored: ['应天府·十字街口'],
+      routeDiscoveries: {},
       activeQuests: [],
       completedQuests: [],
       questStages: {},
@@ -897,6 +900,8 @@ export class Game {
   peek() { return this.perception.peek(); }
 
   getRoomPerception() { return this.perception.getRoomPerception(); }
+
+  revealPerceptionRoute(routeId) { return this.perception.revealRoute(routeId); }
 
   openPerception() { return this.perception.openPerception(); }
 
