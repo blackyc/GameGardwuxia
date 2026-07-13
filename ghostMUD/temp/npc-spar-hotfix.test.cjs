@@ -13,7 +13,7 @@ assert.strictEqual((perception.match(/const dl2 = getData\(\);/g) || []).length,
 assert.ok(perception.includes('canSpar: enc.canSpar !== false'), 'encounter NPCs must expose canSpar by default');
 assert.ok(npcService.includes("if (npcType === 'room')"), 'room NPC talk support missing');
 assert.ok(npcService.includes('const npcName = this._title(npc);'), 'spar must support title/name fallback');
-assert.ok(npcService.includes('g.combat.startCombat(npcName, enemyData)'), 'spar combat must use resolved npcName');
+assert.ok(/g\.combat\.startCombat\(npcName,\s*enemyData,?/.test(npcService), 'spar combat must use resolved npcName');
 
 console.log('  ✓ encounter spar flag and NPC title fallback are wired');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

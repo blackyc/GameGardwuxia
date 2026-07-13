@@ -42,6 +42,7 @@ import { PerceptionService } from './perception_service.js';
 import { RouteService } from './route_service.js';
 // 日常动作服务层（从 Game 拆出，代理 switchTab/cultivate/train/rest/talk/askAround/practiceMenu）
 import { ActionService } from './action_service.js';
+import { TutorialService } from './tutorial_service.js';
 // 物品服务层（从 Game 拆出，代理 useItem）
 import { ItemService } from './item_service.js';
 // 游戏结束/命令处理服务层
@@ -125,6 +126,8 @@ export class Game {
     this.perception = new PerceptionService(this);
     // 日常动作服务（代理日常动作相关方法）
     this.action = new ActionService(this);
+    // 问剑峰黄金三章教程路由（持久状态机）
+    this.tutorial = new TutorialService(this);
     // 物品服务（代理物品使用）
     this.item = new ItemService(this);
     // 游戏结束/命令处理服务
@@ -169,6 +172,10 @@ export class Game {
       guideCompanion: null,
       tutorialSeenRooms: {},
       wenjianfengDinnerDone: false,
+      xiaoyuanFirstLessonCompleted: false,
+      boarCombatResult: null,
+      residualSwordSeen: false,
+      tutorialActionState: null,
       // 帮派/技能系统
       faction: '散修',
       skills: {},
@@ -226,6 +233,7 @@ export class Game {
     this._registerTabs();
     this._registerTimers();
     this._setupPageManager();
+    this.tutorial.resume();
 
     // P1-1 修复：页面离开时立即保存
     window.addEventListener('beforeunload', () => {
@@ -816,11 +824,16 @@ export class Game {
   explore(dir) { return this.movement.explore(dir); }
   dirName(d) { return this.movement.dirName(d); }
   quickTravel(loc) { return this.movement.quickTravel(loc); }
+  tutorialAction(action, payload) { return this.tutorial.handleAction(action, payload); }
 
   // ============ NPC 代理（委托 NpcService）============
   triggerNPCEncounter(active) { const r = this.npc.triggerNPCEncounter(active); this.markDirty(); return r; }
   speakToNpc(npcIndex) { const r = this.npc.speakToNpc(npcIndex, arguments[1]); this.markDirty(); return r; }
   sparNpc(npcIndex, npcType) { const r = this.npc.sparNpc(npcIndex, npcType); this.markDirty(); return r; }
+  toggleNpcGift(npcIndex, npcType) { return this.npc.toggleNpcGift(npcIndex, npcType); }
+  giveGiftToNpc(npcIndex, npcType, itemIndex) { const r = this.npc.giveGiftToNpc(npcIndex, npcType, itemIndex); this.markDirty(); return r; }
+  askNpc(npcIndex, npcType) { const r = this.npc.askNpc(npcIndex, npcType); this.markDirty(); return r; }
+  getGiftableItems() { return this.npc.getGiftableItems(); }
   _presentEncounter(enc) { return this.npc._presentEncounter(enc); }
   npcChoice(index) { return this.npc.npcChoice(index); }
   closeNPC() { return this.npc.closeNPC(); }
@@ -845,12 +858,15 @@ export class Game {
 
   // ============ 战斗代理（委托 CombatFacade）============
   triggerEncounter(loc) { return this.combat.triggerEncounter(loc); }
-  startCombat(name, data) { const r = this.combat.startCombat(name, data); this.markDirty(); return r; }
+  startCombat(name, data) { const r = this.combat.startCombat(name, data, arguments[2]); this.markDirty(); return r; }
   combatAction(action) { return this.combat.combatAction(action); }
+  castCombatSlot(slot) { return this.combat.combatAction('slot:' + slot); }
+  resolveCombatMpGate(choice) { return this.combat.resolveMpGate(choice); }
   showPerforms() { return this.combat.showPerforms(); }
   hidePerforms() { return this.combat.hidePerforms(); }
   usePerform(performId) { return this.combat.usePerform(performId); }
-  endCombat(victory) { const r = this.combat.endCombat(victory); this.markDirty(); return r; }
+  finishCombat(outcome) { const r = this.combat.finishCombat(outcome); this.markDirty(); return r; }
+  endCombat(outcome) { return this.finishCombat(outcome); }
 
   applyReward(rewardStr) { return this.quests.applyReward(rewardStr); }
 
@@ -906,6 +922,8 @@ export class Game {
   openPerception() { return this.perception.openPerception(); }
 
   closePerception() { return this.perception.closePerception(); }
+
+  showMomentFeedback(text, type) { return this.renderer.showMomentFeedback(text, type); }
 
   practiceMenu() { return this.action.practiceMenu(); }
 

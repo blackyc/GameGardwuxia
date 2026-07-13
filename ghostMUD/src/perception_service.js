@@ -16,7 +16,7 @@ import { getData } from './data/data_loader.js';
 import { getEntryAccess } from './entry_condition.js';
 
 // 方位键集合：这些 key 归入「方位通路」（方向栏），其余归入「探索入口」（感知面板）
-const CARDINAL_DIRS = new Set(['北', '南', '东', '西', '上', '下', '出', 'north', 'south', 'east', 'west', 'up', 'down', 'out']);
+const CARDINAL_DIRS = new Set(['北', '南', '东', '西', '上', '下', '出', '回', 'north', 'south', 'east', 'west', 'up', 'down', 'out', 'back']);
 
 export class PerceptionService {
   /** @param {import('./game.js').Game} game */
@@ -67,17 +67,25 @@ export class PerceptionService {
     if (!loc) return { title: s.location, connections: [], npcs: [], searchPoints: [], props: [], extras: ['眼前一片虚无…'] };
 
     // 1. 通路分类：方位通路（方向栏）vs 探索入口（感知面板）
-    const routeByDirection = new Map((g.routes?.getRoutes() || []).map((route) => [route.direction, route]));
-    const allConns = loc.connections
-      ? Object.entries(loc.connections)
-          .filter(([, name]) => g.LOCATIONS[name])
-          .map(([dir, name]) => {
-            const route = routeByDirection.get(dir);
-            const access = route ? { visible: route.visible, allowed: route.clickable, message: route.blockedReason } : getEntryAccess(g, name);
-            return { dir, dirCn: g.dirName(dir), name, explored: s.explored.includes(name), ...access };
-          })
+    const normalizedRoutes = g.routes?.getRoutes() || [];
+    const allConns = normalizedRoutes.length > 0
+      ? normalizedRoutes
+          .map((route) => ({
+            dir: route.direction,
+            dirCn: g.dirName(route.direction),
+            name: route.target,
+            explored: s.explored.includes(route.target),
+            visible: route.visible,
+            allowed: route.clickable,
+            message: route.blockedReason
+          }))
           .filter(connection => connection.visible)
-      : [];
+      : (loc.connections
+          ? Object.entries(loc.connections)
+              .filter(([, name]) => g.LOCATIONS[name])
+              .map(([dir, name]) => ({ dir, dirCn: g.dirName(dir), name, explored: s.explored.includes(name), ...getEntryAccess(g, name) }))
+              .filter(connection => connection.visible)
+          : []);
     const cardinalExits = allConns.filter(c => CARDINAL_DIRS.has(c.dir));
     const connections = allConns.filter(c => !CARDINAL_DIRS.has(c.dir));
 
@@ -187,20 +195,30 @@ export class PerceptionService {
       g.addLog('当前无法感知！', 'combat');
       return;
     }
+    const panel = document.getElementById('perception-panel');
+    if (panel?.classList.contains('open')) {
+      this.closePerception();
+      return { open: false };
+    }
     const sensed = g.routes?.senseCurrentRoom() || [];
     if (sensed.length > 0) {
       sensed.forEach((route) => g.addLog(route.discovery.hint, 'event'));
+      g.showMomentFeedback?.('察见异处', 'discovery');
       g.renderer.updateLocation();
     }
     const data = this.getRoomPerception();
     g.renderer.renderPerception(data);
+    return { open: true };
   }
 
   revealRoute(routeId) {
     const g = this.game;
     const result = g.routes?.revealRoute(routeId) || { ok: false, message: '此处没有可循的痕迹。' };
     g.addLog(result.message, result.ok ? 'special' : 'system');
-    if (result.ok) g.renderer.updateLocation();
+    if (result.ok) {
+      g.showMomentFeedback?.('发现 · ' + (result.route?.label || '隐路'), 'discovery');
+      g.renderer.updateLocation();
+    }
     g.renderer.renderPerception(this.getRoomPerception());
     return result;
   }
@@ -209,6 +227,8 @@ export class PerceptionService {
   closePerception() {
     const panel = document.getElementById('perception-panel');
     if (panel) panel.classList.remove('open');
+    const trigger = document.querySelector('[data-action="perceive"]');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
   }
 }
 

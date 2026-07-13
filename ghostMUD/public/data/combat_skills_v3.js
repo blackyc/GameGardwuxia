@@ -12,6 +12,32 @@
 
 var COMBAT_SKILLS_V3 = [
 
+  // 未习得门派战诀时的徒手动作。仅用于战斗兜底，不计入武学学习或门派传承。
+  {
+    id: 9001, name: '左拳', type: 'basic', path: 'wu', faction: null,
+    desc: '侧身递出一拳，先稳住脚下。', slot: 'A', cd: 1.5, mpCost: 0,
+    skillNum: 0.75, skillNumLvAdd: 0, range: 1, dmgType: 'physical',
+    effects: [], tags: ['unarmed', 'basic'], nextLvSk: 0
+  },
+  {
+    id: 9002, name: '右拳', type: 'basic', path: 'wu', faction: null,
+    desc: '借腰背转劲，右拳跟进。', slot: 'B', cd: 2.0, mpCost: 0,
+    skillNum: 0.8, skillNumLvAdd: 0, range: 1, dmgType: 'physical',
+    effects: [], tags: ['unarmed', 'basic'], nextLvSk: 0
+  },
+  {
+    id: 9003, name: '左踹', type: 'basic', path: 'wu', faction: null,
+    desc: '左腿试探踢出，逼对手收势。', slot: 'C', cd: 2.5, mpCost: 0,
+    skillNum: 0.85, skillNumLvAdd: 0, range: 1, dmgType: 'physical',
+    effects: [], tags: ['unarmed', 'basic'], nextLvSk: 0
+  },
+  {
+    id: 9004, name: '右蹬', type: 'basic', path: 'wu', faction: null,
+    desc: '沉肩蓄力，右脚直蹬。', slot: 'D', cd: 3.0, mpCost: 0,
+    skillNum: 0.9, skillNumLvAdd: 0, range: 1, dmgType: 'physical',
+    effects: [], tags: ['unarmed', 'basic'], nextLvSk: 0
+  },
+
   // ════════════════════════════════════════════════════════════
   //  武修宗门 1/6：问剑峰（剑法·快剑·裂伤+破罡）
   // ════════════════════════════════════════════════════════════
@@ -78,6 +104,47 @@ var COMBAT_SKILLS_V3 = [
     pogangAdd: 0, mihunAdd: 0, nixueAdd: 0,
     buffId: 3001, buffProb: 100, buffStack: 1, buffDuration: 10,
     effects: [{ type: 'atk_up', value: 5, duration: 10 }], tags: ['blade', '增益'],
+    nextLvSk: 0
+  },
+
+  // 第二章展示战：残剑师姐三式（独立展示技能，无升级链）
+  {
+    id: 1091, name: '起式·残月', type: 'light', faction: '问剑峰', path: 'wu', demoOnly: true,
+    desc: '剑未出鞘。鞘尖划出一道弧光。',
+    slot: 'A', cd: 0.1, mpCost: 0,
+    skillNum: 32, skillNumLvAdd: 0, range: 1,
+    duNum: 0, bleedNum: 0, burnNum: 0, iceNum: 0,
+    pogangNum: 0, mihunNum: 0, nixueNum: 0,
+    duAdd: 0, bleedAdd: 0, burnAdd: 0, iceAdd: 0,
+    pogangAdd: 0, mihunAdd: 0, nixueAdd: 0,
+    buffId: 0, buffProb: 0, buffStack: 0, buffDuration: 0,
+    effects: [], tags: ['blade', '展示战'],
+    nextLvSk: 0
+  },
+  {
+    id: 1092, name: '承式·断岳', type: 'light', faction: '问剑峰', path: 'wu', demoOnly: true,
+    desc: '鞘身横转。光拉成一条线。',
+    slot: 'B', cd: 0.1, mpCost: 0,
+    skillNum: 33, skillNumLvAdd: 0, range: 1,
+    duNum: 0, bleedNum: 0, burnNum: 0, iceNum: 0,
+    pogangNum: 0, mihunNum: 0, nixueNum: 0,
+    duAdd: 0, bleedAdd: 0, burnAdd: 0, iceAdd: 0,
+    pogangAdd: 0, mihunAdd: 0, nixueAdd: 0,
+    buffId: 0, buffProb: 0, buffStack: 0, buffDuration: 0,
+    effects: [], tags: ['blade', '展示战'],
+    nextLvSk: 0
+  },
+  {
+    id: 1094, name: '合式·无声', type: 'heavy', faction: '问剑峰', path: 'wu', demoOnly: true,
+    desc: '前两招是流水，这一招是止水。',
+    slot: 'D', cd: 0.1, mpCost: 0,
+    skillNum: 35, skillNumLvAdd: 0, range: 1,
+    duNum: 0, bleedNum: 0, burnNum: 0, iceNum: 0,
+    pogangNum: 0, mihunNum: 0, nixueNum: 0,
+    duAdd: 0, bleedAdd: 0, burnAdd: 0, iceAdd: 0,
+    pogangAdd: 0, mihunAdd: 0, nixueAdd: 0,
+    buffId: 0, buffProb: 0, buffStack: 0, buffDuration: 0,
+    effects: [], tags: ['blade', '展示战'],
     nextLvSk: 0
   },
 

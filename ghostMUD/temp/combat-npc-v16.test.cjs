@@ -70,11 +70,11 @@ runTest('npc_service.sparNpc 方法存在', () => {
 
 runTest('_buildSparEnemy 构造弱敌数据', () => {
   if (!NPC_SERVICE_SRC.includes('_buildSparEnemy')) throw new Error('_buildSparEnemy 未找到');
-  const idx = NPC_SERVICE_SRC.indexOf('_buildSparEnemy');
-  const snippet = NPC_SERVICE_SRC.substring(idx, idx + 500);
+  const idx = NPC_SERVICE_SRC.indexOf('_buildSparEnemy(npc) {');
+  const snippet = NPC_SERVICE_SRC.substring(idx, idx + 1200);
   // 应该构造一个 HP 较低的敌人
   if (!snippet.includes('hp')) throw new Error('_buildSparEnemy 未设置 hp');
-  if (!snippet.includes('60') && !snippet.includes('50') && !snippet.includes('40')) {
+  if (!snippet.includes('96') && !snippet.includes('72') && !snippet.includes('60') && !snippet.includes('50') && !snippet.includes('40')) {
     // 至少应该有一个较低的 HP 值
     if (!snippet.includes('maxHp')) throw new Error('_buildSparEnemy 未设置 maxHp');
   }
@@ -149,16 +149,27 @@ runTest('combat_facade.startCombat 中使用 BattleEngine', () => {
   if (!FACADE_SRC.includes('battle_async')) throw new Error('未导入 battle_async');
 });
 
-runTest('CombatFacade 有 V3 技能数据但无战诀时不静默 fallback', () => {
+runTest('CombatFacade 无已学战诀时使用徒手图，不自动授予宗门战诀', () => {
   const idx = FACADE_SRC.indexOf('startCombat(name, data)');
-  const snippet = FACADE_SRC.substring(idx, idx + 1800);
-  if (!snippet.includes('else if (dl.COMBAT_SKILLS_V3)')) {
-    throw new Error('缺少 V3 数据存在但无战诀时的显式失败分支');
+  const snippet = FACADE_SRC.substring(idx, idx + 3200);
+  if (!snippet.includes('resolvePlayerBattleChart') || !FACADE_SRC.includes('BASIC_UNARMED_CHART')) {
+    throw new Error('缺少未学战诀时的徒手图解析');
   }
-  const fallbackIdx = snippet.indexOf('_legacyStartCombat');
-  const explicitFailIdx = snippet.indexOf('else if (dl.COMBAT_SKILLS_V3)');
-  if (fallbackIdx !== -1 && explicitFailIdx !== -1 && fallbackIdx < explicitFailIdx) {
-    throw new Error('旧引擎 fallback 仍可能先于显式失败分支触发');
+  if (snippet.includes('const factionSkills =')) {
+    throw new Error('正式战斗仍会从宗门技能库自动授艺');
+  }
+});
+
+runTest('值星弟子切磋从 CD 读条开始，且使用低阶徒手图', () => {
+  const idx = NPC_SERVICE_SRC.indexOf('_buildSparEnemy(npc) {');
+  const snippet = NPC_SERVICE_SRC.substring(idx, idx + 1600);
+  if (!snippet.includes('BASIC_UNARMED_CHART') || !snippet.includes('profile.hp || 96')) {
+    throw new Error('值星弟子未使用首场切磋的基础配置');
+  }
+  const sparIdx = NPC_SERVICE_SRC.indexOf('g.combat.startCombat(npcName, enemyData');
+  const sparSnippet = NPC_SERVICE_SRC.substring(sparIdx, sparIdx + 500);
+  if (!sparSnippet.includes('startReady: false')) {
+    throw new Error('切磋不应跳过开局 CD');
   }
 });
 

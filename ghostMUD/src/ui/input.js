@@ -49,6 +49,7 @@ export class InputManager {
           this.game.rest();
           break;
         case 'searchArea':
+          this.game.closePerception();
           this.game.searchArea();
           break;
         case 'talk':
@@ -58,11 +59,13 @@ export class InputManager {
           const idx = parseInt(btn.dataset.npcIdx, 10);
           const type = btn.dataset.npcType || 'encounter';
           if (!Number.isNaN(idx)) {
-            this.game.focusedNpcIndex = idx;
-            this.game.focusedNpcType = type;
+            const isFocused = this.game.focusedNpcIndex === idx && this.game.focusedNpcType === type;
+            this.game.focusedNpcIndex = isFocused ? null : idx;
+            this.game.focusedNpcType = isFocused ? null : type;
+            this.game.focusedNpcGiftKey = null;
             const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
             const npc = perc && perc.npcs ? perc.npcs.find(n => Number(n.index) === idx && ((n.type || 'encounter') === type)) : null;
-            if (npc) this.game.addLog('你看向' + npc.name + '。', 'info');
+            if (npc && !isFocused) this.game.addLog('你看向' + npc.name + '。', 'info');
             this.game.renderer.updateUI('location');
           }
           break;
@@ -70,6 +73,7 @@ export class InputManager {
         case 'closeNpcFocus':
           this.game.focusedNpcIndex = null;
           this.game.focusedNpcType = null;
+          this.game.focusedNpcGiftKey = null;
           this.game.renderer.updateUI('location');
           break;
         case 'talkNpc': {
@@ -90,6 +94,25 @@ export class InputManager {
           const idx = parseInt(btn.dataset.npcIdx, 10);
           const type = btn.dataset.npcType || 'encounter';
           if (!Number.isNaN(idx)) this.game.sparNpc(idx, type);
+          break;
+        }
+        case 'npcGift': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          if (!Number.isNaN(idx)) this.game.toggleNpcGift(idx, type);
+          break;
+        }
+        case 'confirmNpcGift': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const itemIndex = parseInt(btn.dataset.itemIndex, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          if (!Number.isNaN(idx) && !Number.isNaN(itemIndex)) this.game.giveGiftToNpc(idx, type, itemIndex);
+          break;
+        }
+        case 'npcAsk': {
+          const idx = parseInt(btn.dataset.npcIdx, 10);
+          const type = btn.dataset.npcType || 'encounter';
+          if (!Number.isNaN(idx)) this.game.askNpc(idx, type);
           break;
         }
         case 'npcDisabled':
@@ -124,6 +147,18 @@ export class InputManager {
           break;
         case 'combat':
           this.game.combatAction(btn.dataset.combat);
+          break;
+        case 'tutorial':
+          this.game.tutorialAction(btn.dataset.tutorialAction, {
+            slot: btn.dataset.tutorialSlot,
+            side: btn.dataset.tutorialSide,
+          });
+          break;
+        case 'combatSlot':
+          this.game.castCombatSlot(btn.dataset.slot);
+          break;
+        case 'mpGate':
+          this.game.resolveCombatMpGate(btn.dataset.gate);
           break;
       }
     });
@@ -216,14 +251,8 @@ export class InputManager {
     const panel = document.getElementById('perception-panel');
     if (!panel) return;
     panel.addEventListener('click', (e) => {
-      const target = e.target.closest('[data-perc-action], .perc-close, .perc-path, .perc-search, .perc-subbtn, .perc-npc');
+      const target = e.target.closest('[data-perc-action], .perc-path');
       if (!target) return;
-
-      // 收起按钮
-      if (target.classList.contains('perc-close')) {
-        this.game.closePerception();
-        return;
-      }
 
       const revealRoute = target.closest('[data-perc-action="reveal-route"]');
       if (revealRoute) {
@@ -243,41 +272,6 @@ export class InputManager {
         return;
       }
 
-      // 搜索点
-      if (target.closest('.perc-search')) {
-        this.game.closePerception();
-        setTimeout(() => this.game.searchArea(), 200);
-        return;
-      }
-
-      // 可打听（房间级流言，独立一级）
-      if (target.closest('.perc-rumor') || target.closest('[data-perc-action="rumor"]')) {
-        this.game.closePerception();
-        setTimeout(() => this.game.askAround(), 200);
-        return;
-      }
-
-      // NPC 子选项（交谈→定向遭遇 / 交易→待开放 / 拜师→askTeacher）
-      if (target.classList.contains('perc-subbtn')) {
-        const idx = parseInt(target.dataset.npcIdx, 10);
-        const type = target.dataset.npcType || 'encounter';
-        const action = target.dataset.npcAction;
-        if (isNaN(idx)) return;
-        if (action === 'talk') {
-          this.game.closePerception();
-          // 定向触发该 NPC 的遭遇，不再从房间池随机抽取
-          setTimeout(() => this.game.speakToNpc(idx, type), 200);
-        } else if (action === 'trade') {
-          this.game.addLog('💬 「交易」功能将在后续版本开放。', 'system');
-        } else if (action === 'askTeacher') {
-          this.game.closePerception();
-          setTimeout(() => this.game.askTeacher(), 200);
-        } else if (action === 'spar') {
-          this.game.closePerception();
-          setTimeout(() => this.game.sparNpc(idx, type), 200);
-        }
-        return;
-      }
     });
   }
 

@@ -289,7 +289,18 @@ _ID_MAP['yt_suburb_s'] = '应天府·南郊';
       var t = r.connections[d];
       if (!t || t === rName || !LOCATIONS[t]) continue;
       var opp = OPPOSITE[d];
-      // 优先用反向方向；若已被占用则用 '回' 作为后备
+      var targetConnections = LOCATIONS[t].connections || (LOCATIONS[t].connections = {});
+      var targetDirs = Object.keys(targetConnections);
+      var alreadyReturns = false;
+      for (var k = 0; k < targetDirs.length; k++) {
+        if (targetConnections[targetDirs[k]] === rName) {
+          alreadyReturns = true;
+          break;
+        }
+      }
+      // 已有任意方向返回来源时，不再额外制造一个同目标的“回”连接。
+      if (alreadyReturns) continue;
+      // 优先用反向方向；只有确实缺少返回边且反向位被占用时才用“回”保连通。
       if (opp && !LOCATIONS[t].connections[opp]) {
         LOCATIONS[t].connections[opp] = rName;
       } else if (!LOCATIONS[t].connections['回']) {
@@ -1540,6 +1551,51 @@ var getDesc = window.getDesc = function(obj) {
 //     本段仅作为标记——实际注入代码在 npc_inject_patch.js
 // ============================================================
 // 注：请在 integration_v2.js 之后加载 npc_inject_patch.js}
+
+// ============================================================
+// 12. 运行态拓扑归一：一个房间只保留一条通往同一目标的边
+//     优先真实方位，其次楼层/内外层级，再次命名入口，最后“回”。
+// ============================================================
+(function() {
+  var SPATIAL_RANK = {
+    '北': 100, '南': 100, '东': 100, '西': 100,
+    '东北': 100, '西北': 100, '东南': 100, '西南': 100,
+    'north': 100, 'south': 100, 'east': 100, 'west': 100,
+    'northeast': 100, 'northwest': 100, 'southeast': 100, 'southwest': 100,
+    '上': 85, '下': 85, '入': 85, '内': 85, '深': 85, '外': 82, '出': 82,
+    'up': 85, 'down': 85, 'in': 85, 'out': 82,
+    '前': 75, '后': 75, '回岸': 70,
+    '回': 0, 'back': 0
+  };
+
+  function rankDirection(direction, target) {
+    var targetLabel = String(target || '').split('\u00b7').pop();
+    if (direction === targetLabel) return 110;
+    return Object.prototype.hasOwnProperty.call(SPATIAL_RANK, direction) ? SPATIAL_RANK[direction] : 50;
+  }
+
+  for (var roomId in LOCATIONS) {
+    var room = LOCATIONS[roomId];
+    if (!room || !room.connections) continue;
+    var chosenByTarget = {};
+    var directions = Object.keys(room.connections);
+    for (var i = 0; i < directions.length; i++) {
+      var direction = directions[i];
+      var target = room.connections[direction];
+      var chosen = chosenByTarget[target];
+      if (!chosen || rankDirection(direction, target) > rankDirection(chosen, target)) {
+        chosenByTarget[target] = direction;
+      }
+    }
+    var normalized = {};
+    for (var j = 0; j < directions.length; j++) {
+      var originalDirection = directions[j];
+      var originalTarget = room.connections[originalDirection];
+      if (chosenByTarget[originalTarget] === originalDirection) normalized[originalDirection] = originalTarget;
+    }
+    room.connections = normalized;
+  }
+})();
 
 // === REVERSE CONNECTION MARKING (auto-generated) ===
 // 标记双向连接中的反向通道，供 game.js 做条件封锁

@@ -25,6 +25,7 @@ const MANIFEST = [
   { file: 'rebuild_rooms_wenjianfeng.js', vars: ['WENJIANFENG_ROOMS'] },
   { file: 'wenjianfeng_npc_dialogues.js', vars: ['WENJIANFENG_NPC_DIALOGUES'] },
   { file: 'wenjianfeng_tutorial_ch1.js', vars: ['WENJIANFENG_TUTORIAL_CH1'] },
+  { file: 'wenjianfeng_tutorial_ch2.js', vars: ['WENJIANFENG_TUTORIAL_CH2'] },
   { file: 'integration_v2.js', vars: ['LOCATIONS','MAP_POS','MAP_CONN','ROOM_SEARCH','NPC_ENCOUNTERS','FACTIONS','ROGUE_SKILLS','QUESTS','getDesc'] },
   { file: 'rebuild_meridians.js', vars: ['MERIDIANS'] },
   { file: 'rebuild_seals.js', vars: ['SEALS','SEAL_CATEGORIES'] },
@@ -281,6 +282,21 @@ test('所有 connections 目标存在于 LOCATIONS（零断裂）', () => {
     }
   }
   assert.strictEqual(broken.length, 0, `发现 ${broken.length} 个断裂连接:\n${broken.slice(0, 20).join('\n')}`);
+});
+
+test('运行态房间连接不会用多个方向指向同一目标', () => {
+  const duplicates = [];
+  for (const [id, room] of Object.entries(REG.LOCATIONS)) {
+    const byTarget = new Map();
+    for (const [dir, target] of Object.entries(room.connections || {})) {
+      if (!byTarget.has(target)) byTarget.set(target, []);
+      byTarget.get(target).push(dir);
+    }
+    for (const [target, dirs] of byTarget.entries()) {
+      if (dirs.length > 1) duplicates.push(`${id} -> ${target} (${dirs.join('/')})`);
+    }
+  }
+  assert.strictEqual(duplicates.length, 0, `发现 ${duplicates.length} 组同目标重复连接:\n${duplicates.slice(0, 20).join('\n')}`);
 });
 
 // ── H3 修复：重复 connections 键检测 ──────────────

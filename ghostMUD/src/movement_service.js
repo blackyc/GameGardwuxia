@@ -56,8 +56,8 @@ export class MovementService {
       return;
     }
 
-    // 新手引导移动拦截：巡礼阶段由教程脚本控制移动
-    if (s.tutorialPhase) {
+    // 第一章保留数据脚本巡礼；第二章统一交给 TutorialService 裁决。
+    if (typeof s.tutorialPhase === 'string' && s.tutorialPhase.startsWith('ch1_')) {
       const dl = getData();
       if (dl.WENJIANFENG_TUTORIAL_CH1) {
         const locationBeforeTutorial = s.location;
@@ -67,9 +67,18 @@ export class MovementService {
         if (s.location !== locationBeforeTutorial) return;
       }
     }
+    if (typeof s.tutorialPhase === 'string' && s.tutorialPhase.startsWith('ch2_')) {
+      if (g.tutorial?.beforeMove(target, connectionDir) === false) return;
+    }
+
+    const tutorialActive = g.tutorial?.isChapter2Active?.() === true || s.tutorialPhase === 'ch1_tour';
 
     if (access.successMessage) g.addLog(access.successMessage, 'special');
     s.location = target;
+    g.focusedNpcIndex = null;
+    g.focusedNpcType = null;
+    g.focusedNpcGiftKey = null;
+    g.closePerception();
     if (!s.explored.includes(target)) s.explored.push(target);
     const nl = g.LOCATIONS[target];
     // 更新场景配色
@@ -80,23 +89,25 @@ export class MovementService {
     g.addLog('🚶 向' + this.dirName(dir) + '方行去…', 'info');
     g.addLog('📍 抵达 <b>' + target + '</b> —— ' + g.getRoomDesc(target), 'info');
 
+    g.tutorial?.afterMove?.(target, s.location);
+
     // Room events
-    if (nl.events && nl.events.length > 0 && Math.random() < 0.5) {
+    if (!tutorialActive && nl.events && nl.events.length > 0 && Math.random() < 0.5) {
       g.addLog(nl.events[Math.floor(Math.random() * nl.events.length)], 'event');
     }
 
     // Encounter system
-    if (nl.danger <= 2) {
+    if (!tutorialActive && nl.danger <= 2) {
       if (Math.random() < 0.35) g.triggerNPCEncounter(false);
-    } else if (nl.danger >= 5) {
+    } else if (!tutorialActive && nl.danger >= 5) {
       if (Math.random() < nl.danger * 0.15) g.triggerEncounter(nl);
-    } else {
+    } else if (!tutorialActive) {
       if (Math.random() < 0.2) {
         Math.random() < 0.5 ? g.triggerNPCEncounter(false) : g.triggerEncounter(nl);
       }
     }
 
-    if (nl.boss && Math.random() < 0.3) g.addLog('⚠ 此地弥漫着危险的气息——强敌就在附近…', 'combat');
+    if (!tutorialActive && nl.boss && Math.random() < 0.3) g.addLog('⚠ 此地弥漫着危险的气息——强敌就在附近…', 'combat');
 
     g.renderer.updateLocationIcon();
     g.renderer.renderMap();
@@ -122,6 +133,10 @@ export class MovementService {
     const g = this.game;
     const s = g.state;
     if (s.combat || s.npcEncounter) return;
+    if (g.tutorial?.isChapter2Active?.()) {
+      g.addLog('教程进行中，需亲自走完眼前这段路。', 'system');
+      return;
+    }
     if (!s.explored.includes(loc)) return;
     const access = getEntryAccess(g, loc);
     if (!access.allowed) {
@@ -129,6 +144,10 @@ export class MovementService {
       return;
     }
     s.location = loc;
+    g.focusedNpcIndex = null;
+    g.focusedNpcType = null;
+    g.focusedNpcGiftKey = null;
+    g.closePerception();
     g.addLog('🗺 快速前往 <b>' + loc + '</b>', 'info');
     g.renderer.renderMap();
     g.renderer.updateUI(['location', 'status']);

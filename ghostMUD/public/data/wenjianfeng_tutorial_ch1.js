@@ -324,9 +324,12 @@ var WENJIANFENG_TUTORIAL_CH1 = {
       { speaker: 'narrator', text: `全体哄笑。周碛嘟囔了一句，继续吃饭。` },
     ],
     afterDinner: function(game) {
-      game.state.tutorialPhase = 'ch1_done';
       game.addLog(`💡 第一章·上山 完。明日清晨，剑坪晨练。`, 'system');
-      game.addLog(`💡 你现在可以自由探索问剑峰，或者等待第二章更新。`, 'system');
+      if (game.tutorial && typeof game.tutorial.chapterCompleted === 'function') {
+        game.tutorial.chapterCompleted(1);
+      } else {
+        game.state.tutorialPhase = 'ch1_done';
+      }
       game.renderer.updateUI();
     },
   },
@@ -374,16 +377,17 @@ var WENJIANFENG_TUTORIAL_CH1 = {
   // 参数: game, target(目标房间名)
   // 返回: true=允许移动, false=阻止移动
   onMove: function(game, target) {
-    var step = game.state.tutorialStep || 0;
+    var step = Number(game.state.tutorialStep) || 0;
     var phase = game.state.tutorialPhase;
+    var normalizedTarget = String(target || '').trim();
 
     if (phase === 'ch1_tour') {
       var nextRoom = this.tourRoute[step + 1];
-      if (target === nextRoom) {
+      if (normalizedTarget === String(nextRoom || '').trim()) {
         this.enterScene(game, step + 1);
         return true;
       }
-      var routeIndex = this.tourRoute.indexOf(target);
+      var routeIndex = this.tourRoute.indexOf(normalizedTarget);
       if (routeIndex >= 0 && routeIndex < step) {
         game.addLog('苏小棠停在前头等你，示意你看完就跟上。', 'info');
         return true;

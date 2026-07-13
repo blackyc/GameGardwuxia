@@ -1,6 +1,7 @@
 import { noteNpcSeen, applyNpcChoiceMemory } from './npc_memory.js';
 
 import { getData } from './data/data_loader.js';
+import { BASIC_UNARMED_CHART } from './combat_contract.js';
 
 export class NpcService {
   /** @param {import('./game.js').Game} game */
@@ -33,29 +34,95 @@ export class NpcService {
 
   speakToNpc(npcIndex, npcType = 'encounter') {
     const g = this.game;
-    const room = g.state.location;
-    let pool = g.NPC_ENCOUNTERS[room];
-    if (npcType === 'guide') {
-      const dl = getData();
-      const guide = dl.WENJIANFENG_TUTORIAL_CH1 && typeof dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter === 'function'
-        ? dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter(g, room)
-        : null;
-      if (!guide) {
-        g.addLog('此人已经不在此处了。', 'system');
-        return;
-      }
-      this._presentEncounter(guide);
-      return;
-    }
-    if (npcType === 'recruiter') {
-      const dl = getData();
-      pool = dl.FACTION_RECRUITER_ENCOUNTERS[room] || null;
-    }
-    if (!pool || npcIndex >= pool.length) {
+    const npc = this._resolveNpc(npcIndex, npcType);
+    if (!npc) {
       g.addLog('此人已经不在此处了。', 'system');
       return;
     }
-    this._presentEncounter(pool[npcIndex]);
+    this._presentEncounter(npc);
+  }
+
+  _resolveNpc(npcIndex, npcType = 'encounter') {
+    const g = this.game;
+    const room = g.state.location;
+    const dl = getData();
+    if (npcType === 'guide') {
+      return dl.WENJIANFENG_TUTORIAL_CH1 && typeof dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter === 'function'
+        ? dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter(g, room)
+        : null;
+    }
+    if (npcType === 'recruiter') return (dl.FACTION_RECRUITER_ENCOUNTERS[room] || [])[npcIndex] || null;
+    if (npcType === 'room') return (dl.LOCATIONS[room]?.npcs || [])[npcIndex] || null;
+    return (g.NPC_ENCOUNTERS[room] || [])[npcIndex] || null;
+  }
+
+  getGiftableItems() {
+    const blockedTypes = new Set(['quest', 'equipment', 'equip', 'weapon', 'technique', 'manual', 'stone']);
+    return (this.game.state.inventory || [])
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }) => item && item.giftable !== false && (item.giftable === true || !blockedTypes.has(item.type)));
+  }
+
+  toggleNpcGift(npcIndex, npcType = 'encounter') {
+    const g = this.game;
+    const npc = this._resolveNpc(npcIndex, npcType);
+    if (!npc) {
+      g.addLog('此人已经不在此处了。', 'system');
+      return;
+    }
+    const gifts = this.getGiftableItems();
+    if (gifts.length === 0) {
+      g.focusedNpcGiftKey = null;
+      g.addLog('你的行囊里没有适合相赠之物。', 'system');
+      g.showMomentFeedback?.('无物可赠', 'muted');
+      return;
+    }
+    const key = npcType + ':' + npcIndex;
+    g.focusedNpcGiftKey = g.focusedNpcGiftKey === key ? null : key;
+    g.renderer.updateUI('location');
+  }
+
+  giveGiftToNpc(npcIndex, npcType = 'encounter', itemIndex) {
+    const g = this.game;
+    const npc = this._resolveNpc(npcIndex, npcType);
+    const item = g.state.inventory?.[itemIndex];
+    const allowed = this.getGiftableItems().some(entry => entry.index === itemIndex);
+    if (!npc || !item || !allowed) {
+      g.focusedNpcGiftKey = null;
+      g.addLog('这份礼没有送成。', 'system');
+      g.renderer.updateUI('location');
+      return;
+    }
+    g.state.inventory.splice(itemIndex, 1);
+    const name = this._title(npc);
+    const result = applyNpcChoiceMemory(g.state, npc, {
+      choice: '送礼：' + (item.name || '无名物'),
+      relationship: { affinityDelta: 1, note: '收下了你赠送的' + (item.name || '礼物') }
+    }, { room: g.state.location, gameTime: g.state.gameTime });
+    g.focusedNpcGiftKey = null;
+    g.addLog('你将<b>' + this._esc(item.name || '无名物') + '</b>赠给' + this._esc(name) + '。对方收下了。', 'npc');
+    g.showMomentFeedback?.(name + ' · ' + (result.label || '眼熟'), 'relation');
+    g.renderer.updateUI(['location', 'bag']);
+  }
+
+  askNpc(npcIndex, npcType = 'encounter') {
+    const g = this.game;
+    const npc = this._resolveNpc(npcIndex, npcType);
+    if (!npc) {
+      g.addLog('此人已经不在此处了。', 'system');
+      return;
+    }
+    const authored = npc.askLines || npc.rumors || npc.rumor || npc.gossip || npc.hint;
+    const lines = Array.isArray(authored) ? authored : (authored ? [authored] : []);
+    let answer = lines.length > 0 ? lines[Math.floor(Math.random() * lines.length)] : '';
+    if (!answer) {
+      const route = (g.routes?.getRoutes() || []).find(item => item.clickable);
+      answer = route
+        ? '“若要去' + route.label + '，沿' + g.dirName(route.direction) + '边的路走。”'
+        : '“这里的事，眼睛看见的往往比耳朵听来的可靠。”';
+    }
+    g.addLog('<b>' + this._esc(this._title(npc)) + '</b>：' + this._esc(answer), 'npc');
+    g.showMomentFeedback?.('打听所得', 'info');
   }
 
   _presentEncounter(enc) {
@@ -95,7 +162,11 @@ export class NpcService {
     const result = results && results[index];
     if (!result) return;
     const s = g.state;
-    applyNpcChoiceMemory(s, enc, result, { room: s.location, gameTime: s.gameTime });
+    const previousRelation = g.describeNpcRelation ? g.describeNpcRelation(enc) : '';
+    const memoryResult = applyNpcChoiceMemory(s, enc, result, { room: s.location, gameTime: s.gameTime });
+    if (memoryResult.label && memoryResult.label !== previousRelation) {
+      g.showMomentFeedback?.(this._title(enc) + ' · ' + memoryResult.label, 'relation');
+    }
     const title = this._title(enc);
 
     this._appendLine('你', result.choice || '沉默片刻。', 'player');
@@ -205,7 +276,7 @@ export class NpcService {
     const choicesDiv = document.getElementById('npc-choices');
     if (!choicesDiv) return;
     if (hasNext) {
-      choicesDiv.innerHTML = '<button type="button" class="modal-choice dialogue-next" data-dialogue-action="next">下一句</button>';
+      choicesDiv.innerHTML = '<button type="button" class="modal-choice dialogue-next" data-dialogue-action="next">... ...</button>';
       return;
     }
     if (!results || results.length === 0) {
@@ -356,6 +427,11 @@ export class NpcService {
       return;
     }
 
+    if (npc.sparProfile?.enabled === false) {
+      g.addLog(npc.sparProfile.reason || '对方此刻无意与你切磋。', 'system');
+      return;
+    }
+
     // 构造切磋用敌人数据
     const npcName = this._title(npc);
     const enemyData = this._buildSparEnemy(npc);
@@ -364,7 +440,19 @@ export class NpcService {
     g.addLog(`${npcName}拔剑而立：「好说。」`, 'event');
 
     // 启动战斗
-    g.combat.startCombat(npcName, enemyData);
+    g.combat.startCombat(npcName, enemyData, {
+      mode: 'spar',
+      encounterId: npc.id || npcName,
+      grantRewards: false,
+      startReady: false,
+      onComplete: (result) => {
+        if (result.outcome === 'victory') {
+          g.addLog(`${npcName}收剑抱拳：「承让。」`, 'event');
+        } else if (result.outcome === 'defeat') {
+          g.addLog(`${npcName}在最后一式及时收力：「根基还要再稳些。」`, 'event');
+        }
+      },
+    });
   }
 
   /**
@@ -373,32 +461,34 @@ export class NpcService {
   _buildSparEnemy(npc) {
     const npcName = this._title(npc);
     const npcId = npc?.id || '';
+    const profile = npc?.sparProfile || {};
     // 值星弟子 — 新手级弱敌
     const isZhixing = npcId.includes('zhixing') || npcName.includes('值星');
 
     if (isZhixing) {
       return {
         name: npcName,
-        hp: 60,
-        atk: 6,
-        def: 2,
-        spd: 5,
+        hp: profile.hp || 96,
+        atk: profile.atk || 6,
+        def: profile.def || 2,
+        spd: profile.spd || 5,
         exp: 8,
         gold: 0,
-        // 值星弟子的简单行功图（用问剑峰的技能）
-        chart: { A: 1001, B: 1002, C: 1003, D: 1004, E: 1005 },
+        // 值星弟子也从完整 CD 开始读条，避免首场切磋变成演示秒杀。
+        chart: profile.chart || { ...BASIC_UNARMED_CHART },
       };
     }
 
     // 默认弱敌
     return {
       name: npcName,
-      hp: 50,
-      atk: 5,
-      def: 1,
-      spd: 5,
+      hp: profile.hp || 72,
+      atk: profile.atk || 5,
+      def: profile.def || 1,
+      spd: profile.spd || 5,
       exp: 5,
       gold: 0,
+      chart: profile.chart || { ...BASIC_UNARMED_CHART },
     };
   }
 }

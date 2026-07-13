@@ -77,6 +77,7 @@ export function collectData() {
     LING_SKILL_DATA: data.LING_SKILL_DATA || [],
     // 问剑峰引导
     WENJIANFENG_TUTORIAL_CH1: data.WENJIANFENG_TUTORIAL_CH1 || null,
+    WENJIANFENG_TUTORIAL_CH2: data.WENJIANFENG_TUTORIAL_CH2 || null,
     // 行功战斗系统
     XINGGONG: data.XINGGONG || null,
     ATB_SYSTEM: data.ATB_SYSTEM || null,

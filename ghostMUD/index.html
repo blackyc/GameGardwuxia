@@ -36,27 +36,43 @@
   <section class="page active" data-page="jianghu">
     <!-- 区域 1：房间名。 -->
     <header class="location-banner" aria-label="当前房间">
-      <span id="location-region" class="location-region"></span>
-      <span id="location-name">十字街口</span>
+      <span class="location-banner-back" aria-hidden="true">←</span>
+      <span class="location-banner-divider" aria-hidden="true"></span>
+      <div class="location-plaque">
+        <span class="location-plaque-ornament location-plaque-ornament--left" aria-hidden="true"></span>
+        <span class="location-plaque-ornament location-plaque-ornament--right" aria-hidden="true"></span>
+        <span id="location-region" class="location-region"></span>
+        <span id="location-name">十字街口</span>
+      </div>
+      <span id="location-guide-status" class="location-guide-status" hidden>引路 · 同行中</span>
     </header>
 
     <!-- 区域 2：场景叙事、人物卡、操作和感知交互全景。 -->
     <main class="jianghu-main-zone" aria-label="场景与交互">
-      <div class="room-card" id="room-card">
+      <div class="room-card scene-narrative-panel" id="room-card">
+        <div class="scene-panel-label scene-panel-label--place">此地</div>
         <div class="room-desc" id="location-desc"></div>
+        <div class="scene-panel-divider" aria-hidden="true"></div>
+        <div class="exit-bar" id="exit-bar"></div>
+        <div class="scene-panel-label scene-panel-label--people">此地人物</div>
         <div class="room-npcs" id="room-npcs"></div>
         <div class="npc-focus" id="npc-focus"></div>
       </div>
 
-      <!-- 方位通路：东南西北等方位连接，常驻显示 -->
-      <div class="exit-bar" id="exit-bar"></div>
+      <section class="tutorial-action-panel" id="tutorial-action-panel" aria-live="polite" hidden></section>
 
+      <!-- 方位通路：东南西北等方位连接，常驻显示 -->
       <div class="scene-feed" id="scene-feed" aria-live="polite"></div>
 
       <div class="diamond-row" aria-label="常用操作">
-        <button class="diamond-badge" data-action="perceive" title="感知当前场景">
+        <button class="diamond-badge" data-action="perceive" title="察看隐处与场景细节" aria-controls="perception-panel" aria-expanded="false">
           <span class="diamond-hook"></span>
-          <span class="label">感知</span>
+          <span class="label">察看</span>
+          <span class="diamond-tassel"></span>
+        </button>
+        <button class="diamond-badge" data-action="searchArea" title="探索当前房间并触发搜索事件">
+          <span class="diamond-hook"></span>
+          <span class="label">探索</span>
           <span class="diamond-tassel"></span>
         </button>
         <button class="diamond-badge" data-action="cultivate-menu" title="展开修行选项">
@@ -72,8 +88,8 @@
       </div>
 
       <div class="cultivate-submenu" id="cultivate-submenu" style="display:none">
-        <button class="action-btn" data-action="meditate"><span class="icon">🧘</span>入定</button>
-        <button class="action-btn" data-action="pushup"><span class="icon">💪</span>练功</button>
+        <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--primary" data-action="meditate">入定</button>
+        <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--secondary" data-action="pushup">练功</button>
       </div>
 
       <div class="perception-panel" id="perception-panel">
@@ -86,6 +102,7 @@
       <div class="recent-log-header">最近日志</div>
       <div id="log-area" aria-live="polite"></div>
     </section>
+    <div class="jianghu-moment-feedback" id="jianghu-moment-feedback" aria-live="polite" aria-atomic="false"></div>
   </section>
 
   <!-- ════════════ 页面 2 · 武学 ════════════ -->
@@ -240,9 +257,11 @@
 </div>
 
 <!-- Combat Modal -->
-<div class="modal" id="combat-modal">
+<div class="modal" id="combat-modal" role="dialog" aria-modal="true" aria-labelledby="combat-title">
   <div class="modal-box combat-arena">
-    <h3>⚔ 交 锋 ⚔</h3>
+    <div class="combat-scroll-head" aria-hidden="true"><span></span><i></i><span></span></div>
+    <h3 id="combat-title" tabindex="-1">交 锋</h3>
+    <div class="combat-meta"><span id="combat-mode">实战</span><span id="combat-round">第 1 周天</span><span id="combat-time">0.0s</span></div>
     <!-- 对战双方 -->
     <div class="combat-vs">
       <div class="side">
@@ -261,11 +280,11 @@
     </div>
     <!-- 行功五槽 -->
     <div class="combat-slots" id="combat-slots">
-      <div class="combat-slot" data-slot="0"><div class="slot-label">起</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
-      <div class="combat-slot" data-slot="1"><div class="slot-label">承</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
-      <div class="combat-slot" data-slot="2"><div class="slot-label">转</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
-      <div class="combat-slot" data-slot="3"><div class="slot-label">合</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
-      <div class="combat-slot" data-slot="4"><div class="slot-label">归</div><div class="slot-name">—</div><div class="slot-cd"></div></div>
+      <button type="button" class="combat-slot" data-action="combatSlot" data-slot="A"><span class="slot-label">起</span><span class="slot-name">—</span><span class="slot-cd"></span></button>
+      <button type="button" class="combat-slot" data-action="combatSlot" data-slot="B"><span class="slot-label">承</span><span class="slot-name">—</span><span class="slot-cd"></span></button>
+      <button type="button" class="combat-slot" data-action="combatSlot" data-slot="C"><span class="slot-label">转</span><span class="slot-name">—</span><span class="slot-cd"></span></button>
+      <button type="button" class="combat-slot" data-action="combatSlot" data-slot="D"><span class="slot-label">合</span><span class="slot-name">—</span><span class="slot-cd"></span></button>
+      <button type="button" class="combat-slot" data-action="combatSlot" data-slot="E"><span class="slot-label">归</span><span class="slot-name">—</span><span class="slot-cd"></span></button>
     </div>
     <!-- 状态图标区 -->
     <div class="combat-status-row">
@@ -273,10 +292,11 @@
       <div class="status-icons" id="combat-enemy-status"></div>
     </div>
     <!-- 战斗日志 -->
-    <div class="combat-log" id="combat-log"></div>
+    <div class="combat-log" id="combat-log" aria-live="polite" aria-label="战斗回放"></div>
     <!-- 真气门禁选项（默认隐藏） -->
     <div class="mpgate-panel" id="mpgate-panel" style="display:none">
       <div class="mpgate-title" id="mpgate-title">真气不足！</div>
+      <div class="mpgate-timer" id="mpgate-timer"></div>
       <div class="mpgate-options" id="mpgate-options"></div>
     </div>
     <!-- 干预按钮 -->
@@ -284,6 +304,8 @@
       <button class="combat-btn" data-action="combat" data-combat="flee">🏃 脱战</button>
       <button class="combat-btn" data-action="combat" data-combat="variant">🔄 变式</button>
       <button class="combat-btn" data-action="combat" data-combat="potion">💊 服药</button>
+      <button class="combat-btn combat-tutorial-btn" data-action="combat" data-combat="guard" hidden>架势</button>
+      <button class="combat-btn combat-tutorial-btn" data-action="combat" data-combat="dodge" hidden>闪身</button>
     </div>
   </div>
 </div>
@@ -299,6 +321,7 @@
         <script src="/data/rebuild_rooms_wenjianfeng.js"></script>
         <script src="/data/wenjianfeng_npc_dialogues.js"></script>
         <script src="/data/wenjianfeng_tutorial_ch1.js"></script>
+        <script src="/data/wenjianfeng_tutorial_ch2.js"></script>
         <script src="/data/integration_v2.js"></script>
         <script src="/data/rebuild_meridians.js"></script>
         <script src="/data/rebuild_seals.js"></script>

@@ -16,7 +16,17 @@
  */
 
 import { getData } from './data/data_loader.js';
-import { normalizeCombatSkill, getSkillCost, getCorruptionLevel, getWeaponAtk, getArmorDef } from './combat_contract.js';
+import {
+  BATTLE_MODES,
+  BATTLE_OUTCOMES,
+  normalizeBattleOutcome,
+  normalizeCombatSkill,
+  getSkillCost,
+  getCorruptionLevel,
+  getWeaponAtk,
+  getArmorDef,
+} from './combat_contract.js';
+import { createBattleRng } from './battle_rng.js';
 
 // ============================================================
 //  常量 & 查表
@@ -105,8 +115,8 @@ function calcSkillDamageWithWeapon(skill, atk, weaponAtk, def, realm) {
 }
 
 /** 计算暴击 */
-function rollCrit(critProb, critRate) {
-  if (Math.random() < critProb) {
+function rollCrit(critProb, critRate, random) {
+  if (random() < critProb) {
     return critRate; // 暴击倍率
   }
   return 1.0;
@@ -114,13 +124,14 @@ function rollCrit(critProb, critRate) {
 
 /** 获取敌人数据 */
 function getEnemyData(enemyData) {
+  const hp = enemyData.hp ?? 50;
   return {
     name: enemyData.name || `敌人`,
-    hp: enemyData.hp || 50,
-    maxHp: enemyData.hp || 50,
-    atk: enemyData.atk || 5,
-    def: enemyData.def || 1,
-    spd: enemyData.spd || 6,
+    hp,
+    maxHp: hp,
+    atk: enemyData.atk ?? 5,
+    def: enemyData.def ?? 1,
+    spd: enemyData.spd ?? 6,
     data: enemyData,
     physicalImmune: enemyData.physicalImmune || false,
     boss: enemyData.boss || false,
@@ -136,9 +147,12 @@ export class BattleEngine {
   /**
    * @param {Game} game - Game 实例引用
    */
-  constructor(game) {
+  constructor(game, options = {}) {
     this.game = game;
     this.state = game.state;
+    this.options = options;
+    this.rng = options.rng || createBattleRng(options.seed ?? Date.now(), options.rngState);
+    this.random = () => this.rng.next();
     this.tickRate = TICK_RATE;
     this.battleState = null;
     this.timerId = null;
@@ -158,9 +172,14 @@ export class BattleEngine {
    * @param {object} enemyData - 敌人数据
    * @param {object} playerChart - 战诀 { A: skillId, B: skillId, C: skillId, D: skillId, E: skillId }
    */
-  startCombat(enemyData, playerChart) {
+  startCombat(enemyData, playerChart, options = {}) {
     const s = this.state;
     const enemy = getEnemyData(enemyData);
+    const config = { ...this.options, ...options };
+    const battleId = config.battleId || `battle-${Date.now()}-${enemy.name}`;
+    const mode = Object.values(BATTLE_MODES).includes(config.mode)
+      ? config.mode
+      : BATTLE_MODES.ENCOUNTER;
 
     // 计算玩家属性
     const realm = s.realm || 0;
@@ -175,26 +194,50 @@ export class BattleEngine {
     // 获取真气恢复速率
     const mpReg = this._getPlayerMpReg();
 
+    const chart = { ...playerChart };
+    const firstSlot = Math.max(0, SLOTS.findIndex(slot => chart[slot]));
+    const playerOverride = config.playerOverride || {};
+    const player = {
+      hp: s.hp ?? maxHp,
+      maxHp,
+      mp: s.mp ?? maxMp,
+      maxMp,
+      atk,
+      def,
+      weaponAtk,
+      spd,
+      critProb: this._getPlayerCritProb(),
+      critRate: this._getPlayerCritRate(),
+      mpReg,
+      dodge: this._getPlayerDodge(),
+      ...playerOverride,
+    };
+    player.maxHp = Number(player.maxHp || player.hp || 1);
+    player.hp = Math.min(player.maxHp, Number(player.hp ?? player.maxHp));
+    player.maxMp = Number(player.maxMp ?? player.mp ?? 0);
+    player.mp = Math.min(player.maxMp, Number(player.mp ?? player.maxMp));
+
     this.battleState = {
       active: true,
+      paused: false,
+      battleId,
+      mode,
+      encounterId: config.encounterId || enemyData.id || enemy.name,
+      playerActorId: config.playerActorId || 'player',
+      controlledActorId: config.controlledActorId || config.playerActorId || 'player',
+      playerName: config.playerName || (config.controlledActorId && config.controlledActorId !== 'player' ? config.controlledActorId : '你'),
+      syncPlayerState: config.syncPlayerState !== false,
+      manualControl: config.manualControl === true,
+      enemyPassive: config.enemyPassive === true,
+      hideEnemyHp: config.hideEnemyHp === true,
+      outcome: null,
+      rewardSettled: false,
+      grantRewards: config.grantRewards !== false && mode !== BATTLE_MODES.SHOWCASE,
       enemy,
-      player: {
-        hp: s.hp ?? maxHp,
-        maxHp,
-        mp: s.mp ?? maxMp,
-        maxMp,
-        atk,
-        def,
-        weaponAtk,
-        spd,
-        critProb: this._getPlayerCritProb(),
-        critRate: this._getPlayerCritRate(),
-        mpReg,
-        dodge: this._getPlayerDodge(),
-      },
-      chart: { ...playerChart },
-      currentSlot: 0,
-      slotUnlocked: [true, false, false, false, false],
+      player,
+      chart,
+      currentSlot: firstSlot,
+      slotUnlocked: SLOTS.map((slot, idx) => idx === firstSlot && Boolean(chart[slot])),
       round: 0,
       // CD 系统：开局所有技能同时开始读CD（从最大值开始倒数）
       cooldowns: this._initCooldowns(playerChart),
@@ -204,6 +247,7 @@ export class BattleEngine {
       // 干预
       interventionUsed: { variant: false, potion: false, retreat: false },
       potionUsedThisCombat: false,
+      tutorialDefense: { guardCharges: 0, dodgeCharges: 0, guardUsed: 0, dodgeUsed: 0 },
       // 敌人
       enemyChart: enemy.enemyChart || null,
       enemySlot: 0,
@@ -215,12 +259,14 @@ export class BattleEngine {
       mpGateTimer: 0,
       // 日志
       log: [],
+      events: [],
+      eventSeq: 0,
       // 连击
       comboCount: 0,
       // 畸变
       hijackPending: false,
       // 羁绊
-      bonds: this._scanBonds(playerChart),
+      bonds: this._scanBonds(chart),
       // 计时
       battleTime: 0,
       // 连续命中计数（用于叙事触发）
@@ -228,6 +274,10 @@ export class BattleEngine {
       // 武器放大器连击计数
       weaponHitCount: 0,
     };
+
+    if (config.startReady === true) {
+      for (const slot of SLOTS) this.battleState.cooldowns[slot] = 0;
+    }
 
     // 初始化敌人战诀CD
     if (this.battleState.enemyChart) {
@@ -247,10 +297,12 @@ export class BattleEngine {
 
     // 记录战斗开始
     this._addLog(`遭遇 ${enemy.name}！战诀展开——`, 'event');
-    this._addLog(`五式同时开始读CD，等待就绪……`, 'info');
+    this._addLog(`${Object.keys(chart).length}式同时开始读CD，等待就绪……`, 'info');
 
     // 启动 tick 定时器
-    this.timerId = setInterval(() => this.tick(), this.tickRate);
+    if (config.autoStart !== false) {
+      this.timerId = setInterval(() => this.tick(), this.tickRate);
+    }
 
     return this.battleState;
   }
@@ -259,7 +311,7 @@ export class BattleEngine {
    * 核心 tick 循环（每 100ms 调用）
    */
   tick() {
-    if (!this.battleState || !this.battleState.active) return;
+    if (!this.battleState || !this.battleState.active || this.battleState.paused) return;
 
     const dt = TICK_SECONDS;
     this.battleState.battleTime += dt;
@@ -276,6 +328,7 @@ export class BattleEngine {
 
     // 3. 异常状态结算
     this.processStatusEffects();
+    if (this._settleIfTerminal()) return;
 
     // 4. 检查门禁倒计时
     if (this.battleState.mpGatePending) {
@@ -286,21 +339,15 @@ export class BattleEngine {
       }
     } else {
       // 5. 自动出招检查
-      this._autoCastCheck();
+      if (!this.battleState.manualControl) this._autoCastCheck();
+      if (this._settleIfTerminal()) return;
     }
 
     // 6. 敌人行动
-    this.enemyTick();
+    if (!this.battleState.enemyPassive) this.enemyTick();
 
     // 7. 检查战斗结束
-    if (this.battleState.player.hp <= 0) {
-      this.endCombat(false);
-      return;
-    }
-    if (this.battleState.enemy.hp <= 0) {
-      this.endCombat(true);
-      return;
-    }
+    if (this._settleIfTerminal()) return;
 
     // 8. 触发UI更新
     this._notifyUpdate();
@@ -374,9 +421,15 @@ export class BattleEngine {
     if (bs.mpGatePending) return; // 门禁等待中，暂停自动出招
 
     const currentSlot = SLOTS[bs.currentSlot];
+    if (!bs.chart[currentSlot]) {
+      const next = this._nextConfiguredSlotIndex(bs.currentSlot);
+      if (next < 0) return;
+      bs.currentSlot = next;
+      bs.slotUnlocked[next] = true;
+    }
     if (!bs.slotUnlocked[bs.currentSlot]) return; // 当前槽未解锁
 
-    const gate = this.checkDoubleGate(currentSlot);
+    const gate = this.checkDoubleGate(SLOTS[bs.currentSlot]);
     if (!gate.cdReady) return; // CD未就绪
 
     if (!gate.mpEnough) {
@@ -386,7 +439,7 @@ export class BattleEngine {
     }
 
     // 双门禁通过 → 自动出招
-    this.autoCast(currentSlot);
+    this.autoCast(SLOTS[bs.currentSlot]);
   }
 
   /**
@@ -396,13 +449,13 @@ export class BattleEngine {
   autoCast(slot) {
     const bs = this.battleState;
     const skId = bs.chart[slot];
-    if (!skId) return;
+    if (!skId) return false;
 
     const sk = getSkillData(skId);
 
     // 畸变篡改检查
     if (this._checkHijack(slot, sk)) {
-      return; // 篡改触发，已处理
+      return true; // 篡改触发，已处理
     }
 
     // 执行出招
@@ -411,20 +464,83 @@ export class BattleEngine {
     // 出招后该式进入CD
     bs.cooldowns[slot] = sk.cd || 2.0;
 
-    // 解锁下一槽
     const slotIdx = SLOTS.indexOf(slot);
-    if (slotIdx < 4) {
-      bs.slotUnlocked[slotIdx + 1] = true;
+    this._advancePlayerSlot(slotIdx);
+    this._settleIfTerminal();
+    return true;
+  }
+
+  /** Execute the current configured slot in tutorial/showcase manual-control battles. */
+  castSlot(slot) {
+    const bs = this.battleState;
+    const slotIdx = SLOTS.indexOf(slot);
+    if (!bs?.active || !bs.manualControl) return { ok: false, reason: 'not-manual' };
+    if (slotIdx < 0 || !bs.chart[slot]) return { ok: false, reason: 'empty-slot' };
+    if (slotIdx !== bs.currentSlot) return { ok: false, reason: 'wrong-order', expected: SLOTS[bs.currentSlot] };
+    const gate = this.checkDoubleGate(slot);
+    if (!gate.cdReady) return { ok: false, reason: 'cooldown' };
+    if (!gate.mpEnough) {
+      this.triggerMpGate(gate.skill);
+      return { ok: false, reason: 'mp-gate' };
     }
+    this.autoCast(slot);
+    this._notifyUpdate();
+    return { ok: true, outcome: bs.outcome };
+  }
 
-    // 推进当前槽位
-    bs.currentSlot = (slotIdx + 1) % 5;
+  useTutorialDefense(action) {
+    const bs = this.battleState;
+    if (!bs?.active || bs.mode !== BATTLE_MODES.TUTORIAL) return false;
+    if (action === 'guard') {
+      bs.tutorialDefense.guardCharges = 1;
+      bs.tutorialDefense.guardUsed++;
+      this._addLog('你横剑收肘，预备架住下一次冲撞。', 'event');
+    } else if (action === 'dodge') {
+      bs.tutorialDefense.dodgeCharges = 1;
+      bs.tutorialDefense.dodgeUsed++;
+      this._addLog('你压低重心，盯住野猪肩背的发力方向。', 'event');
+    } else {
+      return false;
+    }
+    this._notifyUpdate();
+    return true;
+  }
 
-    // 走完一圈
-    if (bs.currentSlot === 0) {
+  _nextConfiguredSlotIndex(fromIndex) {
+    const bs = this.battleState;
+    if (!bs) return -1;
+    for (let step = 1; step <= SLOTS.length; step++) {
+      const idx = (fromIndex + step) % SLOTS.length;
+      if (bs.chart[SLOTS[idx]]) return idx;
+    }
+    return -1;
+  }
+
+  _advancePlayerSlot(slotIdx) {
+    const bs = this.battleState;
+    const next = this._nextConfiguredSlotIndex(slotIdx);
+    if (next < 0) return;
+    bs.slotUnlocked[next] = true;
+    bs.currentSlot = next;
+    if (next <= slotIdx) {
       bs.round++;
       this._onZhouTianComplete();
     }
+  }
+
+  _settleIfTerminal() {
+    const bs = this.battleState;
+    if (!bs?.active) return Boolean(bs?.outcome);
+    // A simultaneous zero is a defeat: the controlled actor did not survive the exchange.
+    if (bs.player.hp <= 0) {
+      this.finishCombat(BATTLE_OUTCOMES.DEFEAT);
+      return true;
+    }
+    if (bs.enemy.hp <= 0) {
+      this.finishCombat(BATTLE_OUTCOMES.VICTORY);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -476,7 +592,7 @@ export class BattleEngine {
     }
 
     // 暴击
-    const critMult = rollCrit(attackerData.critProb || 0, attackerData.critRate || 1.5);
+    const critMult = rollCrit(attackerData.critProb || 0, attackerData.critRate || 1.5, this.random);
     if (critMult > 1.0) {
       dmg = Math.floor(dmg * critMult);
 
@@ -509,7 +625,7 @@ export class BattleEngine {
 
     // 闪避检查
     const defenderDodge = defenderData.dodge || 0;
-    if (Math.random() < defenderDodge) {
+    if (this.random() < defenderDodge) {
       const targetName = isPlayer ? bs.enemy.name : `你`;
       this._addLog(`${targetName}侧身闪过`, 'combat');
       bs.consecutiveHits = 0;
@@ -536,14 +652,17 @@ export class BattleEngine {
     const slotName = SLOT_NAMES[slot];
     const attackerName = isPlayer ? `` : `${bs.enemy.name}·`;
     const targetName = isPlayer ? bs.enemy.name : `你`;
-    this._addLog(`${attackerName}${slotName}·${sk.name}！伤害 ${dmg}！`, 'combat');
+    const skillName = String(sk.name || '').startsWith(`${slotName}·`)
+      ? sk.name
+      : `${slotName}·${sk.name}`;
+    this._addLog(`${attackerName}${skillName}！伤害 ${dmg}！`, 'combat');
 
     // 连续命中计数
     bs.consecutiveHits++;
 
     // 叙事追加：连续3式命中
     if (bs.consecutiveHits === 3) {
-      this._addLog(`三招连贯，枪出如龙！`, 'event');
+      this._addLog(`三式连贯，行功如一！`, 'event');
     }
     // 叙事追加：连续5式命中（归式后）
     if (bs.consecutiveHits === 5) {
@@ -698,19 +817,13 @@ export class BattleEngine {
       bs.cooldowns[slot] = skill.cd || 2.0;
     }
 
-    // 解锁下一槽
     const slotIdx = SLOTS.indexOf(slot);
-    if (slotIdx < 4) {
-      bs.slotUnlocked[slotIdx + 1] = true;
-    }
-    bs.currentSlot = (slotIdx + 1) % 5;
-    if (bs.currentSlot === 0) {
-      bs.round++;
-      this._onZhouTianComplete();
-    }
+    this._advancePlayerSlot(slotIdx);
 
     bs.consecutiveHits = 0; // 门禁打断连击
+    if (this._settleIfTerminal()) return true;
     this._notifyUpdate();
+    return true;
   }
 
   // ----------------------------------------------------------
@@ -744,8 +857,9 @@ export class BattleEngine {
     }
 
     // 从起式重新开始
-    bs.currentSlot = 0;
-    bs.slotUnlocked = [true, false, false, false, false];
+    const firstSlot = Math.max(0, SLOTS.findIndex(slot => newChart[slot]));
+    bs.currentSlot = firstSlot;
+    bs.slotUnlocked = SLOTS.map((slot, idx) => idx === firstSlot && Boolean(newChart[slot]));
     bs.consecutiveHits = 0;
 
     // 重新扫描羁绊
@@ -808,9 +922,9 @@ export class BattleEngine {
     const zhuifengBonus = this._getZhuifengBonus();
     const successRate = baseRate + zhuifengBonus;
 
-    if (Math.random() < successRate) {
+    if (this.random() < successRate) {
       this._addLog(`[脱战] 你后撤脱离，${bs.enemy.name}追之不及`, 'event');
-      this.endCombat(false);
+      this.finishCombat(BATTLE_OUTCOMES.RETREAT);
       return true;
     } else {
       this._addLog(`[脱战] 脱战失败！${bs.enemy.name}截住了你的退路`, 'combat');
@@ -1045,13 +1159,13 @@ export class BattleEngine {
     if (isPlayer && this.battleState.bonds) {
       const bondBonus = this._getBondBonus(skill);
       if (bondBonus > 0) {
-        if (shigu > 0 && Math.random() < bondBonus) defenderStatus.shigu++;
-        if (lieshang > 0 && Math.random() < bondBonus) defenderStatus.lieshang++;
-        if (yehuo > 0 && Math.random() < bondBonus) defenderStatus.yehuo++;
-        if (ningyuan > 0 && Math.random() < bondBonus) defenderStatus.ningyuan++;
-        if (pogang > 0 && Math.random() < bondBonus) defenderStatus.pogang++;
-        if (mihun > 0 && Math.random() < bondBonus) defenderStatus.mihun++;
-        if (nixue > 0 && Math.random() < bondBonus) defenderStatus.nixue++;
+        if (shigu > 0 && this.random() < bondBonus) defenderStatus.shigu++;
+        if (lieshang > 0 && this.random() < bondBonus) defenderStatus.lieshang++;
+        if (yehuo > 0 && this.random() < bondBonus) defenderStatus.yehuo++;
+        if (ningyuan > 0 && this.random() < bondBonus) defenderStatus.ningyuan++;
+        if (pogang > 0 && this.random() < bondBonus) defenderStatus.pogang++;
+        if (mihun > 0 && this.random() < bondBonus) defenderStatus.mihun++;
+        if (nixue > 0 && this.random() < bondBonus) defenderStatus.nixue++;
       }
     }
   }
@@ -1131,7 +1245,7 @@ export class BattleEngine {
       bs.enemyAiCooldown -= TICK_SECONDS;
       if (bs.enemyAiCooldown <= 0) {
         this._enemySimpleAttack();
-        bs.enemyAiCooldown = 2.0 + Math.random() * 1.5; // 2-3.5s间隔
+        bs.enemyAiCooldown = 2.0 + this.random() * 1.5; // 2-3.5s间隔
       }
     }
   }
@@ -1176,21 +1290,35 @@ export class BattleEngine {
 
     // 简单随机攻击
     let dmg = Math.max(1, enemy.atk - bs.player.def);
-    dmg += Math.floor(Math.random() * 5);
+    dmg += Math.floor(this.random() * 5);
+
+    if (bs.tutorialDefense?.dodgeCharges > 0) {
+      bs.tutorialDefense.dodgeCharges--;
+      this._addLog(`${enemy.name}猛冲而过——你在獠牙擦身前让开半步`, 'event');
+      return;
+    }
+
+    if (bs.tutorialDefense?.guardCharges > 0) {
+      bs.tutorialDefense.guardCharges--;
+      const before = dmg;
+      dmg = Math.max(1, Math.floor(dmg * 0.45));
+      this._addLog(`你以剑脊架住冲势，伤害由 ${before} 降至 ${dmg}`, 'event');
+    }
 
     // 闪避
-    if (Math.random() < (bs.player.dodge || 0)) {
+    if (this.random() < (bs.player.dodge || 0)) {
       this._addLog(`${enemy.name}攻击——你闪避成功`, 'combat');
       return;
     }
 
     bs.player.hp -= dmg;
     this._addLog(`${enemy.name}攻击！伤害 ${dmg}`, 'combat');
+    if (this._settleIfTerminal()) return;
 
     // 敌人施加异常状态（部分敌人）
     if (enemy.data && enemy.data.statusAttack) {
       const sa = enemy.data.statusAttack;
-      if (sa.type && sa.chance && Math.random() < sa.chance) {
+      if (sa.type && sa.chance && this.random() < sa.chance) {
         const stacks = sa.stacks || 2;
         bs.playerStatus[sa.type] = (bs.playerStatus[sa.type] || 0) + stacks;
         this._addLog(`${STATUS_CONFIG[sa.type]?.name || sa.type}+${stacks}`, 'combat');
@@ -1204,6 +1332,7 @@ export class BattleEngine {
     let dmg = Math.max(1, bs.enemy.atk * 1.5 - bs.player.def);
     bs.player.hp -= dmg;
     this._addLog(`${bs.enemy.name}趁机追击！伤害 ${dmg}`, 'combat');
+    this._settleIfTerminal();
   }
 
   // ----------------------------------------------------------
@@ -1221,7 +1350,7 @@ export class BattleEngine {
     const baseRate = HIJACK_BASE_RATE[corruptionLevel] || 0;
 
     if (baseRate <= 0) return false;
-    if (Math.random() >= baseRate) return false;
+    if (this.random() >= baseRate) return false;
 
     // 篡改触发
     const hijackType = this._getHijackType(corruptionLevel);
@@ -1249,7 +1378,7 @@ export class BattleEngine {
       }
       case 'jump': {
         // 4级：跳位
-        const skipTo = Math.min(4, SLOTS.indexOf(slot) + 1 + Math.floor(Math.random() * 2));
+        const skipTo = Math.min(4, SLOTS.indexOf(slot) + 1 + Math.floor(this.random() * 2));
         this._addLog(`行功失控——跳过${SLOTS.slice(SLOTS.indexOf(slot) + 1, skipTo + 1).join('、')}式！`, 'event');
         // 被跳过的式位CD强制重置
         for (let i = SLOTS.indexOf(slot) + 1; i <= skipTo; i++) {
@@ -1283,8 +1412,8 @@ export class BattleEngine {
     if (level <= 0) return null;
     if (level <= 2) return 'text';
     if (level === 3) return 'replace';
-    if (level === 4) return Math.random() < 0.5 ? 'replace' : 'jump';
-    return Math.random() < 0.4 ? 'jump' : 'override';
+    if (level === 4) return this.random() < 0.5 ? 'replace' : 'jump';
+    return this.random() < 0.4 ? 'jump' : 'override';
   }
 
   /** 生成异化招式 @private */
@@ -1292,7 +1421,7 @@ export class BattleEngine {
     return {
       ...original,
       name: `异化·${original.name}`,
-      skillNum: Math.floor(original.skillNum * (0.8 + Math.random() * 0.6)),
+      skillNum: Math.floor(original.skillNum * (0.8 + this.random() * 0.6)),
       dmgType: 'spirit',
     };
   }
@@ -1304,7 +1433,7 @@ export class BattleEngine {
       name: `不可名状之招`,
       type: 'melee',
       dmgType: 'spirit',
-      skillNum: 50 + Math.random() * 100,
+      skillNum: 50 + this.random() * 100,
       skillNumLvAdd: 0,
       cd: 0,
       mana: 0,
@@ -1349,12 +1478,15 @@ export class BattleEngine {
   // ----------------------------------------------------------
 
   /**
-   * 结束战斗
-   * @param {bool} victory
+   * End a combat with an explicit outcome.
+   * The engine never infers retreat from defeat or a wall-clock timeout.
    */
-  endCombat(victory) {
+  finishCombat(rawOutcome) {
     const bs = this.battleState;
-    if (!bs) return;
+    if (!bs || bs.outcome) return null;
+
+    const outcome = normalizeBattleOutcome(rawOutcome);
+    bs.outcome = outcome;
 
     bs.active = false;
 
@@ -1364,11 +1496,15 @@ export class BattleEngine {
       this.timerId = null;
     }
 
-    // 同步状态到 game.state
-    this.state.hp = Math.max(0, Math.floor(bs.player.hp));
-    this.state.mp = Math.max(0, Math.floor(bs.player.mp));
+    // Showcase actors are isolated from the persistent player state.
+    if (bs.syncPlayerState) {
+      this.state.hp = Math.max(0, Math.floor(bs.player.hp));
+      this.state.mp = Math.max(0, Math.floor(bs.player.mp));
+    }
 
-    if (victory) {
+    if (outcome === BATTLE_OUTCOMES.VICTORY && bs.mode === BATTLE_MODES.SPAR) {
+      this._addLog(`切磋已分胜负，你胜过了${bs.enemy.name}`, 'breakthrough');
+    } else if (outcome === BATTLE_OUTCOMES.VICTORY && bs.grantRewards && !bs.rewardSettled) {
       const exp = (bs.enemy.data.exp || 10) + (bs.enemy.data.boss ? 50 : 0);
       const gold = bs.enemy.data.gold || 5;
       this.state.cultivation += exp;
@@ -1376,26 +1512,106 @@ export class BattleEngine {
       this._addLog(`${bs.enemy.name} 毙于你手！`, 'breakthrough');
       this._addLog(`得 ${exp} 修为，${gold} ${this._getMoneyName()}`, 'info');
 
-      this.state.killCount++;
+      this.state.killCount = (this.state.killCount || 0) + 1;
+      if (gold > 0) {
+        if (bs.enemy.data.dropsSpirit) this.game.addSpiritStones?.(gold);
+        else this.game.addMoney?.(gold);
+      }
 
       // 装备掉落
-      if (bs.enemy.data.boss || Math.random() < 0.15) {
+      if (bs.enemy.data.boss || this.random() < 0.15) {
         this._addLog(`获得装备一件（待鉴定）`, 'info');
         // TODO: 调用 loot_gen 生成装备
       }
 
+      bs.rewardSettled = true;
+
       // 检查突破
       this.game.checkBreakthrough?.();
-    } else {
+    } else if (outcome === BATTLE_OUTCOMES.DEFEAT && bs.mode === BATTLE_MODES.SPAR) {
+      // HP did reach zero in the real battle; non-lethal settlement happens afterwards.
+      if (bs.syncPlayerState) this.state.hp = Math.max(1, Number(bs.enemy.data.sparRecoveryHp || 1));
+      this._addLog(`切磋落败。对方及时收招，你只是精疲力竭`, 'event');
+    } else if (outcome === BATTLE_OUTCOMES.DEFEAT) {
+      this._addLog(`你已无力再战`, 'event');
+    } else if (outcome === BATTLE_OUTCOMES.RETREAT) {
       this._addLog(`你脱离了战斗`, 'event');
+    } else if (outcome === BATTLE_OUTCOMES.ABORTED) {
+      this._addLog(`战斗因异常中止，未进行任何胜负结算`, 'system');
     }
+
+    const winnerId = outcome === BATTLE_OUTCOMES.VICTORY
+      ? bs.playerActorId
+      : (outcome === BATTLE_OUTCOMES.DEFEAT ? bs.encounterId : null);
+    const loserId = outcome === BATTLE_OUTCOMES.VICTORY
+      ? bs.encounterId
+      : (outcome === BATTLE_OUTCOMES.DEFEAT ? bs.playerActorId : null);
+    const result = {
+      battleId: bs.battleId,
+      encounterId: bs.encounterId,
+      mode: bs.mode,
+      outcome,
+      winnerId,
+      loserId,
+      enemyName: bs.enemy.name,
+      grantRewards: bs.grantRewards,
+      finalSnapshot: this.createSnapshot(),
+      events: bs.events.map(event => ({ ...event })),
+    };
 
     // 通知战斗结束
     if (this._onEnd) {
-      this._onEnd(victory, bs);
+      this._onEnd(result, bs);
     }
 
     this._notifyUpdate();
+    return result;
+  }
+
+  /** Transitional alias for legacy callers. New code must pass an outcome string. */
+  endCombat(outcome) {
+    return this.finishCombat(outcome);
+  }
+
+  pause() {
+    if (this.battleState?.active) this.battleState.paused = true;
+  }
+
+  resume() {
+    if (this.battleState?.active) this.battleState.paused = false;
+  }
+
+  createSnapshot() {
+    const bs = this.battleState;
+    if (!bs) return null;
+    return {
+      version: 1,
+      battleId: bs.battleId,
+      mode: bs.mode,
+      encounterId: bs.encounterId,
+      controlledActorId: bs.controlledActorId,
+      playerName: bs.playerName,
+      syncPlayerState: bs.syncPlayerState,
+      manualControl: bs.manualControl,
+      enemyPassive: bs.enemyPassive,
+      hideEnemyHp: bs.hideEnemyHp,
+      active: bs.active,
+      paused: bs.paused,
+      outcome: bs.outcome,
+      battleTime: bs.battleTime,
+      round: bs.round,
+      currentSlot: bs.currentSlot,
+      player: { ...bs.player },
+      enemy: { ...bs.enemy, data: { ...bs.enemy.data } },
+      chart: { ...bs.chart },
+      cooldowns: { ...bs.cooldowns },
+      playerStatus: { ...bs.playerStatus },
+      enemyStatus: { ...bs.enemyStatus },
+      interventionUsed: { ...bs.interventionUsed },
+      tutorialDefense: { ...bs.tutorialDefense },
+      rngState: this.rng.snapshot(),
+      events: bs.events.map(event => ({ ...event })),
+    };
   }
 
   // ----------------------------------------------------------
@@ -1461,6 +1677,14 @@ export class BattleEngine {
 
     return {
       active: bs.active,
+      paused: bs.paused,
+      battleId: bs.battleId,
+      mode: bs.mode,
+      outcome: bs.outcome,
+      controlledActorId: bs.controlledActorId,
+      playerName: bs.playerName,
+      manualControl: bs.manualControl,
+      hideEnemyHp: bs.hideEnemyHp,
       battleTime: bs.battleTime,
       round: bs.round,
       // 玩家
@@ -1489,6 +1713,7 @@ export class BattleEngine {
       // 干预
       intervention: { ...bs.interventionUsed },
       potionUsed: bs.potionUsedThisCombat,
+      tutorialDefense: { ...bs.tutorialDefense },
       // 羁绊
       bonds: bs.bonds,
       // 连击
@@ -1535,13 +1760,23 @@ export class BattleEngine {
   _addLog(text, type = 'combat') {
     const bs = this.battleState;
     if (!bs) return;
-    bs.log.push({ text, type, time: bs.battleTime });
+    const event = {
+      id: `${bs.battleId}:${++bs.eventSeq}`,
+      seq: bs.eventSeq,
+      type,
+      text: String(text),
+      time: Number(bs.battleTime.toFixed(3)),
+      round: bs.round,
+      actorId: bs.controlledActorId,
+    };
+    bs.log.push(event);
+    bs.events.push(event);
     // 限制日志长度
     if (bs.log.length > 200) {
       bs.log = bs.log.slice(-100);
     }
     if (this._onLog) {
-      this._onLog({ text, type, time: bs.battleTime });
+      this._onLog(event);
     }
   }
 

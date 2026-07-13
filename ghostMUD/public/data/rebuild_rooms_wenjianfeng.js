@@ -60,6 +60,11 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_liushishu',
         name: '柳师叔',
         desc: '一个须发半白的老者，坐在廊下石凳上，面前摆着一盘棋。黑白子都由他一个人下。',
+      },
+      {
+        id: 'wenjianfeng_xiaoyuan',
+        name: '萧远',
+        desc: '一个看起来四十岁出头的中年人，剑斜背在背后，剑柄上缠的布很旧。',
       }
     ],
     items: [

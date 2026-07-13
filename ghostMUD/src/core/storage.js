@@ -129,7 +129,9 @@ export class Storage {
 
       // 版本迁移
       if (fileVersion === 1) {
-        state = this._migrateV1ToV2(state);
+        state = this._migrateV2ToV3(this._migrateV1ToV2(state));
+      } else if (fileVersion === 2) {
+        state = this._migrateV2ToV3(state);
       } else if (fileVersion !== this._version) {
         // P1-5 修复：未知版本不静默加载，尝试备份恢复
         console.warn(`[Storage] 未知存档版本 ${fileVersion}`);
@@ -209,7 +211,9 @@ export class Storage {
       let state = payload.state;
       const fileVersion = payload.version;
       if (fileVersion === 1) {
-        state = this._migrateV1ToV2(state);
+        state = this._migrateV2ToV3(this._migrateV1ToV2(state));
+      } else if (fileVersion === 2) {
+        state = this._migrateV2ToV3(state);
       } else if (fileVersion !== this._version) {
         console.error(`[Storage] 导入失败：未知存档版本 ${fileVersion}`);
         return false;
@@ -257,7 +261,9 @@ export class Storage {
       if (!payload || !payload.state || typeof payload.state !== 'object') return null;
       let state = payload.state;
       if (payload.version === 1) {
-        state = this._migrateV1ToV2(state);
+        state = this._migrateV2ToV3(this._migrateV1ToV2(state));
+      } else if (payload.version === 2) {
+        state = this._migrateV2ToV3(state);
       } else if (payload.version !== this._version) {
         console.warn(`[Storage] 备份版本 ${payload.version} 未知，尝试兼容加载`);
       }
@@ -321,6 +327,18 @@ export class Storage {
     return migrated;
   }
 
+  /** v2 -> v3: tutorial combat checkpoints and terminal battle result fields. */
+  _migrateV2ToV3(state) {
+    return {
+      ...state,
+      xiaoyuanFirstLessonCompleted: state?.xiaoyuanFirstLessonCompleted === true,
+      boarCombatResult: state?.boarCombatResult || null,
+      residualSwordSeen: state?.residualSwordSeen === true,
+      tutorialActionState: state?.tutorialActionState || null,
+      lastBattleResult: state?.lastBattleResult || null,
+    };
+  }
+
   /**
    * 如果需要，迁移 payload
    */
@@ -328,7 +346,9 @@ export class Storage {
     if (!payload || !payload.state) return payload.state || null;
     let state = payload.state;
     if (payload.version === 1) {
-      state = this._migrateV1ToV2(state);
+      state = this._migrateV2ToV3(this._migrateV1ToV2(state));
+    } else if (payload.version === 2) {
+      state = this._migrateV2ToV3(state);
     }
     return state;
   }

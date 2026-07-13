@@ -24,7 +24,7 @@ function test(name, fn) {
     state: { location: 'A', routeDiscoveries: {}, explored: ['A'] },
     LOCATIONS: {
       A: {
-        connections: { north: 'B', secret: 'D' },
+        connections: { north: 'B', back: 'B', secret: 'D' },
         routeSketch: {
           secret: {
             id: 'route_secret',
@@ -45,6 +45,11 @@ function test(name, fn) {
     assert.strictEqual(north.state, 'known');
     assert.strictEqual(north.clickable, true);
   });
+  test('legacy fallback edge to the same room is normalized to one destination', () => {
+    const toB = routes.getRoutes().filter(route => route.target === 'B');
+    assert.strictEqual(toB.length, 1);
+    assert.strictEqual(toB[0].direction, 'north');
+  });
   test('hidden route cannot leak or be entered before perception', () => {
     const secret = routes.getRoutes().find(route => route.direction === 'secret');
     assert.strictEqual(secret.state, 'hidden');
@@ -64,6 +69,7 @@ function test(name, fn) {
     const integration = fs.readFileSync(path.join(ROOT, 'public', 'data', 'integration_v2.js'), 'utf8');
     assert.ok(integration.includes('route_jubao_hidden_cache'));
     assert.ok(integration.includes("room.routeSketch['暗格']"));
+    assert.ok(integration.includes('alreadyReturns'), 'reverse-edge integration must reject duplicate fallback routes');
   });
 
   console.log('Route service result: ' + passed + ' passed, ' + failed + ' failed');

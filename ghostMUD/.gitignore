@@ -29,3 +29,9 @@ Thumbs.db
 # Temp backup files
 *.bak
 *.tmp
+
+# Runtime process/log files
+temp/work/*.pid
+temp/work/*.log
+temp/work/*_stderr.log
+temp/work/*_stdout.log

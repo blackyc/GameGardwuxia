@@ -351,7 +351,7 @@ export class InterveneEngine {
       if (eff.corruptionLevel) {
         const isLing = this.game.state.path === `ling`;
         // 灵修10%概率被替换为提升1级
-        if (isLing && Math.random() < 0.10) {
+        if (isLing && this.be.random() < 0.10) {
           const oldLevel = this._getCorruptionLevel();
           this._setCorruptionLevel(oldLevel + 1);
           effects.push(`畸变+1（丹药被篡改！）`);
@@ -429,12 +429,15 @@ export class InterveneEngine {
     const corruptionLevel = this._getCorruptionLevel();
     const isLing = this.game.state.path === `ling`;
     if (isLing && corruptionLevel >= 4) {
-      if (Math.random() < 0.20) {
+      if (this.be.random() < 0.20) {
         this._log(`你的脚……不听使唤了。身体被某种力量钉在原地。`, `event`);
         this._log(NARRATIVE.retreatFail, `event`);
         // 敌人获得一次自由攻击
         this._log(`[脱战失败] ${bs.enemy.name}趁机追击！`, `combat`);
         this.be._enemyFreeAttack();
+        if (!bs.active) {
+          return { success: false, log: NARRATIVE.retreatFail, enemyFreeHit: true, outcome: bs.outcome };
+        }
         this._notify();
         return {
           success: false,
@@ -456,12 +459,11 @@ export class InterveneEngine {
       `combat`
     );
 
-    if (Math.random() < successRate) {
+    if (this.be.random() < successRate) {
       // ===== 成功脱战 =====
       this._log(NARRATIVE.retreatSuccess, `event`);
       this._log(`你脱离了战斗。`, `info`);
-      // 调用 BattleEngine 的 endCombat 结束战斗
-      this.be.endCombat(false);
+      this.be.finishCombat('retreat');
       return {
         success: true,
         log: NARRATIVE.retreatSuccess,
@@ -472,6 +474,9 @@ export class InterveneEngine {
       this._log(NARRATIVE.retreatFail, `event`);
       this._log(`[脱战失败] ${bs.enemy.name}截住了你的退路！`, `combat`);
       this.be._enemyFreeAttack();
+      if (!bs.active) {
+        return { success: false, log: NARRATIVE.retreatFail, enemyFreeHit: true, outcome: bs.outcome };
+      }
       this._notify();
       return {
         success: false,

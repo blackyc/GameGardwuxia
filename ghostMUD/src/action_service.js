@@ -84,6 +84,10 @@ export class ActionService {
     const g = this.game;
     if (g.state.combat || g.state.npcEncounter) { g.addLog('当前无法休憩！', 'combat'); return; }
     if (g.state.isCultivating) { g.addLog('修炼中无法休憩。先结束修炼吧。', 'system'); return; }
+    if (g.state.tutorialPhase === 'ch2_ready') {
+      g.tutorial?.beginMorningPractice?.();
+      return;
+    }
     const s = g.state;
     s.isResting = !s.isResting;
     g.addLog(s.isResting ? '💤 你寻了一处角落蜷起身子…' : '🔔 休憩结束，继续前行。', 'info');

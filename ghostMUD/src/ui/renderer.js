@@ -23,6 +23,36 @@ function routePoint(route) {
   return { x: Math.max(10, Math.min(90, baseX + lane * 7)), y: Math.max(10, Math.min(90, baseY + lane * 7)) };
 }
 
+function resolveRoutePoints(routes) {
+  const resolved = new Map();
+  const occupied = [];
+  const candidates = [
+    [22, 0], [-22, 0], [0, 20], [0, -20],
+    [18, 16], [-18, 16], [18, -16], [-18, -16],
+  ];
+  const collides = (point) => occupied.some((other) => (
+    Math.abs(point.x - other.x) < 18 && Math.abs(point.y - other.y) < 14
+  ));
+
+  routes.forEach((route) => {
+    const base = routePoint(route);
+    let point = base;
+    if (collides(base)) {
+      const shifted = candidates
+        .map(([dx, dy]) => ({ x: base.x + dx, y: base.y + dy }))
+        .find((candidate) => (
+          candidate.x >= 10 && candidate.x <= 90
+          && candidate.y >= 10 && candidate.y <= 90
+          && !collides(candidate)
+        ));
+      if (shifted) point = shifted;
+    }
+    occupied.push(point);
+    resolved.set(route.id, point);
+  });
+  return resolved;
+}
+
 // 区域常量：定义所有可独立刷新的 UI 区域
 const ZONE_CHAR = 'char';       // 人物面板（境界、修为、道心、寿命、灵石、功法、任务数）
 const ZONE_STATUS = 'status';   // 境况面板（含帮派信息、攻防、HP、位置、击杀）
@@ -255,6 +285,16 @@ export class Renderer {
     this._setText('location-name', this.displayName(s.location));
     const regionEl = document.getElementById('location-region');
     if (regionEl) this._setText('location-region', this.regionName(s.location));
+    const tutorial = data.WENJIANFENG_TUTORIAL_CH1;
+    const isGuideActive = !!(tutorial && typeof tutorial.isGuideActive === 'function' && tutorial.isGuideActive(this.game, s.location));
+    const banner = document.querySelector('.location-banner');
+    if (banner) {
+      banner.classList.toggle('location-banner--guide', isGuideActive);
+      banner.dataset.tutorialPhase = s.tutorialPhase || '';
+      banner.dataset.tutorialStep = String(s.tutorialStep || 0);
+    }
+    const guideStatus = document.getElementById('location-guide-status');
+    if (guideStatus) guideStatus.hidden = !isGuideActive;
 
     // 房间描述：优先使用game.getRoomDesc()（按时辰变体）
     const desc = this.game.getRoomDesc ? this.game.getRoomDesc(s.location) : (data.getDesc(data.LOCATIONS[s.location]) || '未知之地');
@@ -262,6 +302,8 @@ export class Renderer {
 
     // 在场 NPC 以人物卡呈现，交互入口收在感知全景内。
     const npcsEl = document.getElementById('room-npcs');
+    const roomCardEl = document.getElementById('room-card');
+    if (roomCardEl) roomCardEl.classList.remove('scene-narrative-panel--npc-selected');
     if (npcsEl) {
       const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
       const list = perc && perc.npcs ? perc.npcs : [];
@@ -276,34 +318,55 @@ export class Renderer {
           this.game.focusedNpcIndex = null;
           this.game.focusedNpcType = null;
         }
+        if (roomCardEl) roomCardEl.classList.toggle('scene-narrative-panel--npc-selected', !!focused);
         const buttons = list.map(n => {
           const idx = Number(n.index);
           const type = n.type || 'encounter';
-          const selected = focused && Number(focused.index) === idx && (focused.type || 'encounter') === type ? ' active' : '';
-          return '<button type="button" class="room-npc-card' + selected + '" data-action="focusNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">'
+          const isSelected = focused && Number(focused.index) === idx && (focused.type || 'encounter') === type;
+          const chipState = this._npcChipState(n, isSelected);
+          const isLocked = chipState === 'locked';
+          const chipBadge = this._npcChipBadge(chipState);
+          return '<button type="button" class="room-npc-card npc-chip npc-chip--' + chipState + (isSelected ? ' active' : '') + '" data-npc-state="' + chipState + '" data-action="focusNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '"' + (isLocked ? ' disabled aria-disabled="true"' : '') + '>'
             + '<span class="npc-name">' + this._esc(n.name) + '</span>'
-            + this._npcCue(n)
+            + chipBadge
             + '</button>';
         }).join('');
         let dossier = '';
         if (focused) {
           const idx = Number(focused.index);
           const type = focused.type || 'encounter';
-          const relationLine = focused.relationLabel ? '<div class="npc-dossier-memory">印象：' + this._esc(focused.relationLabel) + '</div>' : '';
+          const dossierState = this._npcChipState(focused, false);
+          const isDossierLocked = dossierState === 'locked';
+          const stateBadge = this._npcDossierBadge(dossierState);
+          const relation = focused.relationLabel || (isDossierLocked ? '未明' : '初识');
+          const lockedReason = isDossierLocked
+            ? '<div class="npc-dossier-locked-reason">需满足感知或剧情条件后才可交谈</div>'
+            : '';
           const canSpar = focused.canSpar !== false && type !== 'guide' && type !== 'recruiter';
-          dossier = '<section class="npc-dossier" id="npc-dossier">'
-            + '<div class="npc-dossier-head"><span class="npc-dossier-title">' + this._esc(focused.name) + '</span>'
-            + '<button type="button" class="npc-dossier-close" data-action="closeNpcFocus">收起</button></div>'
-            + relationLine
+          const giftKey = type + ':' + idx;
+          const giftOpen = this.game.focusedNpcGiftKey === giftKey;
+          const giftItems = giftOpen && this.game.getGiftableItems ? this.game.getGiftableItems() : [];
+          const giftTray = giftOpen
+            ? '<div class="npc-gift-tray" aria-label="选择礼物"><span>相赠何物</span>'
+              + giftItems.slice(0, 6).map(({ item, index }) => '<button type="button" data-action="confirmNpcGift" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '" data-item-index="' + index + '">' + this._esc(item.name || '无名物') + '</button>').join('')
+              + '</div>'
+            : '';
+          const npcAction = (label, action, enabled = true, extraClass = '') => enabled
+            ? '<button type="button" class="jianghu-action-button jianghu-action-button--compact ' + extraClass + '" data-action="' + action + '" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">' + label + '</button>'
+            : '<button type="button" class="jianghu-action-button jianghu-action-button--compact jianghu-action-button--disabled muted" data-action="npcDisabled" data-label="' + label + '">' + label + '</button>';
+          dossier = '<section class="npc-dossier npc-dossier--' + dossierState + '" id="npc-dossier" data-npc-state="' + dossierState + '">'
+            + '<div class="npc-dossier-head"><span class="npc-dossier-identity"><span class="npc-dossier-title">' + this._esc(focused.name) + '</span>'
+            + '<strong class="npc-dossier-relation">' + this._esc(relation) + '</strong></span>'
+            + '<span class="npc-dossier-controls">' + stateBadge + '</span></div>'
             + '<p class="npc-dossier-desc">' + this._esc(focused.desc || '此人正留意着周遭。') + '</p>'
+            + '<div class="npc-dossier-divider" aria-hidden="true"></div>'
+            + lockedReason
             + '<div class="npc-dossier-actions">'
-            + '<button type="button" data-action="talkNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
-            + '<button type="button" data-action="npcObserve" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">观察</button>'
-            + '<button type="button" class="muted" data-action="npcDisabled" data-label="送礼">送礼</button>'
-            + (canSpar
-              ? '<button type="button" data-action="sparNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">切磋</button>'
-              : '<button type="button" class="muted" data-action="npcDisabled" data-label="切磋">切磋</button>')
-            + '</div></section>';
+            + npcAction('交谈', 'talkNpc', !isDossierLocked, 'jianghu-action-button--primary')
+            + npcAction('切磋', 'sparNpc', !isDossierLocked && canSpar, 'jianghu-action-button--secondary')
+            + npcAction('送礼', 'npcGift', !isDossierLocked, 'jianghu-action-button--secondary')
+            + npcAction('打听', 'npcAsk', !isDossierLocked, 'jianghu-action-button--secondary')
+            + '</div>' + giftTray + '</section>';
         }
         npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>' + dossier;
       } else {
@@ -314,6 +377,36 @@ export class Renderer {
     }
     // 方位通路：渲染到方向栏
     this.renderExitBar();
+    this.renderTutorialActionPanel();
+  }
+
+  renderTutorialActionPanel() {
+    const panel = document.getElementById('tutorial-action-panel');
+    if (!panel) return;
+    const model = this.game.tutorial?.getViewModel?.();
+    if (!model) {
+      panel.hidden = true;
+      panel.innerHTML = '';
+      return;
+    }
+    panel.hidden = false;
+    const actions = (model.actions || []).map(action => {
+      const danger = action.danger ? ' tutorial-action--danger' : '';
+      const slot = action.slot ? ` data-tutorial-slot="${this._esc(action.slot)}"` : '';
+      const side = action.side ? ` data-tutorial-side="${this._esc(action.side)}"` : '';
+      return `<button type="button" class="tutorial-action${danger}" data-action="tutorial" data-tutorial-action="${this._esc(action.id)}"${slot}${side}>${this._esc(action.label)}</button>`;
+    }).join('');
+    const meters = (model.meters || []).map(meter => {
+      const max = Math.max(1, Number(meter.max) || 1);
+      const value = Math.max(0, Math.min(max, Number(meter.value) || 0));
+      const pct = Math.round(value / max * 100);
+      return `<div class="tutorial-meter"><span>${this._esc(meter.label)}</span><div class="tutorial-meter-track"><i style="width:${pct}%"></i></div><b>${Math.round(value * 10) / 10}/${max}</b></div>`;
+    }).join('');
+    panel.innerHTML = `<div class="tutorial-action-head"><span>门中日课</span><strong>${this._esc(model.title)}</strong></div>`
+      + `<p class="tutorial-action-body">${this._esc(model.body || '')}</p>`
+      + `<div class="tutorial-action-objective"><span>当前</span>${this._esc(model.objective || '')}</div>`
+      + (meters ? `<div class="tutorial-meters">${meters}</div>` : '')
+      + (actions ? `<div class="tutorial-action-controls">${actions}</div>` : '');
   }
 
   /**
@@ -326,15 +419,18 @@ export class Renderer {
     const routes = this.game.routes?.getRoutes() || [];
     const visibleRoutes = routes.filter((route) => route.visible);
     const sensedRoutes = routes.filter((route) => route.state === 'sensed');
+    const revealedRoutes = visibleRoutes.filter((route) => route.state === 'revealed');
+    const lockedRoutes = visibleRoutes.filter((route) => route.state === 'revealedLocked');
     if (visibleRoutes.length === 0 && sensedRoutes.length === 0) {
       bar.innerHTML = '';
       bar.style.display = 'none';
       return;
     }
+    const routePoints = resolveRoutePoints([...visibleRoutes, ...sensedRoutes]);
 
     const currentName = this._esc(this.displayName(this.game.state.location));
     const routeNodes = visibleRoutes.map((route) => {
-      const point = routePoint(route);
+      const point = routePoints.get(route.id) || routePoint(route);
       const style = `--route-x:${point.x}%;--route-y:${point.y}%;`;
       const label = this._esc(route.label);
       if (route.clickable) {
@@ -343,20 +439,33 @@ export class Renderer {
       return `<span class="route-node route-destination route-revealedLocked" style="${style}" title="${this._esc(route.blockedReason)}"><span>${label}</span><small>${this._esc(route.blockedReason || '此路暂不可通')}</small></span>`;
     }).join('');
     const lines = visibleRoutes.map((route) => {
-      const point = routePoint(route);
-      return `<line x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line>`;
+      const point = routePoints.get(route.id) || routePoint(route);
+      const lineClass = ['revealed', 'revealedLocked'].includes(route.state) ? 'route-revealed-line' : '';
+      return `<line class="${lineClass}" x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line>`;
     }).join('');
     const sensedMarks = sensedRoutes.map((route) => {
-      const point = routePoint(route);
+      const point = routePoints.get(route.id) || routePoint(route);
       return `<line class="route-sensed-line" x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line><circle class="route-sensed-mark" cx="${point.x}" cy="${point.y}" r="2.4"></circle>`;
     }).join('');
 
     bar.className = 'exit-bar route-sketch';
     bar.style.display = 'block';
+    let routeStatus = '';
+    if (lockedRoutes.length > 0) {
+      const route = lockedRoutes[0];
+      routeStatus = `<div class="route-sketch-status route-sketch-status--locked">${this._esc(route.label)}已现：${this._esc(route.blockedReason || '条件不足，暂不可入。')}</div>`;
+    } else if (revealedRoutes.length > 0) {
+      const route = revealedRoutes[0];
+      routeStatus = `<div class="route-sketch-status route-sketch-status--revealed">感知：${this._esc(route.hint || `发现通向${route.label}的入口。`)}</div>`;
+    } else if (sensedRoutes.length > 0) {
+      const route = sensedRoutes[0];
+      routeStatus = `<div class="route-sketch-status">感知：${this._esc(route.hint || '此处似有异样。')}</div>`;
+    }
+    if (routeStatus) bar.classList.add('route-sketch--has-status');
     bar.innerHTML = '<div class="route-sketch-title">行迹</div>'
       + '<div class="route-sketch-canvas">'
       + `<svg class="route-sketch-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}${sensedMarks}</svg>`
-      + `<span class="route-node route-current">${currentName}</span>${routeNodes}</div>`;
+      + `<span class="route-node route-current">${currentName}</span>${routeNodes}</div>${routeStatus}`;
     return;
     const s = this.game.state;
     const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
@@ -619,7 +728,12 @@ export class Renderer {
     if (!data) return;
 
     // 玩家
-    this._setText('combat-player-name', '你');
+    this._setText('combat-player-name', data.playerName || '你');
+    this._setText('combat-mode', ({ spar: '切磋', encounter: '实战', tutorial: '入门试炼', showcase: '暂代其身' })[data.mode] || '实战');
+    this._setText('combat-round', `第 ${data.round + 1} 周天`);
+    this._setText('combat-time', `${data.battleTime.toFixed(1)}s`);
+    const modal = document.getElementById('combat-modal');
+    if (modal) modal.dataset.mode = data.mode || 'encounter';
     this._setText('combat-player-hp-text', Math.max(0, Math.floor(data.player.hp)) + '/' + data.player.maxHp);
     this._setStyle('combat-player-hp', 'width', Math.max(0, data.player.hp / data.player.maxHp * 100) + '%');
     this._setText('combat-player-mp-text', Math.max(0, Math.floor(data.player.mp)) + '/' + data.player.maxMp);
@@ -627,34 +741,31 @@ export class Renderer {
 
     // 敌人
     this._setText('combat-enemy-name', data.enemy.name);
-    this._setText('combat-enemy-hp-text', Math.max(0, Math.floor(data.enemy.hp)) + '/' + data.enemy.maxHp);
-    this._setStyle('combat-enemy-hp', 'width', Math.max(0, data.enemy.hp / data.enemy.maxHp * 100) + '%');
+    this._setText('combat-enemy-hp-text', data.hideEnemyHp ? '？？？？' : Math.max(0, Math.floor(data.enemy.hp)) + '/' + data.enemy.maxHp);
+    this._setStyle('combat-enemy-hp', 'width', data.hideEnemyHp ? '100%' : Math.max(0, data.enemy.hp / data.enemy.maxHp * 100) + '%');
 
     // 五槽
     const slotLabels = ['起', '承', '转', '合', '归'];
-    const slotEls = document.querySelectorAll('.combat-slot');
+    const slotEls = document.querySelectorAll('#combat-slots .combat-slot');
     slotEls.forEach((el, idx) => {
       const slot = data.slots[idx];
       el.querySelector('.slot-name').textContent = slot.skill ? slot.skill.name : '—';
       el.querySelector('.slot-label').textContent = slotLabels[idx];
       const cdEl = el.querySelector('.slot-cd');
+      el.className = 'combat-slot ' + slot.state;
+      el.dataset.state = slot.state;
+      el.disabled = !(data.manualControl && idx === data.currentSlot && ['current', 'ready'].includes(slot.state));
       if (slot.state === 'locked') {
-        el.className = 'combat-slot locked';
         cdEl.textContent = '🔒';
       } else if (slot.state === 'cooldown' || slot.state === 'almost') {
-        el.className = 'combat-slot ' + slot.state;
         cdEl.textContent = slot.cd > 0 ? slot.cd.toFixed(1) + 's' : '';
       } else if (slot.state === 'mpwarn') {
-        el.className = 'combat-slot mpwarn';
         cdEl.textContent = '气不足';
       } else if (slot.state === 'mpgate') {
-        el.className = 'combat-slot mpgate';
         cdEl.textContent = '门禁!';
       } else if (slot.state === 'current') {
-        el.className = 'combat-slot current';
-        cdEl.textContent = '▶';
+        cdEl.textContent = data.manualControl ? '落式' : '▶';
       } else {
-        el.className = 'combat-slot ready';
         cdEl.textContent = '✓';
       }
     });
@@ -662,8 +773,8 @@ export class Renderer {
     // 状态图标
     const pStatus = document.getElementById('combat-player-status');
     const eStatus = document.getElementById('combat-enemy-status');
-    if (pStatus) pStatus.innerHTML = (data.player.statusIcons || []).map(s => `<span class="status-icon">${s.icon}</span>`).join('');
-    if (eStatus) eStatus.innerHTML = (data.enemy.statusIcons || []).map(s => `<span class="status-icon">${s.icon}</span>`).join('');
+    if (pStatus) pStatus.innerHTML = (data.player.statusIcons || []).map(s => `<span class="status-icon" title="${this._esc(s.name)}">${s.icon}<small>${s.stacks}</small></span>`).join('');
+    if (eStatus) eStatus.innerHTML = (data.enemy.statusIcons || []).map(s => `<span class="status-icon" title="${this._esc(s.name)}">${s.icon}<small>${s.stacks}</small></span>`).join('');
 
     // 战斗日志
     const logEl = document.getElementById('combat-log');
@@ -678,28 +789,38 @@ export class Renderer {
       if (data.mpGate) {
         gatePanel.style.display = 'block';
         this._setText('mpgate-title', `真气不足！${data.mpGate.skill.name}需${data.mpGate.need}气，当前${data.mpGate.have}`);
+        this._setText('mpgate-timer', `${Math.max(0, data.mpGate.timer).toFixed(1)} 秒后自动调息`);
         const optsEl = document.getElementById('mpgate-options');
-        if (optsEl && !optsEl.dataset.bound) {
-          optsEl.dataset.bound = '1';
+        if (optsEl) {
           optsEl.innerHTML = `
-            <button class="mpgate-btn" data-gate="rest">调息 +30气</button>
-            <button class="mpgate-btn" data-gate="potion">服药 +40气</button>
-            <button class="mpgate-btn" data-gate="basic">平斩 -10气</button>
-            <button class="mpgate-btn" data-gate="force">强行运功</button>
+            <button class="mpgate-btn" data-action="mpGate" data-gate="rest">调息 +30气</button>
+            <button class="mpgate-btn" data-action="mpGate" data-gate="potion" ${data.potionUsed ? 'disabled' : ''}>服药 +40气</button>
+            <button class="mpgate-btn" data-action="mpGate" data-gate="basic">平斩 -10气</button>
+            <button class="mpgate-btn" data-action="mpGate" data-gate="force">强行运功</button>
           `;
-          optsEl.querySelectorAll('.mpgate-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              be.resolveMpGate(btn.dataset.gate);
-              gatePanel.style.display = 'none';
-            });
-          });
         }
       } else {
         gatePanel.style.display = 'none';
-        const optsEl = document.getElementById('mpgate-options');
-        if (optsEl) delete optsEl.dataset.bound;
       }
     }
+
+    const availability = facade.interveneEngine?.getAvailableInterventions?.() || [];
+    const byType = Object.fromEntries(availability.map(item => [item.type, item]));
+    document.querySelectorAll('#combat-modal [data-combat]').forEach(btn => {
+      const type = btn.dataset.combat === 'flee' ? 'retreat' : btn.dataset.combat;
+      const tutorialControl = type === 'guard' || type === 'dodge';
+      btn.hidden = data.mode === 'showcase' || (data.mode === 'tutorial' ? !tutorialControl : tutorialControl);
+      if (tutorialControl) {
+        const charges = type === 'guard' ? data.tutorialDefense?.guardCharges : data.tutorialDefense?.dodgeCharges;
+        btn.disabled = data.mode !== 'tutorial' || charges > 0;
+        btn.textContent = type === 'guard' ? (charges ? '架势已成' : '架势') : (charges ? '待机闪身' : '闪身');
+        return;
+      }
+      const item = byType[type];
+      const blockedByMode = data.mode === 'showcase' || (data.mode === 'tutorial' && type === 'retreat');
+      btn.disabled = blockedByMode || !item?.available;
+      btn.title = type === 'retreat' && item?.successRateText ? `脱战成功率 ${item.successRateText}` : '';
+    });
   }
 
   /** 更新位置图标 */
@@ -753,6 +874,18 @@ export class Renderer {
     while (area.children.length > 100) area.removeChild(area.firstChild);
   }
 
+  /** Brief, borderless feedback for gains, discoveries and relationship changes. */
+  showMomentFeedback(text, type = 'info') {
+    const layer = document.getElementById('jianghu-moment-feedback');
+    if (!layer || !text) return;
+    const item = document.createElement('div');
+    item.className = 'jianghu-moment-feedback__item is-' + type;
+    item.textContent = String(text);
+    layer.appendChild(item);
+    while (layer.children.length > 3) layer.removeChild(layer.firstChild);
+    window.setTimeout(() => item.remove(), 1900);
+  }
+
   /**
    * 感知系统（T9.2）—— 渲染感知面板。
    * 面板是宣纸贴纸感的 in-page 展开区，叠在江湖页上方。
@@ -777,42 +910,12 @@ export class Renderer {
       html += '</div>';
     }
 
-    // 在场人物（交谈/交易/拜师 针对各 NPC，打听 独立为搜索项）
-    if (data.npcs && data.npcs.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 在场人物</div>';
-      data.npcs.forEach((n, i) => {
-        const idx = Number.isInteger(n.index) ? n.index : i;
-        const type = n.type || 'encounter';
-        let subBtns = '<button class="perc-subbtn" data-npc-action="talk" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交谈</button>'
-          + '<button class="perc-subbtn" data-npc-action="trade" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">交易</button>';
-        if (n.canSpar) {
-          subBtns += '<button class="perc-subbtn" data-npc-action="spar" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">切磋</button>';
-        }
-        // 拜师按钮仅在宗门HQ且已有帮派时显示
-        if (data.canAskTeacher) {
-          subBtns += '<button class="perc-subbtn" data-npc-action="askTeacher" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">拜师</button>';
-        }
-        html += '<div class="perc-item perc-npc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">'
-          + '<span class="perc-npc-name">' + this._esc(n.name) + '</span>'
-          + this._npcCue(n)
-          + '<span class="perc-npc-actions">' + subBtns + '</span></div>';
-      });
-      html += '</div>';
-    }
-
-    // 可打听（房间级流言，不针对单个NPC）
-    html += '<div class="perc-section"><div class="perc-head">> 可打听</div>';
-    html += '<div class="perc-item perc-rumor" data-perc-action="rumor">'
-      + '<span>向周围路人打听消息……</span></div>';
-    html += '</div>';
-
-    // 可搜索
-    if (data.searchPoints && data.searchPoints.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 可探索</div>';
-      data.searchPoints.forEach((sp) => {
-        html += '<div class="perc-item perc-search" data-action="searchArea">'
-          + '<span>' + sp.name + '</span> '
-          + '<span style="font-size:11px;color:var(--ink-soft)">（' + sp.desc + '）</span></div>';
+    // 察看只承载空间线索与可观察物，不再复制人物互动或搜索入口。
+    if (data.routeClues && data.routeClues.length > 0) {
+      html += '<div class="perc-section"><div class="perc-head">> 隐处可探</div>';
+      data.routeClues.forEach((clue) => {
+        html += '<div class="perc-item perc-route-clue"><span>' + this._esc(clue.hint || '此处似有异样。') + '</span>'
+          + '<button type="button" class="perc-subbtn" data-perc-action="reveal-route" data-route-id="' + this._esc(clue.id) + '">' + this._esc(clue.revealLabel || '循迹细察') + '</button></div>';
       });
       html += '</div>';
     }
@@ -836,9 +939,11 @@ export class Renderer {
       html += '</div>';
     }
 
-    html += '<div class="perc-close-wrap"><button class="perc-close" id="perc-close-btn">收起 ▲</button></div>';
+    if (!html) html = '<div class="perc-empty">此处暂未察见隐路或异物。</div>';
     panel.querySelector('.perception-inner').innerHTML = html;
     panel.classList.add('open');
+    const trigger = document.querySelector('[data-action="perceive"]');
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
     // 滚动到顶
     panel.scrollTop = 0;
   }
@@ -860,6 +965,35 @@ export class Renderer {
     if (tier === 'epic' || tier === 'story') return '<span class="npc-cue story" aria-label="重要对话">卷</span>';
     if (tier === 'uncanny') return '<span class="npc-cue uncanny" aria-label="异样对话">墨</span>';
     return '';
+  }
+
+  _npcChipState(n, isSelected) {
+    if (n?.locked || n?.interactionLocked || n?.canTalk === false) return 'locked';
+    if (isSelected) return 'selected';
+    if (n?.type === 'guide') return 'guide';
+    const tier = n?.dialogueTier || n?.storyTier || n?.tier || '';
+    if (tier === 'epic' || tier === 'story') return 'key';
+    return 'default';
+  }
+
+  _npcChipBadge(state) {
+    const badges = {
+      guide: { text: '随', label: '引路人' },
+      key: { text: '卷', label: '关键人物' },
+      locked: { text: '?', label: '暂不可交谈' }
+    };
+    const badge = badges[state];
+    return badge ? '<span class="npc-chip-badge" aria-label="' + badge.label + '">' + badge.text + '</span>' : '';
+  }
+
+  _npcDossierBadge(state) {
+    const badges = {
+      guide: { text: '随', label: '引路人' },
+      key: { text: '卷', label: '关键人物' },
+      locked: { text: '未明', label: '暂不可交谈' }
+    };
+    const badge = badges[state];
+    return badge ? '<span class="npc-dossier-state-tag" aria-label="' + badge.label + '">' + badge.text + '</span>' : '';
   }
   _setText(id, text) {
     const el = document.getElementById(id);

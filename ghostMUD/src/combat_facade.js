@@ -19,7 +19,49 @@ import { getData, pickEnemy } from './data/data_loader.js';
 import { BattleEngine } from './battle_async.js';
 import { HijackEngine } from './battle_hijack.js';
 import { InterveneEngine } from './battle_intervene.js';
-import { normalizeChart, getChartSlots } from './combat_contract.js';
+import {
+  BATTLE_MODES,
+  BATTLE_OUTCOMES,
+  BASIC_UNARMED_CHART,
+  COMBAT_SLOTS,
+  normalizeBattleOutcome,
+  normalizeChart,
+  getChartSlots,
+} from './combat_contract.js';
+
+/**
+ * Resolve a combat chart without granting skills as a side effect.
+ * Explicit tutorial/showcase charts are honored; ordinary fights only use
+ * skills that the player has actually learned.
+ */
+export function resolvePlayerBattleChart(state, options = {}, combatSkills = []) {
+  const explicitChart = getChartSlots(options.playerChart);
+  if (explicitChart) return { ...explicitChart };
+
+  const learnedIds = new Set(Object.keys(state?.skills || {}));
+  const skillsById = new Map((combatSkills || []).map(skill => [String(skill.id), skill]));
+  const isLearnedCombatSkill = skillId => {
+    const skill = skillsById.get(String(skillId));
+    return Boolean(skill && skill.slot && !skill.demoOnly && learnedIds.has(String(skillId)));
+  };
+
+  const configured = getChartSlots(state?.chart) || {};
+  const configuredChart = {};
+  for (const slot of COMBAT_SLOTS) {
+    if (isLearnedCombatSkill(configured[slot])) configuredChart[slot] = configured[slot];
+  }
+  if (Object.keys(configuredChart).length > 0) return configuredChart;
+
+  const learnedChart = {};
+  for (const skill of combatSkills || []) {
+    if (!skill?.slot || !COMBAT_SLOTS.includes(skill.slot)) continue;
+    if (skill.demoOnly || !learnedIds.has(String(skill.id)) || learnedChart[skill.slot]) continue;
+    learnedChart[skill.slot] = skill.id;
+  }
+  if (Object.keys(learnedChart).length > 0) return learnedChart;
+
+  return { ...BASIC_UNARMED_CHART };
+}
 
 export class CombatFacade {
   /** @param {import('./game.js').Game} game */
@@ -29,6 +71,9 @@ export class CombatFacade {
     this.battleEngine = null;
     this.hijackEngine = null;
     this.interveneEngine = null;
+    this._battleCompletion = null;
+    this._focusBeforeCombat = null;
+    this._combatKeydownHandler = null;
   }
 
   // ============ 武学查询 ============
@@ -130,41 +175,42 @@ export class CombatFacade {
   // ============ 战斗启动 ============
 
   startCombat(name, data) {
+    const options = arguments[2] || {};
     const g = this.game;
     const dl = g._data || (g._data = getData());
-    let chart = g.state.chart;
-    if (!chart && dl.COMBAT_SKILLS_V3) {
-      // 自动从技能数据中构造（取本门派前5个技能）
-      const factionSkills = dl.COMBAT_SKILLS_V3.filter(sk => sk.faction === g.state.faction && sk.path === 'wu');
-      if (factionSkills.length >= 5) {
-        chart = {};
-        for (const sk of factionSkills) {
-          if (sk.slot) chart[sk.slot] = sk.id;
-        }
-        g.state.chart = chart; // 缓存
-      }
-    }
-    // 归一化 chart 格式
-    const normalizedChart = getChartSlots(chart);
+    const battleId = options.battleId || `battle-${Date.now()}-${data.id || name}`;
+    const mode = Object.values(BATTLE_MODES).includes(options.mode)
+      ? options.mode
+      : BATTLE_MODES.ENCOUNTER;
+    // 正式战斗不再从宗门技能库自动“授艺”。只有已习得战诀可入图；
+    // 尚未习得战诀时，临时使用四个徒手动作。
+    const normalizedChart = dl.COMBAT_SKILLS_V3
+      ? resolvePlayerBattleChart(g.state, options, dl.COMBAT_SKILLS_V3)
+      : getChartSlots(options.playerChart || g.state.chart);
     if (normalizedChart && dl.COMBAT_SKILLS_V3) {
       // 使用新战斗引擎
-      this.battleEngine = new BattleEngine(g);
+      this.battleEngine = new BattleEngine(g, {
+        ...options,
+        battleId,
+        mode,
+        seed: options.seed ?? battleId,
+      });
       this.hijackEngine = new HijackEngine(this.battleEngine);
       this.interveneEngine = new InterveneEngine(this.battleEngine);
+      this._battleCompletion = typeof options.onComplete === 'function' ? options.onComplete : null;
 
       // 设置回调
-      this.battleEngine._onLog = (text, type) => g.addLog(text, type);
+      this.battleEngine._onLog = (event) => g.addLog(event.text, event.type);
       this.battleEngine._onUpdate = () => g.renderer.updateCombatUI();
-      this.battleEngine._onEnd = (victory) => this.endCombat(victory);
+      this.battleEngine._onEnd = (result) => this.finishCombat(result);
 
       // 启动战斗
-      g.state.combat = { enemyName: name, enemyData: data };
-      document.getElementById('combat-modal').classList.add('active');
-      this.battleEngine.startCombat(data, normalizedChart);
+      g.state.combat = { battleId, mode, enemyName: name, enemyData: data };
+      this._activateCombatModal();
+      this.battleEngine.startCombat(data, normalizedChart, { ...options, battleId, mode });
+      g.renderer?.updateCombatUI?.();
+      this._focusCombatControl();
       return true;
-    } else if (dl.COMBAT_SKILLS_V3) {
-      g.addLog('你尚未习得任何行功战诀，无法开战。', 'system');
-      return false;
     } else {
       // 仅在 V3 技能数据缺失时保留旧引擎兜底，避免缺战诀被静默伪装为可战斗。
       this._legacyStartCombat(name, data);
@@ -182,13 +228,25 @@ export class CombatFacade {
     if (this.battleEngine && this.battleEngine.battleState && this.battleEngine.battleState.active) {
       // 转发到新引擎
       const be = this.battleEngine;
+      if (action?.startsWith('slot:')) {
+        const result = be.castSlot(action.slice(5).toUpperCase());
+        if (!result.ok) {
+          const messages = {
+            'wrong-order': `行功次序未到。当前应走${result.expected || '下一'}式。`,
+            cooldown: '此式尚未回气。',
+            'mp-gate': '真气不足，先处理行功门禁。',
+          };
+          g.addLog(messages[result.reason] || '此刻无法催动该式。', 'system');
+        }
+        return result;
+      }
       switch (action) {
         case 'attack': {
           // 战诀自动运转，手动攻击仅作调试入口
           // autoCast 参数必须是 'A'~'E'，不是 0-4
           const SLOTS = ['A', 'B', 'C', 'D', 'E'];
           for (let i = 0; i < 5; i++) {
-            if (be.battleState.slotUnlocked[i] && be.battleState.cooldowns[i] <= 0) {
+            if (be.battleState.slotUnlocked[i] && be.battleState.cooldowns[SLOTS[i]] <= 0) {
               be.autoCast(SLOTS[i]);
               return;
             }
@@ -204,6 +262,11 @@ export class CombatFacade {
           g.addLog('🧘 凝神调息，真气回复。', 'combat');
           break;
         }
+        case 'guard':
+        case 'dodge': {
+          be.useTutorialDefense(action);
+          break;
+        }
         case 'flee': {
           if (this.interveneEngine) {
             this.interveneEngine.doRetreat();
@@ -214,16 +277,21 @@ export class CombatFacade {
         }
         case 'variant': {
           if (this.interveneEngine) {
-            const presets = this.interveneEngine.getAvailableInterventions();
-            if (presets && presets.variant) {
-              this.interveneEngine.doVariant(presets.variant[0]?.id);
-            }
+            const intervention = this.interveneEngine.getAvailableInterventions()
+              .find(item => item.type === 'variant');
+            const chart = intervention?.charts?.find(item => item.available);
+            if (chart) this.interveneEngine.doVariant(chart.id);
+            else g.addLog('当前没有可用的备用战诀。', 'system');
           }
           break;
         }
         case 'potion': {
           if (this.interveneEngine) {
-            this.interveneEngine.doPotion(null);
+            const intervention = this.interveneEngine.getAvailableInterventions()
+              .find(item => item.type === 'potion');
+            const potion = intervention?.items?.find(item => item.available);
+            if (potion) this.interveneEngine.doPotion(potion.id);
+            else g.addLog('行囊中没有当前可用的战斗药物。', 'system');
           }
           break;
         }
@@ -244,6 +312,10 @@ export class CombatFacade {
   }
 
   // ============ 旧引擎 ============
+
+  resolveMpGate(choice) {
+    return this.battleEngine?.resolveMpGate(choice) ?? false;
+  }
 
   _legacyStartCombat(name, data) {
     const g = this.game;
@@ -296,7 +368,7 @@ export class CombatFacade {
         }
         if (Math.random() < 0.4 + s.realm * 0.05 + dodgeBonus) {
           g.addLog('🏃 抓住间隙，成功脱身！' + (dodgeBonus > 0 ? '（轻功+成）' : ''), 'info');
-          this.endCombat(false);
+          this.finishCombat(BATTLE_OUTCOMES.RETREAT);
           return;
         } else {
           g.addLog('🏃 遁走失败！', 'combat');
@@ -318,7 +390,7 @@ export class CombatFacade {
         g.addLog('?? ' + c.enemyData.special, 'special');
       }
       g.checkQuestProgress('kill', c.enemyName);
-      this.endCombat(true);
+      this.finishCombat(BATTLE_OUTCOMES.VICTORY);
       return;
     }
     s.roundCount++;
@@ -450,7 +522,7 @@ export class CombatFacade {
       g.addLog('💀 <b>' + c.enemyName + '</b> 毙于你手！', 'breakthrough');
       if (!c.enemyData.dropsSpirit) g.addLog('   得 ' + exp + ' 修为，' + gold + ' ' + g.getMoneyName(), 'item');
       else g.addLog('   得 ' + exp + ' 修为，' + gold + ' 灵石', 'item');
-      this.endCombat(true);
+      this.finishCombat(BATTLE_OUTCOMES.VICTORY);
       return;
     }
 
@@ -461,24 +533,117 @@ export class CombatFacade {
 
   // ============ 战斗结束 ============
 
-  endCombat(victory) {
+  finishCombat(resultOrOutcome) {
     const g = this.game;
+    const outcome = normalizeBattleOutcome(
+      typeof resultOrOutcome === 'object' ? resultOrOutcome?.outcome : resultOrOutcome
+    );
+
+    // External callers ask the active engine to settle; its callback re-enters with a result object.
+    if (this.battleEngine?.battleState?.active && typeof resultOrOutcome !== 'object') {
+      return this.battleEngine.finishCombat(outcome);
+    }
+
+    let result = typeof resultOrOutcome === 'object' && resultOrOutcome
+      ? resultOrOutcome
+      : {
+          battleId: g.state.combat?.battleId || `legacy-${Date.now()}`,
+          mode: g.state.combat?.mode || BATTLE_MODES.ENCOUNTER,
+          outcome,
+          events: [],
+        };
+    const completion = this._battleCompletion;
+    this._battleCompletion = null;
+
     // 清理新引擎实例（避免重入：BattleEngine.endCombat 会回调此方法）
     if (this.battleEngine) {
-      const be = this.battleEngine;
       this.battleEngine = null;
       this.hijackEngine = null;
       this.interveneEngine = null;
-      // 如果 BattleEngine 尚未停止，停止它
-      if (be.battleState && be.battleState.active) {
-        be.endCombat(victory);
-      }
     }
+    g.state.lastBattleResult = {
+      battleId: result.battleId,
+      encounterId: result.encounterId || null,
+      mode: result.mode,
+      outcome: result.outcome,
+    };
     g.state.combat = null;
-    document.getElementById('combat-modal').classList.remove('active');
+    this._deactivateCombatModal();
     // 战斗结束：多种状态可能变化，全量刷新
     g.renderer.updateUI();
-    if (victory) g.checkBreakthrough();
+    if (outcome === BATTLE_OUTCOMES.VICTORY && result.grantRewards) {
+      g.checkQuestProgress?.('kill', result.enemyName);
+    }
+    if (completion) completion(result);
+
+    if (outcome === BATTLE_OUTCOMES.DEFEAT && result.mode === BATTLE_MODES.ENCOUNTER) {
+      g.gameOver('力战不敌，殒命于此');
+    }
+    return result;
+  }
+
+  endCombat(outcome) {
+    return this.finishCombat(outcome);
+  }
+
+  _activateCombatModal() {
+    if (typeof document === 'undefined') return;
+    const modal = document.getElementById('combat-modal');
+    if (!modal) return;
+
+    this._focusBeforeCombat = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    modal.classList.add('active');
+
+    this._combatKeydownHandler = (event) => {
+      if (event.key !== 'Tab') return;
+      const focusable = this._getCombatFocusable();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        document.getElementById('combat-title')?.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    modal.addEventListener('keydown', this._combatKeydownHandler);
+  }
+
+  _getCombatFocusable() {
+    if (typeof document === 'undefined') return [];
+    const modal = document.getElementById('combat-modal');
+    if (!modal) return [];
+    return [...modal.querySelectorAll('button:not([disabled]):not([hidden]), [tabindex]:not([tabindex="-1"])')]
+      .filter(element => !element.closest('[hidden]') && element.getClientRects().length > 0);
+  }
+
+  _focusCombatControl() {
+    if (typeof document === 'undefined') return;
+    const currentSlot = document.querySelector('#combat-modal .combat-slot[data-state="current"]:not([disabled])');
+    const firstControl = currentSlot || this._getCombatFocusable()[0];
+    (firstControl || document.getElementById('combat-title'))?.focus();
+  }
+
+  _deactivateCombatModal() {
+    if (typeof document === 'undefined') return;
+    const modal = document.getElementById('combat-modal');
+    if (modal && this._combatKeydownHandler) {
+      modal.removeEventListener('keydown', this._combatKeydownHandler);
+    }
+    modal?.classList.remove('active');
+    this._combatKeydownHandler = null;
+
+    const previous = this._focusBeforeCombat;
+    this._focusBeforeCombat = null;
+    if (previous?.isConnected && typeof previous.focus === 'function') previous.focus();
   }
 }
 

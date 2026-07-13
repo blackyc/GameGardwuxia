@@ -10,6 +10,35 @@
 
 export const COMBAT_SLOTS = ['A', 'B', 'C', 'D', 'E'];
 
+// 未习得战诀时的兜底动作。它们是临时徒手动作，不写入玩家的已学武学。
+export const BASIC_UNARMED_CHART = Object.freeze({
+  A: 9001,
+  B: 9002,
+  C: 9003,
+  D: 9004,
+});
+
+export const BATTLE_OUTCOMES = Object.freeze({
+  VICTORY: 'victory',
+  DEFEAT: 'defeat',
+  RETREAT: 'retreat',
+  ABORTED: 'aborted',
+});
+
+export const BATTLE_MODES = Object.freeze({
+  SPAR: 'spar',
+  ENCOUNTER: 'encounter',
+  TUTORIAL: 'tutorial',
+  SHOWCASE: 'showcase',
+});
+
+export function normalizeBattleOutcome(value) {
+  if (Object.values(BATTLE_OUTCOMES).includes(value)) return value;
+  if (value === true) return BATTLE_OUTCOMES.VICTORY;
+  if (value === false) return BATTLE_OUTCOMES.DEFEAT;
+  return BATTLE_OUTCOMES.ABORTED;
+}
+
 /**
  * 归一化技能数据字段。
  * 技能源 (combat_skills_v3.js) 使用旧字段名 mpCost/duNum/bleedNum 等，

@@ -228,11 +228,11 @@ console.log('\u2501'.repeat(50));
 
 // ── 1. Schema 基础验证 ────────────────────────────────
 
-test('SCHEMA_VERSION \u4e3a 2', () => {
+test('SCHEMA_VERSION \u4e3a 3', () => {
   const ls = createMockLocalStorage();
   const mod = loadStorageModule(ls);
   assert.strictEqual(mod.SAVE_SCHEMA !== undefined, true, 'SAVE_SCHEMA not exported');
-  assert.strictEqual(mod.SCHEMA_VERSION, 2, 'SCHEMA_VERSION should be 2');
+  assert.strictEqual(mod.SCHEMA_VERSION, 3, 'SCHEMA_VERSION should be 3');
 });
 
 test('SAVE_SCHEMA \u5305\u542b\u6240\u6709\u5fc5\u8981\u5b57\u6bb5', () => {
@@ -658,7 +658,7 @@ test('exportSave() \u8fd4\u56de JSON \u5b57\u7b26\u4e32', () => {
   assert.strictEqual(typeof exported, 'string', 'exportSave should return string');
 
   const parsed = JSON.parse(exported);
-  assert.strictEqual(parsed.version, 2, 'exported version should be 2');
+  assert.strictEqual(parsed.version, 3, 'exported version should be 3');
   assert.strictEqual(parsed.state.realm, 4, 'exported realm should be 4');
 });
 

@@ -7,6 +7,8 @@ const ANCHOR_BY_DIRECTION = Object.freeze({
   入: 'DEEP', in: 'DEEP', 深: 'DEEP', 出: 'BACK', out: 'BACK', 回: 'BACK', back: 'BACK'
 });
 
+const FALLBACK_DIRECTIONS = new Set(['回', 'back']);
+
 function shortRoomName(roomId) {
   return String(roomId || '').split('·').pop() || '未知去处';
 }
@@ -40,7 +42,7 @@ export class RouteService {
     const room = this.game.LOCATIONS?.[roomId];
     if (!room?.connections) return [];
 
-    return Object.entries(room.connections)
+    const routes = Object.entries(room.connections)
       .filter(([, target]) => Boolean(this.game.LOCATIONS?.[target]))
       .map(([direction, target], slot) => {
         const metadata = room.routeSketch?.[direction] || {};
@@ -55,6 +57,20 @@ export class RouteService {
           discovery: metadata.discovery || null
         };
       });
+
+    // A room is one spatial destination even if legacy integration produced
+    // both a semantic direction and a synthetic “回” edge to that room.
+    const byTarget = new Map();
+    routes.forEach((route) => {
+      const existing = byTarget.get(route.target);
+      if (!existing || (FALLBACK_DIRECTIONS.has(existing.direction) && !FALLBACK_DIRECTIONS.has(route.direction))) {
+        byTarget.set(route.target, route);
+      }
+    });
+    return [...byTarget.values()].map((route, slot) => ({
+      ...route,
+      layout: { ...route.layout, slot }
+    }));
   }
 
   getRoutes(roomId = this.game.state.location) {

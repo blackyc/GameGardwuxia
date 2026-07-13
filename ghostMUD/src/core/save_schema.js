@@ -8,7 +8,7 @@
  * 由运行时重新初始化。
  */
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 /**
  * SAVE_SCHEMA — 每个字段定义：
@@ -91,6 +91,10 @@ export const SAVE_SCHEMA = {
   guideCompanion:     { type: 'string',  default: null,        nullable: true  },
   tutorialSeenRooms:  { type: 'object',  default: {},          nullable: false },
   wenjianfengDinnerDone: { type: 'boolean', default: false,    nullable: false },
+  xiaoyuanFirstLessonCompleted: { type: 'boolean', default: false, nullable: false },
+  boarCombatResult:   { type: 'string',  default: null,        nullable: true  },
+  residualSwordSeen:  { type: 'boolean', default: false,       nullable: false },
+  tutorialActionState:{ type: 'object',  default: null,        nullable: true  },
 
   // ═══ 行功战斗系统 v3.0 ═══
   chart:              { type: 'object',  default: null,        nullable: true  },
@@ -115,6 +119,7 @@ export const SAVE_SCHEMA = {
   // ═══ 战斗辅助（运行时状态，存档可保留但加载时重置） ═══
   performCooldowns:   { type: 'object',  default: {},          nullable: false },
   roundCount:         { type: 'number',  default: 0,           nullable: false },
+  lastBattleResult:   { type: 'object',  default: null,        nullable: true  },
 };
 
 /**

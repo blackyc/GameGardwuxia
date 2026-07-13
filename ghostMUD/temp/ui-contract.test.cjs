@@ -69,7 +69,9 @@ test('NPC cards expose only names until focused', () => {
   assert.ok(buttonBlock.includes('room-npc-card'), 'NPC buttons missing room-npc-card');
   assert.ok(!buttonBlock.includes('focused.desc'), 'NPC card button must not render focused description');
   assert.ok(renderer.includes('npc-dossier-desc'), 'focused dossier description missing');
-  assert.ok(renderer.includes('npc-dossier-memory'), 'focused dossier memory line missing');
+  assert.ok(renderer.includes('npc-dossier-relation'), 'focused dossier inline relation missing');
+  assert.ok(!renderer.includes('data-action="closeNpcFocus">收起'), 'focused dossier must collapse from its selected name chip');
+  ['交谈', '切磋', '送礼', '打听'].forEach(label => assert.ok(renderer.includes("npcAction('" + label), 'missing NPC action: ' + label));
 });
 
 test('ink dialogue layer keeps history and choices inside one shell', () => {
@@ -87,6 +89,47 @@ test('scene feed and recent log stay separated', () => {
 
 test('diamond action buttons keep circular inner lining', () => {
   assertCss(/\.page\[data-page="jianghu"\]\s+\.diamond-badge::before\s*\{[\s\S]*border-radius:\s*50%/, 'diamond inner circular lining');
+  assert.ok(html.includes('<span class="label">察看</span>'), 'scene observation action missing');
+  assert.ok(html.includes('<span class="label">探索</span>'), 'scene search action missing');
+});
+
+test('perception no longer duplicates NPC, rumor or search controls', () => {
+  const start = renderer.indexOf('renderPerception(data)');
+  const end = renderer.indexOf('// === 内部工具 ===', start);
+  const block = renderer.slice(start, end);
+  assert.ok(!block.includes('> 在场人物'), 'perception must not duplicate scene NPCs');
+  assert.ok(!block.includes('> 可打听'), 'perception must not keep room-level rumor action');
+  assert.ok(!block.includes('> 可探索'), 'perception must not duplicate the search action');
+  assert.ok(!block.includes('perc-close'), 'perception must collapse from the 察看 trigger');
+});
+
+test('only NPC name chips use layered irregular ink strokes', () => {
+  assertCss(/\.room-npc-card\.npc-chip::before[\s\S]*clip-path:\s*polygon/, 'rough NPC name-chip outer stroke');
+  assert.ok(!jianghuCss.includes('.npc-dossier::before'), 'NPC detail cards keep their regular double-line frame');
+  ['guide', 'key', 'locked', 'selected'].forEach(state => assert.ok(jianghuCss.includes('npc-chip--' + state), 'missing chip state: ' + state));
+});
+
+test('chapter two tap tasks have a dedicated live panel before scene prose', () => {
+  const panel = pos('id="tutorial-action-panel"');
+  const feed = pos('id="scene-feed"');
+  assert.ok(panel < feed, 'tutorial action panel must precede the scene feed');
+  assert.ok(html.includes('class="tutorial-action-panel"'), 'tutorial action panel class missing');
+  assert.ok(renderer.includes('renderTutorialActionPanel'), 'tutorial action renderer missing');
+  assert.ok(renderer.includes('data-tutorial-action'), 'tutorial action payload missing');
+});
+
+test('combat dialog exposes five manual chart slots and live playback', () => {
+  assert.ok(html.includes('id="combat-modal" role="dialog" aria-modal="true"'), 'combat modal semantics missing');
+  assert.ok(html.includes('id="combat-title" tabindex="-1"'), 'combat title focus fallback missing');
+  assert.strictEqual((html.match(/data-action="combatSlot"/g) || []).length, 5, 'combat must expose five chart slots');
+  assert.ok(html.includes('id="combat-log" aria-live="polite"'), 'combat playback must be announced');
+  assert.ok(renderer.includes('dataset.state = slot.state'), 'combat slot state contract missing');
+});
+
+test('route sketch resolves overlapping exits before drawing and clicking', () => {
+  assert.ok(renderer.includes('function resolveRoutePoints(routes)'), 'route collision resolver missing');
+  assert.ok(renderer.includes('const routePoints = resolveRoutePoints([...visibleRoutes, ...sensedRoutes])'), 'route renderer must resolve all visible and sensed points together');
+  assert.ok(renderer.includes('routePoints.get(route.id) || routePoint(route)'), 'route nodes and lines must consume resolved positions');
 });
 
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

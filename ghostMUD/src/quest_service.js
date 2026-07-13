@@ -28,26 +28,30 @@ export class QuestService {
     const g = this.game;
     const s = g.state;
     const parts = rewardStr.split(';');
+    const feedback = [];
     for (const part of parts) {
       const [key, val] = part.split(':');
-      if (key === 'gain_gold') g.addMoney(parseInt(val));
-      else if (key === 'gain_cultivation') s.cultivation += parseInt(val);
-      else if (key === 'gain_spirit') g.addSpiritStones(parseInt(val));
-      else if (key === 'daoxin') s.daoxin = Math.min(s.maxDaoXin, s.daoxin + parseInt(val));
-      else if (key === 'heal' || key === 'hp') s.hp = Math.min(s.maxHp, s.hp + (parseInt(val) || 30));
+      if (key === 'gain_gold') { g.addMoney(parseInt(val)); feedback.push(g.getMoneyName() + ' +' + parseInt(val)); }
+      else if (key === 'gain_cultivation') { s.cultivation += parseInt(val); feedback.push('修为 +' + parseInt(val)); }
+      else if (key === 'gain_spirit') { g.addSpiritStones(parseInt(val)); feedback.push('灵石 +' + parseInt(val)); }
+      else if (key === 'daoxin') { s.daoxin = Math.min(s.maxDaoXin, s.daoxin + parseInt(val)); feedback.push('道心 +' + parseInt(val)); }
+      else if (key === 'heal' || key === 'hp') { s.hp = Math.min(s.maxHp, s.hp + (parseInt(val) || 30)); feedback.push('气血 +' + (parseInt(val) || 30)); }
       else if (key === 'random_item') {
         const it = g.ITEMS[Math.floor(Math.random() * g.ITEMS.length)];
         s.inventory.push({ ...it });
         g.addLog('📦 获得：<b>' + it.name + '</b>', 'item');
+        feedback.push('获得 · ' + it.name);
       } else if (key === 'random_technique') {
         const techItems = g.ITEMS.filter(it => it.type === 'technique');
         if (techItems.length > 0) {
           const ti = techItems[Math.floor(Math.random() * techItems.length)];
           s.inventory.push({ ...ti });
           g.addLog('📖 获得功法：<b>' + ti.name + '</b>', 'special');
+          feedback.push('习得 · ' + ti.name);
         }
       }
     }
+    if (feedback.length > 0) g.showMomentFeedback?.(feedback.join(' · '), 'reward');
   }
 
   /**
@@ -121,6 +125,7 @@ export class QuestService {
     if (!q) return;
 
     g.addLog('🏆 任务完成：<b>' + q.name + '</b>！', 'breakthrough');
+    g.showMomentFeedback?.('任务完成 · ' + q.name, 'quest');
 
     if (q.rewards.spiritStones) { g.addSpiritStones(q.rewards.spiritStones); g.addLog('   获得 ' + q.rewards.spiritStones + ' 灵石', 'item'); }
     if (q.rewards.copperCoins) { s.copperCoins += q.rewards.copperCoins; g.addLog('   获得 ' + q.rewards.copperCoins + ' 文铜钱', 'item'); }

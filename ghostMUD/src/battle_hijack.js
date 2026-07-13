@@ -120,7 +120,7 @@ export class HijackEngine {
     }
 
     // 掷骰
-    if (Math.random() >= effectiveRate) {
+    if (this.be.random() >= effectiveRate) {
       return { triggered: false, type: null, modifiedSkill: null, log: '', extraEffects: null };
     }
 
@@ -178,7 +178,7 @@ export class HijackEngine {
   doTextVariant(skillData) {
     const bodyPart = this._inferBodyPart(skillData);
     const templates = this._getNarrativeTemplates(bodyPart);
-    const template = templates[Math.floor(Math.random() * templates.length)];
+    const template = templates[Math.floor(this.be.random() * templates.length)];
 
     const narrativeText = template.template.replace('{technique}', skillData.name);
 
@@ -209,7 +209,7 @@ export class HijackEngine {
     const textResult = this.doTextVariant(skillData);
 
     // 计算伤害浮动
-    const variance = (Math.random() * 2 - 1) * DAMAGE_VARIANCE; // [-0.20, +0.20]
+    const variance = (this.be.random() * 2 - 1) * DAMAGE_VARIANCE; // [-0.20, +0.20]
     const damageMultiplier = 1 + variance;
     const originalSkillNum = skillData.skillNum || 20;
     const modifiedSkillNum = Math.max(1, Math.floor(originalSkillNum * damageMultiplier));
@@ -304,7 +304,7 @@ export class HijackEngine {
 
     // 30%概率跳过承/转式直接进入合式或更后
     let jumpDistance;
-    if (Math.random() < SLOT_JUMP_CHANCE) {
+    if (this.be.random() < SLOT_JUMP_CHANCE) {
       // 跳过1-2个式位
       jumpDistance = Math.min(2, SLOTS.length - 1 - currentIndex);
     } else {
@@ -620,15 +620,15 @@ export class HijackEngine {
     if (level === 1) return 'text';
     if (level === 2) {
       // 2级：文本变异 + 伤害浮动（随机选一个，或两个都触发）
-      return Math.random() < 0.5 ? 'text' : 'stat';
+      return this.be.random() < 0.5 ? 'text' : 'stat';
     }
     if (level === 3) return 'skill_replace';
     if (level === 4) {
       // 4级：功法替换 + 跳位（50%概率各选其一）
-      return Math.random() < 0.5 ? 'skill_replace' : 'slot_jump';
+      return this.be.random() < 0.5 ? 'skill_replace' : 'slot_jump';
     }
     // 5级：60%战诀覆写，25%跳位，15%功法替换
-    const roll = Math.random();
+    const roll = this.be.random();
     if (roll < 0.60) return 'chart_override';
     if (roll < 0.85) return 'slot_jump';
     return 'skill_replace';
@@ -792,7 +792,7 @@ export class HijackEngine {
 
     // 无宗门 → 随机
     const keys = Object.keys(SECT_TO_ENTITY).map(k => SECT_TO_ENTITY[k]);
-    return keys[Math.floor(Math.random() * keys.length)];
+    return keys[Math.floor(this.be.random() * keys.length)];
   }
 
   /**
@@ -880,7 +880,7 @@ export class HijackEngine {
       const pool = this.HIJACK.engine.unnameableConsequences;
       // 按概率加权随机
       const totalWeight = pool.reduce((sum, c) => sum + c.probability, 0);
-      let roll = Math.random() * totalWeight;
+      let roll = this.be.random() * totalWeight;
       for (const consequence of pool) {
         roll -= consequence.probability;
         if (roll <= 0) return consequence;
@@ -896,7 +896,7 @@ export class HijackEngine {
       { id: 'energy_drain', name: '噬', desc: `吸取目標精元——自身回復+目標精元上限永久-1`, probability: 15 },
     ];
     const totalWeight = fallback.reduce((sum, c) => sum + c.probability, 0);
-    let roll = Math.random() * totalWeight;
+    let roll = this.be.random() * totalWeight;
     for (const consequence of fallback) {
       roll -= consequence.probability;
       if (roll <= 0) return consequence;
@@ -931,7 +931,7 @@ export class HijackEngine {
       }
       case 'backfire': {
         // 反噬
-        damage = 40 + Math.random() * 20;
+        damage = 40 + this.be.random() * 20;
         selfDamage = damage;
         log = `[不可名狀·反] ${consequence.desc}\n招式出去的瞬間——力量倒灌。你和對手同時悶哼。`;
         break;

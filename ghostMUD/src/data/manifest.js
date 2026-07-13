@@ -58,6 +58,10 @@ export const DATA_MANIFEST = [
     vars: ['WENJIANFENG_TUTORIAL_CH1'],
   },
   {
+    file: 'wenjianfeng_tutorial_ch2.js',
+    vars: ['WENJIANFENG_TUTORIAL_CH2'],
+  },
+  {
     file: 'integration_v2.js',
     vars: ['LOCATIONS', 'MAP_POS', 'MAP_CONN', 'ROOM_SEARCH', 'NPC_ENCOUNTERS',
            'FACTIONS', 'ROGUE_SKILLS', 'QUESTS', 'getDesc'],

@@ -48,26 +48,32 @@ export class SearchService {
       const amt = min + Math.floor(Math.random() * (max - min + 1));
       g.addMoney(amt);
       g.addLog('💰 ' + picked.desc + '（+' + amt + ' ' + g.getMoneyName() + '）', 'item');
+      g.showMomentFeedback?.('获得 ' + amt + ' ' + g.getMoneyName(), 'reward');
     } else if (picked.type === 'spirit') {
       const [min, max] = picked.amount.split('-').map(Number);
       const amt = min + Math.floor(Math.random() * (max - min + 1));
       g.addSpiritStones(amt);
       const spiritName = (s.path === 'ling' || s.knowsSpiritStones) ? '灵石' : '不知名的石头';
       g.addLog('?? ' + picked.desc + '（+' + amt + ' ' + spiritName + '）', 'item');
+      g.showMomentFeedback?.('获得 ' + amt + ' ' + spiritName, 'reward');
     } else if (picked.type === 'daoxin') {
       s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (picked.amount || 10));
       g.addLog('🧘 ' + picked.desc, 'info');
+      g.showMomentFeedback?.('道心 +' + (picked.amount || 10), 'reward');
     } else if (picked.type === 'hp') {
       s.hp = Math.min(s.maxHp, s.hp + (picked.amount || 15));
       g.addLog('💊 ' + picked.desc, 'item');
+      g.showMomentFeedback?.('气血 +' + (picked.amount || 15), 'reward');
     } else if (picked.type === 'cultivation') {
       s.cultivation += (picked.amount || 10);
       g.addLog('✨ ' + picked.desc, 'info');
+      g.showMomentFeedback?.('修为 +' + (picked.amount || 10), 'reward');
     } else if (picked.type === 'find_type') {
       const it = this.pickItemByType(picked.itemType);
       if (it) {
         s.inventory.push({ ...it });
         g.addLog('📦 ' + picked.desc.replace('了点东西', '：<b>' + it.name + '</b>').replace('了', '了：<b>' + it.name + '</b>'), 'item');
+        g.showMomentFeedback?.('获得 · ' + it.name, 'reward');
       } else {
         g.addLog('🔍 ' + picked.desc, 'system');
       }
