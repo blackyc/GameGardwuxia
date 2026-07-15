@@ -363,9 +363,9 @@ export class Renderer {
             + lockedReason
             + '<div class="npc-dossier-actions">'
             + npcAction('交谈', 'talkNpc', !isDossierLocked, 'jianghu-action-button--primary')
-            + npcAction('切磋', 'sparNpc', !isDossierLocked && canSpar, 'jianghu-action-button--secondary')
+            + npcAction('观察', 'npcObserve', !isDossierLocked, 'jianghu-action-button--secondary')
             + npcAction('送礼', 'npcGift', !isDossierLocked, 'jianghu-action-button--secondary')
-            + npcAction('打听', 'npcAsk', !isDossierLocked, 'jianghu-action-button--secondary')
+            + npcAction('切磋', 'sparNpc', !isDossierLocked && canSpar, 'jianghu-action-button--secondary')
             + '</div>' + giftTray + '</section>';
         }
         npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>' + dossier;
@@ -752,11 +752,17 @@ export class Renderer {
       el.querySelector('.slot-name').textContent = slot.skill ? slot.skill.name : '—';
       el.querySelector('.slot-label').textContent = slotLabels[idx];
       const cdEl = el.querySelector('.slot-cd');
-      el.className = 'combat-slot ' + slot.state;
+      const isCooling = Boolean(slot.skill && slot.cdMax > 0 && slot.cd > 0);
+      const isPrepared = Boolean(slot.skill && slot.cdMax > 0 && slot.cd <= 0);
+      const cdFill = Math.max(0, Math.min(100, Math.round((slot.cdPercent || 0) * 100)));
+      el.className = 'combat-slot ' + slot.state + (isCooling ? ' is-cooling' : '') + (isPrepared ? ' is-prepared' : '');
       el.dataset.state = slot.state;
+      el.style.setProperty('--cd-fill', `${cdFill}%`);
       el.disabled = !(data.manualControl && idx === data.currentSlot && ['current', 'ready'].includes(slot.state));
       if (slot.state === 'locked') {
-        cdEl.textContent = '🔒';
+        // Later formula slots remain unavailable, but their opening CD is still
+        // visible so the player sees the whole chart preparing in parallel.
+        cdEl.textContent = isCooling ? slot.cd.toFixed(1) + 's' : (isPrepared ? '待序' : '🔒');
       } else if (slot.state === 'cooldown' || slot.state === 'almost') {
         cdEl.textContent = slot.cd > 0 ? slot.cd.toFixed(1) + 's' : '';
       } else if (slot.state === 'mpwarn') {

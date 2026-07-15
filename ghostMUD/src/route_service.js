@@ -45,7 +45,15 @@ export class RouteService {
     const routes = Object.entries(room.connections)
       .filter(([, target]) => Boolean(this.game.LOCATIONS?.[target]))
       .map(([direction, target], slot) => {
-        const metadata = room.routeSketch?.[direction] || {};
+        const isWenjianfengMaze = roomId.startsWith('问剑峰·竹林深处');
+        const mazeFallback = isWenjianfengMaze
+          ? {
+              label: String(target).replace(/^问剑峰·竹林深处·/, ''),
+              kind: 'maze',
+              layout: { anchor: ANCHOR_BY_DIRECTION[direction] || 'AUTO', lane: slot }
+            }
+          : {};
+        const metadata = { ...mazeFallback, ...(room.routeSketch?.[direction] || {}) };
         return {
           id: this._routeId(roomId, direction, metadata),
           sourceRoomId: roomId,

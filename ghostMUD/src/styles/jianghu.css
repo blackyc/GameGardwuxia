@@ -1935,21 +1935,54 @@ body[data-page="jianghu"] #scene-bg {
 
 #combat-modal .combat-slots { gap: 7px; margin: 14px 0 9px; }
 #combat-modal .combat-slot {
+  --cd-fill: 100%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-width: 0;
   min-height: 74px;
   padding: 7px 3px;
-  color: #25231f;
+  color: #fff1d1;
   font-family: inherit;
-  background: #cac3b2;
-  border: 1px solid #5b5b53;
+  background: linear-gradient(180deg, #9b6b3e 0%, #70421f 100%);
+  border: 1px solid #4c2e18;
   border-radius: 2px;
-  box-shadow: inset 0 0 0 2px rgba(244,239,222,.45);
+  box-shadow: inset 0 0 0 2px rgba(255,235,193,.18), inset 0 -2px 0 rgba(54,28,12,.28);
+  transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease;
 }
-#combat-modal .combat-slot .slot-label { color: #33352f; }
-#combat-modal .combat-slot .slot-name { display: block; color: #403d36; }
-#combat-modal .combat-slot .slot-cd { display: block; color: #7d332e; }
-#combat-modal .combat-slot.current { background: #d9c778; border-color: #34352f; box-shadow: inset 0 0 0 2px rgba(255,249,213,.6), 0 0 0 2px #2b6765; }
-#combat-modal .combat-slot.ready { background: #d4cda9; }
+#combat-modal .combat-slot::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: auto 0 0;
+  height: var(--cd-fill);
+  background: linear-gradient(180deg, #aa7947 0%, #77451f 100%);
+  transition: height .1s linear;
+}
+#combat-modal .combat-slot > span { position: relative; z-index: 1; }
+#combat-modal .combat-slot .slot-label { color: inherit; text-shadow: 0 1px rgba(45,22,8,.48); }
+#combat-modal .combat-slot .slot-name { display: block; color: inherit; text-shadow: 0 1px rgba(45,22,8,.48); }
+#combat-modal .combat-slot .slot-cd { display: block; color: #ffe1a8; text-shadow: 0 1px rgba(45,22,8,.48); }
+/* After casting, the pale card is gradually re-covered from bottom to top. */
+#combat-modal .combat-slot.is-cooling {
+  color: #3b2819;
+  background: #e7decb;
+  border-color: #80664d;
+  box-shadow: inset 0 0 0 2px rgba(255,250,234,.56), inset 0 -1px 0 rgba(94,63,39,.18);
+}
+#combat-modal .combat-slot.is-cooling .slot-label,
+#combat-modal .combat-slot.is-cooling .slot-name { text-shadow: 0 1px rgba(255,250,235,.72); }
+#combat-modal .combat-slot.is-cooling .slot-cd { color: #65391e; text-shadow: 0 1px rgba(255,250,235,.72); }
+#combat-modal .combat-slot.locked.is-cooling { opacity: 1; }
+#combat-modal .combat-slot.locked.is-prepared { opacity: .7; }
+#combat-modal .combat-slot.locked:not(.is-cooling) { opacity: .42; background: #b8b1a2; color: #6a645a; border-color: #817b70; }
+#combat-modal .combat-slot.locked.is-prepared { background: linear-gradient(180deg, #9f7041 0%, #70421f 100%); color: #f6e4bd; border-color: #67401f; }
+#combat-modal .combat-slot.locked.is-prepared::before { display: block; height: 100%; }
+#combat-modal .combat-slot.locked:not(.is-cooling)::before { display: none; }
+#combat-modal .combat-slot.current { background: linear-gradient(180deg, #a8733f 0%, #6c3f1d 100%); border-color: #2a665f; box-shadow: inset 0 0 0 2px rgba(255,241,205,.28), 0 0 0 2px #2b8d84; }
+#combat-modal .combat-slot.ready { background: linear-gradient(180deg, #9f7041 0%, #70421f 100%); }
+#combat-modal .combat-slot.current::before,
+#combat-modal .combat-slot.ready::before { height: 100%; }
 #combat-modal .combat-slot:disabled { cursor: default; }
 #combat-modal[data-mode="showcase"] .combat-slot.current { cursor: pointer; }
 
@@ -1961,6 +1994,44 @@ body[data-page="jianghu"] #scene-bg {
   border-radius: 0;
 }
 #combat-modal .combat-log-entry { color: #3d3932; }
+
+#combat-modal .combat-result-layer[hidden] { display: none; }
+#combat-modal .combat-result-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: rgba(24, 21, 15, .26);
+  animation: combat-result-fade .2s ease-out both;
+}
+#combat-modal .combat-result-mark {
+  display: grid;
+  gap: 8px;
+  min-width: min(68vw, 310px);
+  padding: 22px 28px 18px;
+  text-align: center;
+  color: #f8e8bd;
+  background: rgba(66, 39, 20, .9);
+  border: 2px solid #b98948;
+  box-shadow: 0 0 0 3px rgba(42, 25, 13, .7), 0 12px 30px rgba(0, 0, 0, .42);
+}
+#combat-modal .combat-result-mark strong {
+  color: #f4d36e;
+  font-size: 34px;
+  letter-spacing: 12px;
+  text-indent: 12px;
+  text-shadow: 0 2px 0 #4a2a12;
+}
+#combat-modal .combat-result-mark span {
+  color: #e9d3a7;
+  font-size: 12px;
+}
+@keyframes combat-result-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 #combat-modal .combat-log-entry.combat { color: #872e29; }
 #combat-modal .combat-log-entry.event,
 #combat-modal .combat-log-entry.breakthrough { color: #1f6260; }

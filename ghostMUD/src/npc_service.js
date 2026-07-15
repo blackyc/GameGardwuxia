@@ -13,12 +13,14 @@ export class NpcService {
     this.dialogueLines = [];
     this.dialogueLineIndex = 0;
     this.dialogueVariant = null;
+    this.dialogueGraph = null;
+    this.dialogueNodeId = null;
   }
 
   triggerNPCEncounter(active) {
     const g = this.game;
     const room = g.state.location;
-    let pool = g.NPC_ENCOUNTERS[room];
+    let pool = g.world?.getNpcPool(room) || g.NPC_ENCOUNTERS[room];
     const dl = getData();
     const factionPool = dl.FACTION_RECRUITER_ENCOUNTERS[room] || null;
 
@@ -47,13 +49,17 @@ export class NpcService {
     const room = g.state.location;
     const dl = getData();
     if (npcType === 'guide') {
-      return dl.WENJIANFENG_TUTORIAL_CH1 && typeof dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter === 'function'
-        ? dl.WENJIANFENG_TUTORIAL_CH1.getGuideEncounter(g, room)
-        : null;
+      const tutorial = dl.WENJIANFENG_TUTORIAL_CH1;
+      if (!tutorial) return null;
+      if (typeof tutorial.getCompanionNpc === 'function') return tutorial.getCompanionNpc(g, room);
+      return typeof tutorial.getGuideEncounter === 'function' ? tutorial.getGuideEncounter(g, room) : null;
     }
-    if (npcType === 'recruiter') return (dl.FACTION_RECRUITER_ENCOUNTERS[room] || [])[npcIndex] || null;
+    if (npcType === 'recruiter') {
+      if (g.world?.getZonePolicy(room).allowAmbientNpc === false) return null;
+      return (dl.FACTION_RECRUITER_ENCOUNTERS[room] || [])[npcIndex] || null;
+    }
     if (npcType === 'room') return (dl.LOCATIONS[room]?.npcs || [])[npcIndex] || null;
-    return (g.NPC_ENCOUNTERS[room] || [])[npcIndex] || null;
+    return (g.world?.getNpcPool(room) || g.NPC_ENCOUNTERS[room] || [])[npcIndex] || null;
   }
 
   getGiftableItems() {
@@ -93,14 +99,26 @@ export class NpcService {
       g.renderer.updateUI('location');
       return;
     }
+    const npcKey = npc.memoryKey || npc.id || this._title(npc);
+    if (item.boundNpc && item.boundNpc !== npcKey) {
+      g.focusedNpcGiftKey = null;
+      g.addLog('这件东西似乎该交给特定的人，你没有递出去。', 'system');
+      g.showMomentFeedback?.('礼物尚未找到主人', 'muted');
+      g.renderer.updateUI('location');
+      return;
+    }
     g.state.inventory.splice(itemIndex, 1);
     const name = this._title(npc);
     const result = applyNpcChoiceMemory(g.state, npc, {
       choice: '送礼：' + (item.name || '无名物'),
-      relationship: { affinityDelta: 1, note: '收下了你赠送的' + (item.name || '礼物') }
+      relationship: {
+        affinityDelta: Number.isFinite(item.giftAffinity) ? item.giftAffinity : 1,
+        note: item.giftNote || ('收下了你赠送的' + (item.name || '礼物'))
+      }
     }, { room: g.state.location, gameTime: g.state.gameTime });
+    if (item.giftFlags && typeof item.giftFlags === 'object') Object.assign(g.state, item.giftFlags);
     g.focusedNpcGiftKey = null;
-    g.addLog('你将<b>' + this._esc(item.name || '无名物') + '</b>赠给' + this._esc(name) + '。对方收下了。', 'npc');
+    g.addLog(item.giftLog || ('你将<b>' + this._esc(item.name || '无名物') + '</b>赠给' + this._esc(name) + '。对方收下了。'), 'npc');
     g.showMomentFeedback?.(name + ' · ' + (result.label || '眼熟'), 'relation');
     g.renderer.updateUI(['location', 'bag']);
   }
@@ -112,9 +130,7 @@ export class NpcService {
       g.addLog('此人已经不在此处了。', 'system');
       return;
     }
-    const authored = npc.askLines || npc.rumors || npc.rumor || npc.gossip || npc.hint;
-    const lines = Array.isArray(authored) ? authored : (authored ? [authored] : []);
-    let answer = lines.length > 0 ? lines[Math.floor(Math.random() * lines.length)] : '';
+    let answer = g.world?.getNpcRumor(npc, g.state.location) || '';
     if (!answer) {
       const route = (g.routes?.getRoutes() || []).find(item => item.clickable);
       answer = route
@@ -133,7 +149,9 @@ export class NpcService {
     this.dialogueHistoryOpen = false;
     this.dialogueSettled = false;
     this.dialogueVariant = this._selectDialogueVariant(enc);
-    this.dialogueLines = this._openingLines(enc);
+    this.dialogueGraph = enc.dialogueGraph || null;
+    this.dialogueNodeId = this.dialogueGraph?.start || null;
+    this.dialogueLines = this.dialogueGraph ? [this._graphLine()] : this._openingLines(enc);
     this.dialogueLineIndex = 0;
 
     this._appendCurrentLine();
@@ -148,6 +166,11 @@ export class NpcService {
 
   nextDialogueLine() {
     if (!this.game.state.npcEncounter) return;
+    if (this.dialogueGraph) {
+      const node = this._graphNode();
+      if (node?.next) this._advanceGraph(node.next);
+      return;
+    }
     if (this.dialogueLineIndex >= this.dialogueLines.length - 1) return;
     this.dialogueLineIndex++;
     this._appendCurrentLine();
@@ -214,6 +237,35 @@ export class NpcService {
     this._settleDialogue(enc, title, outcome, result);
   }
 
+  dialogueChoice(choiceId) {
+    const g = this.game;
+    const enc = g.state.npcEncounter;
+    const node = this._graphNode();
+    const choice = node?.choices?.find(entry => entry?.id === choiceId);
+    if (!enc || !choice) return;
+
+    this._appendLine('你', choice.playerLine || choice.label || '沉默片刻。', 'player');
+    const effects = choice.effects || {};
+    const memoryResult = applyNpcChoiceMemory(g.state, enc, {
+      choice: choice.label || choice.id,
+      relationship: {
+        affinityDelta: Number(effects.affinity || 0),
+        flags: effects.flags,
+        note: effects.note
+      }
+    }, { room: g.state.location, gameTime: g.state.gameTime });
+    if (memoryResult.label) g.showMomentFeedback?.(this._title(enc) + ' · ' + memoryResult.label, 'relation');
+
+    const progress = (g.state.dialogueProgress ||= {});
+    progress[this.dialogueGraph.id || this._title(enc)] = {
+      lastChoice: choice.id,
+      lastNode: choice.next || this.dialogueNodeId,
+      completed: !choice.next
+    };
+    g.markDirty();
+    if (choice.next) this._advanceGraph(choice.next);
+  }
+
   closeNPC() {
     const g = this.game;
     g.state.npcEncounter = null;
@@ -223,6 +275,8 @@ export class NpcService {
     this.dialogueLines = [];
     this.dialogueLineIndex = 0;
     this.dialogueVariant = null;
+    this.dialogueGraph = null;
+    this.dialogueNodeId = null;
     const modal = document.getElementById('npc-modal');
     if (modal) {
       modal.classList.remove('active');
@@ -251,6 +305,13 @@ export class NpcService {
   _renderCurrentLine() {
     const enc = this.game.state.npcEncounter;
     if (!enc) return;
+    if (this.dialogueGraph) {
+      const node = this._graphNode();
+      if (!node) return;
+      this._renderDialogue(enc, this._graphLine(), [], Boolean(node.next && !(node.choices?.length)));
+      this._renderGraphChoices(node);
+      return;
+    }
     const line = this.dialogueLines[this.dialogueLineIndex] || this._line(this._title(enc), '对方沉默了片刻。', 'npc');
     const hasNext = this.dialogueLineIndex < this.dialogueLines.length - 1;
     const results = this.dialogueSettled ? [] : this._dialogueResults(enc);
@@ -291,6 +352,24 @@ export class NpcService {
     });
   }
 
+  _renderGraphChoices(node) {
+    const choicesDiv = document.getElementById('npc-choices');
+    if (!choicesDiv) return;
+    const choices = Array.isArray(node?.choices) ? node.choices.slice(0, 3) : [];
+    if (choices.length === 0) {
+      choicesDiv.innerHTML = node?.next
+        ? '<button type="button" class="modal-choice dialogue-next" data-dialogue-action="next">... ...</button>'
+        : '';
+      return;
+    }
+    choicesDiv.innerHTML = choices.map(choice =>
+      '<button type="button" class="modal-choice" data-dialogue-choice="' + this._esc(choice.id) + '">' + this._esc(choice.label || '回答') + '</button>'
+    ).join('');
+    choicesDiv.querySelectorAll('[data-dialogue-choice]').forEach(btn => {
+      btn.addEventListener('click', () => this.dialogueChoice(btn.dataset.dialogueChoice));
+    });
+  }
+
   _renderHistory() {
     const drawer = document.getElementById('dialogue-history-drawer');
     const list = document.getElementById('dialogue-history-list');
@@ -299,6 +378,32 @@ export class NpcService {
     list.innerHTML = this.dialogueHistory.map(item =>
       '<div class="history-line ' + item.kind + '"><b>' + this._esc(item.speaker) + '</b><span>' + this._esc(item.text) + '</span></div>'
     ).join('');
+  }
+
+  _graphNode() {
+    return this.dialogueGraph?.nodes?.[this.dialogueNodeId] || null;
+  }
+
+  _graphLine() {
+    const node = this._graphNode();
+    return this._line(node?.speaker || this._title(this.game.state.npcEncounter), node?.text || '对方沉默了片刻。', 'npc');
+  }
+
+  _advanceGraph(nextNodeId) {
+    const node = this.dialogueGraph?.nodes?.[nextNodeId];
+    if (!node) return;
+    this.dialogueNodeId = nextNodeId;
+    this.dialogueLines = [this._graphLine()];
+    this.dialogueLineIndex = 0;
+    this._appendCurrentLine();
+    const progress = (this.game.state.dialogueProgress ||= {});
+    progress[this.dialogueGraph.id || this._title(this.game.state.npcEncounter)] = {
+      ...(progress[this.dialogueGraph.id || this._title(this.game.state.npcEncounter)] || {}),
+      lastNode: nextNodeId,
+      completed: Boolean(node.end)
+    };
+    this.game.markDirty();
+    this._renderCurrentLine();
   }
 
   _dialogueResults(enc) {
@@ -416,7 +521,7 @@ export class NpcService {
         npc = loc.npcs[npcIndex];
       }
     } else {
-      const pool = g.NPC_ENCOUNTERS[s.location];
+      const pool = g.world?.getNpcPool(s.location) || g.NPC_ENCOUNTERS[s.location];
       if (pool && npcIndex < pool.length) {
         npc = pool[npcIndex];
       }
@@ -424,6 +529,10 @@ export class NpcService {
 
     if (!npc) {
       g.addLog('此人已不在此处。', 'system');
+      return;
+    }
+    if (g.world?.getZonePolicy(s.location).zoneKind === 'faction_hq' && npc.canSpar !== true) {
+      g.addLog('对方此刻并未摆出切磋的意思。', 'system');
       return;
     }
 

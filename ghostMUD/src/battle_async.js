@@ -349,7 +349,10 @@ export class BattleEngine {
     // 7. 检查战斗结束
     if (this._settleIfTerminal()) return;
 
-    // 8. 触发UI更新
+    // 8. Keep the persistent combat snapshot in sync for the HUD and recovery.
+    this._syncLiveVitals();
+
+    // 9. 触发UI更新
     this._notifyUpdate();
   }
 
@@ -541,6 +544,24 @@ export class BattleEngine {
       return true;
     }
     return false;
+  }
+
+  /** Sync live combat vitals without mutating shared enemy definitions. */
+  _syncLiveVitals() {
+    const bs = this.battleState;
+    if (!bs || !bs.syncPlayerState) return;
+
+    this.state.hp = Math.max(0, Math.floor(bs.player.hp));
+    this.state.mp = Math.max(0, Math.floor(bs.player.mp));
+
+    const combat = this.state.combat;
+    if (!combat || combat.battleId !== bs.battleId) return;
+    combat.enemyHp = Math.max(0, Math.floor(bs.enemy.hp));
+    combat.enemyMaxHp = bs.enemy.maxHp;
+    if (combat.enemyData) {
+      combat.enemyData.hp = combat.enemyHp;
+      combat.enemyData.maxHp = combat.enemyMaxHp;
+    }
   }
 
   /**
@@ -1497,10 +1518,7 @@ export class BattleEngine {
     }
 
     // Showcase actors are isolated from the persistent player state.
-    if (bs.syncPlayerState) {
-      this.state.hp = Math.max(0, Math.floor(bs.player.hp));
-      this.state.mp = Math.max(0, Math.floor(bs.player.mp));
-    }
+    this._syncLiveVitals();
 
     if (outcome === BATTLE_OUTCOMES.VICTORY && bs.mode === BATTLE_MODES.SPAR) {
       this._addLog(`切磋已分胜负，你胜过了${bs.enemy.name}`, 'breakthrough');

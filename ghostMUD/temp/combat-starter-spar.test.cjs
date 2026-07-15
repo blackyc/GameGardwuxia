@@ -48,6 +48,13 @@ const assert = require('assert');
   facade.battleEngine.tick();
   assert.strictEqual(bs.active, true, 'the opening exchange must not end the spar');
   assert.ok(bs.enemy.hp > 0 && bs.enemy.hp < enemy.hp, 'the first basic move should deal bounded damage');
+  assert.ok(bs.player.hp < bs.player.maxHp, 'the enemy opening move must also reduce player HP');
+
+  facade.battleEngine.finishCombat('victory');
+  assert.ok(facade._pendingBattleResult, 'victory must wait for player acknowledgement');
+  assert.ok(game.state.combat?.awaitingDismissal, 'the runtime combat snapshot must remain available during victory hold');
+  assert.strictEqual(facade.dismissCombatResult(), true, 'victory acknowledgement should close the battle');
+  assert.strictEqual(game.state.combat, null, 'combat state should clear only after acknowledgement');
   console.log('Combat starter spar test: PASS basic chart, opening cooldowns, no showcase leak');
 })().catch(error => {
   console.error(error);

@@ -23,6 +23,22 @@ export class SearchService {
     const g = this.game;
     if (g.state.combat || g.state.npcEncounter) { g.addLog('当前无法搜寻！', 'system'); return; }
     const room = g.state.location;
+    const policy = g.world?.getZonePolicy(room);
+    if (policy && !policy.allowSearch) {
+      g.addLog('此处并不适合贸然搜索。', 'system');
+      return;
+    }
+    const special = g.world?.resolveSpecialSearch(room);
+    if (special) {
+      g.world.applySearchEvent(special);
+      const itemName = special.item?.name || '';
+      g.addLog(special.foundText || special.desc || ('你在此处发现了' + itemName + '。'), 'item');
+      g.showMomentFeedback?.(itemName ? '发现 · ' + itemName : '发现异物', 'discovery');
+      g.checkQuestProgress('find', special.id || null);
+      g.renderer.updateUI(['location', 'bag', 'quest']);
+      g.markDirty();
+      return;
+    }
     const data = g.ROOM_SEARCH[room];
     if (!data) { g.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system'); return; }
 
@@ -31,7 +47,15 @@ export class SearchService {
       return;
     }
 
-    const pool = data.results.filter(r => r.chance < 1.0 || r.type === 'nothing');
+    const pool = data.results.filter(r => {
+      if (!(r.chance < 1.0 || r.type === 'nothing')) return false;
+      // 门派驻地只允许策划显式配置的发现；不从全局随机表偷渡掉落。
+      return !policy?.authoredNpcOnly || r.authored === true || r.type === 'nothing';
+    });
+    if (pool.length === 0) {
+      g.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system');
+      return;
+    }
     const totalWeight = pool.reduce((sum, r) => sum + (r.chance || 1), 0);
     let rand = Math.random() * totalWeight;
     let picked = pool[pool.length - 1];

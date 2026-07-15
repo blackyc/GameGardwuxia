@@ -112,9 +112,20 @@ export class ActionService {
     const loc = g.LOCATIONS[s.location];
     if (!loc) return;
     if (loc.danger >= 5) { g.addLog('此地无人可问，唯有寂寞如雪。', 'system'); return; }
+    const policy = g.world?.getZonePolicy(s.location);
+    const authoredRumors = g.world?.getRumors(s.location) || [];
+    if (policy && !policy.allowRoomRumors) {
+      if (authoredRumors.length > 0) {
+        g.addLog('🗣 ' + authoredRumors[Math.floor(Math.random() * authoredRumors.length)], 'info');
+      } else {
+        g.addLog('此处是门派清修之地，不宜向外来消息胡乱打听。', 'system');
+      }
+      return;
+    }
 
     const nearby = loc.connections ? Object.entries(loc.connections).filter(e => g.LOCATIONS[e[1]]).map(e => ({dir: e[0], name: e[1], loc: g.LOCATIONS[e[1]]})) : [];
     const rumors = [];
+    rumors.push(...authoredRumors);
 
     if (nearby.length > 0) {
       const n1 = nearby[Math.floor(Math.random() * nearby.length)];

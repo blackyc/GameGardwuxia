@@ -16,7 +16,7 @@ import { getData } from './data/data_loader.js';
 import { getEntryAccess } from './entry_condition.js';
 
 // 方位键集合：这些 key 归入「方位通路」（方向栏），其余归入「探索入口」（感知面板）
-const CARDINAL_DIRS = new Set(['北', '南', '东', '西', '上', '下', '出', '回', 'north', 'south', 'east', 'west', 'up', 'down', 'out', 'back']);
+const CARDINAL_DIRS = new Set(['北', '南', '东', '西', '东北', '东南', '西北', '西南', '上', '下', '出', '回', 'north', 'south', 'east', 'west', 'northeast', 'southeast', 'northwest', 'southwest', 'up', 'down', 'out', 'back']);
 
 export class PerceptionService {
   /** @param {import('./game.js').Game} game */
@@ -49,7 +49,8 @@ export class PerceptionService {
 
     if (loc.boss) obs.push('⚠ 远处强大的气息…有一名高手盘踞此地。');
     if (g.ROOM_SEARCH[s.location]) obs.push('搜索此处约有<b>' + Math.floor(g.ROOM_SEARCH[s.location].searchChance * 100) + '%</b>概率有所发现。');
-    if (g.NPC_ENCOUNTERS[s.location] && g.NPC_ENCOUNTERS[s.location].length > 0) obs.push('附近有<b>' + g.NPC_ENCOUNTERS[s.location].length + '</b>种可能的奇遇。输入「交谈」试试。');
+    const encounterPool = g.world?.getNpcPool(s.location) || g.NPC_ENCOUNTERS[s.location] || [];
+    if (encounterPool.length > 0) obs.push('附近有<b>' + encounterPool.length + '</b>种可能的奇遇。输入「交谈」试试。');
     if (s.faction && s.faction !== '散修' && g.isAtFactionHQ(s.location, s.faction)) obs.push('🏫 你正在本派据点——可向师傅<b>拜师</b>学习新武学！');
 
     g.addLog('👀 你凝神观察四周…', 'system');
@@ -93,8 +94,10 @@ export class PerceptionService {
     const npcs = [];
     const dl2 = getData();
     const tutorial = dl2.WENJIANFENG_TUTORIAL_CH1;
-    const guide = tutorial && typeof tutorial.getGuideEncounter === 'function'
-      ? tutorial.getGuideEncounter(g, s.location)
+    const guide = tutorial
+      ? (typeof tutorial.getCompanionNpc === 'function'
+          ? tutorial.getCompanionNpc(g, s.location)
+          : (typeof tutorial.getGuideEncounter === 'function' ? tutorial.getGuideEncounter(g, s.location) : null))
       : null;
     if (guide && guide.title) {
       npcs.push({
@@ -108,7 +111,8 @@ export class PerceptionService {
         canSpar: false
       });
     }
-    const pool = g.NPC_ENCOUNTERS[s.location];
+    const pool = g.world?.getNpcPool(s.location) || g.NPC_ENCOUNTERS[s.location];
+    const factionRoom = g.world?.getZonePolicy(s.location).zoneKind === 'faction_hq';
     if (pool && pool.length > 0) {
       pool.forEach((enc, i) => {
         if (enc.title && !npcs.some(n => n.name === enc.title)) npcs.push({
@@ -119,12 +123,12 @@ export class PerceptionService {
           memoryKey: enc.memoryKey || enc.id || enc.title,
           relationLabel: g.describeNpcRelation ? g.describeNpcRelation(enc) : '',
           dialogueTier: this._npcDialogueTier(enc),
-          canSpar: enc.canSpar !== false
+          canSpar: factionRoom ? enc.canSpar === true : enc.canSpar !== false
         });
       });
     }
     const factionPool = dl2.FACTION_RECRUITER_ENCOUNTERS[s.location] || null;
-    if (factionPool && factionPool.length > 0 && s.faction === '散修') {
+    if (factionPool && factionPool.length > 0 && s.faction === '散修' && g.world?.getZonePolicy(s.location).allowAmbientNpc !== false) {
       factionPool.forEach((enc, i) => {
         if (enc.title) npcs.push({ name: enc.title, desc: '（帮派接引人）', type: 'recruiter', index: i, dialogueTier: 'story' });
       });
@@ -144,7 +148,7 @@ export class PerceptionService {
           memoryKey: npc.memoryKey || npc.id || npc.name,
           relationLabel: g.describeNpcRelation ? g.describeNpcRelation(npc) : '',
           dialogueTier: this._npcDialogueTier(npc),
-          canSpar: npc.canSpar !== false
+          canSpar: factionRoom ? npc.canSpar === true : npc.canSpar !== false
         });
       });
     }

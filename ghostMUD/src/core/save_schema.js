@@ -8,7 +8,7 @@
  * 由运行时重新初始化。
  */
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 /**
  * SAVE_SCHEMA — 每个字段定义：
@@ -63,6 +63,8 @@ export const SAVE_SCHEMA = {
   completedQuests:    { type: 'array',   default: [],          nullable: false },
   questStages:        { type: 'object',  default: {},          nullable: false },
   npcMemory:          { type: 'object',  default: {},          nullable: false },
+  worldEvents:        { type: 'object',  default: {},          nullable: false },
+  dialogueProgress:   { type: 'object',  default: {},          nullable: false },
 
   // ═══ 帮派/技能系统 ═══
   faction:            { type: 'string',  default: '散修',      nullable: false },

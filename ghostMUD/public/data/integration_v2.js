@@ -1269,10 +1269,15 @@ var NPC_ENCOUNTERS = {};
           memoryKey: npc.memoryKey || npc.id || npcName,
           desc: npc.desc || '',
           desc_awakened: npc.desc_awakened || '',
+          source: 'authored',
+          gossip: npc.gossip || room.rumors || [],
+          canSpar: npc.canSpar === true,
+          sparProfile: npc.sparProfile || null,
           trigger: '\u4ea4\u8c08',
           results: dialogueResults.map(_normalizeDialogueResult)
         };
         if (dialogueLines) encounter.dialogueLines = dialogueLines;
+        if (npc.conditions) encounter.conditions = npc.conditions;
         if (Array.isArray(npc.dialogueVariants) && npc.dialogueVariants.length > 0) encounter.dialogueVariants = npc.dialogueVariants;
         if (npc.dialogueTier || npc.storyTier || npc.tier || dialogueLines) {
           encounter.dialogueTier = npc.dialogueTier || npc.storyTier || npc.tier || 'story';
@@ -1289,6 +1294,7 @@ var NPC_ENCOUNTERS = {};
         name: m.name,
         title: m.name,
         desc: m.desc,
+        source: 'ambient',
         trigger: '交谈',
         results: [
           { type: 'item', text: m.name + '叫住你："客官，看看这东西——"说着从包袱里翻出件物事来。' },

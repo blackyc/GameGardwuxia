@@ -72,6 +72,7 @@ export class CombatFacade {
     this.hijackEngine = null;
     this.interveneEngine = null;
     this._battleCompletion = null;
+    this._pendingBattleResult = null;
     this._focusBeforeCombat = null;
     this._combatKeydownHandler = null;
   }
@@ -205,7 +206,14 @@ export class CombatFacade {
       this.battleEngine._onEnd = (result) => this.finishCombat(result);
 
       // 启动战斗
-      g.state.combat = { battleId, mode, enemyName: name, enemyData: data };
+      // Keep a runtime copy for live HP display. Encounter definitions may come
+      // from the shared data registry and must never be mutated by a battle.
+      g.state.combat = {
+        battleId,
+        mode,
+        enemyName: name,
+        enemyData: { ...data, maxHp: data.maxHp ?? data.hp },
+      };
       this._activateCombatModal();
       this.battleEngine.startCombat(data, normalizedChart, { ...options, battleId, mode });
       g.renderer?.updateCombatUI?.();
@@ -554,6 +562,42 @@ export class CombatFacade {
         };
     const completion = this._battleCompletion;
     this._battleCompletion = null;
+    g.state.lastBattleResult = {
+      battleId: result.battleId,
+      encounterId: result.encounterId || null,
+      mode: result.mode,
+      outcome: result.outcome,
+    };
+
+    if (outcome === BATTLE_OUTCOMES.VICTORY) {
+      // The engine has settled rewards exactly once. Hold only the presentation
+      // and follow-up callback until the player acknowledges the victory.
+      this._pendingBattleResult = { result, completion };
+      if (g.state.combat) {
+        g.state.combat.outcome = outcome;
+        g.state.combat.awaitingDismissal = true;
+      }
+      this._showCombatResult('胜 利');
+      g.renderer.updateCombatUI();
+      return result;
+    }
+
+    return this._finalizeCombatExit(result, completion);
+  }
+
+  /** Close a victory hold after the player acknowledges the result layer. */
+  dismissCombatResult() {
+    const pending = this._pendingBattleResult;
+    if (!pending) return false;
+    this._pendingBattleResult = null;
+    this._finalizeCombatExit(pending.result, pending.completion);
+    return true;
+  }
+
+  /** Final UI teardown runs exactly once, after a non-victory result or acknowledgement. */
+  _finalizeCombatExit(result, completion) {
+    const g = this.game;
+    const outcome = normalizeBattleOutcome(result?.outcome);
 
     // 清理新引擎实例（避免重入：BattleEngine.endCombat 会回调此方法）
     if (this.battleEngine) {
@@ -561,13 +605,8 @@ export class CombatFacade {
       this.hijackEngine = null;
       this.interveneEngine = null;
     }
-    g.state.lastBattleResult = {
-      battleId: result.battleId,
-      encounterId: result.encounterId || null,
-      mode: result.mode,
-      outcome: result.outcome,
-    };
     g.state.combat = null;
+    this._hideCombatResult();
     this._deactivateCombatModal();
     // 战斗结束：多种状态可能变化，全量刷新
     g.renderer.updateUI();
@@ -597,6 +636,11 @@ export class CombatFacade {
     modal.classList.add('active');
 
     this._combatKeydownHandler = (event) => {
+      if (this._pendingBattleResult && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        this.dismissCombatResult();
+        return;
+      }
       if (event.key !== 'Tab') return;
       const focusable = this._getCombatFocusable();
       if (focusable.length === 0) {
@@ -615,6 +659,29 @@ export class CombatFacade {
       }
     };
     modal.addEventListener('keydown', this._combatKeydownHandler);
+    this._hideCombatResult();
+  }
+
+  _showCombatResult(title) {
+    if (typeof document === 'undefined') return;
+    const modal = document.getElementById('combat-modal');
+    const layer = document.getElementById('combat-result-layer');
+    const titleEl = document.getElementById('combat-result-title');
+    if (!modal || !layer) return;
+    if (titleEl) titleEl.textContent = title;
+    modal.querySelector('.combat-arena')?.setAttribute('inert', '');
+    layer.hidden = false;
+    const focusLayer = () => layer.focus();
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(focusLayer);
+    else focusLayer();
+  }
+
+  _hideCombatResult() {
+    if (typeof document === 'undefined') return;
+    const modal = document.getElementById('combat-modal');
+    modal?.querySelector('.combat-arena')?.removeAttribute('inert');
+    const layer = document.getElementById('combat-result-layer');
+    if (layer) layer.hidden = true;
   }
 
   _getCombatFocusable() {
@@ -639,6 +706,7 @@ export class CombatFacade {
       modal.removeEventListener('keydown', this._combatKeydownHandler);
     }
     modal?.classList.remove('active');
+    this._hideCombatResult();
     this._combatKeydownHandler = null;
 
     const previous = this._focusBeforeCombat;

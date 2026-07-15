@@ -38,7 +38,11 @@ export class MovementService {
     const loc = g.LOCATIONS[s.location];
     if (!loc) { g.addLog('此处地脉紊乱，感知不到方位…', 'system'); return; }
 
-    const DIR_CN = { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出' };
+    const DIR_CN = {
+      north:'北', south:'南', east:'东', west:'西',
+      northeast:'东北', northwest:'西北', southeast:'东南', southwest:'西南',
+      up:'上', down:'下', in:'入', out:'出'
+    };
     const cnDir = DIR_CN[dir] || dir;
     const connectionDir = loc.connections?.[cnDir] ? cnDir : dir;
     const target = loc.connections?.[connectionDir];
@@ -96,14 +100,18 @@ export class MovementService {
       g.addLog(nl.events[Math.floor(Math.random() * nl.events.length)], 'event');
     }
 
-    // Encounter system
+    // Encounter system: a faction headquarters is authored space, not a city random table.
+    const allowAmbientNpc = g.world?.canTriggerArrivalNpc(target) ?? true;
+    const allowRandomCombat = g.world?.canTriggerRandomCombat(target) ?? true;
     if (!tutorialActive && nl.danger <= 2) {
-      if (Math.random() < 0.35) g.triggerNPCEncounter(false);
+      if (allowAmbientNpc && Math.random() < 0.35) g.triggerNPCEncounter(false);
     } else if (!tutorialActive && nl.danger >= 5) {
-      if (Math.random() < nl.danger * 0.15) g.triggerEncounter(nl);
-    } else if (!tutorialActive) {
-      if (Math.random() < 0.2) {
-        Math.random() < 0.5 ? g.triggerNPCEncounter(false) : g.triggerEncounter(nl);
+      if (allowRandomCombat && Math.random() < nl.danger * 0.15) g.triggerEncounter(nl);
+    } else if (!tutorialActive && Math.random() < 0.2) {
+      if (Math.random() < 0.5) {
+        if (allowAmbientNpc) g.triggerNPCEncounter(false);
+      } else if (allowRandomCombat) {
+        g.triggerEncounter(nl);
       }
     }
 
@@ -122,8 +130,14 @@ export class MovementService {
    * 方向代号 → 中文名
    */
   dirName(d) {
-    return { north:'北', south:'南', east:'东', west:'西', up:'上', down:'下', in:'入', out:'出',
-             '北':'北', '南':'南', '东':'东', '西':'西', '上':'上', '下':'下', '入':'入', '出':'出' }[d] || d;
+    return {
+      north:'北', south:'南', east:'东', west:'西',
+      northeast:'东北', northwest:'西北', southeast:'东南', southwest:'西南',
+      up:'上', down:'下', in:'入', out:'出',
+      '北':'北', '南':'南', '东':'东', '西':'西',
+      '东北':'东北', '西北':'西北', '东南':'东南', '西南':'西南',
+      '上':'上', '下':'下', '入':'入', '出':'出'
+    }[d] || d;
   }
 
   /**

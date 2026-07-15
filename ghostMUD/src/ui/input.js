@@ -160,6 +160,9 @@ export class InputManager {
         case 'mpGate':
           this.game.resolveCombatMpGate(btn.dataset.gate);
           break;
+        case 'dismissCombatResult':
+          this.game.dismissCombatResult();
+          break;
       }
     });
   }

@@ -40,6 +40,7 @@ import { TeacherService } from './teacher_service.js';
 // 感知服务层（从 Game 拆出，代理 peek/getRoomPerception/openPerception/closePerception）
 import { PerceptionService } from './perception_service.js';
 import { RouteService } from './route_service.js';
+import { WorldContextService } from './world_context.js';
 // 日常动作服务层（从 Game 拆出，代理 switchTab/cultivate/train/rest/talk/askAround/practiceMenu）
 import { ActionService } from './action_service.js';
 import { TutorialService } from './tutorial_service.js';
@@ -166,6 +167,8 @@ export class Game {
       completedQuests: [],
       questStages: {},
       npcMemory: {},
+      worldEvents: {},
+      dialogueProgress: {},
       // 教程/引路状态
       tutorialPhase: null,
       tutorialStep: 0,
@@ -192,6 +195,9 @@ export class Game {
       realTimeAccumulator: 0 // 真实毫秒累计，满300000ms推进1时辰
     };
 
+    // World rules remain independent from the renderer and can be queried by services.
+    this.world = new WorldContextService(this);
+
     // 尝试加载存档
     const saved = this.storage.load();
     if (saved) {
@@ -199,6 +205,25 @@ export class Game {
       if (saved.location && ROOM_ID_MIGRATION[saved.location]) {
         console.log('[H3 Migration] Migrating location:', saved.location, '→', ROOM_ID_MIGRATION[saved.location]);
         saved.location = ROOM_ID_MIGRATION[saved.location];
+      }
+      if (Array.isArray(saved.explored)) {
+        saved.explored = [...new Set(saved.explored.map(roomId => ROOM_ID_MIGRATION[roomId] || roomId))];
+      }
+      if (saved.tutorialSeenRooms && typeof saved.tutorialSeenRooms === 'object') {
+        saved.tutorialSeenRooms = Object.fromEntries(
+          Object.entries(saved.tutorialSeenRooms).map(([roomId, value]) => [ROOM_ID_MIGRATION[roomId] || roomId, value])
+        );
+      }
+      if (saved.routeDiscoveries && typeof saved.routeDiscoveries === 'object') {
+        saved.routeDiscoveries = Object.fromEntries(
+          Object.entries(saved.routeDiscoveries).map(([key, value]) => {
+            const migratedKey = Object.entries(ROOM_ID_MIGRATION).reduce(
+              (result, [oldId, newId]) => result.startsWith(oldId + '::') ? newId + result.slice(oldId.length) : result,
+              key
+            );
+            return [migratedKey, value];
+          })
+        );
       }
       // Also migrate any location references in quest stages
       // P1-3 修复：Storage 已将 questProgress 重命名为 questStages，这里检查 questStages
@@ -862,6 +887,7 @@ export class Game {
   combatAction(action) { return this.combat.combatAction(action); }
   castCombatSlot(slot) { return this.combat.combatAction('slot:' + slot); }
   resolveCombatMpGate(choice) { return this.combat.resolveMpGate(choice); }
+  dismissCombatResult() { const r = this.combat.dismissCombatResult(); this.markDirty(); return r; }
   showPerforms() { return this.combat.showPerforms(); }
   hidePerforms() { return this.combat.hidePerforms(); }
   usePerform(performId) { return this.combat.usePerform(performId); }
