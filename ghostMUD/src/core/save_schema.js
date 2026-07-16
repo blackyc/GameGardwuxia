@@ -62,9 +62,16 @@ export const SAVE_SCHEMA = {
   activeQuests:       { type: 'array',   default: [],          nullable: false },
   completedQuests:    { type: 'array',   default: [],          nullable: false },
   questStages:        { type: 'object',  default: {},          nullable: false },
+  // V1.7：主线指针 + 计数/去重进度（旧档缺省自动补）
+  primaryQuestId:     { type: 'string',  default: null,        nullable: true  },
+  questProgress:      { type: 'object',  default: {},          nullable: false },
   npcMemory:          { type: 'object',  default: {},          nullable: false },
   worldEvents:        { type: 'object',  default: {},          nullable: false },
   dialogueProgress:   { type: 'object',  default: {},          nullable: false },
+
+  // ═══ 舆图路标 / 区域天气（V1.7 服务层）═══
+  mapWaypoint:        { type: 'string',  default: null,        nullable: true  },
+  weather:            { type: 'object',  default: { seed: 1, regions: {} }, nullable: false },
 
   // ═══ 帮派/技能系统 ═══
   faction:            { type: 'string',  default: '散修',      nullable: false },

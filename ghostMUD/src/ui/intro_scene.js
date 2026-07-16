@@ -63,8 +63,8 @@ export class IntroScene {
     this._buildStage();
     this.stage.classList.add('active');
 
-    // 🔇 静默开场：开场期间所有 WebAudio 合成音（板鼓/大锣/惊堂木/风声）静默，只保留 BGM
-    audio.setMuted(true);
+    // 开场静音是临时运行态，不得覆盖玩家持久音频偏好。
+    audio.pushTemporaryMute('intro');
 
     // 🔒 兜底：若 25 秒内开幕式无进展，强制跳过
     // （7 幕打完约 18-22 秒 + 玩家点击时间，20 秒过短会误杀）
@@ -427,8 +427,7 @@ export class IntroScene {
 
     if (this._safetyTimer) { clearTimeout(this._safetyTimer); this._safetyTimer = null; }
     this._cleanup();
-    // 🔇 开场结束：恢复 SFX 为可用状态（默认仍静音，开选项后可开）
-    try { audio.setMuted(false); } catch (e) { console.warn('[Intro] setMuted 失败（非致命）', e); }
+    try { audio.popTemporaryMute('intro'); } catch (e) { console.warn('[Intro] 临时静音恢复失败（非致命）', e); }
     // 通知 game 进入主循环（无论如何都要执行）
     try {
       if (typeof this.game.onIntroComplete === 'function') {

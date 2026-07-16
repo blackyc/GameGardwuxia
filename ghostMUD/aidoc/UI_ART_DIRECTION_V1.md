@@ -288,9 +288,10 @@ NPC 默认以“小名牌”出现。
 
 选中状态：
 
-- 在同一区域展开人物详情。
-- 描述最多 2-3 行。
-- 操作按钮显示：交谈、观察、送礼、切磋。
+- 点击小名牌后，进入同一套“水墨言路”人物交互壳；江湖主页面不再运行时展开 `NpcDetailCard`。
+- 初始为“人物一瞥”：展示头像、关系、短描述和四项真实操作：交谈、观察、送礼、切磋。
+- 交谈、送礼反应、切磋邀战进入紧凑台词态；分支选项固定在台词区下方，不能挤压或推移。
+- 送礼先进入每页至多六格的礼物选择态；切磋必须先由玩家在邀战分支确认，才进入战斗场景。
 - 条件不足要显示原因，不得只置灰。
 
 特殊 NPC：
@@ -298,6 +299,13 @@ NPC 默认以“小名牌”出现。
 - 关键 NPC：可有细金边或小卷轴标记。
 - 引路 NPC：可有“随行”状态标记。
 - 诡异 NPC：可轻微破坏常规名牌，如墨渗、朱砂点，但不可影响可读性。
+
+运行时边界：
+
+- `NpcDetailCard` 保留在 Figma 作为历史设计和信息结构参考，不再作为江湖页的平行运行时组件。
+- NPC 主动说话或主角心声可使用轻量“言路短笺”。短笺只承载无分支的线性台本，不提供继续、收起或回应按钮；玩家点击画面任意位置逐句推进，末句后关闭。
+- 已由言路短笺展示的台词不得重复写入最近日志。需要玩家选择时，内容必须从一开始就进入完整水墨言路，不能让短笺临时升级。
+- 张望是暂态工具；修行子操作使用画面中央浮层，并必须提供明确的返回按钮。同一时间只允许一张暂态工具打开。
 
 ### 6.5 苏小棠 / 引路 NPC
 
@@ -621,7 +629,7 @@ Figma 的目标不是画漂亮大稿，而是建立可执行约束。
 - RoomTitlePlaque。
 - SceneTextPanel。
 - NpcNameChip。
-- NpcDetailCard。
+- NpcDetailCard（Figma 历史参考，运行时不生成）。
 - ActionButton。
 - DiamondActionButton。
 - RecentLogLine。
@@ -653,7 +661,7 @@ Figma 组件必须映射到代码类名。
 | RoomTitlePlaque | `.location-banner` |
 | SceneTextPanel | `.scene-description` |
 | NpcNameChip | `.npc-chip` |
-| NpcDetailCard | `.npc-detail-card` |
+| NpcDetailCard | Figma 历史参考；运行时由 `.dialogue-layer[data-mode="inspect"]` 承担 |
 | ActionButton | `.npc-action-button` |
 | DiamondActionButton | `.jianghu-action-button` |
 | RecentLogLine | `.recent-log-line` |
@@ -698,6 +706,8 @@ worker 不可以做：
 10. PC 端是否没有过度拉伸。
 11. 新增控件是否有 Figma / CSS 映射。
 12. 是否误改了未讨论页面。
+13. 江湖页是否未生成平行 `NpcDetailCard`，人物一瞥是否只存在于水墨言路。
+14. 切磋是否经过邀战确认才进入战斗，张望/修行是否为单一暂态浮层。
 
 ## 15. 当前未决问题
 

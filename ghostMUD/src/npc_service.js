@@ -3,6 +3,12 @@ import { noteNpcSeen, applyNpcChoiceMemory } from './npc_memory.js';
 import { getData } from './data/data_loader.js';
 import { BASIC_UNARMED_CHART } from './combat_contract.js';
 
+const DIALOGUE_PORTRAITS = {
+  '苏小棠': { src: '/assets/portraits/suxiaotang.jpg', key: 'suxiaotang' },
+  '周碛': { src: '/assets/portraits/zhouqi.png', key: 'zhouqi' },
+  '残剑师姐': { src: '/assets/portraits/canjian-shijie.jpg', key: 'canjian' }
+};
+
 export class NpcService {
   /** @param {import('./game.js').Game} game */
   constructor(game) {
@@ -15,6 +21,13 @@ export class NpcService {
     this.dialogueVariant = null;
     this.dialogueGraph = null;
     this.dialogueNodeId = null;
+    // Runtime-only view state. It deliberately does not enter saves: authored
+    // dialogue progress lives in state.dialogueProgress, while a currently
+    // open sheet can always be safely reopened after a reload.
+    this.interaction = null;
+    this.ribbon = null;
+    this.ribbonQueue = [];
+    this.ribbonIndex = 0;
   }
 
   triggerNPCEncounter(active) {
@@ -69,6 +82,48 @@ export class NpcService {
       .filter(({ item }) => item && item.giftable !== false && (item.giftable === true || !blockedTypes.has(item.type)));
   }
 
+  /** Open the unified ink shell from an NPC name chip. Re-clicking the same
+   * chip closes it, matching the room-level interaction convention. */
+  openNpcInteraction(npcIndex, npcType = 'encounter') {
+    const g = this.game;
+    const current = this.interaction;
+    if (!g.state.npcEncounter && current?.npcIndex === npcIndex && current?.npcType === npcType) {
+      this.closeNPC();
+      return false;
+    }
+    const npc = this._resolveNpc(npcIndex, npcType);
+    if (!npc) {
+      g.addLog('此人已经不在此处了。', 'system');
+      return false;
+    }
+    noteNpcSeen(g.state, npc, { room: g.state.location, gameTime: g.state.gameTime });
+    this.interaction = { mode: 'inspect', npc, npcIndex, npcType, giftPage: 0 };
+    g.focusedNpcIndex = npcIndex;
+    g.focusedNpcType = npcType;
+    g.focusedNpcGiftKey = null;
+    g.addLog('你看向' + this._title(npc) + '。', 'info');
+    this._showDialogueLayer('inspect');
+    this._renderInteraction();
+    return true;
+  }
+
+  inspectNpc(npcIndex, npcType = 'encounter') {
+    const npc = this._resolveNpc(npcIndex, npcType);
+    if (!npc) return this.closeNPC();
+    this.interaction = { ...(this.interaction || {}), mode: 'observe', npc, npcIndex, npcType, giftPage: 0 };
+    this._showDialogueLayer('observe');
+    this._renderInteraction();
+    this.game.addLog('你细看' + this._title(npc) + '，将此人的神态记在心里。', 'info');
+  }
+
+  returnNpcInteraction() {
+    if (!this.interaction?.npc) return this.closeNPC();
+    this.interaction.mode = 'inspect';
+    this.interaction.giftPage = 0;
+    this._showDialogueLayer('inspect');
+    this._renderInteraction();
+  }
+
   toggleNpcGift(npcIndex, npcType = 'encounter') {
     const g = this.game;
     const npc = this._resolveNpc(npcIndex, npcType);
@@ -79,13 +134,24 @@ export class NpcService {
     const gifts = this.getGiftableItems();
     if (gifts.length === 0) {
       g.focusedNpcGiftKey = null;
-      g.addLog('你的行囊里没有适合相赠之物。', 'system');
-      g.showMomentFeedback?.('无物可赠', 'muted');
-      return;
+      this.interaction = { ...(this.interaction || {}), mode: 'gift-empty', npc, npcIndex, npcType, giftPage: 0 };
+      this._showDialogueLayer('gift-empty');
+      this._renderInteraction();
+      return false;
     }
-    const key = npcType + ':' + npcIndex;
-    g.focusedNpcGiftKey = g.focusedNpcGiftKey === key ? null : key;
-    g.renderer.updateUI('location');
+    this.interaction = { ...(this.interaction || {}), mode: 'gift-select', npc, npcIndex, npcType, giftPage: 0 };
+    g.focusedNpcGiftKey = null;
+    this._showDialogueLayer('gift-select');
+    this._renderInteraction();
+    return true;
+  }
+
+  setGiftPage(page) {
+    if (!this.interaction || this.interaction.mode !== 'gift-select') return;
+    const count = this.getGiftableItems().length;
+    const pages = Math.max(1, Math.ceil(count / 6));
+    this.interaction.giftPage = Math.max(0, Math.min(pages - 1, Number(page) || 0));
+    this._renderInteraction();
   }
 
   giveGiftToNpc(npcIndex, npcType = 'encounter', itemIndex) {
@@ -94,17 +160,15 @@ export class NpcService {
     const item = g.state.inventory?.[itemIndex];
     const allowed = this.getGiftableItems().some(entry => entry.index === itemIndex);
     if (!npc || !item || !allowed) {
-      g.focusedNpcGiftKey = null;
       g.addLog('这份礼没有送成。', 'system');
-      g.renderer.updateUI('location');
+      this.returnNpcInteraction();
       return;
     }
     const npcKey = npc.memoryKey || npc.id || this._title(npc);
     if (item.boundNpc && item.boundNpc !== npcKey) {
-      g.focusedNpcGiftKey = null;
       g.addLog('这件东西似乎该交给特定的人，你没有递出去。', 'system');
       g.showMomentFeedback?.('礼物尚未找到主人', 'muted');
-      g.renderer.updateUI('location');
+      this.returnNpcInteraction();
       return;
     }
     g.state.inventory.splice(itemIndex, 1);
@@ -117,10 +181,20 @@ export class NpcService {
       }
     }, { room: g.state.location, gameTime: g.state.gameTime });
     if (item.giftFlags && typeof item.giftFlags === 'object') Object.assign(g.state, item.giftFlags);
-    g.focusedNpcGiftKey = null;
     g.addLog(item.giftLog || ('你将<b>' + this._esc(item.name || '无名物') + '</b>赠给' + this._esc(name) + '。对方收下了。'), 'npc');
     g.showMomentFeedback?.(name + ' · ' + (result.label || '眼熟'), 'relation');
-    g.renderer.updateUI(['location', 'bag']);
+    this.interaction = {
+      ...(this.interaction || {}),
+      mode: 'gift-reaction',
+      npc,
+      npcIndex,
+      npcType,
+      giftPage: 0,
+      reaction: item.giftReaction || npc.giftReaction || '对方接过礼物，眉眼间的戒备松了半分。'
+    };
+    this._showDialogueLayer('gift-reaction');
+    this._renderInteraction();
+    g.renderer.updateUI(['bag', 'location']);
   }
 
   askNpc(npcIndex, npcType = 'encounter') {
@@ -144,6 +218,14 @@ export class NpcService {
   _presentEncounter(enc) {
     const g = this.game;
     g.state.npcEncounter = enc;
+    const previous = this.interaction;
+    this.interaction = {
+      mode: 'talk',
+      npc: enc,
+      npcIndex: previous?.npc === enc ? previous.npcIndex : null,
+      npcType: previous?.npc === enc ? previous.npcType : null,
+      giftPage: 0
+    };
     noteNpcSeen(g.state, enc, { room: g.state.location, gameTime: g.state.gameTime });
     this.dialogueHistory = [];
     this.dialogueHistoryOpen = false;
@@ -157,11 +239,7 @@ export class NpcService {
     this._appendCurrentLine();
     this._renderCurrentLine();
 
-    const modal = document.getElementById('npc-modal');
-    if (modal) {
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-    }
+    this._showDialogueLayer('talk');
   }
 
   nextDialogueLine() {
@@ -269,6 +347,10 @@ export class NpcService {
   closeNPC() {
     const g = this.game;
     g.state.npcEncounter = null;
+    this.interaction = null;
+    g.focusedNpcIndex = null;
+    g.focusedNpcType = null;
+    g.focusedNpcGiftKey = null;
     this.dialogueHistory = [];
     this.dialogueHistoryOpen = false;
     this.dialogueSettled = false;
@@ -281,8 +363,70 @@ export class NpcService {
     if (modal) {
       modal.classList.remove('active');
       modal.setAttribute('aria-hidden', 'true');
+      delete modal.dataset.mode;
     }
     g.renderer.updateUI();
+  }
+
+  /**
+   * A compact, linear proactive sequence. Any click advances one line and the
+   * final click closes it; branching always starts from a full conversation.
+   */
+  showDialogueRibbon(payload = {}) {
+    const base = { ...payload };
+    delete base.lines;
+    const lines = Array.isArray(payload.lines) ? payload.lines : [payload];
+    this.ribbonQueue = lines.map(line => {
+      if (typeof line === 'string') return { ...base, text: line };
+      return { ...base, ...line };
+    }).filter(line => String(line.text || '').trim());
+    if (this.ribbonQueue.length === 0) return false;
+    this.ribbonIndex = 0;
+    return this._renderDialogueRibbon();
+  }
+
+  _renderDialogueRibbon() {
+    const payload = this.ribbonQueue[this.ribbonIndex];
+    if (!payload) return false;
+    const text = String(payload.text || '').trim();
+    this.ribbon = { ...payload, text };
+    const ribbon = document.getElementById('dialogue-ribbon');
+    if (!ribbon) return false;
+    const name = payload.speaker || payload.npc?.title || payload.npc?.name || '心声';
+    document.getElementById('dialogue-ribbon-name').textContent = name;
+    document.getElementById('dialogue-ribbon-text').textContent = text;
+    const portrait = DIALOGUE_PORTRAITS[name] || null;
+    const portraitImage = document.getElementById('dialogue-ribbon-portrait-image');
+    const portraitInitial = document.getElementById('dialogue-ribbon-portrait-initial');
+    if (portraitImage) {
+      portraitImage.hidden = !portrait;
+      portraitImage.alt = portrait ? name + '头像' : '';
+      if (portrait) portraitImage.src = portrait.src;
+      else portraitImage.removeAttribute('src');
+    }
+    if (portraitInitial) {
+      portraitInitial.hidden = Boolean(portrait);
+      portraitInitial.textContent = name.slice(0, 1) || '人';
+    }
+    ribbon.hidden = false;
+    return true;
+  }
+
+  nextDialogueRibbon() {
+    if (this.ribbonIndex >= this.ribbonQueue.length - 1) {
+      this.dismissDialogueRibbon();
+      return false;
+    }
+    this.ribbonIndex++;
+    return this._renderDialogueRibbon();
+  }
+
+  dismissDialogueRibbon() {
+    this.ribbon = null;
+    this.ribbonQueue = [];
+    this.ribbonIndex = 0;
+    const ribbon = document.getElementById('dialogue-ribbon');
+    if (ribbon) ribbon.hidden = true;
   }
 
   toggleDialogueHistory(force) {
@@ -318,17 +462,123 @@ export class NpcService {
     this._renderDialogue(enc, line, hasNext ? [] : results, hasNext);
   }
 
-  _renderDialogue(enc, line, results, hasNext) {
-    const title = this._title(enc);
-    const speaker = line.speaker || title;
+  _showDialogueLayer(mode) {
+    const modal = document.getElementById('npc-modal');
+    if (!modal) return;
+    modal.dataset.mode = mode || 'talk';
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  _renderShellFrame(npc, { mode, speaker, text, history = false, closeLabel = '收起画卷' }) {
+    const title = this._title(npc);
     const titleEl = document.getElementById('npc-title');
     const speakerEl = document.getElementById('dialogue-speaker');
     const descEl = document.getElementById('npc-desc');
+    const portraitBox = document.getElementById('dialogue-portrait');
+    const portraitImage = document.getElementById('dialogue-portrait-image');
     const portraitEl = document.getElementById('dialogue-portrait-initial');
+    const rail = document.getElementById('npc-interaction-actions');
+    const historyButton = document.querySelector('[data-dialogue-action="history"]');
+    const closeButton = document.getElementById('npc-close-btn');
+    const modal = document.getElementById('npc-modal');
     if (titleEl) titleEl.textContent = title;
-    if (speakerEl) speakerEl.textContent = speaker;
-    if (descEl) descEl.textContent = line.text;
-    if (portraitEl) portraitEl.textContent = speaker.slice(0, 1) || '人';
+    if (speakerEl) speakerEl.textContent = speaker || '';
+    if (descEl) descEl.textContent = text || '';
+    if (modal) modal.dataset.mode = mode || 'talk';
+    if (historyButton) historyButton.hidden = !history;
+    if (closeButton) closeButton.textContent = closeLabel;
+
+    const portrait = DIALOGUE_PORTRAITS[title] || null;
+    if (portraitBox) portraitBox.dataset.portrait = portrait?.key || 'initial';
+    if (portraitImage) {
+      portraitImage.hidden = !portrait;
+      portraitImage.alt = portrait ? title + '头像' : '';
+      if (portrait) portraitImage.src = portrait.src;
+      else portraitImage.removeAttribute('src');
+    }
+    if (portraitEl) {
+      portraitEl.hidden = Boolean(portrait);
+      portraitEl.textContent = title.slice(0, 1) || '人';
+    }
+    if (rail) rail.innerHTML = mode === 'inspect' ? this._renderInteractionActions(npc) : '';
+  }
+
+  _renderInteractionActions(npc) {
+    const data = this.interaction || {};
+    const idx = Number(data.npcIndex);
+    const type = data.npcType || 'encounter';
+    const locked = npc?.locked || npc?.interactionLocked || npc?.canTalk === false;
+    const zonePolicy = this.game.world?.getZonePolicy?.(this.game.state.location);
+    const factionSparAllowed = zonePolicy?.zoneKind !== 'faction_hq' || npc?.canSpar === true;
+    const canSpar = !locked && factionSparAllowed && npc?.canSpar !== false && type !== 'guide' && type !== 'recruiter';
+    const action = (label, id, enabled = true) => enabled
+      ? '<button type="button" class="dialogue-rail-action" data-action="' + id + '" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">' + label + '</button>'
+      : '<button type="button" class="dialogue-rail-action" disabled aria-disabled="true">' + label + '</button>';
+    if (locked) return '<p class="dialogue-rail-locked">需先满足感知或剧情条件</p>';
+    return action('交谈', 'talkNpc') + action('观察', 'npcObserve') + action('送礼', 'npcGift') + action('切磋', 'sparNpc', canSpar);
+  }
+
+  _renderInteraction() {
+    const interaction = this.interaction;
+    if (!interaction?.npc) return;
+    const npc = interaction.npc;
+    const title = this._title(npc);
+    const relation = this.game.describeNpcRelation?.(npc) || npc.relationLabel || '初识';
+    const choices = document.getElementById('npc-choices');
+    const history = document.getElementById('dialogue-history-drawer');
+    if (history) history.hidden = true;
+    this.dialogueHistoryOpen = false;
+
+    if (interaction.mode === 'inspect') {
+      this._renderShellFrame(npc, { mode: 'inspect', speaker: '关系 · ' + relation, text: this.game.getDesc(npc) || npc.desc || '此人正留意着周遭。' });
+      if (choices) choices.innerHTML = '';
+      return;
+    }
+
+    if (interaction.mode === 'observe') {
+      const detail = npc.observeDesc || npc.inspectDesc || npc.detail || (this.game.getDesc(npc) || npc.desc || '此人神色如常。') + ' 你又细看片刻，暂未看出更多破绽。';
+      this._renderShellFrame(npc, { mode: 'observe', speaker: '细察 · ' + relation, text: detail });
+      if (choices) choices.innerHTML = '<button type="button" class="modal-choice" data-action="npcInteractionBack">回到人物</button>';
+      return;
+    }
+
+    if (interaction.mode === 'gift-empty') {
+      this._renderShellFrame(npc, { mode: 'gift-select', speaker: title, text: '你的行囊里没有适合相赠之物。' });
+      if (choices) choices.innerHTML = '<button type="button" class="modal-choice" data-action="npcInteractionBack">回到人物</button>';
+      return;
+    }
+
+    if (interaction.mode === 'gift-select') {
+      const gifts = this.getGiftableItems();
+      const page = Number(interaction.giftPage) || 0;
+      const pageCount = Math.max(1, Math.ceil(gifts.length / 6));
+      const visible = gifts.slice(page * 6, page * 6 + 6);
+      this._renderShellFrame(npc, { mode: 'gift-select', speaker: '相赠何物', text: '挑一件递给' + title + '。' });
+      if (choices) {
+        choices.innerHTML = '<div class="dialogue-gift-grid">' + visible.map(({ item, index }) =>
+          '<button type="button" class="dialogue-gift-card" data-action="confirmNpcGift" data-npc-idx="' + interaction.npcIndex + '" data-npc-type="' + this._esc(interaction.npcType || 'encounter') + '" data-item-index="' + index + '">' + this._esc(item.name || '无名物') + '</button>'
+        ).join('') + '</div>'
+          + (pageCount > 1 ? '<div class="dialogue-pager"><button type="button" data-action="npcGiftPage" data-page="' + (page - 1) + '" ' + (page <= 0 ? 'disabled' : '') + '>上一页</button><span>' + (page + 1) + ' / ' + pageCount + '</span><button type="button" data-action="npcGiftPage" data-page="' + (page + 1) + '" ' + (page >= pageCount - 1 ? 'disabled' : '') + '>下一页</button></div>' : '')
+          + '<button type="button" class="modal-choice dialogue-quiet-choice" data-action="npcInteractionBack">暂且作罢</button>';
+      }
+      return;
+    }
+
+    if (interaction.mode === 'gift-reaction') {
+      this._renderShellFrame(npc, { mode: 'gift-reaction', speaker: title, text: interaction.reaction || '对方收下了礼物。', history: true });
+      if (choices) choices.innerHTML = '<button type="button" class="modal-choice" data-action="npcGift" data-npc-idx="' + interaction.npcIndex + '" data-npc-type="' + this._esc(interaction.npcType || 'encounter') + '">还有……</button><button type="button" class="modal-choice dialogue-quiet-choice" data-action="npcInteractionBack">够了够了</button>';
+      return;
+    }
+
+    if (interaction.mode === 'challenge') {
+      this._renderShellFrame(npc, { mode: 'challenge', speaker: title, text: interaction.challengeLine || '对方微一抱拳：“请。”' });
+      if (choices) choices.innerHTML = '<button type="button" class="modal-choice dialogue-danger-choice" data-action="confirmNpcSpar">应战</button><button type="button" class="modal-choice dialogue-quiet-choice" data-action="npcInteractionBack">改日再说</button>';
+    }
+  }
+
+  _renderDialogue(enc, line, results, hasNext) {
+    this._renderShellFrame(enc, { mode: 'talk', speaker: line.speaker || this._title(enc), text: line.text, history: true });
     this._renderChoices(results, hasNext);
     this._renderHistory();
   }
@@ -512,20 +762,7 @@ export class NpcService {
       return;
     }
 
-    // 获取 NPC 数据
-    let npc = null;
-    if (npcType === 'room') {
-      const dl = getData();
-      const loc = dl.LOCATIONS[s.location];
-      if (loc && Array.isArray(loc.npcs)) {
-        npc = loc.npcs[npcIndex];
-      }
-    } else {
-      const pool = g.world?.getNpcPool(s.location) || g.NPC_ENCOUNTERS[s.location];
-      if (pool && npcIndex < pool.length) {
-        npc = pool[npcIndex];
-      }
-    }
+    const npc = this._resolveNpc(npcIndex, npcType);
 
     if (!npc) {
       g.addLog('此人已不在此处。', 'system');
@@ -541,14 +778,26 @@ export class NpcService {
       return;
     }
 
-    // 构造切磋用敌人数据
+    const npcName = this._title(npc);
+    const challengeLine = npc.sparProfile?.challengeLine
+      || (npcName.includes('值星') ? '那……有礼了。' : npcName.includes('周碛') ? '啧，你也想挑战我吗？' : '对方微一抱拳：“请。”');
+    this.interaction = { mode: 'challenge', npc, npcIndex, npcType, challengeLine, giftPage: 0 };
+    this._showDialogueLayer('challenge');
+    this._renderInteraction();
+    return true;
+  }
+
+  /** Confirmed from the challenge branch; only this path enters combat. */
+  confirmNpcSpar() {
+    const g = this.game;
+    const interaction = this.interaction;
+    const npc = interaction?.mode === 'challenge' ? interaction.npc : null;
+    if (!npc) return false;
     const npcName = this._title(npc);
     const enemyData = this._buildSparEnemy(npc);
-
+    this.closeNPC();
     g.addLog(`你向${npcName}抱拳：「请指教！」`, 'event');
     g.addLog(`${npcName}拔剑而立：「好说。」`, 'event');
-
-    // 启动战斗
     g.combat.startCombat(npcName, enemyData, {
       mode: 'spar',
       encounterId: npc.id || npcName,
@@ -562,6 +811,7 @@ export class NpcService {
         }
       },
     });
+    return true;
   }
 
   /**

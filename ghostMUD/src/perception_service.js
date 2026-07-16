@@ -75,6 +75,8 @@ export class PerceptionService {
             dir: route.direction,
             dirCn: g.dirName(route.direction),
             name: route.target,
+            label: route.label,
+            kind: route.kind,
             explored: s.explored.includes(route.target),
             visible: route.visible,
             allowed: route.clickable,
@@ -87,8 +89,9 @@ export class PerceptionService {
               .map(([dir, name]) => ({ dir, dirCn: g.dirName(dir), name, explored: s.explored.includes(name), ...getEntryAccess(g, name) }))
               .filter(connection => connection.visible)
           : []);
-    const cardinalExits = allConns.filter(c => CARDINAL_DIRS.has(c.dir));
-    const connections = allConns.filter(c => !CARDINAL_DIRS.has(c.dir));
+    const childKinds = new Set(['dungeon', 'interior']);
+    const cardinalExits = allConns.filter(c => !childKinds.has(c.kind) && CARDINAL_DIRS.has(c.dir));
+    const connections = allConns.filter(c => childKinds.has(c.kind));
 
     // 2. 在场人物
     const npcs = [];
@@ -196,7 +199,7 @@ export class PerceptionService {
   openPerception() {
     const g = this.game;
     if (g.state.combat || g.state.npcEncounter) {
-      g.addLog('当前无法感知！', 'combat');
+      g.addLog('当前无法张望！', 'combat');
       return;
     }
     const panel = document.getElementById('perception-panel');
@@ -204,10 +207,12 @@ export class PerceptionService {
       this.closePerception();
       return { open: false };
     }
+    const cultivate = document.getElementById('cultivate-submenu');
+    if (cultivate) cultivate.style.display = 'none';
     const sensed = g.routes?.senseCurrentRoom() || [];
     if (sensed.length > 0) {
       sensed.forEach((route) => g.addLog(route.discovery.hint, 'event'));
-      g.showMomentFeedback?.('察见异处', 'discovery');
+      g.showMomentFeedback?.('望见异处', 'discovery');
       g.renderer.updateLocation();
     }
     const data = this.getRoomPerception();

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/src/styles/topbar.css">
   <link rel="stylesheet" href="/src/styles/app_v3.css">
   <link rel="stylesheet" href="/src/styles/jianghu.css">
+  <link rel="stylesheet" href="/src/styles/character.css">
 </head>
 <body>
 <div id="noise-overlay"></div>
@@ -44,6 +45,7 @@
         <span id="location-region" class="location-region"></span>
         <span id="location-name">十字街口</span>
       </div>
+      <span id="location-weather" class="location-weather" hidden></span>
       <span id="location-guide-status" class="location-guide-status" hidden>引路 · 同行中</span>
     </header>
 
@@ -52,7 +54,6 @@
       <div class="room-card scene-narrative-panel" id="room-card">
         <div class="scene-panel-label scene-panel-label--place">此地</div>
         <div class="room-desc" id="location-desc"></div>
-        <div class="scene-panel-divider" aria-hidden="true"></div>
         <div class="exit-bar" id="exit-bar"></div>
         <div class="scene-panel-label scene-panel-label--people">此地人物</div>
         <div class="room-npcs" id="room-npcs"></div>
@@ -62,12 +63,10 @@
       <section class="tutorial-action-panel" id="tutorial-action-panel" aria-live="polite" hidden></section>
 
       <!-- 方位通路：东南西北等方位连接，常驻显示 -->
-      <div class="scene-feed" id="scene-feed" aria-live="polite"></div>
-
       <div class="diamond-row" aria-label="常用操作">
-        <button class="diamond-badge" data-action="perceive" title="察看隐处与场景细节" aria-controls="perception-panel" aria-expanded="false">
+        <button class="diamond-badge" data-action="perceive" title="张望隐处与场景细节" aria-controls="perception-panel" aria-expanded="false">
           <span class="diamond-hook"></span>
-          <span class="label">察看</span>
+          <span class="label">张望</span>
           <span class="diamond-tassel"></span>
         </button>
         <button class="diamond-badge" data-action="searchArea" title="探索当前房间并触发搜索事件">
@@ -90,6 +89,7 @@
       <div class="cultivate-submenu" id="cultivate-submenu" style="display:none">
         <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--primary" data-action="meditate">入定</button>
         <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--secondary" data-action="pushup">练功</button>
+        <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--secondary" data-action="cultivate-menu">返回</button>
       </div>
 
       <div class="perception-panel" id="perception-panel">
@@ -141,11 +141,17 @@
     <div class="card" id="map-card">
       <div class="card-header"><span class="dot"></span>天 下 舆 图</div>
       <div class="card-body">
+        <div class="map-context-row">
+          <div id="map-region-strip" class="map-region-strip" aria-label="已知区域"></div>
+          <div id="map-weather" class="map-weather"></div>
+        </div>
         <div id="map-container"><div id="map-canvas"></div></div>
+        <div id="map-waypoint" class="map-waypoint">轻点已探明地点，可在舆图上立下路标。</div>
         <div id="map-legend">
           <span><span class="ldot current"></span>当前位置</span>
           <span><span class="ldot explored"></span>已探明</span>
           <span><span class="ldot unexplored"></span>未探明</span>
+          <span><span class="ldot waypoint"></span>路标</span>
         </div>
       </div>
     </div>
@@ -161,40 +167,52 @@
       <button class="subtab" data-subtab="quest">任务</button>
     </div>
 
-    <!-- 子页：状态（panel-char + panel-status 合并） -->
+    <!-- 子页：状态。人物属性只在此处维护一份。 -->
     <div class="subtab-panel active" id="subtab-state">
-      <div class="card">
-        <div class="card-header"><span class="dot"></span>身 份</div>
-        <div class="card-body" id="panel-char">
-          <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value highlight" id="stat-realm">凡人</span></div>
-          <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="stat-cultivation">0 / 100</span></div>
-          <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="stat-daoxin">100 / 100</span></div>
-          <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="stat-lifespan">80 年</span></div>
-          <div class="stat-row"><span class="stat-label" id="mp-label-char">内力</span><span class="stat-value" id="stat-mp">80 / 80</span></div>
-          <div class="stat-row"><span class="stat-label" id="stones-label">灵石</span><span class="stat-value" id="stat-stones">0</span></div>
-          <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="stat-techniques">无</span></div>
-          <div class="stat-row"><span class="stat-label">任务数</span><span class="stat-value quest" id="stat-quests">0</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="dot"></span>境 况</div>
-        <div class="card-body" id="panel-status">
-          <div class="stat-row"><span class="stat-label">境界</span><span class="stat-value" id="s-realm">凡人</span></div>
-          <div class="stat-row"><span class="stat-label">修为</span><span class="stat-value" id="s-cult">0 / 100</span></div>
-          <div class="stat-row"><span class="stat-label">道心</span><span class="stat-value" id="s-daoxin">100 / 100</span></div>
-          <div class="stat-row"><span class="stat-label">寿元</span><span class="stat-value" id="s-life">80 年</span></div>
-          <div class="stat-row"><span class="stat-label">生命</span><span class="stat-value" id="s-hp">100 / 100</span></div>
-          <div class="stat-row"><span class="stat-label" id="s-mp-label-row">内力</span><span class="stat-value" id="s-mp">80 / 80</span></div>
-          <div class="stat-row"><span class="stat-label" id="s-stones-label">灵石</span><span class="stat-value" id="s-stones">0</span></div>
-          <div class="stat-row"><span class="stat-label">攻击</span><span class="stat-value" id="s-atk">5</span></div>
-          <div class="stat-row"><span class="stat-label">防御</span><span class="stat-value" id="s-def">2</span></div>
-          <div class="stat-row"><span class="stat-label">所学</span><span class="stat-value" id="s-tech">无</span></div>
-          <div class="stat-row"><span class="stat-label">所在</span><span class="stat-value" id="s-loc">应天府·十字街口</span></div>
-          <div class="stat-row"><span class="stat-label">斩杀</span><span class="stat-value" id="s-kill">0</span></div>
-          <div class="stat-row" id="s-faction-row" style="display:none"><span class="stat-label">帮派</span><span class="stat-value" id="s-faction" style="color:#c49a38">无</span></div>
-          <div class="stat-row" id="s-skills-row" style="display:none"><span class="stat-label">武学</span><span class="stat-value" id="s-skills" style="font-size:11px">无</span></div>
-          <div class="stat-row" id="s-rep-row" style="display:none"><span class="stat-label">门忠</span><span class="stat-value" id="s-rep">0</span></div>
-        </div>
+      <div class="character-sheet" id="panel-char">
+        <section class="character-identity" aria-label="人物身份">
+          <div class="character-identity-copy">
+            <span class="character-path-seal" id="char-path">武修</span>
+            <h2 class="character-name" id="char-name">无名小辈</h2>
+            <p class="character-origin" id="char-origin">身世未明</p>
+            <div class="character-tags">
+              <span id="char-faction">散修</span>
+              <span id="char-realm">凡人</span>
+            </div>
+          </div>
+          <figure class="character-portrait-frame">
+            <img src="/assets/portraits/player-wuxiu.png" alt="主角上半身立绘">
+            <figcaption id="char-portrait-caption">江湖未署名</figcaption>
+          </figure>
+        </section>
+
+        <section class="character-vitals" aria-label="当前状态">
+          <div class="character-meter character-meter--hp">
+            <div class="character-meter-head"><span>气血</span><strong id="char-hp">100 / 100</strong></div>
+            <div class="character-meter-track"><span id="char-hp-bar" style="width:100%"></span></div>
+          </div>
+          <div class="character-meter character-meter--mp">
+            <div class="character-meter-head"><span id="char-mp-label">内力</span><strong id="char-mp">80 / 80</strong></div>
+            <div class="character-meter-track"><span id="char-mp-bar" style="width:100%"></span></div>
+          </div>
+          <div class="character-meter character-meter--cultivation">
+            <div class="character-meter-head"><span>修为</span><strong id="stat-cultivation">0 / 100</strong></div>
+            <div class="character-meter-track"><span id="char-cultivation-bar" style="width:0%"></span></div>
+          </div>
+          <div class="character-meter character-meter--daoxin">
+            <div class="character-meter-head"><span>道心</span><strong id="stat-daoxin">100 / 100</strong></div>
+            <div class="character-meter-track"><span id="char-daoxin-bar" style="width:100%"></span></div>
+          </div>
+        </section>
+
+        <section class="character-facts" aria-label="修行与能力">
+          <div class="character-fact character-fact--accent"><span>境界</span><strong id="stat-realm">凡人</strong></div>
+          <div class="character-fact"><span>寿元</span><strong id="stat-lifespan">80 年</strong></div>
+          <div class="character-fact"><span>斩杀</span><strong id="char-kills">0</strong></div>
+          <div class="character-fact"><span>攻 / 防</span><strong id="char-combat">5 / 2</strong></div>
+          <div class="character-fact"><span id="stones-label">铜钱</span><strong id="stat-stones">0</strong></div>
+          <div class="character-fact"><span>门中声望</span><strong id="char-reputation">0</strong></div>
+        </section>
       </div>
     </div>
 
@@ -231,9 +249,13 @@
 <!-- Ink Dialogue Layer -->
 <div class="dialogue-layer" id="npc-modal" aria-hidden="true">
   <div class="dialogue-scroll" role="dialog" aria-modal="true" aria-labelledby="npc-title">
-    <div class="dialogue-portrait" aria-hidden="true">
-      <span id="dialogue-portrait-initial">人</span>
-    </div>
+    <aside class="dialogue-rail" aria-label="人物交互">
+      <div class="dialogue-portrait" id="dialogue-portrait" aria-hidden="true">
+        <img id="dialogue-portrait-image" alt="" hidden>
+        <span id="dialogue-portrait-initial">人</span>
+      </div>
+      <div class="dialogue-rail-actions" id="npc-interaction-actions"></div>
+    </aside>
     <div class="dialogue-body">
       <div class="dialogue-topline">
         <span class="dialogue-seal" id="npc-title">奇遇</span>
@@ -255,6 +277,18 @@
     </div>
   </div>
 </div>
+
+<!-- NPC 主动发话的线性短笺：点击画面推进，末句后自动收起。 -->
+<aside class="dialogue-ribbon" id="dialogue-ribbon" aria-live="polite" hidden>
+  <div class="dialogue-ribbon-portrait" id="dialogue-ribbon-portrait" aria-hidden="true">
+    <img id="dialogue-ribbon-portrait-image" alt="" hidden>
+    <span id="dialogue-ribbon-portrait-initial">人</span>
+  </div>
+  <div class="dialogue-ribbon-content">
+    <div class="dialogue-ribbon-name" id="dialogue-ribbon-name"></div>
+    <p class="dialogue-ribbon-text" id="dialogue-ribbon-text"></p>
+  </div>
+</aside>
 
 <!-- Combat Modal -->
 <div class="modal" id="combat-modal" role="dialog" aria-modal="true" aria-labelledby="combat-title">
@@ -278,6 +312,17 @@
         <div class="combat-hp-text" id="combat-enemy-hp-text">100/100</div>
       </div>
     </div>
+    <!-- 轻量交锋占位：后续可替换为逐帧角色或骨骼动画。 -->
+    <div class="combat-stage" aria-hidden="true">
+      <div class="combat-stage-figure combat-stage-figure--player">
+        <span class="combat-stick-head"></span><span class="combat-stick-body"></span><span class="combat-stick-leg combat-stick-leg--left"></span><span class="combat-stick-leg combat-stick-leg--right"></span>
+      </div>
+      <span class="combat-stage-impact">交</span>
+      <div class="combat-stage-figure combat-stage-figure--enemy">
+        <span class="combat-stick-head"></span><span class="combat-stick-body"></span><span class="combat-stick-leg combat-stick-leg--left"></span><span class="combat-stick-leg combat-stick-leg--right"></span>
+      </div>
+      <span class="combat-stage-ground"></span>
+    </div>
     <!-- 行功五槽 -->
     <div class="combat-slots" id="combat-slots">
       <button type="button" class="combat-slot" data-action="combatSlot" data-slot="A"><span class="slot-label">起</span><span class="slot-name">—</span><span class="slot-cd"></span></button>
@@ -291,8 +336,6 @@
       <div class="status-icons" id="combat-player-status"></div>
       <div class="status-icons" id="combat-enemy-status"></div>
     </div>
-    <!-- 战斗日志 -->
-    <div class="combat-log" id="combat-log" aria-live="polite" aria-label="战斗回放"></div>
     <!-- 真气门禁选项（默认隐藏） -->
     <div class="mpgate-panel" id="mpgate-panel" style="display:none">
       <div class="mpgate-title" id="mpgate-title">真气不足！</div>
@@ -307,6 +350,11 @@
       <button class="combat-btn combat-tutorial-btn" data-action="combat" data-combat="guard" hidden>架势</button>
       <button class="combat-btn combat-tutorial-btn" data-action="combat" data-combat="dodge" hidden>闪身</button>
     </div>
+    <!-- 战报固定在操作区下方，延续江湖日志的纸笺阅读感。 -->
+    <section class="combat-record" aria-label="战斗回放">
+      <div class="combat-record-title">战报</div>
+      <div class="combat-log" id="combat-log" aria-live="polite"></div>
+    </section>
   </div>
   <div class="combat-result-layer" id="combat-result-layer" data-action="dismissCombatResult" role="button" tabindex="0" aria-label="确认战斗结果" hidden>
     <div class="combat-result-mark">

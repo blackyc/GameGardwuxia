@@ -40,6 +40,42 @@ const MP_GATE_REST_RECOVER = 30;  // 调息恢复量
 const MP_GATE_BASIC_COST = 10;    // 平斩真气消耗
 const SLOTS = ['A', 'B', 'C', 'D', 'E'];
 const SLOT_NAMES = { A: '起式', B: '承式', C: '转式', D: '合式', E: '归式' };
+// 完整动作句模板。只润色战报，不参与命中、伤害、CD 或胜负计算。
+const COMBAT_NARRATION = {
+  player: [
+    ({ skill, dmg }) => `你先发制人，${skill}猛然递出，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你招式如流，${skill}直取中门，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你虚实相生，${skill}倏忽而至，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你一招羚羊挂角，${skill}无迹可寻，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你剑走偏锋，${skill}斜掠而入，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你后发先至，${skill}截住来势，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你踏中宫而进，${skill}迎面逼上，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你觑准破绽，${skill}骤然发难，造成伤害 ${dmg}！`,
+  ],
+  combo: [
+    ({ skill, dmg }) => `你一气呵成，${skill}紧随前式，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你连环递进，${skill}不给喘息，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你行云流水，${skill}顺势而出，造成伤害 ${dmg}！`,
+    ({ skill, dmg }) => `你进退有据，${skill}再迫一步，造成伤害 ${dmg}！`,
+  ],
+  enemy: [
+    ({ actor, skill, dmg }) => `${actor}抢步欺近，${skill}直袭而来，你受到伤害 ${dmg}！`,
+    ({ actor, skill, dmg }) => `${actor}后发先至，${skill}截住你的去势，你受到伤害 ${dmg}！`,
+    ({ actor, skill, dmg }) => `${actor}步步紧逼，${skill}骤然递出，你受到伤害 ${dmg}！`,
+    ({ actor, skill, dmg }) => `${actor}虚晃一招，${skill}旋即攻至，你受到伤害 ${dmg}！`,
+    ({ actor, skill, dmg }) => `${actor}攻守相济，${skill}乘隙而入，你受到伤害 ${dmg}！`,
+    ({ actor, skill, dmg }) => `${actor}骤然发难，${skill}来势甚急，你受到伤害 ${dmg}！`,
+  ],
+};
+
+function formatCombatNarration(templates, eventSeq, context) {
+  const template = templates[Math.abs(Number(eventSeq) || 0) % templates.length];
+  return template ? template(context) : `${context.skill}命中，造成伤害 ${context.dmg}！`;
+}
+
+function getCombatSkillName(name) {
+  return String(name || '一式').replace(/^(?:起式|承式|转式|合式|归式)[·・:：\s-]*/, '') || '一式';
+}
 
 // 异常状态配置
 const STATUS_CONFIG = {
@@ -297,6 +333,7 @@ export class BattleEngine {
 
     // 记录战斗开始
     this._addLog(`遭遇 ${enemy.name}！战诀展开——`, 'event');
+    this._addLog(`双方各守门户，静候对方露出破绽。`, 'event');
     this._addLog(`${Object.keys(chart).length}式同时开始读CD，等待就绪……`, 'info');
 
     // 启动 tick 定时器
@@ -614,7 +651,8 @@ export class BattleEngine {
 
     // 暴击
     const critMult = rollCrit(attackerData.critProb || 0, attackerData.critRate || 1.5, this.random);
-    if (critMult > 1.0) {
+    const wasCritical = critMult > 1.0;
+    if (wasCritical) {
       dmg = Math.floor(dmg * critMult);
 
       // 逆血暴击触发
@@ -640,17 +678,19 @@ export class BattleEngine {
         // 逆血触发后清零（肉慈斋锚点减半）
         attackerStatus.nixue = Math.floor(attackerStatus.nixue / 2);
       }
-
-      this._addLog(`——一击贯穿！`, 'combat');
     }
 
     // 闪避检查
     const defenderDodge = defenderData.dodge || 0;
     if (this.random() < defenderDodge) {
       const targetName = isPlayer ? bs.enemy.name : `你`;
-      this._addLog(`${targetName}侧身闪过`, 'combat');
+      this._addLog(`${targetName}身随意转，恰如羚羊挂角，避开了这一招。`, 'combat');
       bs.consecutiveHits = 0;
       return;
+    }
+
+    if (wasCritical) {
+      this._addLog(`这一招剑走偏锋，劲力骤然贯穿对方守势！`, 'combat');
     }
 
     // 迷魂减速效果：延迟出招（增加CD）
@@ -670,13 +710,15 @@ export class BattleEngine {
     }
 
     // 叙事文本
-    const slotName = SLOT_NAMES[slot];
-    const attackerName = isPlayer ? `` : `${bs.enemy.name}·`;
-    const targetName = isPlayer ? bs.enemy.name : `你`;
-    const skillName = String(sk.name || '').startsWith(`${slotName}·`)
-      ? sk.name
-      : `${slotName}·${sk.name}`;
-    this._addLog(`${attackerName}${skillName}！伤害 ${dmg}！`, 'combat');
+    const skillName = getCombatSkillName(sk.name);
+    const templates = isPlayer
+      ? (bs.consecutiveHits >= 1 ? COMBAT_NARRATION.combo : COMBAT_NARRATION.player)
+      : COMBAT_NARRATION.enemy;
+    this._addLog(formatCombatNarration(templates, bs.eventSeq, {
+      actor: bs.enemy.name,
+      skill: skillName,
+      dmg,
+    }), 'combat');
 
     // 连续命中计数
     bs.consecutiveHits++;
@@ -802,7 +844,7 @@ export class BattleEngine {
           bs.player.mp -= MP_GATE_BASIC_COST;
           const basicDmg = Math.max(1, Math.floor(bs.player.atk * 0.5));
           bs.enemy.hp = Math.max(0, bs.enemy.hp - basicDmg);
-          this._addLog(`平斩！伤害 ${basicDmg}`, 'combat');
+          this._addLog(`你趁隙平斩，朴实一击落在实处，造成伤害 ${basicDmg}！`, 'combat');
         } else {
           this._addLog(`真气不足10，自动转为调息`, 'info');
           bs.player.mp = Math.min(bs.player.maxMp, bs.player.mp + MP_GATE_REST_RECOVER);
@@ -819,7 +861,7 @@ export class BattleEngine {
           let dmg = Math.max(1, Math.floor(skillNum * (bs.player.atk + (bs.player.weaponAtk || 0)) * ratio - bs.enemy.def));
           if (skill.dmgType === 'physical' && bs.enemy.physicalImmune) dmg = 0;
           bs.enemy.hp = Math.max(0, bs.enemy.hp - dmg);
-          this._addLog(`强行出招·${skill.name}！伤害 ${dmg}（效率${Math.floor(ratio * 100)}%）`, 'combat');
+          this._addLog(`你强提真气，${getCombatSkillName(skill.name)}勉强递出，造成伤害 ${dmg}（威力${Math.floor(ratio * 100)}%）！`, 'combat');
 
           // 异常状态仍照常施加
           this._applyStatusEffects(skill, bs.playerStatus, bs.enemyStatus, true);
@@ -1328,12 +1370,16 @@ export class BattleEngine {
 
     // 闪避
     if (this.random() < (bs.player.dodge || 0)) {
-      this._addLog(`${enemy.name}攻击——你闪避成功`, 'combat');
+      this._addLog(`${enemy.name}骤然攻来，你身随意转，恰好避开锋芒。`, 'combat');
       return;
     }
 
     bs.player.hp -= dmg;
-    this._addLog(`${enemy.name}攻击！伤害 ${dmg}`, 'combat');
+    this._addLog(formatCombatNarration(COMBAT_NARRATION.enemy, bs.eventSeq, {
+      actor: enemy.name,
+      skill: '一击',
+      dmg,
+    }), 'combat');
     if (this._settleIfTerminal()) return;
 
     // 敌人施加异常状态（部分敌人）
@@ -1379,7 +1425,7 @@ export class BattleEngine {
     switch (hijackType) {
       case 'text': {
         // 1-2级：文本变异
-        this._addLog(`[${SLOT_NAMES[slot]}·${skill.name}] 你的招式……似乎有些不对`, 'event');
+        this._addLog(`你催动${getCombatSkillName(skill.name)}，却觉招式似乎有些不对。`, 'event');
         this._executeSkill(slot, skill, 'player');
         bs.cooldowns[slot] = skill.cd || 2.0;
         return true;

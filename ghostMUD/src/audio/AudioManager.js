@@ -3,69 +3,195 @@
  *
  * Strategy:
  *   - BGM: HTMLAudioElement loop playback of bgm.mp3 (no WebAudio dependency)
- *     <audio> auto-unlocks after first user gesture; avoids 162x AudioContext warnings
  *   - SFX (bangu/daluo/jingtangmu/wind): WebAudio synthesis (optional, can be muted)
- *   - BGM plays normally during intro; SFX muted during intro, restored after
+ *   - User preferences persist in ghostmud.audio.preferences.v1
+ *   - Intro temporary mute is stack-based and does not rewrite preferences
  */
 
+import {
+  loadAudioPreferences,
+  saveAudioPreferences,
+  normalizeAudioPreferences,
+  DEFAULT_AUDIO_PREFERENCES,
+} from './audio_preferences.js';
+
 class AudioManager {
-  constructor() {
+  constructor(storage) {
+    this._storage = storage || (typeof localStorage !== 'undefined' ? localStorage : null);
     this.ctx = null;
     this._master = null;
     this._banguLoopTimer = null;
     this._banguLoopBpm = 60;
-    this._sfxMuted = true;   // SFX muted by default (for intro)
-    this._bgmMuted = false;  // BGM on by default
     this._unlocked = false;
     this._queuedSounds = [];
-
-    // BGM element (HTMLAudioElement, auto-decode)
-    this.bgMusic = new Audio('/bgm.mp3');
-    this.bgMusic.loop = true;
-    this.bgMusic.volume = 0.4;
+    this._tempMuteReasons = new Set();
     this._bgStarted = false;
+
+    const prefs = loadAudioPreferences(this._storage);
+    this._prefs = { ...prefs };
+
+    // Runtime effective flags (preferences × temporary mute)
+    this._sfxMuted = this._computeSfxMuted();
+    this._bgmMuted = this._computeBgmMuted();
+
+    // BGM element (HTMLAudioElement). In non-browser tests Audio may be missing.
+    this.bgMusic = this._createBgmElement();
+    this._applyBgmOutput();
+  }
+
+  _createBgmElement() {
+    if (typeof Audio === 'undefined') {
+      return {
+        loop: true,
+        volume: this._prefs.bgmVolume,
+        muted: false,
+        play: () => Promise.resolve(),
+        pause() {},
+      };
+    }
+    const el = new Audio('/bgm.mp3');
+    el.loop = true;
+    el.volume = this._prefs.bgmVolume;
+    return el;
+  }
+
+  getPreferences() {
+    return normalizeAudioPreferences(this._prefs);
+  }
+
+  setMasterMuted(m) {
+    this._prefs.masterMuted = Boolean(m);
+    this._persistAndApply();
+  }
+
+  setBgmMuted(m) {
+    this._prefs.bgmMuted = Boolean(m);
+    this._persistAndApply();
+  }
+
+  setSfxMuted(m) {
+    this._prefs.sfxMuted = Boolean(m);
+    this._persistAndApply();
+  }
+
+  setBgmVolume(n) {
+    const v = Number(n);
+    this._prefs.bgmVolume = Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : this._prefs.bgmVolume;
+    this._persistAndApply();
+  }
+
+  setSfxVolume(n) {
+    const v = Number(n);
+    this._prefs.sfxVolume = Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : this._prefs.sfxVolume;
+    this._persistAndApply();
   }
 
   /**
-   * Start BGM (called from main.js entry, with auto-play retry strategy)
-   * Chrome policy: .play() before user gesture fails silently,
-   * so try play() first, then wait for first click/key event to retry
+   * 临时静音（序章等）。不得写入 localStorage。
+   * 对同一 reason 重复 push 幂等。
+   */
+  pushTemporaryMute(reason) {
+    const key = reason == null ? 'default' : String(reason);
+    this._tempMuteReasons.add(key);
+    this._applyEffectiveMute();
+  }
+
+  /**
+   * 结束临时静音，恢复用户偏好（不得强制开声）。
+   * 对同一 reason 重复 pop 幂等。
+   */
+  popTemporaryMute(reason) {
+    const key = reason == null ? 'default' : String(reason);
+    this._tempMuteReasons.delete(key);
+    this._applyEffectiveMute();
+  }
+
+  /**
+   * 旧 SFX API 兼容别名：只影响 SFX 偏好，不改 BGM 偏好。
+   */
+  setMuted(m) {
+    this.setSfxMuted(Boolean(m));
+  }
+
+  _persistAndApply() {
+    this._prefs = normalizeAudioPreferences(this._prefs);
+    saveAudioPreferences(this._prefs, this._storage);
+    this._applyEffectiveMute();
+  }
+
+  _computeSfxMuted() {
+    return Boolean(this._prefs.masterMuted || this._prefs.sfxMuted || this._tempMuteReasons.size > 0);
+  }
+
+  _computeBgmMuted() {
+    return Boolean(this._prefs.masterMuted || this._prefs.bgmMuted || this._tempMuteReasons.size > 0);
+  }
+
+  _applyEffectiveMute() {
+    this._sfxMuted = this._computeSfxMuted();
+    this._bgmMuted = this._computeBgmMuted();
+    this._applyBgmOutput();
+    if (this._master) {
+      const vol = this._sfxMuted ? 0 : this._prefs.sfxVolume;
+      try { this._master.gain.value = vol; } catch (_) { /* ignore */ }
+    }
+  }
+
+  _applyBgmOutput() {
+    if (!this.bgMusic) return;
+    this.bgMusic.volume = this._prefs.bgmVolume;
+    this.bgMusic.muted = this._bgmMuted;
+    if (this._bgmMuted && typeof this.bgMusic.pause === 'function') {
+      try { this.bgMusic.pause(); } catch (_) { /* ignore */ }
+    }
+  }
+
+  /**
+   * Start BGM — must respect masterMuted || bgmMuted (and temporary mute).
    */
   startBgm() {
     if (this._bgStarted) return;
     this._bgStarted = true;
+    this._applyBgmOutput();
+    if (this._bgmMuted) return;
+
     const tryPlay = () => {
-      this.bgMusic.play().then(() => {
-        console.log('[Audio] BGM started');
-      }).catch(() => {
-        // First attempt failed (Chrome autoplay policy),
-        // wait for first user gesture to retry
-        const onGesture = () => {
-          this.bgMusic.play().catch(() => {});
-          ['click','touchstart','keydown','mousedown'].forEach(ev =>
-            document.removeEventListener(ev, onGesture, true));
-        };
-        ['click','touchstart','keydown','mousedown'].forEach(ev =>
-          document.addEventListener(ev, onGesture, true));
-      });
+      const p = this.bgMusic.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => {
+          console.log('[Audio] BGM started');
+        }).catch(() => {
+          if (typeof document === 'undefined') return;
+          const onGesture = () => {
+            if (!this._computeBgmMuted()) {
+              this.bgMusic.play().catch(() => {});
+            }
+            ['click', 'touchstart', 'keydown', 'mousedown'].forEach(ev =>
+              document.removeEventListener(ev, onGesture, true));
+          };
+          ['click', 'touchstart', 'keydown', 'mousedown'].forEach(ev =>
+            document.addEventListener(ev, onGesture, true));
+        });
+      }
     };
     tryPlay();
   }
 
   _ensureCtx() {
     if (this.ctx) return this.ctx;
+    if (typeof window === 'undefined') return null;
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return null;
     this.ctx = new AC();
     this._master = this.ctx.createGain();
-    this._master.gain.value = 0.5;
+    this._master.gain.value = this._sfxMuted ? 0 : this._prefs.sfxVolume;
     this._master.connect(this.ctx.destination);
     if (!this._unlocked) this._autoUnlockOnGesture();
     return this.ctx;
   }
 
-  /** Auto-unlock AudioContext on first user gesture */
   _autoUnlockOnGesture() {
+    if (typeof document === 'undefined') return;
     const events = ['click', 'touchstart', 'keydown', 'mousedown'];
     const handler = () => {
       events.forEach((ev) => document.removeEventListener(ev, handler, true));
@@ -82,16 +208,6 @@ class AudioManager {
         this._queuedSounds.splice(0).forEach((fn) => { try { fn(); } catch (e) {} });
       }).catch((e) => console.warn('[Audio] resume failed', e));
     }
-    // BGM start is handled by startBgm() (decoupled from unlock)
-  }
-
-  setMuted(m) {
-    this._sfxMuted = m;
-    if (this.bgMusic) this.bgMusic.muted = this._bgmMuted;
-  }
-  setBgmMuted(m) {
-    this._bgmMuted = m;
-    if (this.bgMusic) this.bgMusic.muted = m;
   }
 
   _noiseBuffer(seconds) {
@@ -245,9 +361,9 @@ class AudioManager {
 
   stopAll() {
     this.stopBanguLoop();
-    // BGM intentionally not stopped (continuous playback)
   }
 }
 
 export const audio = new AudioManager();
+export { AudioManager, DEFAULT_AUDIO_PREFERENCES };
 export default audio;

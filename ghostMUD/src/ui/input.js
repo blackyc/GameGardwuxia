@@ -39,7 +39,11 @@ export class InputManager {
           break;
         case 'cultivate-menu': {
           const sub = document.getElementById('cultivate-submenu');
-          if (sub) sub.style.display = (sub.style.display === 'none' || !sub.style.display) ? 'flex' : 'none';
+          if (sub) {
+            const opening = sub.style.display === 'none' || !sub.style.display;
+            if (opening) this.game.closePerception();
+            sub.style.display = opening ? 'flex' : 'none';
+          }
           break;
         }
         case 'meditate':
@@ -58,23 +62,11 @@ export class InputManager {
         case 'focusNpc': {
           const idx = parseInt(btn.dataset.npcIdx, 10);
           const type = btn.dataset.npcType || 'encounter';
-          if (!Number.isNaN(idx)) {
-            const isFocused = this.game.focusedNpcIndex === idx && this.game.focusedNpcType === type;
-            this.game.focusedNpcIndex = isFocused ? null : idx;
-            this.game.focusedNpcType = isFocused ? null : type;
-            this.game.focusedNpcGiftKey = null;
-            const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
-            const npc = perc && perc.npcs ? perc.npcs.find(n => Number(n.index) === idx && ((n.type || 'encounter') === type)) : null;
-            if (npc && !isFocused) this.game.addLog('你看向' + npc.name + '。', 'info');
-            this.game.renderer.updateUI('location');
-          }
+          if (!Number.isNaN(idx)) this.game.openNpcInteraction(idx, type);
           break;
         }
         case 'closeNpcFocus':
-          this.game.focusedNpcIndex = null;
-          this.game.focusedNpcType = null;
-          this.game.focusedNpcGiftKey = null;
-          this.game.renderer.updateUI('location');
+          this.game.closeNPC();
           break;
         case 'talkNpc': {
           const idx = parseInt(btn.dataset.npcIdx, 10);
@@ -85,9 +77,7 @@ export class InputManager {
         case 'npcObserve': {
           const idx = parseInt(btn.dataset.npcIdx, 10);
           const type = btn.dataset.npcType || 'encounter';
-          const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
-          const npc = perc && perc.npcs ? perc.npcs.find(n => Number(n.index) === idx && ((n.type || 'encounter') === type)) : null;
-          if (npc) this.game.addLog('你细看' + npc.name + '，把此人的神态记在心里。', 'info');
+          if (!Number.isNaN(idx)) this.game.inspectNpc(idx, type);
           break;
         }
         case 'sparNpc': {
@@ -109,6 +99,15 @@ export class InputManager {
           if (!Number.isNaN(idx) && !Number.isNaN(itemIndex)) this.game.giveGiftToNpc(idx, type, itemIndex);
           break;
         }
+        case 'npcInteractionBack':
+          this.game.npc.returnNpcInteraction();
+          break;
+        case 'npcGiftPage':
+          this.game.npc.setGiftPage(parseInt(btn.dataset.page, 10));
+          break;
+        case 'confirmNpcSpar':
+          this.game.confirmNpcSpar();
+          break;
         case 'npcAsk': {
           const idx = parseInt(btn.dataset.npcIdx, 10);
           const type = btn.dataset.npcType || 'encounter';
@@ -218,6 +217,15 @@ export class InputManager {
     if (npcClose) {
       npcClose.addEventListener('click', () => this.game.closeNPC());
     }
+
+    // 言路短笺是线性过场：任意一次点击只推进短笺，不穿透到底层操作。
+    document.addEventListener('click', (e) => {
+      const ribbon = document.getElementById('dialogue-ribbon');
+      if (!ribbon || ribbon.hidden) return;
+      e.preventDefault();
+      e.stopPropagation();
+      this.game.nextDialogueRibbon();
+    }, true);
 
     // 绝招返回
     document.addEventListener('click', (e) => {

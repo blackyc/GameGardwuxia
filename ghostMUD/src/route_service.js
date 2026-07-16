@@ -38,6 +38,31 @@ export class RouteService {
     return metadata?.id || `${roomId}::${direction}`;
   }
 
+  /** Resolve the spatial layer without requiring every legacy room to be rewritten. */
+  getRoomLayer(roomId = this.game.state.location) {
+    const room = this.game.LOCATIONS?.[roomId];
+    if (!room) return 'world';
+    if (room.spaceLayer) return room.spaceLayer;
+    if (room.zoneKind === 'dungeon') return 'dungeon';
+
+    const pending = [roomId];
+    const visited = new Set();
+    while (pending.length > 0) {
+      const targetRoomId = pending.shift();
+      if (visited.has(targetRoomId)) continue;
+      visited.add(targetRoomId);
+      for (const [sourceId, source] of Object.entries(this.game.LOCATIONS || {})) {
+        for (const [direction, target] of Object.entries(source?.connections || {})) {
+          if (target !== targetRoomId) continue;
+          const kind = source.routeSketch?.[direction]?.kind;
+          if (kind === 'dungeon' || kind === 'interior') return kind;
+          if (kind === 'maze' && !visited.has(sourceId)) pending.push(sourceId);
+        }
+      }
+    }
+    return roomId.startsWith('问剑峰·') ? 'faction' : 'world';
+  }
+
   _rawRoutes(roomId = this.game.state.location) {
     const room = this.game.LOCATIONS?.[roomId];
     if (!room?.connections) return [];

@@ -883,7 +883,7 @@ button.route-destination:active {
 .dialogue-scroll {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(86px, 24%) minmax(0, 1fr);
+  grid-template-columns: 108px minmax(0, 1fr);
   width: min(640px, 94vw);
   max-height: min(78vh, 690px);
   padding: 16px;
@@ -907,15 +907,41 @@ button.route-destination:active {
 .dialogue-scroll::after { bottom: 8px; }
 
 .dialogue-portrait {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 164px;
+  width: 108px;
+  aspect-ratio: 1;
+  align-self: start;
+  overflow: hidden;
   margin-right: 14px;
   background: radial-gradient(circle, rgba(246, 240, 218, 0.9), rgba(192, 205, 190, 0.48));
   border: 1px solid rgba(67, 71, 66, 0.42);
-  border-radius: 50% 50% 46% 46%;
+  border-radius: 50%;
   box-shadow: inset 0 0 24px rgba(82, 92, 84, 0.18);
+}
+
+.dialogue-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.82) contrast(1.04);
+}
+
+.dialogue-portrait[data-portrait="suxiaotang"] img {
+  object-position: 50% 23%;
+  transform: scale(1.34);
+}
+
+.dialogue-portrait[data-portrait="zhouqi"] img {
+  object-position: 50% 18%;
+  transform: scale(1.28);
+}
+
+.dialogue-portrait[data-portrait="canjian"] img {
+  object-position: 50% 17%;
+  transform: scale(1.45);
 }
 
 .dialogue-portrait span {
@@ -1073,14 +1099,14 @@ button.route-destination:active {
   }
 
   .dialogue-scroll {
-    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-columns: 84px minmax(0, 1fr);
     width: 96vw;
     max-height: 82vh;
     padding: 12px;
   }
 
   .dialogue-portrait {
-    min-height: 128px;
+    width: 84px;
     margin-right: 10px;
   }
 
@@ -1893,6 +1919,8 @@ body[data-page="jianghu"] #scene-bg {
 }
 
 #combat-modal .combat-arena {
+  display: flex;
+  flex-direction: column;
   width: min(94vw, 620px);
   max-width: 620px;
   padding: 18px 20px 20px;
@@ -1932,6 +1960,38 @@ body[data-page="jianghu"] #scene-bg {
 #combat-modal .combat-mp-fill { border-radius: 0; background: #2b6765; }
 #combat-modal .combat-hp-text,
 #combat-modal .combat-mp-text { color: #59564f; font-size: 11px; }
+
+/* A deliberately light-weight silhouette stage. It is a disposable stand-in
+ * for later character animation, not a second combat rules surface. */
+#combat-modal .combat-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 104px;
+  margin: 8px 8px 4px;
+  overflow: hidden;
+  border-top: 1px solid rgba(78, 76, 66, .34);
+  border-bottom: 1px solid rgba(78, 76, 66, .28);
+  background: radial-gradient(ellipse at center, rgba(201, 179, 123, .2), transparent 64%);
+}
+#combat-modal .combat-stage-ground { position: absolute; right: 9%; bottom: 18px; left: 9%; height: 1px; background: linear-gradient(90deg, transparent, rgba(53, 55, 50, .68) 14%, rgba(53, 55, 50, .68) 86%, transparent); }
+#combat-modal .combat-stage-figure { position: relative; z-index: 1; width: 32px; height: 62px; color: #2c322d; transform-origin: 50% 88%; }
+#combat-modal .combat-stage-figure--player { margin-left: 27%; animation: combat-duelist-player 2.35s ease-in-out infinite; }
+#combat-modal .combat-stage-figure--enemy { margin-right: 27%; color: #84362f; transform: scaleX(-1); animation: combat-duelist-enemy 2.35s ease-in-out infinite; }
+#combat-modal .combat-stick-head { position: absolute; top: 2px; left: 10px; width: 12px; height: 12px; border: 2px solid currentColor; border-radius: 50%; background: rgba(241, 235, 214, .8); }
+#combat-modal .combat-stick-body { position: absolute; top: 18px; left: 15px; width: 3px; height: 24px; background: currentColor; }
+#combat-modal .combat-stick-body::before,
+#combat-modal .combat-stick-body::after { position: absolute; top: 4px; left: 1px; width: 22px; height: 2px; content: ''; background: currentColor; transform-origin: 0 50%; }
+#combat-modal .combat-stick-body::before { transform: rotate(-28deg); }
+#combat-modal .combat-stick-body::after { transform: rotate(36deg); }
+#combat-modal .combat-stick-leg { position: absolute; top: 40px; left: 15px; width: 20px; height: 2px; background: currentColor; transform-origin: 0 50%; }
+#combat-modal .combat-stick-leg--left { transform: rotate(42deg); }
+#combat-modal .combat-stick-leg--right { transform: rotate(-42deg); }
+#combat-modal .combat-stage-impact { position: absolute; z-index: 2; left: 50%; top: 36px; color: rgba(139, 50, 44, .74); font: 700 27px/1 'STKaiti', 'KaiTi', serif; text-shadow: 0 1px rgba(255, 246, 218, .82); transform: translateX(-50%) rotate(-8deg); animation: combat-impact 2.35s ease-in-out infinite; }
+@keyframes combat-duelist-player { 0%, 24%, 100% { transform: translateX(0) rotate(0deg); } 38% { transform: translateX(18px) rotate(-12deg); } 51% { transform: translateX(3px) rotate(4deg); } }
+@keyframes combat-duelist-enemy { 0%, 37%, 100% { transform: scaleX(-1) translateX(0) rotate(0deg); } 52% { transform: scaleX(-1) translateX(14px) rotate(-12deg); } 66% { transform: scaleX(-1) translateX(2px) rotate(4deg); } }
+@keyframes combat-impact { 0%, 28%, 70%, 100% { opacity: .25; transform: translateX(-50%) scale(.68) rotate(-8deg); } 40%, 57% { opacity: 1; transform: translateX(-50%) scale(1.12) rotate(-8deg); } }
 
 #combat-modal .combat-slots { gap: 7px; margin: 14px 0 9px; }
 #combat-modal .combat-slot {
@@ -1986,14 +2046,13 @@ body[data-page="jianghu"] #scene-bg {
 #combat-modal .combat-slot:disabled { cursor: default; }
 #combat-modal[data-mode="showcase"] .combat-slot.current { cursor: pointer; }
 
-#combat-modal .combat-log {
-  max-height: 150px;
-  color: #33302a;
-  background: rgba(238,233,217,.72);
-  border: 1px solid #77756c;
-  border-radius: 0;
-}
-#combat-modal .combat-log-entry { color: #3d3932; }
+#combat-modal .combat-record { order: 8; margin-top: 10px; border-top: 1px solid #6f6b60; background: rgba(245, 240, 220, .73); }
+#combat-modal .combat-record-title { padding: 6px 9px 3px; color: #48463e; font: 700 13px/1.2 'STKaiti', 'KaiTi', serif; }
+#combat-modal .combat-log { max-height: 132px; min-height: 74px; padding: 2px 9px 8px; overflow-y: auto; color: #3d3932; background: transparent; border: 0; border-radius: 0; font: 13px/1.62 'STKaiti', 'KaiTi', serif; scrollbar-color: #8b8474 transparent; scrollbar-width: thin; }
+#combat-modal .combat-log::-webkit-scrollbar { width: 5px; }
+#combat-modal .combat-log::-webkit-scrollbar-track { background: transparent; }
+#combat-modal .combat-log::-webkit-scrollbar-thumb { background: rgba(107, 101, 89, .72); border-radius: 5px; }
+#combat-modal .combat-log-entry { padding: 1px 0; color: #3d3932; }
 
 #combat-modal .combat-result-layer[hidden] { display: none; }
 #combat-modal .combat-result-layer {
@@ -2048,13 +2107,18 @@ body[data-page="jianghu"] #scene-bg {
 
 @media (max-width: 600px) {
   #combat-modal { align-items: stretch; }
-  #combat-modal .combat-arena { width: 100%; max-height: 100dvh; margin: 0; padding: 14px 12px; border-inline: 0; }
+  #combat-modal .combat-arena { width: 100%; max-height: 100dvh; margin: 0; padding: 14px 12px; overflow-y: auto; overscroll-behavior: contain; border-inline: 0; }
+  #combat-modal .combat-stage { height: 92px; margin-inline: 4px; }
+  #combat-modal .combat-stage-figure--player { margin-left: 23%; }
+  #combat-modal .combat-stage-figure--enemy { margin-right: 23%; }
   #combat-modal .combat-slot { min-height: 68px; }
   #combat-modal .combat-slot .slot-name { white-space: normal; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #combat-modal .combat-slot { animation: none !important; transition: none; }
+  #combat-modal .combat-slot,
+  #combat-modal .combat-stage *,
+  #combat-modal .combat-stage { animation: none !important; transition: none; }
 }
 
 /* Jianghu V1.5.2: compact spatial sketch, hand-ink NPC states and light feedback. */
@@ -2248,7 +2312,104 @@ body[data-page="jianghu"] #scene-bg {
   .jianghu-moment-feedback__item { animation: jianghu-moment-fade 1.9s linear both; }
 }
 
+/* Unified NPC interaction shell. NpcDetailCard remains a Figma/history
+ * component, but the runtime keeps the room surface to name chips only. */
+.dialogue-rail { min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+.dialogue-rail .dialogue-portrait { margin-right: 0; }
+.dialogue-rail-actions { display: flex; flex-direction: column; gap: 6px; }
+.dialogue-rail-action { width: 100%; min-height: 36px; padding: 6px 8px; color: #2b2820; border: 1px solid rgba(48, 49, 45, .82); box-shadow: inset 0 0 0 1px rgba(255, 252, 221, .62), 0 1px 0 rgba(38, 35, 27, .2); font: 700 13px/1.15 'STKaiti', 'KaiTi', serif; transition: filter .14s ease, transform .14s ease; }
+.dialogue-rail-action:not(:disabled):active { filter: brightness(.92); transform: translateY(1px); }
+.dialogue-rail-action[data-action="talkNpc"] { background: linear-gradient(90deg, #edda92, #d8b85d); }
+.dialogue-rail-action[data-action="npcObserve"] { color: #263c39; background: linear-gradient(90deg, #cbd8d0, #aac6bf); }
+.dialogue-rail-action[data-action="npcGift"] { color: #4c351d; background: linear-gradient(90deg, #e8c883, #c99449); }
+.dialogue-rail-action[data-action="sparNpc"] { color: #faedd9; background: linear-gradient(90deg, #9a5040, #76362f); }
+.dialogue-rail-action:disabled { color: #817c70; background: #c4bdab; box-shadow: inset 0 0 0 1px rgba(245, 240, 219, .45); }
+.dialogue-rail-locked { margin: 0; padding: 8px 5px; color: #6d6456; background: rgba(190, 184, 166, .55); border: 1px solid rgba(99, 94, 84, .28); font: 12px/1.45 'STKaiti', 'KaiTi', serif; }
+.dialogue-layer[data-mode="inspect"] .dialogue-text-wrap { min-height: 176px; }
+.dialogue-layer[data-mode="observe"] .dialogue-text-wrap, .dialogue-layer[data-mode="gift-select"] .dialogue-text-wrap, .dialogue-layer[data-mode="gift-reaction"] .dialogue-text-wrap, .dialogue-layer[data-mode="challenge"] .dialogue-text-wrap, .dialogue-layer[data-mode="talk"] .dialogue-text-wrap { min-height: 116px; }
+.dialogue-layer:not([data-mode="inspect"]) .dialogue-rail-actions { display: none; }
+.dialogue-gift-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.dialogue-gift-card { min-height: 54px; padding: 7px; color: #302820; background: linear-gradient(145deg, #f3e6b6, #d9ba78); border: 1px solid #6e5a3a; box-shadow: inset 0 0 0 2px rgba(255, 248, 220, .58); font: 700 14px/1.25 'STKaiti', 'KaiTi', serif; }
+.dialogue-pager { display: flex; align-items: center; justify-content: center; gap: 12px; color: #62533d; font: 12px/1.2 'STKaiti', 'KaiTi', serif; }
+.dialogue-pager button { min-height: 28px; padding: 3px 8px; color: #40382d; background: rgba(248, 242, 218, .72); border: 1px solid rgba(77, 72, 61, .44); font: inherit; }
+.dialogue-quiet-choice { color: #5c564c !important; background: rgba(235, 230, 211, .8) !important; }
+.dialogue-danger-choice { color: #f9ebd2 !important; background: linear-gradient(180deg, #914138, #672d29) !important; }
+
+/* A proactive line stays light; it floats at the visual focus without locking
+ * the Jianghu page or becoming a second full modal. */
+.dialogue-ribbon { position: fixed; z-index: 2950; top: 50%; left: 50%; display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; width: min(560px, calc(100vw - 28px)); max-height: min(46dvh, 330px); box-sizing: border-box; padding: 12px 14px; overflow: auto; overscroll-behavior: contain; color: #292722; background: rgba(238, 232, 214, .98); border: 1px solid rgba(48, 49, 45, .76); box-shadow: 0 14px 34px rgba(0, 0, 0, .3), inset 0 0 0 2px rgba(255, 253, 233, .68); transform: translate(-50%, -50%); animation: dialogue-ribbon-rise .24s ease-out both; }
+.dialogue-ribbon[hidden] { display: none; }
+.dialogue-ribbon-portrait { position: relative; width: 68px; aspect-ratio: 1; align-self: start; overflow: hidden; display: grid; place-items: center; color: #f1dfb8; background: #77362f; border: 2px solid rgba(62, 55, 43, .72); border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(245, 231, 191, .48); font: 700 25px/1 'STKaiti', 'KaiTi', serif; }
+.dialogue-ribbon-portrait img { width: 100%; height: 100%; object-fit: cover; }
+.dialogue-ribbon-content { min-width: 0; }
+.dialogue-ribbon-name { color: #89382d; font: 700 14px/1.2 'STKaiti', 'KaiTi', serif; }
+.dialogue-ribbon-text { margin: 5px 0 8px; font: 16px/1.65 'STKaiti', 'KaiTi', serif; }
+@keyframes dialogue-ribbon-rise { from { opacity: 0; transform: translate(-50%, -46%) scale(.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+/* 张望与修行是暂态工具：窄屏用底部纸笺，宽屏自然停在右下。 */
+.page[data-page="jianghu"] .perception-panel.open { position: fixed; z-index: 2600; right: 12px; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); left: 12px; max-height: min(52dvh, 430px); margin: 0; overflow: auto; overscroll-behavior: contain; box-shadow: 0 12px 28px rgba(24, 25, 22, .25); }
+.page[data-page="jianghu"] .perception-panel.open .perception-inner { max-height: none; }
+.page[data-page="jianghu"] .cultivate-submenu[style*="flex"] { position: fixed !important; z-index: 3000; top: 50%; right: auto; bottom: auto; left: 50%; width: min(340px, calc(100vw - 36px)); box-sizing: border-box; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 0; padding: 18px 16px; background: rgba(243, 239, 220, .99); border: 1px solid rgba(55, 58, 55, .76); box-shadow: 0 14px 34px rgba(24, 25, 22, .3), inset 0 0 0 2px rgba(255, 253, 233, .64); transform: translate(-50%, -50%); }
+.page[data-page="jianghu"] .cultivate-submenu[style*="flex"] .action-btn { flex: 1 1 120px; min-width: 0; }
+.page[data-page="jianghu"] .cultivate-submenu[style*="flex"] [data-action="cultivate-menu"] { flex-basis: 100%; }
+@media (min-width: 720px) { .page[data-page="jianghu"] .perception-panel.open { left: auto; width: min(390px, 36vw); bottom: 26px; } }
+@media (max-width: 520px) { .dialogue-ribbon { grid-template-columns: 56px minmax(0, 1fr); gap: 9px; padding: 11px; } .dialogue-ribbon-portrait { width: 54px; } .dialogue-ribbon-text { font-size: 15px; line-height: 1.58; } }
+@media (max-width: 420px) { .dialogue-rail-actions { gap: 4px; } .dialogue-rail-action { min-height: 34px; padding-inline: 4px; font-size: 12px; } .dialogue-gift-card { min-height: 48px; font-size: 13px; } }
+
 @keyframes jianghu-moment-fade {
   0%, 100% { opacity: 0; }
   12%, 78% { opacity: 1; }
+}
+
+/* V1.7 spatial hierarchy and mixed recent-log stream. */
+.page[data-page="jianghu"] .jianghu-main-zone {
+  bottom: 32dvh;
+}
+
+.page[data-page="jianghu"] .scene-panel-divider,
+.page[data-page="jianghu"] .route-sketch-title {
+  display: none;
+}
+
+.page[data-page="jianghu"] .room-card.scene-narrative-panel .exit-bar.route-sketch {
+  margin-top: -2px;
+}
+
+.page[data-page="jianghu"] .room-card.scene-narrative-panel .route-sketch-canvas,
+.page[data-page="jianghu"] .route-sketch--has-status .route-sketch-canvas {
+  min-height: 148px;
+}
+
+.page[data-page="jianghu"] .recent-log {
+  top: 58dvh;
+  padding: 10px 16px 8px;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry:nth-last-child(n + 6) {
+  display: block;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry.scene,
+.page[data-page="jianghu"] #log-area .log-entry.dialogue {
+  margin: 2px 0;
+  padding: 4px 7px 4px 9px;
+  border-left: 2px solid rgba(47, 103, 97, 0.58);
+  color: #2f625d;
+  background: rgba(226, 218, 190, 0.34);
+  font-family: 'FangSong', 'STFangsong', 'Noto Serif SC', serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.62;
+}
+
+.page[data-page="jianghu"] #log-area .log-entry.dialogue {
+  color: #6b4936;
+  border-left-color: rgba(145, 83, 57, 0.6);
+}
+
+@media (max-width: 420px) {
+  .page[data-page="jianghu"] .room-card.scene-narrative-panel .route-sketch-canvas,
+  .page[data-page="jianghu"] .route-sketch--has-status .route-sketch-canvas {
+    min-height: 132px;
+  }
 }

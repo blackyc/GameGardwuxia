@@ -113,8 +113,7 @@ export class Renderer {
     }
 
     // 按脏标记选择性刷新
-    if (this._dirty.has(ZONE_CHAR)) this.updateCharPanel();
-    if (this._dirty.has(ZONE_STATUS)) this.updateStatusPanel();
+    if (this._dirty.has(ZONE_CHAR) || this._dirty.has(ZONE_STATUS)) this.updateCharPanel();
     if (this._dirty.has(ZONE_PROGRESS)) this.updateProgress();
     if (this._dirty.has(ZONE_LOCATION)) this.updateLocation();
     if (this._dirty.has(ZONE_BAG) && this.game.currentTab === 'bag') this.renderInventory();
@@ -130,80 +129,54 @@ export class Renderer {
     this._dirty.clear();
   }
 
-  /**
-   * 更新人物面板（stat-* 元素）
-   * 包含：境界、修为、道心、寿命、灵石、功法、任务数
-   */
+  /** 更新唯一的人物摘要视图。 */
   updateCharPanel() {
     const s = this.game.state;
-    const data = getData();
-    if (!data.REALMS || data.REALMS.length === 0) return;
-    const currentRealm = data.REALMS[s.realm] || data.REALMS[0];
-    const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
+    const realms = typeof this.game.getRealms === 'function' ? this.game.getRealms() : getData().REALMS;
+    if (!realms || realms.length === 0) return;
+    const realmIndex = Math.max(0, Math.min(Number(s.realm) || 0, realms.length - 1));
+    const currentRealm = realms[realmIndex] || realms[0];
+    const next = realmIndex < realms.length - 1 ? realms[realmIndex + 1] : null;
+    const pathName = s.path === 'ling' ? '灵修' : '武修';
+    const factionName = s.faction || '散修';
+    const hpMax = Math.max(0, Number(s.maxHp) || 0);
+    const mpMax = Math.max(0, Number(s.maxMp) || 0);
+    const attack = Number(s.attack || 0) + Number(s.equipment?.weapon?.atk || 0);
+    const defense = Number(s.defense || 0) + Number(s.equipment?.armor?.def || 0);
+    const cultivationMax = next ? Math.max(1, Number(next.cost) || 1) : Math.max(1, Number(s.cultivation) || 1);
+    const daoxinMax = Math.max(1, Number(s.maxDaoXin) || 1);
 
     this._setText('stat-realm', currentRealm.name);
     this._setText('stat-cultivation', next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满');
     this._setText('stat-daoxin', s.daoxin + ' / ' + s.maxDaoXin);
     this._setText('stat-lifespan', s.lifespan + ' 年');
-    this._setText('stat-mp', s.maxMp > 0 ? (s.mp + ' / ' + s.maxMp) : '-');
-    // 更新 MP 标签
-    const mpLabel = document.querySelector('#stat-mp');
-    const mpLabelEl = mpLabel ? mpLabel.previousElementSibling : null;
-    if (mpLabelEl) mpLabelEl.textContent = this.game.getMpName();
     this._setText('stat-stones', this.game.formatMoney());
-    // 更新灵石/铜钱标签
     const stonesLabel = document.getElementById('stones-label');
     if (stonesLabel) stonesLabel.textContent = this.game.getMoneyName();
-    this._setText('stat-techniques', s.techniques.length > 0 ? s.techniques.join('、') : '无');
-    this._setText('stat-quests', s.activeQuests.length + ' / ' + (s.activeQuests.length + s.completedQuests.length));
+
+    this._setText('char-path', pathName);
+    this._setText('char-name', s.playerName || '无名小辈');
+    this._setText('char-origin', s.innateName || '身世未明');
+    this._setText('char-faction', factionName);
+    this._setText('char-realm', currentRealm.name);
+    this._setText('char-portrait-caption', factionName === '散修' ? '江湖未署名' : factionName + '门人');
+    this._setText('char-hp', s.hp + ' / ' + hpMax);
+    this._setText('char-mp-label', this.game.getMpName());
+    this._setText('char-mp', mpMax > 0 ? (s.mp + ' / ' + mpMax) : '-');
+    this._setText('char-combat', attack + ' / ' + defense);
+    this._setText('char-reputation', factionName === '散修' ? '未入门' : String(s.factionRep || 0));
+    this._setText('char-kills', s.killCount || 0);
+    this._setStyle('char-hp-bar', 'width', hpMax > 0 ? Math.max(0, Math.min(100, s.hp / hpMax * 100)) + '%' : '0%');
+    this._setStyle('char-mp-bar', 'width', mpMax > 0 ? Math.max(0, Math.min(100, s.mp / mpMax * 100)) + '%' : '0%');
+    this._setStyle('char-cultivation-bar', 'width', next ? Math.max(0, Math.min(100, s.cultivation / cultivationMax * 100)) + '%' : '100%');
+    this._setStyle('char-daoxin-bar', 'width', Math.max(0, Math.min(100, s.daoxin / daoxinMax * 100)) + '%');
+
+    const sheet = document.getElementById('panel-char');
+    if (sheet) sheet.dataset.path = s.path === 'ling' ? 'ling' : 'wu';
   }
 
-  /**
-   * 更新境况面板（s-* 元素）
-   * 包含：境界、修为、道心、寿命、HP、灵石、攻防、功法、位置、击杀、帮派信息
-   */
-  updateStatusPanel() {
-    const s = this.game.state;
-    const data = getData();
-    if (!data.REALMS || data.REALMS.length === 0) return;
-    const currentRealm = data.REALMS[s.realm] || data.REALMS[0];
-    const next = s.realm < data.REALMS.length - 1 ? data.REALMS[s.realm + 1] : null;
-
-    this._setText('s-realm', currentRealm.name);
-    this._setText('s-cult', next ? Math.floor(s.cultivation) + ' / ' + next.cost : '已满');
-    this._setText('s-daoxin', s.daoxin + ' / ' + s.maxDaoXin);
-    this._setText('s-life', s.lifespan + ' 年');
-    this._setText('s-hp', s.hp + ' / ' + s.maxHp);
-    this._setText('s-mp', s.maxMp > 0 ? (s.mp + ' / ' + s.maxMp) : '-');
-    // 更新 MP 标签
-    const sMpEl = document.getElementById('s-mp');
-    const sMpLabel = sMpEl ? sMpEl.previousElementSibling : null;
-    if (sMpLabel) sMpLabel.textContent = this.game.getMpName();
-    this._setText('s-stones', this.game.formatMoney());
-    // 更新灵石/铜钱标签
-    const sStonesLabel = document.getElementById('s-stones-label');
-    if (sStonesLabel) sStonesLabel.textContent = this.game.getMoneyName();
-    this._setText('s-atk', s.attack + (s.equipment.weapon ? s.equipment.weapon.atk : 0));
-    this._setText('s-def', s.defense + (s.equipment.armor ? s.equipment.armor.def : 0));
-    this._setText('s-tech', s.techniques.length > 0 ? s.techniques.join('、') : '无');
-    this._setText('s-loc', this.displayName(s.location));
-    this._setText('s-kill', s.killCount);
-
-    // 帮派信息
-    if (s.faction && s.faction !== '散修') {
-      document.getElementById('s-faction-row').style.display = 'flex';
-      this._setText('s-faction', s.faction);
-      document.getElementById('s-skills-row').style.display = 'flex';
-      const learnedCount = Object.keys(s.skills).length;
-      this._setText('s-skills', learnedCount + '项');
-      document.getElementById('s-rep-row').style.display = 'flex';
-      this._setText('s-rep', s.factionRep);
-    } else {
-      document.getElementById('s-faction-row').style.display = 'none';
-      document.getElementById('s-skills-row').style.display = 'none';
-      document.getElementById('s-rep-row').style.display = 'none';
-    }
-  }
+  // 兼容旧调用；DOM 已不再维护第二份境况面板。
+  updateStatusPanel() { this.updateCharPanel(); }
 
   /**
    * 更新进度条区域
@@ -300,7 +273,8 @@ export class Renderer {
     const desc = this.game.getRoomDesc ? this.game.getRoomDesc(s.location) : (data.getDesc(data.LOCATIONS[s.location]) || '未知之地');
     this._setText('location-desc', desc);
 
-    // 在场 NPC 以人物卡呈现，交互入口收在感知全景内。
+    // 在场人物只保留小名牌。描述和操作统一进入水墨言路壳，避免
+    // 主场景因 NpcDetailCard 展开而产生布局跳变。
     const npcsEl = document.getElementById('room-npcs');
     const roomCardEl = document.getElementById('room-card');
     if (roomCardEl) roomCardEl.classList.remove('scene-narrative-panel--npc-selected');
@@ -308,17 +282,11 @@ export class Renderer {
       const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
       const list = perc && perc.npcs ? perc.npcs : [];
       if (list.length > 0) {
-        const focusedIndex = Number.isInteger(this.game.focusedNpcIndex) ? this.game.focusedNpcIndex : null;
-        const focusedType = this.game.focusedNpcType || null;
-        const focused = focusedIndex === null ? null : list.find(n => {
-          const sameIndex = Number(n.index) === focusedIndex;
-          return sameIndex && (!focusedType || !n.type || n.type === focusedType);
-        });
-        if (focusedIndex !== null && !focused) {
-          this.game.focusedNpcIndex = null;
-          this.game.focusedNpcType = null;
-        }
-        if (roomCardEl) roomCardEl.classList.toggle('scene-narrative-panel--npc-selected', !!focused);
+        const interaction = this.game.npc?.interaction || null;
+        const focusedIndex = Number.isInteger(interaction?.npcIndex) ? interaction.npcIndex : null;
+        const focusedType = interaction?.npcType || null;
+        const focused = focusedIndex === null ? null : list.find(n => Number(n.index) === focusedIndex && (n.type || 'encounter') === focusedType);
+        if (roomCardEl) roomCardEl.classList.toggle('scene-narrative-panel--npc-selected', false);
         const buttons = list.map(n => {
           const idx = Number(n.index);
           const type = n.type || 'encounter';
@@ -331,47 +299,8 @@ export class Renderer {
             + chipBadge
             + '</button>';
         }).join('');
-        let dossier = '';
-        if (focused) {
-          const idx = Number(focused.index);
-          const type = focused.type || 'encounter';
-          const dossierState = this._npcChipState(focused, false);
-          const isDossierLocked = dossierState === 'locked';
-          const stateBadge = this._npcDossierBadge(dossierState);
-          const relation = focused.relationLabel || (isDossierLocked ? '未明' : '初识');
-          const lockedReason = isDossierLocked
-            ? '<div class="npc-dossier-locked-reason">需满足感知或剧情条件后才可交谈</div>'
-            : '';
-          const canSpar = focused.canSpar !== false && type !== 'guide' && type !== 'recruiter';
-          const giftKey = type + ':' + idx;
-          const giftOpen = this.game.focusedNpcGiftKey === giftKey;
-          const giftItems = giftOpen && this.game.getGiftableItems ? this.game.getGiftableItems() : [];
-          const giftTray = giftOpen
-            ? '<div class="npc-gift-tray" aria-label="选择礼物"><span>相赠何物</span>'
-              + giftItems.slice(0, 6).map(({ item, index }) => '<button type="button" data-action="confirmNpcGift" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '" data-item-index="' + index + '">' + this._esc(item.name || '无名物') + '</button>').join('')
-              + '</div>'
-            : '';
-          const npcAction = (label, action, enabled = true, extraClass = '') => enabled
-            ? '<button type="button" class="jianghu-action-button jianghu-action-button--compact ' + extraClass + '" data-action="' + action + '" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">' + label + '</button>'
-            : '<button type="button" class="jianghu-action-button jianghu-action-button--compact jianghu-action-button--disabled muted" data-action="npcDisabled" data-label="' + label + '">' + label + '</button>';
-          dossier = '<section class="npc-dossier npc-dossier--' + dossierState + '" id="npc-dossier" data-npc-state="' + dossierState + '">'
-            + '<div class="npc-dossier-head"><span class="npc-dossier-identity"><span class="npc-dossier-title">' + this._esc(focused.name) + '</span>'
-            + '<strong class="npc-dossier-relation">' + this._esc(relation) + '</strong></span>'
-            + '<span class="npc-dossier-controls">' + stateBadge + '</span></div>'
-            + '<p class="npc-dossier-desc">' + this._esc(focused.desc || '此人正留意着周遭。') + '</p>'
-            + '<div class="npc-dossier-divider" aria-hidden="true"></div>'
-            + lockedReason
-            + '<div class="npc-dossier-actions">'
-            + npcAction('交谈', 'talkNpc', !isDossierLocked, 'jianghu-action-button--primary')
-            + npcAction('观察', 'npcObserve', !isDossierLocked, 'jianghu-action-button--secondary')
-            + npcAction('送礼', 'npcGift', !isDossierLocked, 'jianghu-action-button--secondary')
-            + npcAction('切磋', 'sparNpc', !isDossierLocked && canSpar, 'jianghu-action-button--secondary')
-            + '</div>' + giftTray + '</section>';
-        }
-        npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>' + dossier;
+        npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>';
       } else {
-        this.game.focusedNpcIndex = null;
-        this.game.focusedNpcType = null;
         npcsEl.innerHTML = '';
       }
     }
@@ -417,8 +346,11 @@ export class Renderer {
     const bar = document.getElementById('exit-bar');
     if (!bar) return;
     const routes = this.game.routes?.getRoutes() || [];
-    const visibleRoutes = routes.filter((route) => route.visible);
-    const sensedRoutes = routes.filter((route) => route.state === 'sensed');
+    const roomLayer = this.game.routes?.getRoomLayer?.() || 'world';
+    const isChildLayer = roomLayer === 'dungeon' || roomLayer === 'interior';
+    const mapRoutes = isChildLayer ? routes : routes.filter((route) => route.kind !== 'dungeon' && route.kind !== 'interior');
+    const visibleRoutes = mapRoutes.filter((route) => route.visible);
+    const sensedRoutes = [];
     const revealedRoutes = visibleRoutes.filter((route) => route.state === 'revealed');
     const lockedRoutes = visibleRoutes.filter((route) => route.state === 'revealedLocked');
     if (visibleRoutes.length === 0 && sensedRoutes.length === 0) {
@@ -462,8 +394,7 @@ export class Renderer {
       routeStatus = `<div class="route-sketch-status">感知：${this._esc(route.hint || '此处似有异样。')}</div>`;
     }
     if (routeStatus) bar.classList.add('route-sketch--has-status');
-    bar.innerHTML = '<div class="route-sketch-title">行迹</div>'
-      + '<div class="route-sketch-canvas">'
+    bar.innerHTML = '<div class="route-sketch-canvas">'
       + `<svg class="route-sketch-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}${sensedMarks}</svg>`
       + `<span class="route-node route-current">${currentName}</span>${routeNodes}</div>${routeStatus}`;
     return;
@@ -860,18 +791,8 @@ export class Renderer {
 
   /** 添加日志 */
   addLog(text, type) {
-    if (type === 'scene' || type === 'dialogue') {
-      const feed = document.getElementById('scene-feed');
-      if (!feed) return;
-      const sceneEntry = document.createElement('div');
-      sceneEntry.className = 'scene-entry ' + type;
-      sceneEntry.innerHTML = text;
-      feed.appendChild(sceneEntry);
-      while (feed.children.length > 8) feed.removeChild(feed.firstChild);
-      feed.scrollTop = feed.scrollHeight;
-      return;
-    }
     const area = document.getElementById('log-area');
+    if (!area) return;
     const el = document.createElement('div');
     el.className = 'log-entry ' + (type || '');
     el.innerHTML = text;
@@ -903,20 +824,20 @@ export class Renderer {
     if (!panel) return;
     let html = '';
 
-    // 探索入口（非方位通路）
+    // Child-space entrances stay in 张望 instead of leaking into the parent map.
     if (data.connections && data.connections.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 隐处可探</div>';
+      html += '<div class="perc-section"><div class="perc-head">> 可入之处</div>';
       data.connections.forEach((c) => {
         const marker = c.explored ? '→' : '？';
         const url = c.explored ? '' : ' style="color:var(--ink-soft);opacity:0.6"';
         html += '<div class="perc-item perc-path" data-action="explore" data-dir="' + c.dir + '">'
           + '<span class="perc-dir">' + c.dirCn + ' ' + marker + '</span>'
-          + '<span' + url + '>' + c.name + '</span></div>';
+          + '<span' + url + '>' + this._esc(c.label || c.name) + '</span></div>';
       });
       html += '</div>';
     }
 
-    // 察看只承载空间线索与可观察物，不再复制人物互动或搜索入口。
+    // 张望只承载空间线索与可观察物，不再复制人物互动或搜索入口。
     if (data.routeClues && data.routeClues.length > 0) {
       html += '<div class="perc-section"><div class="perc-head">> 隐处可探</div>';
       data.routeClues.forEach((clue) => {
@@ -945,7 +866,7 @@ export class Renderer {
       html += '</div>';
     }
 
-    if (!html) html = '<div class="perc-empty">此处暂未察见隐路或异物。</div>';
+    if (!html) html = '<div class="perc-empty">张望之下，暂未见隐路或异物。</div>';
     panel.querySelector('.perception-inner').innerHTML = html;
     panel.classList.add('open');
     const trigger = document.querySelector('[data-action="perceive"]');

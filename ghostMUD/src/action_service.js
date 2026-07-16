@@ -66,11 +66,15 @@ export class ActionService {
     s.cultivation += (s.path === 'ling' ? 3 : 2);
     s.trainCounter++;
     if (s.trainCounter % 10 === 0) {
-      const daoLoss = s.path === 'ling' ? 3 : 1;
-      s.daoxin = Math.max(0, s.daoxin - daoLoss);
-      g.addLog(s.path === 'ling'
-        ? '🌀 灵力运转过剧，经脉灼痛——什么东西在窥视。修为+3（道心-' + daoLoss + '）'
-        : '💪 连练十趟，筋骨愈发扎实，但你有些疲惫。修为+2（道心-' + daoLoss + '）', 'info');
+      if (g.hasDaoxinErosionTechnique()) {
+        const daoLoss = 3;
+        s.daoxin = Math.max(0, s.daoxin - daoLoss);
+        g.addLog('🌀 灵力运转过剧，经脉灼痛——什么东西在窥视。修为+3（道心-' + daoLoss + '）', 'info');
+      } else {
+        g.addLog(s.path === 'ling'
+          ? '🌀 连行十周天，灵力渐稳。修为+3'
+          : '💪 连练十趟，筋骨愈发扎实。修为+2', 'info');
+      }
     } else {
       g.addLog(s.path === 'ling'
         ? '🌀 你凝神运功，灵力在经脉中流转一周。修为+3'

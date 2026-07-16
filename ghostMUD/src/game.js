@@ -41,6 +41,9 @@ import { TeacherService } from './teacher_service.js';
 import { PerceptionService } from './perception_service.js';
 import { RouteService } from './route_service.js';
 import { WorldContextService } from './world_context.js';
+import { MapService } from './map_service.js';
+import { WeatherService } from './weather_service.js';
+import { MomentFeedbackQueue } from './moment_feedback_queue.js';
 // 日常动作服务层（从 Game 拆出，代理 switchTab/cultivate/train/rest/talk/askAround/practiceMenu）
 import { ActionService } from './action_service.js';
 import { TutorialService } from './tutorial_service.js';
@@ -115,6 +118,10 @@ export class Game {
     // 移动服务（代理所有移动相关方法）
     this.movement = new MovementService(this);
     this.routes = new RouteService(this);
+    // V1.7 非 UI 服务：舆图数据 / 区域天气 / 瞬时反馈队列
+    this.mapService = new MapService(this);
+    this.weather = new WeatherService(this);
+    this.momentFeedbackQueue = new MomentFeedbackQueue();
     // NPC 服务（代理所有 NPC 遭遇相关方法）
     this.npc = new NpcService(this);
     // 搜索服务（代理所有搜索相关方法）
@@ -166,6 +173,10 @@ export class Game {
       activeQuests: [],
       completedQuests: [],
       questStages: {},
+      primaryQuestId: null,
+      questProgress: {},
+      mapWaypoint: null,
+      weather: { seed: 1, regions: {} },
       npcMemory: {},
       worldEvents: {},
       dialogueProgress: {},
@@ -225,6 +236,14 @@ export class Game {
           })
         );
       }
+      // No authored acquisition for 忘尘经 exists yet. Remove the legacy idle-event grant.
+      if (Array.isArray(saved.techniques)) {
+        saved.techniques = saved.techniques.filter(name => name !== '忘尘经');
+      }
+      if (saved.path !== 'ling') {
+        saved.daoxin = Number(saved.maxDaoXin) || this.state.maxDaoXin;
+        saved.daoxinDecayCounter = 0;
+      }
       // Also migrate any location references in quest stages
       // P1-3 修复：Storage 已将 questProgress 重命名为 questStages，这里检查 questStages
       if (saved.questStages) {
@@ -245,6 +264,11 @@ export class Game {
         }
       }
       Object.assign(this.state, saved);
+      // The chapter-one route gained an intermediate sword-stair room. Older
+      // saves retain the prior numeric step, so reconcile it against location
+      // before the first renderer pass can expose a blocked tutorial state.
+      const chapterOne = getData().WENJIANFENG_TUTORIAL_CH1;
+      chapterOne?.reconcileProgress?.(this);
       this.addLog('📂 存档已加载。', 'system');
     }
 
@@ -708,12 +732,13 @@ export class Game {
       if (s.path === 'ling') {
         const base = 5 + s.realm * 3;
         s.cultivation += base;
-        s.daoxin = Math.max(0, s.daoxin - 3);
-        if (Math.random() < 0.15) this.addLog('🌀 灵力在经脉中奔涌——深处有什么东西在回应。道心微颤。', 'event');
+        if (this.hasDaoxinErosionTechnique()) {
+          s.daoxin = Math.max(0, s.daoxin - 3);
+          if (Math.random() < 0.15) this.addLog('🌀 灵力在经脉中奔涌——深处有什么东西在回应。道心微颤。', 'event');
+        }
       } else {
         const gain = 7 + s.realm * 4;
         s.cultivation += gain;
-        s.daoxin = Math.max(0, s.daoxin - 1);
         if (Math.random() < 0.15) this.addLog('💪 汗水浸湿了衣襟，练武乏了——但修为在涨。', 'event');
       }
     } else {
@@ -723,7 +748,7 @@ export class Game {
       s.cultivation += Math.floor(base + equipBonus + techBonus);
       s.totalCultivation += Math.floor(base + equipBonus + techBonus);
     }
-    if (Math.random() < 0.05 && !s.isResting && !s.isCultivating) this.triggerIdleEvent();
+    if (this.hasDaoxinErosionTechnique() && Math.random() < 0.05 && !s.isResting && !s.isCultivating) this.triggerIdleEvent();
     this.checkBreakthrough();
 
     // 时间推进：每30秒累加，满300000ms（10次tick）推进1时辰
@@ -744,26 +769,19 @@ export class Game {
   daoxinTick() {
     if (this.state.combat || this.state.npcEncounter || this.state.isResting || this.state.isCultivating) return;
     const s = this.state;
-    const loc = this.LOCATIONS[s.location];
+    if (!this.hasDaoxinErosionTechnique()) {
+      s.daoxinDecayCounter = 0;
+      return;
+    }
 
-    if (s.path === 'wu') {
-      // 武修：道心不自然下跌，仅环境微扰（danger≥5 凶地扣1）
-      if (loc && loc.danger >= 5) {
-        s.daoxin = Math.max(0, s.daoxin - 1);
-        if (Math.random() < 0.3) this.addLog('?? 此地阴气逼人，道心微颤。', 'event');
-      }
-    } else {
-      // 灵修：道心按境界递增衰减
-      // 炼气(1)/筑基(2) 每30tick -1，金丹(3)/元婴(4) 每20tick -1，化神(5) 每10tick -1
-      const decayInterval = s.realm <= 2 ? 30 : s.realm <= 4 ? 20 : 10;
-      s.daoxinDecayCounter = (s.daoxinDecayCounter || 0) + 1;
-      if (s.daoxinDecayCounter >= decayInterval) {
-        s.daoxinDecayCounter = 0;
-        s.daoxin = Math.max(0, s.daoxin - 1);
-        if (s.daoxin < 20 && Math.random() < 0.3) {
-          this.addLog('?? 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
-          s.cultivation += 10;
-        }
+    const decayInterval = s.realm <= 2 ? 30 : s.realm <= 4 ? 20 : 10;
+    s.daoxinDecayCounter = (s.daoxinDecayCounter || 0) + 1;
+    if (s.daoxinDecayCounter >= decayInterval) {
+      s.daoxinDecayCounter = 0;
+      s.daoxin = Math.max(0, s.daoxin - 1);
+      if (s.daoxin < 20 && Math.random() < 0.3) {
+        this.addLog('?? 道心动摇……你低头看见自己的手指——过长了一寸。也许没有。也许一直都这么长。', 'event');
+        s.cultivation += 10;
       }
     }
 
@@ -780,25 +798,25 @@ export class Game {
 
   triggerIdleEvent() {
     const ev = [
-      { text: '🌑 暮色忽然沉了三寸。不是天黑——是有什么东西在半空中张开了。你数不出那是什么。', effect: () => { this.state.daoxin -= 5; } },
-      { text: '🌀 丹田内忽然翻涌——不是真气。是一小口苦味。你想吐出来，但喉咙里什么都没有。', effect: () => { this.state.cultivation += 20; } },
-      { text: '👁 有人在看你。不是错觉——你后颈的皮肤知道。你猛地转身，只有一面旧墙，墙上的裂纹恰好排成一张脸的轮廓。', effect: () => { this.state.daoxin -= 3; } },
-      { text: '📜 一行经文从你读过的那本残卷里浮上心头。你明明记得下一句是什么——但此刻读出来的，不是那个字。', effect: () => { this.state.cultivation += 15; this.state.daoxin -= 2; } },
-      { text: '🕳 忘尘宗的真意在脑中一闪：忘我，忘尘，忘一切——包括自己正在忘。等你回过神来，已经过了一炷香——还是半个时辰？你看不清日晷。', effect: () => {
-        if (!this.state.techniques.includes('忘尘经')) {
-          this.state.techniques.push('忘尘经');
-          this.addLog('🧠 你领悟了忘尘宗的皮毛。获得功法：忘尘经', 'special');
-        }
+      { text: '🌑 暮色忽然沉了三寸。', effect: () => { this.state.daoxin -= 5; } },
+      { text: '🌀 丹田内忽然翻涌，你想吐出来，但喉咙里什么都没有。', effect: () => { this.state.cultivation += 20; } },
+      { text: '👁 有人在看你。你猛地转身，只有一面旧墙。', effect: () => { this.state.daoxin -= 3; } },
+      { text: '📜 一行经文浮上心头。你明明记得下一句是什么，但此刻读出来的，却不是那个字。', effect: () => { this.state.cultivation += 15; this.state.daoxin -= 2; } },
+      { text: '🕳 忘我，忘尘，忘一切——包括自己正在忘。等你回过神来，已经过了一炷香——还是半个时辰？', effect: () => {
         this.state.cultivation += 25; this.state.daoxin -= 8;
       } },
-      { text: '💀 路过一口枯井时你停住了——不是因为井里有东西。是因为你在井壁上看到了自己的倒影。它在对你笑。你没在笑。', effect: () => { this.state.daoxin -= 5; this.state.cultivation += 30; } },
-      { text: '🔥 远方山上亮起一盏灯——你已经走了一夜，那个方向不该有人家。灯亮着。亮了一盏。又亮了一盏。一共七盏。然后一盏接一盏灭了。', effect: () => { this.state.daoxin -= 4; this.state.cultivation += 10; } },
+      { text: '💀 路过一口枯井时你停住了——井壁上你看到了自己的倒影。它在对你笑。', effect: () => { this.state.daoxin -= 5; this.state.cultivation += 30; } },
+      { text: '🔥 远方山上亮起一盏灯——你已经走了一夜，那个方向不该有人家。灯亮了一盏。又亮了一盏。一共七盏。然后一盏接一盏灭了。', effect: () => { this.state.daoxin -= 4; this.state.cultivation += 10; } },
     ];
     const e = ev[Math.floor(Math.random() * ev.length)];
     this.addLog(e.text, 'event');
     e.effect();
     // P1 修复：idle event 修改状态后标记脏
     this.markDirty();
+  }
+
+  hasDaoxinErosionTechnique() {
+    return this.state.path === 'ling' && Array.isArray(this.state.techniques) && this.state.techniques.includes('忘尘经');
   }
 
   checkBreakthrough() {
@@ -836,9 +854,13 @@ export class Game {
         if (r.desc) this.addLog('   ' + r.desc, 'event');
       } else {
         s.cultivation = Math.floor(n.cost * 0.6);
-        s.daoxin -= 15;
-        this.addLog('💥 冲关失败！修为震荡，道心遭受重创…', 'combat');
-        if (s.daoxin <= 0) this.gameOver('冲关失败，道心崩裂');
+        if (this.hasDaoxinErosionTechnique()) {
+          s.daoxin -= 15;
+          this.addLog('💥 冲关失败！修为震荡，道心遭受重创…', 'combat');
+          if (s.daoxin <= 0) this.gameOver('冲关失败，道心崩裂');
+        } else {
+          this.addLog('💥 冲关未成，气血翻涌，修为跌回关前。', 'combat');
+        }
       }
     }
     // P1 修复：突破检查后标记脏
@@ -853,8 +875,11 @@ export class Game {
 
   // ============ NPC 代理（委托 NpcService）============
   triggerNPCEncounter(active) { const r = this.npc.triggerNPCEncounter(active); this.markDirty(); return r; }
+  openNpcInteraction(npcIndex, npcType) { return this.npc.openNpcInteraction(npcIndex, npcType); }
+  inspectNpc(npcIndex, npcType) { return this.npc.inspectNpc(npcIndex, npcType); }
   speakToNpc(npcIndex) { const r = this.npc.speakToNpc(npcIndex, arguments[1]); this.markDirty(); return r; }
   sparNpc(npcIndex, npcType) { const r = this.npc.sparNpc(npcIndex, npcType); this.markDirty(); return r; }
+  confirmNpcSpar() { return this.npc.confirmNpcSpar(); }
   toggleNpcGift(npcIndex, npcType) { return this.npc.toggleNpcGift(npcIndex, npcType); }
   giveGiftToNpc(npcIndex, npcType, itemIndex) { const r = this.npc.giveGiftToNpc(npcIndex, npcType, itemIndex); this.markDirty(); return r; }
   askNpc(npcIndex, npcType) { const r = this.npc.askNpc(npcIndex, npcType); this.markDirty(); return r; }
@@ -862,6 +887,9 @@ export class Game {
   _presentEncounter(enc) { return this.npc._presentEncounter(enc); }
   npcChoice(index) { return this.npc.npcChoice(index); }
   closeNPC() { return this.npc.closeNPC(); }
+  showDialogueRibbon(payload) { return this.npc.showDialogueRibbon(payload); }
+  nextDialogueRibbon() { return this.npc.nextDialogueRibbon(); }
+  dismissDialogueRibbon() { return this.npc.dismissDialogueRibbon(); }
   getNpcMemory(encOrKey) { return getNpcMemory(this.state, encOrKey); }
   describeNpcRelation(encOrKey) { return describeNpcRelation(this.getNpcMemory(encOrKey)); }
 
@@ -904,6 +932,16 @@ export class Game {
   startQuest(questId) { const r = this.quests.startQuest(questId); this.markDirty(); return r; }
   checkQuestProgress(type, target) { const r = this.quests.checkQuestProgress(type, target); this.markDirty(); return r; }
   completeQuest(questId) { const r = this.quests.completeQuest(questId); this.markDirty(); return r; }
+  getPrimaryQuestSummary() { return this.quests.getPrimaryQuestSummary(); }
+
+  // ============ V1.7 舆图 / 天气代理（纯数据，不改 UI）============
+  getWorldRegions() { return this.mapService.getWorldRegions(); }
+  getLocalGraph(roomId, options) { return this.mapService.getLocalGraph(roomId, options); }
+  setWaypoint(roomId) { const r = this.mapService.setWaypoint(roomId); this.markDirty(); return r; }
+  getWaypoint() { return this.mapService.getWaypoint(); }
+  clearWaypoint() { const r = this.mapService.clearWaypoint(); this.markDirty(); return r; }
+  getWeatherForRoom(roomId) { return this.weather.getWeatherForRoom(roomId); }
+  advanceWeatherTo(gameTime) { return this.weather.advanceTo(gameTime); }
 
   // ============ 地图 ============
 
