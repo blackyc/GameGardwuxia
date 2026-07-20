@@ -13,6 +13,9 @@ import { HijackEngine } from './battle_hijack.js';
 import { InterveneEngine } from './battle_intervene.js';
 // 背景音乐（入场即启动）
 import audio from './audio/AudioManager.js';
+// 江湖页 V2：vista 时辰页头 + NPC 流苏拖拽
+import { initVista } from './ui/vista.js';
+import { initTassels } from './ui/tassel.js';
 
 // 将战斗引擎类挂载到 window，供 game.js 及调试使用
 window.BattleEngine = BattleEngine;
@@ -39,6 +42,8 @@ function boot() {
   window.pageManager.init();
   window.game = new Game();
   topbar.mount(window.game);
+  initVista(window.game);
+  initTassels();
 }
 
 // 等待 DOM 加载完成后启动

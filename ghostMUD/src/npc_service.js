@@ -478,6 +478,7 @@ export class NpcService {
     const portraitBox = document.getElementById('dialogue-portrait');
     const portraitImage = document.getElementById('dialogue-portrait-image');
     const portraitEl = document.getElementById('dialogue-portrait-initial');
+    const relationSeal = document.getElementById('dialogue-relation-seal');
     const rail = document.getElementById('npc-interaction-actions');
     const historyButton = document.querySelector('[data-dialogue-action="history"]');
     const closeButton = document.getElementById('npc-close-btn');
@@ -501,6 +502,13 @@ export class NpcService {
       portraitEl.hidden = Boolean(portrait);
       portraitEl.textContent = title.slice(0, 1) || '人';
     }
+    const relation = this.game.describeNpcRelation?.(npc) || npc.relationLabel || '';
+    if (relationSeal) {
+      relationSeal.hidden = !relation;
+      relationSeal.textContent = relation;
+      relationSeal.title = relation ? '关系：' + relation : '';
+      relationSeal.setAttribute('aria-label', relation ? '关系：' + relation : '');
+    }
     if (rail) rail.innerHTML = mode === 'inspect' ? this._renderInteractionActions(npc) : '';
   }
 
@@ -512,11 +520,14 @@ export class NpcService {
     const zonePolicy = this.game.world?.getZonePolicy?.(this.game.state.location);
     const factionSparAllowed = zonePolicy?.zoneKind !== 'faction_hq' || npc?.canSpar === true;
     const canSpar = !locked && factionSparAllowed && npc?.canSpar !== false && type !== 'guide' && type !== 'recruiter';
-    const action = (label, id, enabled = true) => enabled
-      ? '<button type="button" class="dialogue-rail-action" data-action="' + id + '" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">' + label + '</button>'
-      : '<button type="button" class="dialogue-rail-action" disabled aria-disabled="true">' + label + '</button>';
+    const action = (label, id, role, enabled = true) => enabled
+      ? '<button type="button" class="dialogue-rail-action" data-action-role="' + role + '" data-action="' + id + '" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '">' + label + '</button>'
+      : '<button type="button" class="dialogue-rail-action" data-action-role="' + role + '" disabled aria-disabled="true" title="当前不可使用">' + label + '</button>';
     if (locked) return '<p class="dialogue-rail-locked">需先满足感知或剧情条件</p>';
-    return action('交谈', 'talkNpc') + action('观察', 'npcObserve') + action('送礼', 'npcGift') + action('切磋', 'sparNpc', canSpar);
+    return action('交谈', 'talkNpc', 'primary')
+      + action('观察', 'npcObserve', 'secondary')
+      + action('送礼', 'npcGift', 'relational')
+      + action('切磋', 'sparNpc', 'danger', canSpar);
   }
 
   _renderInteraction() {
@@ -524,21 +535,20 @@ export class NpcService {
     if (!interaction?.npc) return;
     const npc = interaction.npc;
     const title = this._title(npc);
-    const relation = this.game.describeNpcRelation?.(npc) || npc.relationLabel || '初识';
     const choices = document.getElementById('npc-choices');
     const history = document.getElementById('dialogue-history-drawer');
     if (history) history.hidden = true;
     this.dialogueHistoryOpen = false;
 
     if (interaction.mode === 'inspect') {
-      this._renderShellFrame(npc, { mode: 'inspect', speaker: '关系 · ' + relation, text: this.game.getDesc(npc) || npc.desc || '此人正留意着周遭。' });
+      this._renderShellFrame(npc, { mode: 'inspect', speaker: '人物小记', text: this.game.getDesc(npc) || npc.desc || '此人正留意着周遭。' });
       if (choices) choices.innerHTML = '';
       return;
     }
 
     if (interaction.mode === 'observe') {
       const detail = npc.observeDesc || npc.inspectDesc || npc.detail || (this.game.getDesc(npc) || npc.desc || '此人神色如常。') + ' 你又细看片刻，暂未看出更多破绽。';
-      this._renderShellFrame(npc, { mode: 'observe', speaker: '细察 · ' + relation, text: detail });
+      this._renderShellFrame(npc, { mode: 'observe', speaker: '细察', text: detail });
       if (choices) choices.innerHTML = '<button type="button" class="modal-choice" data-action="npcInteractionBack">回到人物</button>';
       return;
     }

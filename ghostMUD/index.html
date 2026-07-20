@@ -11,9 +11,24 @@
   <link rel="stylesheet" href="/src/styles/topbar.css">
   <link rel="stylesheet" href="/src/styles/app_v3.css">
   <link rel="stylesheet" href="/src/styles/jianghu.css">
+  <link rel="stylesheet" href="/src/styles/vista.css">
   <link rel="stylesheet" href="/src/styles/character.css">
+  <link rel="stylesheet" href="/src/styles/jianghu_v3_runtime.css">
 </head>
 <body>
+<!-- 手绘墨线滤镜（江湖页 V2：rough 主框 / rough2 卡角记号） -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="rough2" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
 <div id="noise-overlay"></div>
 
 <!-- 写意水彩背景层（场景动态配色驱动） -->
@@ -35,18 +50,37 @@
 
   <!-- ════════════ 页面 1 · 江湖（主游戏页） ════════════ -->
   <section class="page active" data-page="jianghu">
-    <!-- 区域 1：房间名。 -->
-    <header class="location-banner" aria-label="当前房间">
-      <span class="location-banner-back" aria-hidden="true">←</span>
-      <span class="location-banner-divider" aria-hidden="true"></span>
-      <div class="location-plaque">
-        <span class="location-plaque-ornament location-plaque-ornament--left" aria-hidden="true"></span>
-        <span class="location-plaque-ornament location-plaque-ornament--right" aria-hidden="true"></span>
+    <!-- 区域 1：vista 页头（十二时辰远景 + 深木匾额，房间名仍由 JS 填入） -->
+    <header class="location-banner" id="vista" aria-label="当前房间">
+      <div class="vista-sky"></div>
+      <div class="vista-plx vista-lstars" id="vista-stars"><svg id="vista-stars-svg" viewBox="0 0 870 280" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg></div>
+      <div class="vista-plx" id="vista-clouds" aria-hidden="true">
+        <svg class="vista-cloud vc1" width="170" height="56" viewBox="0 0 170 56" fill="none"><path class="vcb" d="M12,48 Q14,32 30,32 Q32,20 46,22 Q50,10 64,14 Q78,6 88,16 Q102,12 108,24 Q122,24 121,36 Q134,39 128,48 L146,48 Q150,44 146,48 Z"/><path class="vcc" d="M38,42 q-7,0 -7,-7 q0,-6 6,-6 q5,0 5,5 q0,3 -3,3 M70,34 q-8,0 -8,-8 q0,-7 7,-7 q6,0 6,6 q0,4 -4,4 M100,42 q-6,0 -6,-6 q0,-5 5,-5 q4,0 4,4 q0,3 -2,3"/></svg>
+        <svg class="vista-cloud vc2" width="170" height="56" viewBox="0 0 170 56" fill="none"><path class="vcb" d="M12,48 Q14,32 30,32 Q32,20 46,22 Q50,10 64,14 Q78,6 88,16 Q102,12 108,24 Q122,24 121,36 Q134,39 128,48 L146,48 Q150,44 146,48 Z"/><path class="vcc" d="M38,42 q-7,0 -7,-7 q0,-6 6,-6 q5,0 5,5 q0,3 -3,3 M70,34 q-8,0 -8,-8 q0,-7 7,-7 q6,0 6,6 q0,4 -4,4 M100,42 q-6,0 -6,-6 q0,-5 5,-5 q4,0 4,4 q0,3 -2,3"/></svg>
+      </div>
+      <div class="vista-plx" id="vista-far" aria-hidden="true">
+        <div class="vista-mtn vista-mtn--far"></div>
+        <img class="vista-mtn-tex" src="/ui/vista-far.png" alt="">
+      </div>
+      <div class="vista-plx" id="vista-sun"><div class="vista-sun-disc" id="vista-sun-disc"></div></div>
+      <div class="vista-plx" id="vista-birds" aria-hidden="true">
+        <svg class="vista-bird" style="top:46px" width="46" height="16" viewBox="0 0 46 16" fill="none" stroke="#3A2E24" stroke-width="2" stroke-linecap="round"><path d="M2,10 Q7,3 12,10 Q17,3 22,10 M26,12 Q30,7 34,12 Q38,7 42,12"/></svg>
+        <svg class="vista-bird vb2" width="34" height="14" viewBox="0 0 46 16" fill="none" stroke="#3A2E24" stroke-width="2" stroke-linecap="round"><path d="M2,10 Q7,3 12,10 Q17,3 22,10 M26,12 Q30,7 34,12 Q38,7 42,12"/></svg>
+      </div>
+      <div class="vista-plx" id="vista-near" aria-hidden="true">
+        <div class="vista-mtn vista-mtn--near"></div>
+        <img class="vista-mtn-tex" src="/ui/vista-near.png" alt="">
+      </div>
+      <div class="vista-plx vista-lff" id="vista-ff" aria-hidden="true"></div>
+      <!-- 房间材质契约见 src/ui/plaque_material.js；wood 为默认，cyan-gold/cinnabar 为语义变体。 -->
+      <div class="location-plaque" data-plaque-material="wood">
         <span id="location-region" class="location-region"></span>
         <span id="location-name">十字街口</span>
       </div>
       <span id="location-weather" class="location-weather" hidden></span>
       <span id="location-guide-status" class="location-guide-status" hidden>引路 · 同行中</span>
+      <!-- 竖排时辰（题画小字，JS: #vista-time-name / #vista-time-label） -->
+      <div class="vtime" id="vista-time" aria-hidden="true"><span class="vtime-label" id="vista-time-label">日入</span><span class="vtime-name" id="vista-time-name">酉时</span></div>
     </header>
 
     <!-- 区域 2：场景叙事、人物卡、操作和感知交互全景。 -->
@@ -229,11 +263,26 @@
 
 <!-- 底部 5 导航 -->
 <nav id="bottom-nav">
-  <button class="nav-btn active" data-page="jianghu"><span class="nav-icon">🏮</span><span class="nav-label">江湖</span></button>
-  <button class="nav-btn" data-page="wuxue"><span class="nav-icon">⚔️</span><span class="nav-label">武学</span></button>
-  <button class="nav-btn" data-page="xingnang"><span class="nav-icon">🎒</span><span class="nav-label">行囊</span></button>
-  <button class="nav-btn" data-page="yutu"><span class="nav-icon">🗺️</span><span class="nav-label">舆图</span></button>
-  <button class="nav-btn" data-page="renwu"><span class="nav-icon">👤</span><span class="nav-label">人物</span></button>
+  <button class="nav-btn active" data-page="jianghu">
+    <svg class="nav-icon nav-drawn-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7h12l2 5-2 14H10L8 12zM9 12h14M11 7l1-3h8l1 3M12 26v2m8-2v2"/></svg>
+    <span class="nav-label">江湖</span><svg class="nav-brush" viewBox="0 0 56 8" aria-hidden="true"><path d="M2 5c13-4 34 2 52-2M8 7c13-2 28 0 39-2"/></svg>
+  </button>
+  <button class="nav-btn" data-page="wuxue">
+    <svg class="nav-icon nav-drawn-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M7 25L24 8m-2-2 4 4m-1-3 2-2M9 23l-4 4m20-2L8 8m2-2-4 4m1-3L5 5m18 18 4 4"/></svg>
+    <span class="nav-label">武学</span><svg class="nav-brush" viewBox="0 0 56 8" aria-hidden="true"><path d="M2 5c13-4 34 2 52-2M8 7c13-2 28 0 39-2"/></svg>
+  </button>
+  <button class="nav-btn" data-page="xingnang">
+    <svg class="nav-icon nav-drawn-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 11h14l2 16H7zM11 11c0-4 10-4 10 0M10 16h12M16 15v8m-3-4h6"/></svg>
+    <span class="nav-label">行囊</span><svg class="nav-brush" viewBox="0 0 56 8" aria-hidden="true"><path d="M2 5c13-4 34 2 52-2M8 7c13-2 28 0 39-2"/></svg>
+  </button>
+  <button class="nav-btn" data-page="yutu">
+    <svg class="nav-icon nav-drawn-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7l7-3 8 3 7-3v21l-7 3-8-3-7 3zM12 4v21m8-18v21M8 11l3 2m3 3 4-2m4 6 3-2"/></svg>
+    <span class="nav-label">舆图</span><svg class="nav-brush" viewBox="0 0 56 8" aria-hidden="true"><path d="M2 5c13-4 34 2 52-2M8 7c13-2 28 0 39-2"/></svg>
+  </button>
+  <button class="nav-btn" data-page="renwu">
+    <svg class="nav-icon nav-drawn-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4c4 0 6 3 6 7s-2 7-6 7-6-3-6-7 2-7 6-7zm-9 24c1-6 4-9 9-9s8 3 9 9M12 10c2 1 6 1 8-1"/></svg>
+    <span class="nav-label">人物</span><svg class="nav-brush" viewBox="0 0 56 8" aria-hidden="true"><path d="M2 5c13-4 34 2 52-2M8 7c13-2 28 0 39-2"/></svg>
+  </button>
 </nav>
 
 <!-- 祥云帷幕层（页面切换转场） -->
@@ -250,9 +299,12 @@
 <div class="dialogue-layer" id="npc-modal" aria-hidden="true">
   <div class="dialogue-scroll" role="dialog" aria-modal="true" aria-labelledby="npc-title">
     <aside class="dialogue-rail" aria-label="人物交互">
-      <div class="dialogue-portrait" id="dialogue-portrait" aria-hidden="true">
+      <div class="dialogue-portrait" id="dialogue-portrait">
         <img id="dialogue-portrait-image" alt="" hidden>
         <span id="dialogue-portrait-initial">人</span>
+        <i class="dialogue-portrait-ornament dialogue-portrait-ornament--nw" aria-hidden="true"></i>
+        <i class="dialogue-portrait-ornament dialogue-portrait-ornament--se" aria-hidden="true"></i>
+        <b class="dialogue-relation-seal" id="dialogue-relation-seal" hidden></b>
       </div>
       <div class="dialogue-rail-actions" id="npc-interaction-actions"></div>
     </aside>

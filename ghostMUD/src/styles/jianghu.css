@@ -914,20 +914,105 @@ button.route-destination:active {
   width: 108px;
   aspect-ratio: 1;
   align-self: start;
-  overflow: hidden;
+  overflow: visible;
   margin-right: 14px;
-  background: radial-gradient(circle, rgba(246, 240, 218, 0.9), rgba(192, 205, 190, 0.48));
-  border: 1px solid rgba(67, 71, 66, 0.42);
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 252, 232, 0.96), rgba(225, 216, 187, 0.9) 64%, rgba(174, 154, 118, 0.62) 100%),
+    repeating-linear-gradient(8deg, rgba(94, 76, 52, 0.035) 0 1px, transparent 1px 5px);
+  border: 1.5px solid rgba(57, 53, 43, 0.72);
   border-radius: 50%;
-  box-shadow: inset 0 0 24px rgba(82, 92, 84, 0.18);
+  box-shadow:
+    inset 0 0 0 3px rgba(247, 237, 205, 0.68),
+    inset 0 0 20px rgba(82, 69, 48, 0.2),
+    0 2px 4px rgba(48, 39, 28, 0.18);
+}
+
+.dialogue-portrait::before {
+  position: absolute;
+  z-index: 4;
+  inset: -3px -2px -2px -3px;
+  pointer-events: none;
+  border: 1px solid rgba(75, 61, 43, 0.5);
+  border-radius: 48% 52% 49% 51%;
+  content: '';
+  transform: rotate(-2deg);
 }
 
 .dialogue-portrait img {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
   filter: saturate(0.82) contrast(1.04);
+  -webkit-mask-image: radial-gradient(circle at 50% 48%, #000 0 70%, rgba(0, 0, 0, .96) 76%, rgba(0, 0, 0, .56) 88%, transparent 99%);
+  mask-image: radial-gradient(circle at 50% 48%, #000 0 70%, rgba(0, 0, 0, .96) 76%, rgba(0, 0, 0, .56) 88%, transparent 99%);
 }
+
+.dialogue-portrait-ornament {
+  position: absolute;
+  z-index: 5;
+  width: 31px;
+  height: 31px;
+  pointer-events: none;
+  border-color: rgba(112, 78, 40, 0.76);
+  border-style: solid;
+  opacity: 0.82;
+}
+
+.dialogue-portrait-ornament--nw {
+  top: 2px;
+  left: 2px;
+  border-width: 2px 0 0 2px;
+  border-radius: 100% 0 0;
+  transform: rotate(-7deg);
+}
+
+.dialogue-portrait-ornament--se {
+  right: 2px;
+  bottom: 2px;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 100%;
+  transform: rotate(-7deg);
+}
+
+.dialogue-portrait-ornament::after {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 1px solid currentColor;
+  color: rgba(112, 78, 40, 0.7);
+  content: '';
+  transform: rotate(45deg);
+}
+
+.dialogue-portrait-ornament--nw::after { top: 4px; left: 4px; }
+.dialogue-portrait-ornament--se::after { right: 4px; bottom: 4px; }
+
+.dialogue-relation-seal {
+  position: absolute;
+  z-index: 8;
+  right: -5px;
+  bottom: 1px;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-width: 27px;
+  min-height: 27px;
+  padding: 3px 4px;
+  color: #873b31;
+  border: 1.5px solid currentColor;
+  background: rgba(240, 225, 193, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(135, 59, 49, 0.22), 0 1px 2px rgba(49, 33, 22, 0.2);
+  font: 700 10px/1.05 'STKaiti', 'KaiTi', serif;
+  font-style: normal;
+  letter-spacing: 0;
+  transform: rotate(4deg);
+}
+
+.dialogue-relation-seal[hidden] { display: none; }
 
 .dialogue-portrait[data-portrait="suxiaotang"] img {
   object-position: 50% 23%;
@@ -944,7 +1029,9 @@ button.route-destination:active {
   transform: scale(1.45);
 }
 
-.dialogue-portrait span {
+.dialogue-portrait > span {
+  position: relative;
+  z-index: 2;
   color: rgba(45, 48, 43, 0.62);
   font: 700 44px/1 'STKaiti', 'KaiTi', serif;
 }
@@ -2317,13 +2404,18 @@ body[data-page="jianghu"] #scene-bg {
 .dialogue-rail { min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
 .dialogue-rail .dialogue-portrait { margin-right: 0; }
 .dialogue-rail-actions { display: flex; flex-direction: column; gap: 6px; }
-.dialogue-rail-action { width: 100%; min-height: 36px; padding: 6px 8px; color: #2b2820; border: 1px solid rgba(48, 49, 45, .82); box-shadow: inset 0 0 0 1px rgba(255, 252, 221, .62), 0 1px 0 rgba(38, 35, 27, .2); font: 700 13px/1.15 'STKaiti', 'KaiTi', serif; transition: filter .14s ease, transform .14s ease; }
+.dialogue-rail-action { position: relative; width: 100%; min-height: 36px; padding: 6px 8px; overflow: hidden; color: #2b2820; border: 1px solid rgba(48, 49, 45, .82); background: rgba(239, 233, 212, .94); box-shadow: inset 0 0 0 1px rgba(255, 252, 221, .62), 0 1px 0 rgba(38, 35, 27, .2); font: 700 13px/1.15 'STKaiti', 'KaiTi', serif; transition: filter .14s ease, transform .14s ease, border-color .14s ease; }
+.dialogue-rail-action:not(:disabled):hover { filter: brightness(1.035); }
 .dialogue-rail-action:not(:disabled):active { filter: brightness(.92); transform: translateY(1px); }
-.dialogue-rail-action[data-action="talkNpc"] { background: linear-gradient(90deg, #edda92, #d8b85d); }
-.dialogue-rail-action[data-action="npcObserve"] { color: #263c39; background: linear-gradient(90deg, #cbd8d0, #aac6bf); }
-.dialogue-rail-action[data-action="npcGift"] { color: #4c351d; background: linear-gradient(90deg, #e8c883, #c99449); }
-.dialogue-rail-action[data-action="sparNpc"] { color: #faedd9; background: linear-gradient(90deg, #9a5040, #76362f); }
-.dialogue-rail-action:disabled { color: #817c70; background: #c4bdab; box-shadow: inset 0 0 0 1px rgba(245, 240, 219, .45); }
+.dialogue-rail-action[data-action-role="primary"] { background: linear-gradient(90deg, #eedb91, #d8bb69); }
+.dialogue-rail-action[data-action-role="secondary"] { color: #30342f; background: linear-gradient(90deg, #eee8d5, #ddd6c3); }
+.dialogue-rail-action[data-action-role="relational"] { color: #4d361f; border-color: #8b6a3d; background: linear-gradient(90deg, #ecd9a4, #d7b979); }
+.dialogue-rail-action[data-action-role="danger"] { color: #4b2d28; border-color: #8a4035; background: linear-gradient(90deg, #eee5d2, #dfd0b7); }
+.dialogue-rail-action[data-action-role="danger"]::before { position: absolute; top: 4px; bottom: 4px; left: 3px; width: 3px; background: #983a30; content: ''; transform: rotate(-4deg); }
+.dialogue-rail-action[data-action-role="danger"]:not(:disabled):hover { color: #f8ead3; background: linear-gradient(90deg, #97483c, #75332e); }
+.dialogue-rail-action[aria-pressed="true"], .dialogue-rail-action.is-current { border-color: #3f8d89; box-shadow: inset 3px 0 0 #3f8d89, inset 0 0 0 1px rgba(255, 252, 221, .62); }
+.dialogue-rail-action:disabled { color: #817c70; border-color: #9d988c; background: #c4bdab; box-shadow: inset 0 0 0 1px rgba(245, 240, 219, .45); }
+.dialogue-rail-action:disabled::before { display: none; }
 .dialogue-rail-locked { margin: 0; padding: 8px 5px; color: #6d6456; background: rgba(190, 184, 166, .55); border: 1px solid rgba(99, 94, 84, .28); font: 12px/1.45 'STKaiti', 'KaiTi', serif; }
 .dialogue-layer[data-mode="inspect"] .dialogue-text-wrap { min-height: 176px; }
 .dialogue-layer[data-mode="observe"] .dialogue-text-wrap, .dialogue-layer[data-mode="gift-select"] .dialogue-text-wrap, .dialogue-layer[data-mode="gift-reaction"] .dialogue-text-wrap, .dialogue-layer[data-mode="challenge"] .dialogue-text-wrap, .dialogue-layer[data-mode="talk"] .dialogue-text-wrap { min-height: 116px; }
@@ -2340,7 +2432,9 @@ body[data-page="jianghu"] #scene-bg {
 .dialogue-ribbon { position: fixed; z-index: 2950; top: 50%; left: 50%; display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; width: min(560px, calc(100vw - 28px)); max-height: min(46dvh, 330px); box-sizing: border-box; padding: 12px 14px; overflow: auto; overscroll-behavior: contain; color: #292722; background: rgba(238, 232, 214, .98); border: 1px solid rgba(48, 49, 45, .76); box-shadow: 0 14px 34px rgba(0, 0, 0, .3), inset 0 0 0 2px rgba(255, 253, 233, .68); transform: translate(-50%, -50%); animation: dialogue-ribbon-rise .24s ease-out both; }
 .dialogue-ribbon[hidden] { display: none; }
 .dialogue-ribbon-portrait { position: relative; width: 68px; aspect-ratio: 1; align-self: start; overflow: hidden; display: grid; place-items: center; color: #f1dfb8; background: #77362f; border: 2px solid rgba(62, 55, 43, .72); border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(245, 231, 191, .48); font: 700 25px/1 'STKaiti', 'KaiTi', serif; }
-.dialogue-ribbon-portrait img { width: 100%; height: 100%; object-fit: cover; }
+.dialogue-ribbon-portrait { isolation: isolate; background: radial-gradient(circle at 38% 30%, #fbf3d7, #d9c9a4 74%, #9b805d); border-color: rgba(57, 53, 43, .72); }
+.dialogue-ribbon-portrait::after { position: absolute; z-index: 3; inset: -1px; pointer-events: none; border: 1px solid rgba(110, 78, 42, .66); border-radius: 48% 52% 49% 51%; content: ''; transform: rotate(-3deg); }
+.dialogue-ribbon-portrait img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; -webkit-mask-image: radial-gradient(circle, #000 0 72%, rgba(0,0,0,.7) 88%, transparent 100%); mask-image: radial-gradient(circle, #000 0 72%, rgba(0,0,0,.7) 88%, transparent 100%); }
 .dialogue-ribbon-content { min-width: 0; }
 .dialogue-ribbon-name { color: #89382d; font: 700 14px/1.2 'STKaiti', 'KaiTi', serif; }
 .dialogue-ribbon-text { margin: 5px 0 8px; font: 16px/1.65 'STKaiti', 'KaiTi', serif; }
@@ -2412,4 +2506,281 @@ body[data-page="jianghu"] #scene-bg {
   .page[data-page="jianghu"] .route-sketch--has-status .route-sketch-canvas {
     min-height: 132px;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+ * V2 终稿覆盖层（诡仙归 · 江湖页）
+ * 来源：aidoc/UI_REDESIGN_DEBATE_V1.md + public/design/jianghu-v3-mockup.html V3.2
+ * 原则：只追加、不删改；旧契约块原样保留，本层以后置同/高优先级覆盖。
+ * ═══════════════════════════════════════════════════════════════ */
+
+/* ── 0. 页底白垩：vista 页头接管天色，旧 jpg 底图退场 ── */
+body[data-page="jianghu"] #scene-bg {
+  background-image: none !important;
+  background-color: #F2E9D2;
+}
+
+/* ── 1. 三区改 flex 列：vista 页头 / 主区（内滚） / 日志（吃余量） ── */
+.page[data-page="jianghu"].active {
+  display: flex !important;
+  flex-direction: column;
+}
+.page[data-page="jianghu"] .jianghu-main-zone {
+  position: relative;
+  top: auto; bottom: auto; left: auto; right: auto;
+  height: auto;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  background: transparent;
+}
+.page[data-page="jianghu"] .recent-log {
+  position: relative;
+  top: auto; bottom: auto; left: auto; right: auto;
+  flex: 1 0 auto;
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  /* 笺纸竖线 */
+  background-image: repeating-linear-gradient(90deg, transparent 0 34px, rgba(110, 95, 76, .12) 34px 35px);
+}
+.page[data-page="jianghu"] .recent-log #log-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ── 2. room-card 赭石文武线 + 卷草角 + 「此地」石绿挂牌 ── */
+.page[data-page="jianghu"] .room-card {
+  position: relative;
+  border: 2.5px solid #9C5B33;
+  background: rgba(246, 239, 221, .92);
+  box-shadow: 0 2px 10px rgba(58, 46, 36, .12);
+}
+.page[data-page="jianghu"] .room-card::before {
+  content: "";
+  position: absolute; inset: 4px;
+  border: 1px solid rgba(156, 91, 51, .45);
+  pointer-events: none;
+}
+.page[data-page="jianghu"] .room-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cpath d='M2 32 Q2 12 12 7 Q6 14 10 18 Q4 16 6 24 Q3 22 4 30 M8 4 Q16 2 22 6 Q15 6 14 11' fill='none' stroke='%239C5B33' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: top 6px left 6px, top 6px right 6px, bottom 6px left 6px, bottom 6px right 6px;
+  background-size: 34px 34px;
+}
+.page[data-page="jianghu"] .scene-panel-label--place {
+  position: absolute;
+  top: -11px; left: 16px;
+  z-index: 2;
+  padding: 2px 12px;
+  background: #47755A;
+  color: #F2E9D2;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(58, 46, 36, .3);
+  transform: rotate(-2deg);
+  font-family: var(--dv-kai, "KaiTi", "STKaiti", "楷体", serif);
+  letter-spacing: 4px;
+}
+
+/* ── 3. NPC 名帖卷轴化：暖纸 + 木轴头 + 朱砂流苏 ── */
+.page[data-page="jianghu"] .room-npc-card.npc-chip {
+  position: relative;
+  background: #F6EFDD;
+  border: 1px solid rgba(58, 46, 36, .55);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(58, 46, 36, .14);
+}
+.page[data-page="jianghu"] .room-npc-card.npc-chip .npc-name {
+  font-family: var(--dv-kai, "KaiTi", "STKaiti", "楷体", serif);
+  font-size: 20px;
+  color: #3A2E24;
+}
+.npc-rod {
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 72%;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, #5A4632, #2E241A);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.npc-rod--l { left: -3px; }
+.npc-rod--r { right: -3px; }
+.npc-tassel-anchor {
+  position: absolute;
+  right: 16px;
+  bottom: -2px;
+  width: 0;
+  height: 0;
+}
+.npc-tassel {
+  position: absolute;
+  left: -2.5px;
+  top: 0;
+  width: 12px;
+  height: 60px;
+  transform-origin: 2.5px 0;
+  cursor: grab;
+  pointer-events: auto;
+  display: block;
+}
+.npc-tassel i {
+  position: absolute;
+  left: 1.5px; top: 0;
+  width: 2px; height: 14px;
+  background: #B53A28;
+  display: block;
+}
+.npc-tassel b {
+  position: absolute;
+  left: -1px; top: 12px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #D8B96A, #A57B2C);
+  display: block;
+}
+.npc-tassel u {
+  position: absolute;
+  left: -2px; top: 19px;
+  width: 9px; height: 38px;
+  background: repeating-linear-gradient(90deg, #B53A28 0 1.5px, #8A2A1C 1.5px 3px);
+  border-radius: 0 0 4px 4px;
+  display: block;
+}
+
+/* ── 4. dialogue-ribbon 深冷域：石青底 + 金线 + 米白字 ── */
+.dialogue-ribbon {
+  background: linear-gradient(180deg, #26505F, #1B3A48);
+  color: #F0E6CC;
+  border: 1px solid rgba(201, 162, 84, .55);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .4), inset 0 0 0 2px rgba(201, 162, 84, .18);
+}
+.dialogue-ribbon-name { color: #C9A254; }
+.dialogue-ribbon-text { color: #F0E6CC; }
+
+/* ── 5. bottom-nav 联珠纹 + 赭石顶边 + active 朱砂 ── */
+#bottom-nav {
+  position: relative;
+  border-top: 2.5px solid #9C5B33;
+}
+#bottom-nav::before {
+  content: "";
+  position: absolute;
+  top: -9px; left: 0; right: 0;
+  height: 6px;
+  background-image: radial-gradient(circle at 4px 3px, #9C5B33 1.6px, transparent 2.2px);
+  background-size: 12px 6px;
+  background-repeat: repeat-x;
+  opacity: .7;
+  pointer-events: none;
+}
+#bottom-nav .nav-btn.active .nav-label,
+#bottom-nav .nav-btn.active .nav-icon {
+  color: #B53A28;
+}
+
+/* ── 6. noise-overlay 换 feTurbulence 细纸纹 ── */
+body[data-page="jianghu"] #noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: .5;
+}
+
+/* ── 7. 行旅图（芥子园）：rs-* 单 SVG 节点 ── */
+.route-sketch-canvas { position: relative; }
+.route-sketch-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+}
+.rs-line {
+  stroke: #3A2E24;
+  stroke-width: 2;
+  opacity: .75;
+}
+.rs-line--mystery { stroke-dasharray: 5 4; opacity: .45; }
+.rs-line--locked { stroke-dasharray: 2 5; opacity: .35; }
+.rs-line--sensed { stroke: #6E5F4C; stroke-width: 1.4; stroke-dasharray: 3 6; opacity: .4; }
+.rs-sensed-mark { fill: #6E5F4C; opacity: .5; }
+.rs-foot { fill: #3A2E24; opacity: .5; }
+.rs-dir {
+  font: 400 12px var(--dv-kai, "KaiTi", "STKaiti", "楷体", serif);
+  fill: #6E5F4C;
+  text-anchor: middle;
+}
+.rs-node[data-action] { cursor: pointer; }
+.rs-node[data-action]:hover .rs-frame { stroke: #B53A28; }
+.rs-frame {
+  fill: rgba(246, 239, 221, .92);
+  stroke: #3A2E24;
+  stroke-width: 1.6;
+}
+.rs-frame--shadow {
+  fill: none;
+  stroke: rgba(58, 46, 36, .35);
+  transform: translate(2.5px, 2.5px);
+}
+.rs-name {
+  font: 400 16px var(--dv-kai, "KaiTi", "STKaiti", "楷体", serif);
+  fill: #3A2E24;
+  text-anchor: middle;
+}
+.rs-name--current { font-size: 17px; font-weight: 700; }
+.rs-node--mystery .rs-frame { stroke-dasharray: 5 4; }
+.rs-node--mystery .rs-name,
+.rs-node--mystery .rs-mark { opacity: .45; }
+.rs-node--locked .rs-frame { opacity: .6; }
+.rs-node--locked .rs-name { opacity: .5; }
+.rs-seal {
+  font: 400 11px var(--dv-kai, "KaiTi", "STKaiti", "楷体", serif);
+  fill: #B53A28;
+  text-anchor: middle;
+}
+.rs-mark path {
+  stroke: #3A2E24;
+  stroke-width: 1.6;
+  fill: none;
+  stroke-linecap: round;
+}
+.rs-mark circle { fill: #3A2E24; }
+.rs-here rect { fill: #B53A28; stroke: #8A2A1C; stroke-width: 1; }
+.rs-here text {
+  font: 700 13px var(--dv-kai, "KaiTi", "STKaiti", "楷体", serif);
+  fill: #F2E9D2;
+  text-anchor: middle;
+}
+/* 走墨：首个可点通路上的墨痕自当前节点洇向去处 */
+.rs-line--inkrun {
+  stroke: #2E4A3E;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: rs-inkrun 2.8s ease forwards .3s;
+}
+@keyframes rs-inkrun { to { stroke-dashoffset: 0; } }
+.rs-node--inkrun .rs-frame { stroke: #2E4A3E; }
+
+/* ── 8. 桌面宽屏：覆盖旧双栏 display:block!important，仍走 flex 列 ── */
+@media (min-width: 768px) {
+  .page[data-page="jianghu"].active {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .page[data-page="jianghu"] .jianghu-main-zone {
+    position: relative;
+    top: auto; bottom: auto;
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
+/* ── 9. reduced-motion：走墨直接成稿 ── */
+@media (prefers-reduced-motion: reduce) {
+  .rs-line--inkrun { animation: none; stroke-dashoffset: 0; }
 }

@@ -333,7 +333,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
         },
         31: {
           npcDialog: [
-            { speaker: '苏小棠', text: `她回头望了一眼幽深竹影，声音又快起来：「剑冢看完了，快走快走，天色可不等人。」` },
+            { speaker: '苏小棠', text: `她回头望了一眼幽深竹影，：「剑冢看完了，快走快走，天色可不等人。」` },
           ],
           moveHint: `她带你离开竹林。`,
           availableMoves: ['南'],

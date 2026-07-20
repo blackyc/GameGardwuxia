@@ -6,6 +6,8 @@
  */
 
 import { getData } from '../data/data_loader.js';
+import { setVistaTime } from './vista.js';
+import { applyPlaqueMaterial } from './plaque_material.js';
 
 function routePoint(route) {
   const points = {
@@ -258,6 +260,7 @@ export class Renderer {
     this._setText('location-name', this.displayName(s.location));
     const regionEl = document.getElementById('location-region');
     if (regionEl) this._setText('location-region', this.regionName(s.location));
+    applyPlaqueMaterial(s.location, data.LOCATIONS?.[s.location]);
     const tutorial = data.WENJIANFENG_TUTORIAL_CH1;
     const isGuideActive = !!(tutorial && typeof tutorial.isGuideActive === 'function' && tutorial.isGuideActive(this.game, s.location));
     const banner = document.querySelector('.location-banner');
@@ -287,16 +290,19 @@ export class Renderer {
         const focusedType = interaction?.npcType || null;
         const focused = focusedIndex === null ? null : list.find(n => Number(n.index) === focusedIndex && (n.type || 'encounter') === focusedType);
         if (roomCardEl) roomCardEl.classList.toggle('scene-narrative-panel--npc-selected', false);
-        const buttons = list.map(n => {
+        const buttons = list.map((n, order) => {
           const idx = Number(n.index);
           const type = n.type || 'encounter';
           const isSelected = focused && Number(focused.index) === idx && (focused.type || 'encounter') === type;
           const chipState = this._npcChipState(n, isSelected);
           const isLocked = chipState === 'locked';
           const chipBadge = this._npcChipBadge(chipState);
-          return '<button type="button" class="room-npc-card npc-chip npc-chip--' + chipState + (isSelected ? ' active' : '') + '" data-npc-state="' + chipState + '" data-action="focusNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '"' + (isLocked ? ' disabled aria-disabled="true"' : '') + '>'
+          const tasselSide = Math.floor(order / 3) % 2 === 0 ? 'right' : 'left';
+          return '<button type="button" class="room-npc-card npc-chip npc-chip--' + chipState + ' npc-chip--tassel-' + tasselSide + (isSelected ? ' active' : '') + '" data-npc-state="' + chipState + '" data-action="focusNpc" data-npc-idx="' + idx + '" data-npc-type="' + this._esc(type) + '"' + (isLocked ? ' disabled aria-disabled="true"' : '') + '>'
             + '<span class="npc-name">' + this._esc(n.name) + '</span>'
             + chipBadge
+            + '<span class="npc-rod npc-rod--l" aria-hidden="true"></span><span class="npc-rod npc-rod--r" aria-hidden="true"></span>'
+            + '<span class="npc-tassel-anchor" aria-hidden="true"><span class="npc-tassel"><i></i><b></b><u></u></span></span>'
             + '</button>';
         }).join('');
         npcsEl.innerHTML = '<div class="room-npc-list" aria-label="在场人物">' + buttons + '</div>';
@@ -361,24 +367,97 @@ export class Renderer {
     const routePoints = resolveRoutePoints([...visibleRoutes, ...sensedRoutes]);
 
     const currentName = this._esc(this.displayName(this.game.state.location));
-    const routeNodes = visibleRoutes.map((route) => {
+    const exploredRooms = Array.isArray(this.game.state?.explored) ? this.game.state.explored : [];
+    // 芥子园行旅图：640×200 逻辑画布，当前节点居中，resolveRoutePoints 的 % 坐标 ×6.4/×2 映射
+    const VB_W = 640, VB_H = 200, CX = 320, CY = 100;
+    const px = (pt) => Number(((pt.x / 100) * VB_W).toFixed(1));
+    const py = (pt) => Number(((pt.y / 100) * VB_H).toFixed(1));
+    // 卡角记号：按房名特征映射芥子园式小符
+    const markFor = (label) => {
+      if (/山门|牌坊/.test(label)) return '<path d="M-10 6 L-10 -6 M10 6 L10 -6 M-14 -6 L14 -6 M-8 -11 L8 -11"/>'; // 四柱顶
+      if (/阶/.test(label)) return '<path d="M-10 6 L10 6 M-7 0 L7 0 M-4 -6 L4 -6"/>'; // 剑阶三横
+      if (/松/.test(label)) return '<path d="M0 8 L0 -2 M0 -2 L-7 -10 M0 -2 L7 -10 M0 2 L-5 -4 M0 2 L5 -4"/>'; // 斜松
+      if (/门|城|关|楼|阁/.test(label)) return '<path d="M-9 7 L-9 -3 L9 -3 L9 7 M-12 -3 L12 -3 M-5 -8 L5 -8 M0 -8 L0 -12"/>'; // 城楼
+      return '<circle cx="0" cy="0" r="2.6"/>'; // 墨点
+    };
+    // 固定种子的整数折线：呈现清晰的像素偏差，而不是噪声滤镜造成的缺墨感。
+    const pixelFramePath = (width, height, key = '') => {
+      const hw = Math.round(width / 2);
+      const hh = Math.round(height / 2);
+      let seed = Array.from(String(key)).reduce((sum, ch) => ((sum * 33) + ch.charCodeAt(0)) >>> 0, 17);
+      const jitter = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return (seed % 5) - 2;
+      };
+      const x1 = -Math.round(hw * .46), x2 = Math.round(hw * .08), x3 = Math.round(hw * .58);
+      const y1 = -Math.round(hh * .38), y2 = Math.round(hh * .34);
+      return [
+        `M ${-hw + jitter()} ${-hh + jitter()}`,
+        `L ${x1} ${-hh + jitter()} L ${x2} ${-hh + jitter()} L ${x3} ${-hh + jitter()} L ${hw + jitter()} ${-hh + jitter()}`,
+        `L ${hw + jitter()} ${y1} L ${hw + jitter()} ${y2} L ${hw + jitter()} ${hh + jitter()}`,
+        `L ${x3} ${hh + jitter()} L ${x2} ${hh + jitter()} L ${x1} ${hh + jitter()} L ${-hw + jitter()} ${hh + jitter()}`,
+        `L ${-hw + jitter()} ${y2} L ${-hw + jitter()} ${y1} Z`
+      ].join(' ');
+    };
+    const parts = [];
+    let inkrunUsed = false;
+    visibleRoutes.forEach((route) => {
       const point = routePoints.get(route.id) || routePoint(route);
-      const style = `--route-x:${point.x}%;--route-y:${point.y}%;`;
+      const x = px(point), y = py(point);
       const label = this._esc(route.label);
-      if (route.clickable) {
-        return `<button class="route-node route-destination route-${route.state}" data-action="explore" data-dir="${this._esc(route.direction)}" style="${style}">${label}</button>`;
+      const dirWord = this._esc(this.game.dirName ? this.game.dirName(route.direction) : (route.direction || ''));
+      const isLocked = route.state === 'revealedLocked' || !route.clickable;
+      // 谜面未揭：可去但从未探访 → 淡墨虚框，名号记号一并淡之
+      const mystery = route.clickable && route.target && !exploredRooms.includes(route.target);
+      let lineCls = 'rs-line';
+      if (mystery) lineCls += ' rs-line--mystery';
+      else if (isLocked) lineCls += ' rs-line--locked';
+      let nodeCls = 'rs-node';
+      if (mystery) nodeCls += ' rs-node--mystery';
+      if (isLocked) nodeCls += ' rs-node--locked';
+      if (route.clickable && !inkrunUsed) {
+        lineCls += ' rs-line--inkrun';
+        nodeCls += ' rs-node--inkrun';
+        inkrunUsed = true;
       }
-      return `<span class="route-node route-destination route-revealedLocked" style="${style}" title="${this._esc(route.blockedReason)}"><span>${label}</span><small>${this._esc(route.blockedReason || '此路暂不可通')}</small></span>`;
-    }).join('');
-    const lines = visibleRoutes.map((route) => {
+      parts.push(`<line class="${lineCls}" x1="${CX}" y1="${CY}" x2="${x}" y2="${y}"></line>`);
+      // 方向字落在线中段
+      if (dirWord) parts.push(`<text class="rs-dir" x="${((CX + x) / 2).toFixed(1)}" y="${((CY + y) / 2 - 5).toFixed(1)}">${dirWord}</text>`);
+      // 近缘足迹：横向偏外侧的通路在连线旁点两粒墨
+      if (point.x < 42 || point.x > 58) {
+        const fx = CX + (x - CX) * 0.62, fy = CY + (y - CY) * 0.62;
+        parts.push(`<circle class="rs-foot" cx="${fx.toFixed(1)}" cy="${(fy - 7).toFixed(1)}" r="1.6"/><circle class="rs-foot" cx="${(fx + 5).toFixed(1)}" cy="${(fy + 6).toFixed(1)}" r="1.6"/>`);
+      }
+      const actionAttrs = route.clickable ? ` data-action="explore" data-dir="${this._esc(route.direction)}"` : '';
+      const titleAttr = isLocked ? ` title="${this._esc(route.blockedReason || '此路暂不可通')}"` : '';
+      const framePath = pixelFramePath(104, 34, route.id || route.label);
+      parts.push(
+        `<g class="${nodeCls}" transform="translate(${x},${y})"${actionAttrs}${titleAttr}>`
+        + `<path class="rs-frame rs-frame--shadow" d="${framePath}" transform="translate(1 1)"></path>`
+        + `<path class="rs-frame rs-frame--pixel" d="${framePath}"></path>`
+        + `<text class="rs-name" x="0" y="7">${label}</text>`
+        + `<g class="rs-mark" transform="translate(0,-27)">${markFor(route.label)}</g>`
+        + (isLocked ? '<text class="rs-seal" x="42" y="-8">封</text>' : '')
+        + '</g>'
+      );
+    });
+    // 感知未明的通路：淡墨虚线 + 墨点
+    sensedRoutes.forEach((route) => {
       const point = routePoints.get(route.id) || routePoint(route);
-      const lineClass = ['revealed', 'revealedLocked'].includes(route.state) ? 'route-revealed-line' : '';
-      return `<line class="${lineClass}" x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line>`;
-    }).join('');
-    const sensedMarks = sensedRoutes.map((route) => {
-      const point = routePoints.get(route.id) || routePoint(route);
-      return `<line class="route-sensed-line" x1="50" y1="50" x2="${point.x}" y2="${point.y}"></line><circle class="route-sensed-mark" cx="${point.x}" cy="${point.y}" r="2.4"></circle>`;
-    }).join('');
+      const x = px(point), y = py(point);
+      parts.push(`<line class="rs-line rs-line--sensed" x1="${CX}" y1="${CY}" x2="${x}" y2="${y}"></line>`);
+      parts.push(`<circle class="rs-sensed-mark" cx="${x}" cy="${y}" r="2.4"></circle>`);
+    });
+    // 当前节点：居中，「在」字朱砂签探出右缘
+    const currentFramePath = pixelFramePath(116, 38, this.game.state.location || currentName);
+    parts.push(
+      `<g class="rs-node rs-node--current" transform="translate(${CX},${CY})">`
+      + `<path class="rs-frame rs-frame--shadow" d="${currentFramePath}" transform="translate(1 1)"></path>`
+      + `<path class="rs-frame rs-frame--pixel" d="${currentFramePath}"></path>`
+      + `<text class="rs-name rs-name--current" x="0" y="8">${currentName}</text>`
+      + '<g class="rs-here" transform="translate(50,-16)"><rect x="-2" y="-9" width="20" height="24"></rect><text x="8" y="8">在</text></g>'
+      + '</g>'
+    );
 
     bar.className = 'exit-bar route-sketch';
     bar.style.display = 'block';
@@ -395,8 +474,8 @@ export class Renderer {
     }
     if (routeStatus) bar.classList.add('route-sketch--has-status');
     bar.innerHTML = '<div class="route-sketch-canvas">'
-      + `<svg class="route-sketch-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}${sensedMarks}</svg>`
-      + `<span class="route-node route-current">${currentName}</span>${routeNodes}</div>${routeStatus}`;
+      + `<svg class="route-sketch-svg" viewBox="0 0 ${VB_W} ${VB_H}" role="group" aria-label="行旅图">${parts.join('')}</svg>`
+      + `</div>${routeStatus}`;
     return;
     const s = this.game.state;
     const perc = this.game.getRoomPerception ? this.game.getRoomPerception() : null;
@@ -783,6 +862,7 @@ export class Renderer {
 
   /** 更新时辰显示 */
   updateTimeDisplay() {
+    setVistaTime(Number(this.game.state?.gameTime) || 0);
     const el = document.getElementById('time-display');
     if (!el) return;
     const timeName = this.game.getTimeName ? this.game.getTimeName() : '子时';
@@ -795,7 +875,22 @@ export class Renderer {
     if (!area) return;
     const el = document.createElement('div');
     el.className = 'log-entry ' + (type || '');
-    el.innerHTML = text;
+    const source = String(text || '');
+    const plain = source.replace(/<[^>]+>/g, '');
+    const isAnnotation = type === 'quest'
+      || /继续|下一站|前往|目标|沿.+(?:往|去)|引路|已记入舆图/.test(plain);
+    if (isAnnotation) {
+      el.classList.add('log-entry--annotation');
+      const proof = document.createElement('span');
+      proof.className = 'log-proof-mark';
+      proof.textContent = '批';
+      const body = document.createElement('span');
+      body.className = 'log-entry-body';
+      body.innerHTML = source;
+      el.append(proof, body);
+    } else {
+      el.innerHTML = source;
+    }
     area.appendChild(el);
     area.scrollTop = area.scrollHeight;
     while (area.children.length > 100) area.removeChild(area.firstChild);
@@ -906,7 +1001,6 @@ export class Renderer {
   _npcChipBadge(state) {
     const badges = {
       guide: { text: '随', label: '引路人' },
-      key: { text: '卷', label: '关键人物' },
       locked: { text: '?', label: '暂不可交谈' }
     };
     const badge = badges[state];

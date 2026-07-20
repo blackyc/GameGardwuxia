@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>诡仙归 · 江湖页样张 V3（真素材远景 · 行旅图三态 · 卷轴流苏）</title>
+<style>
+/* ═══════════ 敦煌矿物色板（全局变量纪律） ═══════════ */
+:root{
+  --chalk:#F2E9D2;      /* 白垩 */
+  --ink:#3A2E24;        /* 暖墨 */
+  --ink-mid:#6E5F4C;
+  --ink-pale:#9C8E74;
+  --ochre:#9C5B33;      /* 赭石 */
+  --cinnabar:#B53A28;   /* 朱砂 */
+  --azurite:#27556B;    /* 石青 */
+  --malachite:#47755A;  /* 石绿 */
+  --gold:#C9A254;       /* 金箔 */
+  --gold-dim:#A57B2C;   /* 暗金 */
+  --f-kai:"KaiTi","STKaiti","楷体","Kaiti SC","TW-Kai",serif;
+  --f-song:"Noto Serif CJK SC","Songti SC","STSong","SimSun","宋体",serif;
+}
+/* 注册可动画的颜色变量（时辰过渡全靠它） */
+@property --skyT{syntax:'<color>';inherits:true;initial-value:#5C5E80;}
+@property --skyB{syntax:'<color>';inherits:true;initial-value:#D9784A;}
+@property --cFar{syntax:'<color>';inherits:true;initial-value:#5C6480;}
+@property --cMid{syntax:'<color>';inherits:true;initial-value:#4A526C;}
+@property --cNear{syntax:'<color>';inherits:true;initial-value:#343C54;}
+@property --cCloud{syntax:'<color>';inherits:true;initial-value:#8C7490;}
+@property --cSun{syntax:'<color>';inherits:true;initial-value:#E8903E;}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#17130D;
+  background-image:radial-gradient(900px 480px at 50% -100px,rgba(60,72,58,.35),transparent 70%);
+  color:#D8D2C2;font-family:var(--f-song);min-height:100vh;padding-bottom:64px;
+}
+
+/* ═══════════ 样张外壳 ═══════════ */
+.mock-top{text-align:center;padding:24px 16px 4px;}
+.mock-top h1{font-family:var(--f-kai);font-size:21px;letter-spacing:4px;color:#E8E2D0;font-weight:700;}
+.mock-top .mock-sub{margin-top:8px;font-size:12px;color:#9A978A;letter-spacing:1px;}
+.stage{display:flex;justify-content:center;padding:14px 10px 0;}
+#app{
+  width:540px;height:100dvh;position:relative;overflow:hidden;flex:0 0 auto;
+  background:var(--chalk);color:var(--ink);
+  display:flex;flex-direction:column;
+  border:1px solid #3A3A30;
+  box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 0 6px rgba(231,225,210,.05);
+}
+/* 纸纹罩层 */
+.grain{position:absolute;inset:0;z-index:60;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.18 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+/* ═══════════ 1 · 视差远景 vista ═══════════ */
+.vista{position:relative;height:150px;flex:0 0 auto;overflow:hidden;
+  transition:--skyT 1.6s linear,--skyB 1.6s linear,--cFar 1.6s linear,--cMid 1.6s linear,--cNear 1.6s linear,--cCloud 1.6s linear,--cSun 1.6s linear;}
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,var(--skyT),var(--skyB));}
+.plx{position:absolute;inset:-30px -60px;will-change:transform;}
+.plx svg{position:absolute;}
+.lstars{transition:opacity 1.6s;}
+.lstars svg{inset:0;width:100%;height:100%;}
+.sun{position:absolute;width:60px;height:60px;margin:-30px;border-radius:50%;
+  background:radial-gradient(circle,var(--cSun) 38%,transparent 42%),radial-gradient(circle,var(--cSun) 0%,transparent 68%);
+  transition:left 1.6s ease,top 1.6s ease,opacity 1.6s;}
+/* 敦煌云纹（如意云头） */
+.cloud{position:absolute;opacity:.7;}
+.cloud .cb{fill:var(--cCloud);}
+.cloud .cc{fill:none;stroke:var(--cCloud);stroke-width:2.5;stroke-linecap:round;}
+.cd1{top:36px;animation:drift 96s linear infinite;}
+.cd2{top:82px;animation:drift 132s linear infinite;animation-delay:-46s;transform:scale(.7);}
+.cd3{top:16px;animation:drift 164s linear infinite;animation-delay:-100s;transform:scale(1.22);}
+@keyframes drift{from{left:-220px;}to{left:760px;}}
+/* 真素材裁山：mask 填色 + multiply 叠回原笔触 */
+.mtn{position:absolute;left:0;right:0;bottom:0;top:0;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-size:100% auto;mask-size:100% auto;
+  -webkit-mask-position:bottom;mask-position:bottom;}
+.mtn.far{-webkit-mask-image:url(./assets/vista-far.png);mask-image:url(./assets/vista-far.png);background:var(--cFar);}
+/* 近山 1080×382：山脊居左、向右羽化；等比铺满宽度不变形，左对齐底对齐，右端羽化自然没入雾中 */
+.mtn.near{-webkit-mask-image:url(./assets/vista-near.png);mask-image:url(./assets/vista-near.png);background:var(--cNear);
+  -webkit-mask-position:left bottom;mask-position:left bottom;}
+.mtn-tex{position:absolute;left:0;bottom:0;width:100%;mix-blend-mode:multiply;opacity:.25;pointer-events:none;}
+.birds{transition:opacity 1.6s;}
+.bfly{position:absolute;animation:fly 34s linear infinite;}
+.bfly.b2{animation-delay:-17s;top:64px!important;}
+@keyframes fly{from{left:-80px;}to{left:700px;}}
+.lff{transition:opacity 1.6s;}
+.ff{position:absolute;width:5px;height:5px;border-radius:50%;background:#F2D06A;
+  box-shadow:0 0 8px 2px rgba(242,208,106,.7);animation:bob 4.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.9;}50%{transform:translateY(-9px);opacity:.4;}}
+/* 时辰 chips + 视差 hint */
+.ctrl{position:absolute;top:10px;right:10px;z-index:8;display:flex;gap:6px;}
+.chip{font-family:var(--f-song);font-size:13px;letter-spacing:2px;color:#F0E6CC;
+  background:rgba(20,28,36,.42);border:1px solid rgba(201,162,84,.65);border-radius:16px;
+  padding:4px 10px;cursor:pointer;}
+.chip.on{background:var(--cinnabar);border-color:var(--gold);}
+.hint{position:absolute;top:12px;left:14px;z-index:8;font-size:11px;letter-spacing:3px;color:rgba(240,230,205,.65);}
+/* 竖排时辰：题在画上的小字（chips 下方，颜色随昼夜） */
+.vtime{position:absolute;top:64px;right:12px;z-index:8;display:flex;gap:7px;align-items:flex-start;
+  font-family:var(--f-kai);color:#F0E6CC;text-shadow:0 1px 2px rgba(0,0,0,.5);
+  transition:color 1.6s,text-shadow 1.6s;pointer-events:none;}
+.vtime span{writing-mode:vertical-rl;}
+.vtime .vt-name{font-size:19px;font-weight:700;letter-spacing:5px;}
+.vtime .vt-label{font-size:12px;letter-spacing:3px;opacity:.85;padding-top:2px;}
+
+/* ═══════════ 2 · 木质匾额（vista 内居中，总高约 62px） ═══════════ */
+.plaque{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:6;
+  width:192px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  background:linear-gradient(180deg,#382C22,#2E2620);
+  border:1px solid var(--gold);
+  box-shadow:0 0 0 2.5px #1A140F,0 5px 14px rgba(0,0,0,.42);}
+.plaque .sect{font-size:11px;letter-spacing:6px;text-indent:6px;color:rgba(226,200,140,.78);}
+.plaque .title{font-family:var(--f-kai);font-size:27px;font-weight:700;letter-spacing:14px;text-indent:14px;line-height:1.15;
+  color:var(--gold);text-shadow:0 -1px 0 rgba(0,0,0,.55),0 1px 1px rgba(255,225,150,.28);}
+
+/* ═══════════ 面板：赭石文武线 + 卷草角饰 ═══════════ */
+.panel{position:relative;margin:0 12px;background:#F4ECDA;border:2.5px solid var(--ochre);}
+.panel::before{content:'';position:absolute;inset:5px;border:1px solid rgba(156,91,51,.55);pointer-events:none;}
+.flnr{position:absolute;width:44px;height:44px;pointer-events:none;opacity:.8;z-index:1;}
+.f1{top:7px;left:7px;} .f2{top:7px;right:7px;transform:scaleX(-1);}
+.f3{bottom:7px;left:7px;transform:scaleY(-1);} .f4{bottom:7px;right:7px;transform:scale(-1,-1);}
+.tag{position:absolute;top:-14px;left:20px;z-index:2;background:var(--malachite);color:#F5EFDD;
+  font-size:15px;letter-spacing:7px;padding:3px 10px 3px 17px;transform:rotate(-2deg);
+  box-shadow:1.5px 1.5px 0 rgba(71,117,90,.4);}
+
+/* ═══════════ 3 · 此地叙事 + 4 · 行旅图 + 5 · 名帖卷轴 ═══════════ */
+.place{margin-top:8px;padding:10px 12px 6px;flex:0 0 auto;}
+.desc{font-size:13px;line-height:1.72;color:#43382A;text-align:justify;}
+.desc em{font-style:normal;font-weight:700;color:var(--ink);}
+.map{display:block;width:100%;height:172px;margin-top:2px;}
+.ink-run{stroke:#27556B;stroke-width:3;fill:none;stroke-linecap:round;opacity:.9;
+  stroke-dasharray:10 58;stroke-dashoffset:68;filter:url(#rough);
+  animation:inkrun 2.4s ease-in-out infinite;}
+@keyframes inkrun{0%{stroke-dashoffset:68;}60%{stroke-dashoffset:0;}100%{stroke-dashoffset:0;}}
+.people-zone{position:relative;padding-bottom:34px;}
+.people-label{font-size:12px;color:var(--ink-mid);letter-spacing:4px;margin:3px 2px 3px;}
+.scrolls{display:flex;gap:18px;}
+.scroll{position:relative;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;
+  height:38px;padding:0 18px;background:#F6EFDD;}
+.scroll::before{content:'';position:absolute;inset:0;border:2.5px solid var(--ochre);filter:url(#rough);pointer-events:none;}
+.rod{position:absolute;top:-2px;width:6px;height:42px;border-radius:3px;background:linear-gradient(90deg,#7A5632,#4A3016);}
+.rod.l{left:-4px;} .rod.r{right:-4px;}
+.scroll .name{font-family:var(--f-kai);font-size:26px;font-weight:700;letter-spacing:2px;color:var(--ink);}
+.seal{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:0 0 auto;
+  font-size:17px;color:#FBF6E8;border-radius:50%;box-shadow:1px 1px 0 rgba(0,0,0,.25);font-family:var(--f-kai);}
+.seal.green{background:var(--malachite);transform:rotate(4deg);}
+.seal.red{background:var(--cinnabar);transform:rotate(-5deg);}
+/* 流苏：锚点不转，内体以绳顶为 pivot 摆 */
+.tassel-anchor{position:absolute;right:-9px;top:36px;width:14px;height:2px;z-index:3;}
+.tassel{position:absolute;left:0;top:0;width:14px;display:flex;flex-direction:column;align-items:center;
+  padding:0 2px;transform-origin:50% 0;cursor:grab;touch-action:none;}
+.tassel.grab{cursor:grabbing;}
+.tassel i{width:2.5px;height:6px;background:var(--cinnabar);}
+.tassel b{width:8px;height:8px;border-radius:50%;background:var(--gold);border:1.5px solid var(--cinnabar);}
+.tassel u{width:10px;height:12px;background:linear-gradient(180deg,var(--cinnabar),#7E281B);
+  clip-path:polygon(15% 0,85% 0,100% 100%,0 100%);}
+.ts-hint{position:absolute;right:-16px;top:64px;font-size:12px;color:var(--ink-pale);opacity:.55;letter-spacing:1px;}
+
+/* ═══════════ 6 · NPC 主动短笺卡（深冷域浮签） ═══════════ */
+.npc-note{position:relative;z-index:4;flex:0 0 auto;margin:-6px 26px 4px;padding:8px 12px;
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(160deg,#26505F,#1B3A48);
+  border:1px solid rgba(201,162,84,.5);color:#F0E6CC;
+  transform:translateY(-3px);
+  box-shadow:0 8px 18px rgba(12,16,10,.38);}
+.nn-dmd{position:absolute;top:-6px;left:16px;width:10px;height:10px;background:var(--azurite);
+  transform:rotate(45deg);border:1px solid rgba(201,162,84,.6);}
+.nn-avatar{flex:0 0 auto;width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 35% 30%,#EFE6CC,#D9CCA8);
+  border:1.5px solid var(--gold);outline:1px solid rgba(201,162,84,.45);outline-offset:2.5px;
+  font-family:var(--f-kai);font-size:18px;font-weight:700;color:#2E3A40;}
+.nn-head{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.nn-name{font-family:var(--f-kai);font-size:16px;font-weight:700;letter-spacing:2px;color:#F5EEDD;}
+.nn-seal{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;
+  background:var(--cinnabar);color:#FBF6E8;font-size:11px;transform:rotate(-6deg);
+  box-shadow:1px 1px 0 rgba(0,0,0,.3);font-family:var(--f-kai);}
+.nn-line{font-size:12px;line-height:1.6;color:#F0E6CC;opacity:.92;text-align:justify;}
+
+/* ═══════════ 7 · 最近日志（内部滚动，可缩至极矮） ═══════════ */
+.log{flex:1 1 auto;min-height:0;margin-top:2px;padding:8px 18px 10px;overflow-y:auto;
+  background:repeating-linear-gradient(90deg,rgba(156,91,51,.10) 0 1px,transparent 1px 36px),#F4ECDA;}
+.log::-webkit-scrollbar{width:5px;}
+.log::-webkit-scrollbar-thumb{background:rgba(156,91,51,.35);border-radius:3px;}
+.log .cap{font-size:12px;color:var(--ink-pale);letter-spacing:6px;margin-bottom:4px;}
+.entry{display:flex;align-items:baseline;gap:9px;font-size:13px;line-height:1.8;color:var(--ink);}
+.entry.sys{color:var(--ink-pale);font-size:12px;}
+.entry.sys .sq{flex:0 0 auto;width:8px;height:8px;background:var(--malachite);opacity:.8;transform:translateY(-1px) rotate(3deg);}
+.entry.note{color:var(--azurite);font-size:12.5px;}
+.entry.note .pi{flex:0 0 auto;font-size:11px;border:1.5px solid var(--azurite);padding:0 4px;line-height:1.5;transform:translateY(-1px) rotate(-3deg);}
+.entry.gain{color:var(--gold-dim);}
+.entry .verb{color:var(--cinnabar);font-weight:700;}
+
+/* ═══════════ 8 · 底部导航 ═══════════ */
+nav{position:relative;flex:0 0 auto;height:62px;background:linear-gradient(180deg,#EAE0C6,#E2D5B4);
+  border-top:2.5px solid var(--ochre);display:flex;}
+nav::before{content:'';position:absolute;top:-13px;left:0;right:0;height:10px;opacity:.5;
+  background:radial-gradient(circle at 6px 5px,var(--gold) 2px,transparent 2.6px) left repeat-x;background-size:16px 10px;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#6A5638;position:relative;}
+.tab .lb{font-size:19px;letter-spacing:4px;text-indent:4px;}
+.tab.on,.tab.on .lb{color:var(--cinnabar);font-weight:600;}
+.tab .brush{position:absolute;bottom:3px;width:56px;height:8px;}
+.tab svg.ic{filter:url(#rough2);width:21px;height:21px;}
+
+/* ═══════════ reduced-motion ═══════════ */
+@media (prefers-reduced-motion: reduce){
+  .cd1,.cd2,.cd3,.bfly,.ff{animation:none!important;}
+  .ink-run{animation:none;stroke-dashoffset:0;}
+}
+
+/* ═══════════ 手机/矮窗：隐藏演示外壳，保证窗口零滚动条 ═══════════ */
+@media (max-width:600px),(max-height:920px){
+  .mock-top,.notes{display:none;}
+  body{overflow:hidden;padding-bottom:0;}
+  .stage{padding-top:0;}
+}
+body.nochrome{overflow:hidden;padding-bottom:0;}
+body.nochrome .mock-top,body.nochrome .notes{display:none;}
+
+/* ═══════════ 10 · 改动说明区 ═══════════ */
+.notes{width:min(720px,94vw);margin:30px auto 0;background:#262A25;border:1px solid #3F453E;padding:20px 24px 18px;}
+.notes h2{font-family:var(--f-kai);font-size:17px;letter-spacing:4px;color:#E8E2D0;
+  border-bottom:1px solid #3F453E;padding-bottom:8px;margin-bottom:12px;}
+.notes li{font-size:13px;line-height:1.85;color:#C4BFAE;margin-left:18px;padding-left:2px;}
+.notes li + li{margin-top:6px;}
+.notes b{color:#E3DCC6;font-weight:700;}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/></filter>
+  <filter id="rough2"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3"/></filter>
+</svg>
+
+<header class="mock-top">
+  <h1>诡仙归 · 江湖页样张 V3</h1>
+  <p class="mock-sub">问剑峰 · 山门 ｜ 真素材视差远景 · 行旅图三态 · NPC 卷轴流苏 ｜ 静态演示页（不改动游戏源码） · ?s=0&amp;auto=0 可定格子时夜景</p>
+</header>
+
+<div class="stage">
+<div class="app" id="app">
+
+  <!-- 1 · 视差远景 -->
+  <div class="vista" id="vista">
+    <div class="sky"></div>
+    <div class="plx lstars" id="pStars"><svg id="svgStars" viewBox="0 0 870 280" preserveAspectRatio="xMidYMid slice"></svg></div>
+    <div class="plx" id="pClouds">
+      <svg class="cloud cd1" width="170" height="56" viewBox="0 0 170 56" fill="none">
+        <path class="cb" d="M12,48 Q14,32 30,32 Q32,20 46,22 Q50,10 64,14 Q78,6 88,16 Q102,12 108,24 Q122,24 121,36 Q134,39 128,48 L146,48 Q150,44 146,48 Z"/>
+        <path class="cc" d="M38,42 q-7,0 -7,-7 q0,-6 6,-6 q5,0 5,5 q0,3 -3,3 M70,34 q-8,0 -8,-8 q0,-7 7,-7 q6,0 6,6 q0,4 -4,4 M100,42 q-6,0 -6,-6 q0,-5 5,-5 q4,0 4,4 q0,3 -2,3"/>
+      </svg>
+      <svg class="cloud cd2" width="170" height="56" viewBox="0 0 170 56" fill="none">
+        <path class="cb" d="M12,48 Q14,32 30,32 Q32,20 46,22 Q50,10 64,14 Q78,6 88,16 Q102,12 108,24 Q122,24 121,36 Q134,39 128,48 L146,48 Q150,44 146,48 Z"/>
+        <path class="cc" d="M38,42 q-7,0 -7,-7 q0,-6 6,-6 q5,0 5,5 q0,3 -3,3 M70,34 q-8,0 -8,-8 q0,-7 7,-7 q6,0 6,6 q0,4 -4,4 M100,42 q-6,0 -6,-6 q0,-5 5,-5 q4,0 4,4 q0,3 -2,3"/>
+      </svg>
+      <svg class="cloud cd3" width="170" height="56" viewBox="0 0 170 56" fill="none">
+        <path class="cb" d="M12,48 Q14,32 30,32 Q32,20 46,22 Q50,10 64,14 Q78,6 88,16 Q102,12 108,24 Q122,24 121,36 Q134,39 128,48 L146,48 Q150,44 146,48 Z"/>
+        <path class="cc" d="M38,42 q-7,0 -7,-7 q0,-6 6,-6 q5,0 5,5 q0,3 -3,3 M70,34 q-8,0 -8,-8 q0,-7 7,-7 q6,0 6,6 q0,4 -4,4 M100,42 q-6,0 -6,-6 q0,-5 5,-5 q4,0 4,4 q0,3 -2,3"/>
+      </svg>
+    </div>
+    <div class="plx" id="pFar">
+      <div class="mtn far"></div>
+      <img class="mtn-tex" src="./assets/vista-far.png" alt="">
+    </div>
+    <div class="plx" id="pSun"><div class="sun" id="sun"></div></div>
+    <div class="plx" id="pBirds">
+      <svg class="bfly" style="top:52px" width="46" height="16" viewBox="0 0 46 16" fill="none" stroke="#3A2E24" stroke-width="2" stroke-linecap="round"><path d="M2,10 Q7,3 12,10 Q17,3 22,10 M26,12 Q30,7 34,12 Q38,7 42,12"/></svg>
+      <svg class="bfly b2" width="34" height="14" viewBox="0 0 46 16" fill="none" stroke="#3A2E24" stroke-width="2" stroke-linecap="round"><path d="M2,10 Q7,3 12,10 Q17,3 22,10 M26,12 Q30,7 34,12 Q38,7 42,12"/></svg>
+    </div>
+    <div class="plx" id="pNear">
+      <div class="mtn near"></div>
+      <img class="mtn-tex" src="./assets/vista-near.png" alt="">
+    </div>
+    <div class="plx lff" id="pFf"></div>
+    <!-- 2 · 木质匾额（vista 内居中） -->
+    <div class="plaque">
+      <div class="sect">问剑峰</div>
+      <div class="title">山门</div>
+    </div>
+    <!-- 竖排时辰（题画小字，chips 下方） -->
+    <div class="vtime" id="vtime"><span class="vt-label" id="scLabel">日入</span><span class="vt-name" id="scName">酉时</span></div>
+    <div class="hint">移动鼠标 · 视差</div>
+    <div class="ctrl" id="ctrl">
+      <button class="chip" data-s="3">卯</button>
+      <button class="chip" data-s="6">午</button>
+      <button class="chip" data-s="9">酉</button>
+      <button class="chip" data-s="0">子</button>
+      <button class="chip" id="flow">驻</button>
+    </div>
+  </div>
+
+  <!-- 3-5 · 此地面板 -->
+  <section class="panel place">
+    <span class="tag">此地</span>
+    <svg class="flnr f1" viewBox="0 0 44 44" fill="none" stroke="#C9A254" stroke-width="2" stroke-linecap="round"><path d="M6,40 Q6,12 34,8 Q27,11 25,19 Q21,13 14,16 Q9,19 12,24 Q15,28 19,25 Q21,22 17,21"/><path d="M28,10 Q38,6 42,13 Q34,15 28,10 Z" fill="#C9A254" stroke="none"/></svg>
+    <svg class="flnr f2" viewBox="0 0 44 44" fill="none" stroke="#C9A254" stroke-width="2" stroke-linecap="round"><path d="M6,40 Q6,12 34,8 Q27,11 25,19 Q21,13 14,16 Q9,19 12,24 Q15,28 19,25 Q21,22 17,21"/><path d="M28,10 Q38,6 42,13 Q34,15 28,10 Z" fill="#C9A254" stroke="none"/></svg>
+    <svg class="flnr f3" viewBox="0 0 44 44" fill="none" stroke="#C9A254" stroke-width="2" stroke-linecap="round"><path d="M6,40 Q6,12 34,8 Q27,11 25,19 Q21,13 14,16 Q9,19 12,24 Q15,28 19,25 Q21,22 17,21"/><path d="M28,10 Q38,6 42,13 Q34,15 28,10 Z" fill="#C9A254" stroke="none"/></svg>
+    <svg class="flnr f4" viewBox="0 0 44 44" fill="none" stroke="#C9A254" stroke-width="2" stroke-linecap="round"><path d="M6,40 Q6,12 34,8 Q27,11 25,19 Q21,13 14,16 Q9,19 12,24 Q15,28 19,25 Q21,22 17,21"/><path d="M28,10 Q38,6 42,13 Q34,15 28,10 Z" fill="#C9A254" stroke="none"/></svg>
+
+    <p class="desc">门关了。值星弟子坐在门后，手里握着剑。他没在玩——<em>他在等什么</em>。牌坊上的「问剑」二字在月光下看着比白天深。山风从石阶上灌下来，呜呜地响。</p>
+
+    <!-- 4 · 行旅图 -->
+    <svg class="map" viewBox="0 0 650 230" role="img" aria-label="行旅图：北通剑阶，西达正阳门">
+      <!-- 石青虚影框（偏移 3px） -->
+      <g opacity=".3" stroke="#27556B" stroke-width="2.5" fill="none" filter="url(#rough)">
+        <rect x="265" y="29" width="126" height="48"/>
+        <rect x="259" y="107" width="138" height="52"/>
+        <rect x="49" y="179" width="138" height="48"/>
+      </g>
+      <!-- 枯笔连线 -->
+      <g stroke="#7A5632" stroke-width="3" fill="none" filter="url(#rough)" opacity=".85" stroke-linecap="round">
+        <path d="M325,107 L325,77"/>
+        <path d="M256,132 Q218,160 184,192"/>
+      </g>
+      <!-- 北向走墨 -->
+      <path class="ink-run" d="M325,107 L325,77"/>
+      <!-- 方向字 -->
+      <text x="340" y="96" font-size="16" fill="#27556B" font-family="'Noto Serif CJK SC','Songti SC',serif">北</text>
+      <text x="212" y="162" font-size="16" fill="#27556B" font-family="'Noto Serif CJK SC','Songti SC',serif">西</text>
+      <!-- 足迹墨点 -->
+      <g fill="#9C8E74">
+        <ellipse cx="238" cy="150" rx="5.5" ry="3.4" transform="rotate(-38 238 150)"/>
+        <ellipse cx="224" cy="162" rx="5.5" ry="3.4" transform="rotate(-34 224 162)"/>
+      </g>
+      <!-- 主框：剑阶（已探访）/ 山门（当前） -->
+      <g filter="url(#rough)">
+        <rect x="262" y="26" width="126" height="48" fill="#F6EFDD" stroke="#7A5632" stroke-width="2.5"/>
+        <rect x="256" y="104" width="138" height="52" fill="#F6EFDD" stroke="#7A5632" stroke-width="2.5"/>
+      </g>
+      <!-- 主框：正阳门（谜面未揭 · 淡墨虚线框） -->
+      <rect x="46" y="176" width="138" height="48" fill="rgba(246,239,221,.45)" stroke="rgba(58,46,36,.4)"
+            stroke-width="2" stroke-dasharray="5 4" filter="url(#rough)"/>
+      <!-- 房名 -->
+      <g font-family="KaiTi,STKaiti,'楷体',serif" font-weight="700" fill="#3A2E24" text-anchor="middle">
+        <text x="325" y="59" font-size="26" letter-spacing="14">剑阶</text>
+        <text x="325" y="140" font-size="26" letter-spacing="14">山门</text>
+        <text x="115" y="208" font-size="26" letter-spacing="8" opacity=".45">正阳门</text>
+      </g>
+      <!-- 卡角版画记号 -->
+      <g stroke="#7A5632" stroke-width="2" fill="none" filter="url(#rough2)" stroke-linecap="round" opacity=".8">
+        <path d="M360,44 H374 M362,38 H372 M365,32 H369"/>
+        <path d="M366,128 V114 M372,128 V114 M378,128 V114 M384,128 V114 M363,113 Q375,106 387,113 M368,109 Q375,105 382,109"/>
+        <g opacity=".45"><path d="M152,202 H168 M155,202 V194 H165 V202 M153,192 H167"/></g>
+      </g>
+      <!-- 当前「在」字朱砂小签 -->
+      <g transform="rotate(-6 394 112)">
+        <rect x="378" y="96" width="33" height="33" rx="3" fill="#B53A28" filter="url(#rough2)"/>
+        <text x="394" y="120" font-size="20" fill="#FBF6E8" text-anchor="middle" font-family="KaiTi,STKaiti,'楷体',serif" font-weight="700">在</text>
+      </g>
+    </svg>
+
+    <!-- 5 · 此地人物：卷轴名帖 -->
+    <div class="people-zone">
+      <div class="people-label">此地人物</div>
+      <div class="scrolls">
+        <div class="scroll">
+          <span class="rod l"></span><span class="rod r"></span>
+          <span class="tassel-anchor"><span class="tassel" data-tassel><i></i><b></b><u></u></span></span>
+          <span class="ts-hint">穗可挽</span>
+          <span class="name">苏小棠</span><span class="seal green">随</span>
+        </div>
+        <div class="scroll">
+          <span class="rod l"></span><span class="rod r"></span>
+          <span class="tassel-anchor"><span class="tassel" data-tassel><i></i><b></b><u></u></span></span>
+          <span class="name">值星弟子</span><span class="seal red">暴</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · NPC 主动短笺卡 -->
+  <section class="npc-note">
+    <span class="nn-dmd"></span>
+    <div class="nn-avatar">棠</div>
+    <div class="nn-body">
+      <div class="nn-head"><span class="nn-name">苏小棠</span><span class="nn-seal">引</span></div>
+      <p class="nn-line">这里别踩松根，会滑。还有——你要是看见什么白白的东西，可别乱塞进嘴里。</p>
+    </div>
+  </section>
+
+  <!-- 7 · 最近日志 -->
+  <section class="panel log">
+    <div class="cap">最 近 日 志</div>
+    <div class="entry sys"><span class="sq"></span>存档已加载。</div>
+    <div class="entry">身世：乐天派。门派：问剑峰。</div>
+    <div class="entry">你<span class="verb">看向</span>苏小棠。</div>
+    <div class="entry note"><span class="pi">批</span>继续沿石阶往北——去剑阶·中段。</div>
+    <div class="entry gain">拾得 蔫了的野花 ×1。</div>
+    <div class="entry">山风从石阶上灌下来，呜呜地响。</div>
+    <div class="entry sys"><span class="sq"></span>「问剑峰·山门」已记入舆图。</div>
+  </section>
+
+  <!-- 8 · 底部导航 -->
+  <nav>
+    <div class="tab on">
+      <svg class="ic" width="26" height="26" viewBox="0 0 34 34" fill="none" stroke="#B53A28" stroke-width="2.4" stroke-linecap="round">
+        <path d="M11,7 h12 M13,3 h8 M10,27 h14"/><path d="M9,9 q8,-3 16,0 q2,8 0,16 q-8,3 -16,0 q-2,-8 0,-16 Z"/>
+        <path d="M17,7 v20 M12.5,8 q-1,9 0,18 M21.5,8 q1,9 0,18" stroke-width="1.6"/><path d="M17,27 v4"/>
+      </svg>
+      <span class="lb">江湖</span>
+      <svg class="brush" viewBox="0 0 62 8"><path d="M3,5 Q20,2 36,4.5 T59,3.5" stroke="#B53A28" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#rough2)"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="ic" width="26" height="26" viewBox="0 0 34 34" fill="none" stroke="#5A4632" stroke-width="2.4" stroke-linecap="round">
+        <path d="M6,28 L24,4 M14.5,10.5 l7,5 M3.5,25.5 l4,3"/><path d="M28,28 L10,4 M19.5,10.5 l-7,5 M30.5,25.5 l-4,3"/>
+      </svg><span class="lb">武学</span>
+    </div>
+    <div class="tab">
+      <svg class="ic" width="26" height="26" viewBox="0 0 34 34" fill="none" stroke="#5A4632" stroke-width="2.4" stroke-linecap="round">
+        <path d="M17,6 q-3,3 -3,6 q-6,2 -6,10 q0,8 9,8 q9,0 9,-8 q0,-8 -6,-10 q0,-3 -3,-6 Z"/><path d="M14,12 q3,2 6,0" stroke-width="1.8"/>
+      </svg><span class="lb">行囊</span>
+    </div>
+    <div class="tab">
+      <svg class="ic" width="26" height="26" viewBox="0 0 34 34" fill="none" stroke="#5A4632" stroke-width="2.4" stroke-linecap="round">
+        <path d="M5,9 l8,-3 l8,3 l8,-3 v19 l-8,3 l-8,-3 l-8,3 Z"/><path d="M13,6 v19 M21,9 v19" stroke-width="1.6"/><path d="M8,14 q4,3 8,1" stroke-width="1.6" stroke-dasharray="2.5 3"/>
+      </svg><span class="lb">舆图</span>
+    </div>
+    <div class="tab">
+      <svg class="ic" width="26" height="26" viewBox="0 0 34 34" fill="none" stroke="#5A4632" stroke-width="2.4" stroke-linecap="round">
+        <circle cx="17" cy="11" r="5.5"/><path d="M6,29 q3,-9 11,-9 q8,0 11,9"/>
+      </svg><span class="lb">人物</span>
+    </div>
+  </nav>
+  <div class="grain"></div>
+</div>
+</div>
+
+<!-- 10 · 改动说明区 -->
+<section class="notes" aria-label="改动说明">
+  <h2>V3 相 对 V2 的 改 动</h2>
+  <ul>
+    <li><b>真素材裁山剪影</b>：远景改用抠图 PNG（vista-far / vista-near），以 mask-image 裁出山形后填矿物色（--cFar / --cNear）随时辰变色，再叠同图 multiply 25% 恢复原水彩笔触。</li>
+    <li><b>五层视差 + 十二时辰</b>：沿用 SHICHEN 色板与 @property 注册色变量，1.6s 平滑过渡；星辰 26 颗随机布点、萤火 7 粒、飞鸟 2 只昼夜消长；chips + 4 秒自动流转 + 驻/行切换；?s=数字&amp;auto=0 可定格。</li>
+    <li><b>行旅图固定视野</b>：固定高 230px、纵向 ≤3 层、单屏三节点（剑阶·北 / 山门·当前 / 正阳门·西），不再随房间数量上下拉伸。</li>
+    <li><b>节点双层框 + 行旅记号</b>：石青虚影框（偏移 3px）叠暖纸墨主框；当前节点右缘探出朱砂「在」字小签；西线旁两枚足迹墨点；北向连线走墨动画（dashoffset 2.4s 缓动循环）。</li>
+    <li><b>谜面未揭淡墨态</b>：正阳门改淡墨虚线框（dasharray 5 4）、记号与房名压淡至 45%、填充色转浅；剑阶为已探访实框态，三态一眼可辨。</li>
+    <li><b>NPC 主动短笺卡</b>：深石青渐变深冷域浮签（金线边 + 米白字），与日志暖纸拉开冷暖层级；描金双圈头像位 + 朱砂圆印「引」。</li>
+    <li><b>名帖卷轴化</b>：NPC 名帖改小卷轴——木轴头探出上下、右轴挂朱砂流苏；印章由方改圆（圆人 · 方地 · 菱行 · 卷物的形状语法）。</li>
+    <li><b>流苏可拖拽</b>：pointerdown 抓住流苏穗随指针摆角，松手进入阻尼单摆（rAF 积分角速度、重力回复、衰减 0.96/帧、摆幅 &lt;0.5° 停稳），touch 兼容；极淡提示「穗可挽」。</li>
+    <li><b>布局纪律</b>：app 固定 100dvh、整页不滚动，仅日志区内部滚动（短窗自动整体缩放适配）；纸纹 feTurbulence 罩层全局覆盖。</li>
+    <li><b>敦煌云纹</b>：写实云改为如意云头 SVG 造型，三朵不同时速 drift，云色随时辰（--cCloud）变化。</li>
+  </ul>
+</section>
+
+<!-- V3.1 修订说明 -->
+<section class="notes" aria-label="V3.1 修订说明">
+  <h2>V3.1 修 订</h2>
+  <ul>
+    <li><b>页头去掉斜松</b>：近山层换新资产 vista-near.png（1080×382，斜松已擦除、山脊居左向右羽化）；mask-size 维持 100% auto 等比铺满（宽度缩放、不变形），mask-position 左对齐底对齐，右端羽化自然没入雾中，无白边无硬边。</li>
+    <li><b>时辰竖排入画</b>：匾额内「酉时·日入」一行移除，改在 vista 右上 chips 下方竖排题字（writing-mode: vertical-rl，「酉时」大字 +「日入」小字，楷体）；颜色随场景切换——夜间米白描影、日间暖墨，JS 联动与 chips/自动流转不变。</li>
+    <li><b>匾额收敛入 vista</b>：总高压至 62px（问剑峰小字 + 山门两行紧凑），取消 -64px 跨层压叠，改为 vista 内部绝对居中；样式改深色木质匾（#2E2620 深木底 + 金楷 + 1px 细金框 + 一层深色外沿 + 轻投影），去掉四层叠环与菱饰。</li>
+    <li><b>手机窗口零滚动条</b>：vista 220→150px、行旅图 230→172px、人物/短笺/面板间距全部压一档；日志区 min-height:0 可缩至极矮（内部滚动），app 恒为 100dvh flex 列；≤600px 宽或 ≤920px 高的窗口自动隐藏演示外壳（标题与说明区），并有 JS 兜底（小窗下 resize 时若 scrollHeight 超出窗口则强制隐藏外壳），540×667 / 540×844 均无窗口纵向滚动条（桌面高窗仍保留标题与说明区）。</li>
+  </ul>
+</section>
+
+<!-- V3.2 修订说明 -->
+<section class="notes" aria-label="V3.2 修订说明">
+  <h2>V3.2 修 订</h2>
+  <ul>
+    <li><b>匾额靠下</b>：深木匾额由 vista 垂直居中改为 vista 内水平居中、垂直靠下（bottom:12px），更贴近真实项目页头比例；本版即为接入真实代码的终稿。</li>
+  </ul>
+</section>
+
+<script>
+/* ═══════════ 十二时辰色板（复用参考实现） ═══════════ */
+const SHICHEN=[
+ {n:'子',l:'夜半',skyT:'#0D1830',skyB:'#182642',far:'#1B2C44',mid:'#152238',near:'#0E1828',cloud:'#26375A',sun:'#E9E5D3',sx:72,sy:20,so:.95,st:1,ff:1,bd:0},
+ {n:'丑',l:'鸡鸣',skyT:'#101C33',skyB:'#1E2C48',far:'#1E3048',mid:'#172540',near:'#101B2E',cloud:'#2A3C60',sun:'#E9E5D3',sx:60,sy:26,so:.85,st:.9,ff:1,bd:0},
+ {n:'寅',l:'平旦',skyT:'#182746',skyB:'#3A4260',far:'#25364F',mid:'#1D2C46',near:'#13203A',cloud:'#3A4A6E',sun:'#DCD8C8',sx:48,sy:34,so:.45,st:.45,ff:.6,bd:0},
+ {n:'卯',l:'日出',skyT:'#4A6B8C',skyB:'#E8B06A',far:'#4E6A80',mid:'#3E5A70',near:'#2E4356',cloud:'#C8A888',sun:'#F2C14E',sx:20,sy:48,so:1,st:0,ff:0,bd:1},
+ {n:'辰',l:'食时',skyT:'#6E97B5',skyB:'#EBD9A8',far:'#6E8CA0',mid:'#58788C',near:'#3E5A6C',cloud:'#E4D8BC',sun:'#F2C14E',sx:30,sy:34,so:1,st:0,ff:0,bd:1},
+ {n:'巳',l:'隅中',skyT:'#8AB2C9',skyB:'#EAE6D2',far:'#84A2AE',mid:'#6A8C9C',near:'#4C6C7C',cloud:'#F0EADA',sun:'#F5D06A',sx:41,sy:16,so:1,st:0,ff:0,bd:1},
+ {n:'午',l:'日中',skyT:'#9CC2D4',skyB:'#F2EEE0',far:'#92AEBA',mid:'#7A9AAA',near:'#587A88',cloud:'#F5F2E8',sun:'#F7DC84',sx:50,sy:10,so:1,st:0,ff:0,bd:1},
+ {n:'未',l:'日昳',skyT:'#8FB6C8',skyB:'#EEE4C8',far:'#88A6B2',mid:'#7092A2',near:'#50727F',cloud:'#F0E6CE',sun:'#F5D06A',sx:59,sy:20,so:1,st:0,ff:0,bd:1},
+ {n:'申',l:'晡时',skyT:'#7AA0B8',skyB:'#E8CD9C',far:'#7693A2',mid:'#608094',near:'#44626F',cloud:'#E4CCA6',sun:'#F0BE58',sx:68,sy:38,so:1,st:0,ff:0,bd:1},
+ {n:'酉',l:'日入',skyT:'#5C5E80',skyB:'#D9784A',far:'#5C6480',mid:'#4A526C',near:'#343C54',cloud:'#C08A78',sun:'#E8903E',sx:76,sy:50,so:1,st:0,ff:0,bd:.7},
+ {n:'戌',l:'黄昏',skyT:'#2E3454',skyB:'#9C5B4E',far:'#343C5C',mid:'#2A324C',near:'#1E2438',cloud:'#6E5470',sun:'#D97B4A',sx:84,sy:66,so:.4,st:.3,ff:.5,bd:0},
+ {n:'亥',l:'人定',skyT:'#14203A',skyB:'#243354',far:'#1C2C46',mid:'#162440',near:'#101B30',cloud:'#304264',sun:'#E9E5D3',sx:66,sy:24,so:.9,st:1,ff:1,bd:0},
+];
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const vista=document.getElementById('vista');
+const sun=document.getElementById('sun');
+const pStars=document.getElementById('pStars');
+const pFf=document.getElementById('pFf');
+const pBirds=document.getElementById('pBirds');
+const scName=document.getElementById('scName');
+const scLabel=document.getElementById('scLabel');
+const vtime=document.getElementById('vtime');
+const chips=[...document.querySelectorAll('.chip[data-s]')];
+let cur=9;
+
+function setShichen(i){
+  const c=SHICHEN[i]; cur=i;
+  const s=vista.style;
+  s.setProperty('--skyT',c.skyT); s.setProperty('--skyB',c.skyB);
+  s.setProperty('--cFar',c.far); s.setProperty('--cMid',c.mid); s.setProperty('--cNear',c.near);
+  s.setProperty('--cCloud',c.cloud); s.setProperty('--cSun',c.sun);
+  sun.style.left=c.sx+'%'; sun.style.top=c.sy+'%'; sun.style.opacity=c.so;
+  pStars.style.opacity=c.st; pFf.style.opacity=c.ff; pBirds.style.opacity=c.bd;
+  scName.textContent=c.n+'时'; scLabel.textContent=c.l;
+  /* 竖排时辰颜色随场景：夜间米白描影，日间暖墨 */
+  if(c.st>0.2){ vtime.style.color='#F0E6CC'; vtime.style.textShadow='0 1px 2px rgba(0,0,0,.5)'; }
+  else{ vtime.style.color='#3A2E24'; vtime.style.textShadow='0 1px 0 rgba(242,233,210,.45)'; }
+  chips.forEach(ch=>ch.classList.toggle('on',+ch.dataset.s===i));
+}
+
+/* 星辰 26 颗 + 萤火 7 粒（随机布点） */
+(function(){
+  const svg=document.getElementById('svgStars'); let h='';
+  for(let k=0;k<26;k++){
+    const x=Math.random()*870,y=Math.random()*150,r=(Math.random()*1.4+0.8).toFixed(1);
+    h+='<circle cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" r="'+r+'" fill="#F0EAD8" opacity="'+(Math.random()*.5+.5).toFixed(2)+'"/>';
+  }
+  svg.innerHTML=h;
+  for(let k=0;k<7;k++){
+    const d=document.createElement('div'); d.className='ff';
+    d.style.left=(60+Math.random()*520)+'px';
+    d.style.top=(92+Math.random()*42)+'px';
+    d.style.animationDelay=(-Math.random()*4).toFixed(1)+'s';
+    pFf.appendChild(d);
+  }
+})();
+
+/* 鼠标视差：各层不同系数，rAF lerp 0.06，mouseleave 归位 */
+if(!REDUCED){
+  const layers=[['pStars',3,2],['pSun',5,3],['pClouds',22,9],['pFar',8,4],['pBirds',15,6],['pNear',20,8],['pFf',24,10]]
+    .map(([id,fx,fy])=>({el:document.getElementById(id),fx,fy}));
+  let tx=0,ty=0,cx=0,cy=0;
+  vista.addEventListener('mousemove',e=>{
+    const r=vista.getBoundingClientRect();
+    tx=(e.clientX-r.left)/r.width*2-1; ty=(e.clientY-r.top)/r.height*2-1;
+  });
+  vista.addEventListener('mouseleave',()=>{tx=0;ty=0;});
+  (function loop(){
+    cx+=(tx-cx)*.06; cy+=(ty-cy)*.06;
+    layers.forEach(o=>{o.el.style.transform='translate3d('+(-cx*o.fx).toFixed(1)+'px,'+(-cy*o.fy).toFixed(1)+'px,0)';});
+    requestAnimationFrame(loop);
+  })();
+}
+
+/* 时辰流转：4 秒一个时辰，驻/行切换 */
+let timer=null;
+function play(){ timer=setInterval(()=>setShichen((cur+1)%12),4000); document.getElementById('flow').textContent='驻'; }
+function pause(){ clearInterval(timer); timer=null; document.getElementById('flow').textContent='行'; }
+document.getElementById('flow').onclick=()=>timer?pause():play();
+chips.forEach(ch=>ch.onclick=()=>setShichen(+ch.dataset.s));
+
+/* URL 参数：?s=9 指定时辰，?auto=0 静止 */
+const q=new URLSearchParams(location.search);
+setShichen(q.has('s')?+q.get('s'):9);
+if(q.get('auto')!=='0') play(); else document.getElementById('flow').textContent='行';
+
+/* ═══════════ 流苏：拖拽 + 阻尼单摆 ═══════════ */
+document.querySelectorAll('[data-tassel]').forEach(el=>{
+  const anchor=el.parentElement;
+  let ang=0, vel=0, drag=false, raf=null;
+  function render(){ el.style.transform='rotate('+ang+'rad)'; }
+  function tick(){
+    if(!drag){
+      vel += -0.0022*Math.sin(ang);  /* 重力回复 */
+      vel *= 0.96;                    /* 衰减 ~0.96/帧 */
+      ang += vel;
+      if(Math.abs(ang)<0.0087 && Math.abs(vel)<0.0008){ /* 摆幅 <0.5° 停稳 */
+        ang=0; vel=0; render(); raf=null; return;
+      }
+    }
+    render(); raf=requestAnimationFrame(tick);
+  }
+  function pointerAngle(e){
+    const r=anchor.getBoundingClientRect();
+    const px=r.left+r.width/2, py=r.top;
+    return Math.atan2(e.clientX-px, e.clientY-py);
+  }
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault(); drag=true;
+    try{ el.setPointerCapture(e.pointerId); }catch(_){}
+    el.classList.add('grab');
+    const na=Math.max(-1.1,Math.min(1.1,pointerAngle(e))); vel=na-ang; ang=na;
+    if(!raf) raf=requestAnimationFrame(tick);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!drag) return;
+    const na=Math.max(-1.1,Math.min(1.1,pointerAngle(e))); vel=na-ang; ang=na;
+  });
+  function release(){ if(!drag) return; drag=false; el.classList.remove('grab'); if(REDUCED){ang=0; vel=0;} }
+  el.addEventListener('pointerup',release);
+  el.addEventListener('pointercancel',release);
+});
+
+/* ═══════════ 零窗口滚动条保障 ═══════════
+   app 本体恰为 100dvh、日志区内部滚动；小窗/矮窗由媒体查询隐藏演示外壳。
+   以下仅在「小窗」场景做兜底：若内容仍把页面撑出窗口，则强制隐藏外壳。 */
+const app=document.getElementById('app');
+function guard(){
+  const small=window.innerWidth<=600||window.innerHeight<=920;
+  document.body.classList.remove('nochrome');
+  if(small && document.documentElement.scrollHeight>window.innerHeight)
+    document.body.classList.add('nochrome');
+}
+window.addEventListener('resize',guard);
+window.addEventListener('load',guard);
+guard();
+</script>
+</body>
+</html>
