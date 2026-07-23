@@ -44,6 +44,9 @@ export class RouteService {
     if (!room) return 'world';
     if (room.spaceLayer) return room.spaceLayer;
     if (room.zoneKind === 'dungeon') return 'dungeon';
+    // Authored top-level zones cannot be reclassified by a child room's back edge.
+    if (room.zoneKind === 'faction_hq') return 'faction';
+    if (room.zoneKind && room.zoneKind !== 'dungeon') return 'world';
 
     const pending = [roomId];
     const visited = new Set();
@@ -137,6 +140,20 @@ export class RouteService {
     });
   }
 
+  /** Routes that belong to the graph currently shown in route-sketch. */
+  getMapRoutes(roomId = this.game.state.location) {
+    const layer = this.getRoomLayer(roomId);
+    return this.getRoutes(roomId).filter(route => this.getRoomLayer(route.target) === layer);
+  }
+
+  /** Doors that cross a parent/child map boundary and therefore belong to 张望. */
+  getLookEntrances(roomId = this.game.state.location) {
+    const layer = this.getRoomLayer(roomId);
+    return this.getRoutes(roomId)
+      .filter(route => this.getRoomLayer(route.target) !== layer)
+      .filter(route => route.visible);
+  }
+
   getRouteAccess(direction, roomId = this.game.state.location) {
     const route = this.getRoutes(roomId).find((item) => item.direction === direction);
     if (!route) return null;
@@ -169,7 +186,14 @@ export class RouteService {
   getPerceptionClues(roomId = this.game.state.location) {
     return this.getRoutes(roomId)
       .filter((route) => route.state === 'sensed')
-      .map((route) => ({ id: route.id, hint: route.hint, revealLabel: route.revealLabel }));
+      .map((route) => ({
+        id: route.id,
+        kind: route.kind,
+        direction: route.direction,
+        target: route.target,
+        hint: route.hint,
+        revealLabel: route.revealLabel
+      }));
   }
 
   revealRoute(routeId) {

@@ -39,6 +39,7 @@ import { FactionService } from './faction_service.js';
 import { TeacherService } from './teacher_service.js';
 // 感知服务层（从 Game 拆出，代理 peek/getRoomPerception/openPerception/closePerception）
 import { PerceptionService } from './perception_service.js';
+import { SceneInteractionService } from './scene_interaction_service.js';
 import { RouteService } from './route_service.js';
 import { WorldContextService } from './world_context.js';
 import { MapService } from './map_service.js';
@@ -118,6 +119,7 @@ export class Game {
     // 移动服务（代理所有移动相关方法）
     this.movement = new MovementService(this);
     this.routes = new RouteService(this);
+    this.sceneInteraction = new SceneInteractionService(this);
     // V1.7 非 UI 服务：舆图数据 / 区域天气 / 瞬时反馈队列
     this.mapService = new MapService(this);
     this.weather = new WeatherService(this);
@@ -179,6 +181,7 @@ export class Game {
       weather: { seed: 1, regions: {} },
       npcMemory: {},
       worldEvents: {},
+      searchEventAttempts: {},
       dialogueProgress: {},
       // 教程/引路状态
       tutorialPhase: null,
@@ -868,7 +871,7 @@ export class Game {
   }
 
   // ============ 移动代理（委托 MovementService）============
-  explore(dir) { return this.movement.explore(dir); }
+  explore(dir, options) { return this.movement.explore(dir, options); }
   dirName(d) { return this.movement.dirName(d); }
   quickTravel(loc) { return this.movement.quickTravel(loc); }
   tutorialAction(action, payload) { return this.tutorial.handleAction(action, payload); }

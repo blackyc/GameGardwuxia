@@ -351,10 +351,7 @@ export class Renderer {
   renderExitBar() {
     const bar = document.getElementById('exit-bar');
     if (!bar) return;
-    const routes = this.game.routes?.getRoutes() || [];
-    const roomLayer = this.game.routes?.getRoomLayer?.() || 'world';
-    const isChildLayer = roomLayer === 'dungeon' || roomLayer === 'interior';
-    const mapRoutes = isChildLayer ? routes : routes.filter((route) => route.kind !== 'dungeon' && route.kind !== 'interior');
+    const mapRoutes = this.game.routes?.getMapRoutes?.() || this.game.routes?.getRoutes() || [];
     const visibleRoutes = mapRoutes.filter((route) => route.visible);
     const sensedRoutes = [];
     const revealedRoutes = visibleRoutes.filter((route) => route.state === 'revealed');
@@ -906,68 +903,6 @@ export class Renderer {
     layer.appendChild(item);
     while (layer.children.length > 3) layer.removeChild(layer.firstChild);
     window.setTimeout(() => item.remove(), 1900);
-  }
-
-  /**
-   * 感知系统（T9.2）—— 渲染感知面板。
-   * 面板是宣纸贴纸感的 in-page 展开区，叠在江湖页上方。
-   * 数据来自 game.getRoomPerception()。
-   * @param {object} data — { title, connections, npcs, searchPoints, props, extras }
-   */
-  renderPerception(data) {
-    const panel = document.getElementById('perception-panel');
-    if (!panel) return;
-    let html = '';
-
-    // Child-space entrances stay in 张望 instead of leaking into the parent map.
-    if (data.connections && data.connections.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 可入之处</div>';
-      data.connections.forEach((c) => {
-        const marker = c.explored ? '→' : '？';
-        const url = c.explored ? '' : ' style="color:var(--ink-soft);opacity:0.6"';
-        html += '<div class="perc-item perc-path" data-action="explore" data-dir="' + c.dir + '">'
-          + '<span class="perc-dir">' + c.dirCn + ' ' + marker + '</span>'
-          + '<span' + url + '>' + this._esc(c.label || c.name) + '</span></div>';
-      });
-      html += '</div>';
-    }
-
-    // 张望只承载空间线索与可观察物，不再复制人物互动或搜索入口。
-    if (data.routeClues && data.routeClues.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 隐处可探</div>';
-      data.routeClues.forEach((clue) => {
-        html += '<div class="perc-item perc-route-clue"><span>' + this._esc(clue.hint || '此处似有异样。') + '</span>'
-          + '<button type="button" class="perc-subbtn" data-perc-action="reveal-route" data-route-id="' + this._esc(clue.id) + '">' + this._esc(clue.revealLabel || '循迹细察') + '</button></div>';
-      });
-      html += '</div>';
-    }
-
-    // 场景道具
-    if (data.props && data.props.length > 0) {
-      html += '<div class="perc-section"><div class="perc-head">> 所观之物</div>';
-      data.props.forEach((p) => {
-        html += '<div class="perc-item perc-prop"><span>' + p.name + '</span> '
-          + '<span style="font-size:11px;color:var(--ink-soft)">— ' + p.desc + '</span></div>';
-      });
-      html += '</div>';
-    }
-
-    // 额外提示
-    if (data.extras && data.extras.length > 0) {
-      html += '<div class="perc-section" style="border-left:3px solid var(--mint);padding-left:8px">';
-      data.extras.forEach((e) => {
-        html += '<div class="perc-extra" style="font-size:12px;color:var(--ink-soft);padding:2px 0">' + e + '</div>';
-      });
-      html += '</div>';
-    }
-
-    if (!html) html = '<div class="perc-empty">张望之下，暂未见隐路或异物。</div>';
-    panel.querySelector('.perception-inner').innerHTML = html;
-    panel.classList.add('open');
-    const trigger = document.querySelector('[data-action="perceive"]');
-    if (trigger) trigger.setAttribute('aria-expanded', 'true');
-    // 滚动到顶
-    panel.scrollTop = 0;
   }
 
   // === 内部工具 ===

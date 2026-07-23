@@ -98,7 +98,7 @@
 
       <!-- 方位通路：东南西北等方位连接，常驻显示 -->
       <div class="diamond-row" aria-label="常用操作">
-        <button class="diamond-badge" data-action="perceive" title="张望隐处与场景细节" aria-controls="perception-panel" aria-expanded="false">
+        <button class="diamond-badge" data-action="perceive" title="张望隐处与场景细节" aria-controls="scene-interaction-modal" aria-expanded="false">
           <span class="diamond-hook"></span>
           <span class="label">张望</span>
           <span class="diamond-tassel"></span>
@@ -124,10 +124,6 @@
         <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--primary" data-action="meditate">入定</button>
         <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--secondary" data-action="pushup">练功</button>
         <button class="action-btn jianghu-action-button jianghu-action-button--compact jianghu-action-button--secondary" data-action="cultivate-menu">返回</button>
-      </div>
-
-      <div class="perception-panel" id="perception-panel">
-        <div class="perception-inner" id="perception-inner"></div>
       </div>
     </main>
 
@@ -330,6 +326,25 @@
   </div>
 </div>
 
+
+<!-- 场景交互画卷：张望(look)与探索(find)共享视觉外壳，业务结算仍各归所属服务。 -->
+<div class="scene-interaction-layer" id="scene-interaction-modal" aria-hidden="true">
+  <section class="scene-interaction-scroll" role="dialog" aria-modal="true" aria-labelledby="scene-interaction-title">
+    <header class="scene-interaction-head">
+      <h2 id="scene-interaction-title">张望</h2>
+      <button type="button" class="scene-interaction-close" data-action="sceneClose" aria-label="收起">×</button>
+    </header>
+    <figure class="scene-interaction-art">
+      <img id="scene-interaction-image" alt="" hidden>
+      <div id="scene-interaction-art-fallback" class="scene-interaction-art-fallback" hidden aria-hidden="true"></div>
+    </figure>
+    <div class="scene-interaction-copy">
+      <p id="scene-interaction-prompt" class="scene-interaction-prompt"></p>
+      <p id="scene-interaction-text" class="scene-interaction-text" hidden></p>
+      <div id="scene-interaction-options" class="scene-interaction-options"></div>
+    </div>
+  </section>
+</div>
 <!-- NPC 主动发话的线性短笺：点击画面推进，末句后自动收起。 -->
 <aside class="dialogue-ribbon" id="dialogue-ribbon" aria-live="polite" hidden>
   <div class="dialogue-ribbon-portrait" id="dialogue-ribbon-portrait" aria-hidden="true">

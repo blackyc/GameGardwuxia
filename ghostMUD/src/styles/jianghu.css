@@ -517,27 +517,6 @@ button.route-destination:active {
   color: #27251f;
 }
 
-.page[data-page="jianghu"] .perception-panel {
-  margin-top: 8px;
-}
-
-.page[data-page="jianghu"] .perception-panel.open {
-  max-height: none;
-}
-
-.page[data-page="jianghu"] .perception-inner {
-  max-height: none;
-  margin: 0;
-  padding: 14px 12px;
-  overflow: visible;
-  background: rgba(243, 239, 220, 0.97);
-  border: 1px solid rgba(55, 58, 55, 0.72);
-  outline: 1px solid rgba(55, 58, 55, 0.24);
-  outline-offset: -4px;
-  border-radius: 2px;
-  box-shadow: none;
-}
-
 /* Zone 3: action console, visually separate from scene prose. */
 .page[data-page="jianghu"] .recent-log {
   position: absolute;
@@ -2440,13 +2419,9 @@ body[data-page="jianghu"] #scene-bg {
 .dialogue-ribbon-text { margin: 5px 0 8px; font: 16px/1.65 'STKaiti', 'KaiTi', serif; }
 @keyframes dialogue-ribbon-rise { from { opacity: 0; transform: translate(-50%, -46%) scale(.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 
-/* 张望与修行是暂态工具：窄屏用底部纸笺，宽屏自然停在右下。 */
-.page[data-page="jianghu"] .perception-panel.open { position: fixed; z-index: 2600; right: 12px; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); left: 12px; max-height: min(52dvh, 430px); margin: 0; overflow: auto; overscroll-behavior: contain; box-shadow: 0 12px 28px rgba(24, 25, 22, .25); }
-.page[data-page="jianghu"] .perception-panel.open .perception-inner { max-height: none; }
 .page[data-page="jianghu"] .cultivate-submenu[style*="flex"] { position: fixed !important; z-index: 3000; top: 50%; right: auto; bottom: auto; left: 50%; width: min(340px, calc(100vw - 36px)); box-sizing: border-box; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 0; padding: 18px 16px; background: rgba(243, 239, 220, .99); border: 1px solid rgba(55, 58, 55, .76); box-shadow: 0 14px 34px rgba(24, 25, 22, .3), inset 0 0 0 2px rgba(255, 253, 233, .64); transform: translate(-50%, -50%); }
 .page[data-page="jianghu"] .cultivate-submenu[style*="flex"] .action-btn { flex: 1 1 120px; min-width: 0; }
 .page[data-page="jianghu"] .cultivate-submenu[style*="flex"] [data-action="cultivate-menu"] { flex-basis: 100%; }
-@media (min-width: 720px) { .page[data-page="jianghu"] .perception-panel.open { left: auto; width: min(390px, 36vw); bottom: 26px; } }
 @media (max-width: 520px) { .dialogue-ribbon { grid-template-columns: 56px minmax(0, 1fr); gap: 9px; padding: 11px; } .dialogue-ribbon-portrait { width: 54px; } .dialogue-ribbon-text { font-size: 15px; line-height: 1.58; } }
 @media (max-width: 420px) { .dialogue-rail-actions { gap: 4px; } .dialogue-rail-action { min-height: 34px; padding-inline: 4px; font-size: 12px; } .dialogue-gift-card { min-height: 48px; font-size: 13px; } }
 
@@ -2783,4 +2758,208 @@ body[data-page="jianghu"] #noise-overlay {
 /* ── 9. reduced-motion：走墨直接成稿 ── */
 @media (prefers-reduced-motion: reduce) {
   .rs-line--inkrun { animation: none; stroke-dashoffset: 0; }
+}
+/* NPC mirror-window contract: one fixed circular frame, local lattice corners,
+ * and a real relationship seal. This late selector intentionally wins over
+ * legacy responsive/card rules. */
+.dialogue-scroll .dialogue-rail > .dialogue-portrait {
+  width: 108px !important;
+  height: 108px !important;
+  min-width: 108px !important;
+  min-height: 108px !important;
+  max-width: 108px !important;
+  max-height: 108px !important;
+  flex: 0 0 108px !important;
+  align-self: flex-start !important;
+  aspect-ratio: auto !important;
+  overflow: visible !important;
+  margin-right: 0 !important;
+  border-radius: 50% !important;
+}
+.dialogue-scroll .dialogue-rail > .dialogue-portrait img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
+  border-radius: 50% !important;
+  transform: none !important;
+}
+.dialogue-scroll .dialogue-rail > .dialogue-portrait .dialogue-portrait-ornament {
+  display: block;
+}
+.dialogue-scroll .dialogue-rail > .dialogue-portrait .dialogue-relation-seal {
+  right: -5px;
+  bottom: 1px;
+}
+
+/* Proactive callout sits on the action row above the fixed log instead of
+ * covering the NPC name chips. Smaller type keeps the callout compact. */
+.dialogue-ribbon {
+  top: var(--dialogue-ribbon-anchor-y, 50%) !important;
+  bottom: auto !important;
+  grid-template-columns: 62px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  max-height: min(34dvh, 230px) !important;
+  padding: 9px 12px !important;
+  transform: translate(-50%, -50%) !important;
+}
+.dialogue-ribbon-portrait { width: 60px !important; font-size: 23.5px !important; }
+.dialogue-ribbon-name { font-size: 12.5px !important; }
+.dialogue-ribbon-text { margin: 4px 0 3px !important; font-size: 14.5px !important; line-height: 1.5 !important; }
+@keyframes dialogue-ribbon-rise {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)) scale(.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@media (max-width: 520px) {
+  .dialogue-scroll .dialogue-rail > .dialogue-portrait {
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    min-height: 84px !important;
+    max-width: 84px !important;
+    max-height: 84px !important;
+    flex-basis: 84px !important;
+  }
+  .dialogue-ribbon {
+    grid-template-columns: 52px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+  }
+  .dialogue-ribbon-portrait { width: 50px !important; }
+  .dialogue-ribbon-name { font-size: 12px !important; }
+  .dialogue-ribbon-text { font-size: 13.5px !important; line-height: 1.48 !important; }
+}
+.dialogue-scroll .dialogue-rail > .dialogue-portrait::before { display: none !important; }
+
+/* AUTHORITY: look/find scene interaction modal */
+.scene-interaction-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2980;
+  display: none;
+  place-items: center;
+  padding: 18px;
+  background: rgba(23, 25, 23, .54);
+  backdrop-filter: blur(1.5px);
+}
+.scene-interaction-layer.active { display: grid; }
+.scene-interaction-scroll {
+  position: relative;
+  top: -2vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 3fr) minmax(118px, 1fr);
+  width: min(620px, calc(100vw - 28px));
+  height: min(76dvh, 640px);
+  overflow: hidden;
+  color: #2c2922;
+  background: linear-gradient(138deg, rgba(241, 235, 215, .99), rgba(224, 216, 190, .99));
+  border: 2px solid #8f4c2e;
+  box-shadow: inset 0 0 0 5px rgba(186, 115, 65, .25), inset 0 0 0 6px rgba(112, 62, 39, .38), 0 18px 42px rgba(14, 15, 13, .36);
+}
+.scene-interaction-head {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 5px 10px 4px 14px;
+  border-bottom: 1px solid rgba(101, 66, 42, .35);
+}
+.scene-interaction-head h2 {
+  flex: 1;
+  margin: 0;
+  color: #713a2b;
+  font: 700 17px/1.2 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
+  letter-spacing: .18em;
+}
+.scene-interaction-close {
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  color: #554a3a;
+  background: transparent;
+  border: 0;
+  font: 400 24px/1 serif;
+}
+.scene-interaction-art {
+  position: relative;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #d9d2bd;
+  border-bottom: 1px solid rgba(101, 66, 42, .36);
+}
+.scene-interaction-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(.78) contrast(.96);
+}
+.scene-interaction-art::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 26%;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(transparent, rgba(234, 226, 203, .84));
+}
+.scene-interaction-art-fallback {
+  width: 100%;
+  height: 100%;
+  background: url('/ui/jianghu-mobile-bg.jpg') center 42% / cover no-repeat;
+  filter: saturate(.65) contrast(.9);
+}
+.scene-interaction-copy {
+  min-height: 0;
+  padding: 10px 14px 13px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 35px, rgba(137, 91, 55, .07) 35px 36px),
+    rgba(241, 235, 215, .96);
+}
+.scene-interaction-prompt,
+.scene-interaction-text {
+  margin: 0 0 8px;
+  color: #3d382f;
+  font: 700 15px/1.55 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
+  letter-spacing: .08em;
+}
+.scene-interaction-text { font-weight: 500; letter-spacing: .03em; }
+.scene-interaction-options { display: grid; gap: 7px; }
+.scene-interaction-options[hidden] { display: none; }
+.scene-interaction-option {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 11px;
+  color: #29261f;
+  text-align: left;
+  background: rgba(231, 211, 132, .84);
+  border: 1px solid rgba(58, 53, 43, .78);
+  box-shadow: inset 0 0 0 2px rgba(255, 248, 209, .45);
+  font: 700 14px/1.3 'STKaiti', 'KaiTi', serif;
+}
+.scene-interaction-option small {
+  color: #726a5c;
+  font: 400 12px/1.35 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
+}
+.scene-interaction-option:disabled {
+  color: #8a867b;
+  background: rgba(194, 190, 176, .58);
+}
+.scene-interaction-option:not(:disabled):active { transform: translateY(1px); }
+
+@media (max-width: 520px) {
+  .scene-interaction-layer { padding: 12px; }
+  .scene-interaction-scroll {
+    top: -3vh;
+    width: min(100%, 520px);
+    height: min(72dvh, 570px);
+    grid-template-rows: auto minmax(0, 3fr) minmax(112px, 1fr);
+  }
+  .scene-interaction-head h2 { font-size: 15px; }
+  .scene-interaction-copy { padding: 9px 11px 11px; }
 }

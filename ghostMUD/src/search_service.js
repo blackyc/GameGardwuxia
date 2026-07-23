@@ -10,6 +10,8 @@
  * - Game 保留一行代理方法
  */
 
+import { isEligibleForContext } from './world_context.js';
+
 export class SearchService {
   /** @param {import('./game.js').Game} game */
   constructor(game) {
@@ -21,83 +23,99 @@ export class SearchService {
    */
   searchArea() {
     const g = this.game;
-    if (g.state.combat || g.state.npcEncounter) { g.addLog('当前无法搜寻！', 'system'); return; }
-    const room = g.state.location;
-    const policy = g.world?.getZonePolicy(room);
-    if (policy && !policy.allowSearch) {
-      g.addLog('此处并不适合贸然搜索。', 'system');
+    if (g.state.combat || g.state.npcEncounter) {
+      g.addLog('当前无法搜寻！', 'system');
       return;
     }
-    const special = g.world?.resolveSpecialSearch(room);
+
+    const roomId = g.state.location;
+    const context = g.world?.get(roomId);
+    const policy = context?.policy || g.world?.getZonePolicy(roomId);
+    if (policy && !policy.allowSearch) {
+      const text = '此处并不适合贸然搜索。';
+      g.addLog(text, 'system');
+      this._presentFind({ title: '探索', text });
+      return;
+    }
+
+    const special = g.world?.resolveSpecialSearch(roomId);
     if (special) {
       g.world.applySearchEvent(special);
       const itemName = special.item?.name || '';
-      g.addLog(special.foundText || special.desc || ('你在此处发现了' + itemName + '。'), 'item');
+      const text = special.foundText || special.desc || ('你在此处发现了' + itemName + '。');
+      g.addLog(text, 'item');
       g.showMomentFeedback?.(itemName ? '发现 · ' + itemName : '发现异物', 'discovery');
       g.checkQuestProgress('find', special.id || null);
       g.renderer.updateUI(['location', 'bag', 'quest']);
       g.markDirty();
-      return;
-    }
-    const data = g.ROOM_SEARCH[room];
-    if (!data) { g.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system'); return; }
-
-    if (Math.random() > data.searchChance) {
-      g.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system');
+      this._presentFind({
+        ...special,
+        title: special.title || itemName || '探索所得',
+        text
+      });
       return;
     }
 
-    const pool = data.results.filter(r => {
-      if (!(r.chance < 1.0 || r.type === 'nothing')) return false;
+    const data = g.ROOM_SEARCH[roomId];
+    if (!data || Math.random() > data.searchChance) {
+      this._presentNoResult();
+      return;
+    }
+
+    const pool = data.results.filter(result => {
+      if (!(result.chance < 1.0 || result.type === 'nothing')) return false;
+      if (context && !isEligibleForContext(result, context)) return false;
       // 门派驻地只允许策划显式配置的发现；不从全局随机表偷渡掉落。
-      return !policy?.authoredNpcOnly || r.authored === true || r.type === 'nothing';
+      return !policy?.authoredNpcOnly || result.authored === true || result.type === 'nothing';
     });
     if (pool.length === 0) {
-      g.addLog('🔍 四下搜寻了一番，未发现特别之物。', 'system');
+      this._presentNoResult();
       return;
     }
-    const totalWeight = pool.reduce((sum, r) => sum + (r.chance || 1), 0);
-    let rand = Math.random() * totalWeight;
-    let picked = pool[pool.length - 1];
 
-    for (const r of pool) {
-      rand -= (r.chance || 1);
-      if (rand <= 0) { picked = r; break; }
+    const totalWeight = pool.reduce((sum, result) => sum + (result.chance || 1), 0);
+    let randomWeight = Math.random() * totalWeight;
+    let picked = pool[pool.length - 1];
+    for (const result of pool) {
+      randomWeight -= (result.chance || 1);
+      if (randomWeight <= 0) {
+        picked = result;
+        break;
+      }
     }
 
-    const s = g.state;
-
+    const state = g.state;
     if (picked.type === 'money') {
       const [min, max] = picked.amount.split('-').map(Number);
-      const amt = min + Math.floor(Math.random() * (max - min + 1));
-      g.addMoney(amt);
-      g.addLog('💰 ' + picked.desc + '（+' + amt + ' ' + g.getMoneyName() + '）', 'item');
-      g.showMomentFeedback?.('获得 ' + amt + ' ' + g.getMoneyName(), 'reward');
+      const amount = min + Math.floor(Math.random() * (max - min + 1));
+      g.addMoney(amount);
+      g.addLog('💰 ' + picked.desc + '（+' + amount + ' ' + g.getMoneyName() + '）', 'item');
+      g.showMomentFeedback?.('获得 ' + amount + ' ' + g.getMoneyName(), 'reward');
     } else if (picked.type === 'spirit') {
       const [min, max] = picked.amount.split('-').map(Number);
-      const amt = min + Math.floor(Math.random() * (max - min + 1));
-      g.addSpiritStones(amt);
-      const spiritName = (s.path === 'ling' || s.knowsSpiritStones) ? '灵石' : '不知名的石头';
-      g.addLog('?? ' + picked.desc + '（+' + amt + ' ' + spiritName + '）', 'item');
-      g.showMomentFeedback?.('获得 ' + amt + ' ' + spiritName, 'reward');
+      const amount = min + Math.floor(Math.random() * (max - min + 1));
+      g.addSpiritStones(amount);
+      const spiritName = (state.path === 'ling' || state.knowsSpiritStones) ? '灵石' : '不知名的石头';
+      g.addLog('💠 ' + picked.desc + '（+' + amount + ' ' + spiritName + '）', 'item');
+      g.showMomentFeedback?.('获得 ' + amount + ' ' + spiritName, 'reward');
     } else if (picked.type === 'daoxin') {
-      s.daoxin = Math.min(s.maxDaoXin, s.daoxin + (picked.amount || 10));
+      state.daoxin = Math.min(state.maxDaoXin, state.daoxin + (picked.amount || 10));
       g.addLog('🧘 ' + picked.desc, 'info');
       g.showMomentFeedback?.('道心 +' + (picked.amount || 10), 'reward');
     } else if (picked.type === 'hp') {
-      s.hp = Math.min(s.maxHp, s.hp + (picked.amount || 15));
+      state.hp = Math.min(state.maxHp, state.hp + (picked.amount || 15));
       g.addLog('💊 ' + picked.desc, 'item');
       g.showMomentFeedback?.('气血 +' + (picked.amount || 15), 'reward');
     } else if (picked.type === 'cultivation') {
-      s.cultivation += (picked.amount || 10);
+      state.cultivation += (picked.amount || 10);
       g.addLog('✨ ' + picked.desc, 'info');
       g.showMomentFeedback?.('修为 +' + (picked.amount || 10), 'reward');
     } else if (picked.type === 'find_type') {
-      const it = this.pickItemByType(picked.itemType);
-      if (it) {
-        s.inventory.push({ ...it });
-        g.addLog('📦 ' + picked.desc.replace('了点东西', '：<b>' + it.name + '</b>').replace('了', '了：<b>' + it.name + '</b>'), 'item');
-        g.showMomentFeedback?.('获得 · ' + it.name, 'reward');
+      const item = this.pickItemByType(picked.itemType);
+      if (item) {
+        state.inventory.push({ ...item });
+        g.addLog('📦 ' + picked.desc + '：<b>' + item.name + '</b>', 'item');
+        g.showMomentFeedback?.('获得 · ' + item.name, 'reward');
       } else {
         g.addLog('🔍 ' + picked.desc, 'system');
       }
@@ -105,8 +123,24 @@ export class SearchService {
       g.addLog('🔍 ' + picked.desc, 'system');
     }
 
-    g.checkQuestProgress('find', null);
+    g.checkQuestProgress('find', picked.id || null);
     g.renderer.updateUI(['char', 'status', 'progress', 'bag', 'quest']);
+    g.markDirty();
+    this._presentFind({
+      ...picked,
+      title: picked.title || (picked.type === 'nothing' ? '探索' : '探索所得'),
+      text: picked.desc || '你寻了一阵，未见所得。'
+    });
+  }
+
+  _presentNoResult() {
+    const text = '你寻了一阵，未见所得。';
+    this.game.addLog('🔍 ' + text, 'system');
+    this._presentFind({ title: '探索', text });
+  }
+
+  _presentFind(result) {
+    return this.game.sceneInteraction?.openFind(result);
   }
 
   /**

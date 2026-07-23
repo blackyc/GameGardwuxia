@@ -74,3 +74,13 @@ as a bitmap asset above.
 7. For an opaque full-frame illustration, export **JPG at 2x** instead. The
    implementation task may convert approved raster assets to WebP after visual
    verification; the source PNG/JPG should remain available in Figma.
+
+## Interaction authority
+
+Before editing `张望`, `探索`, route discovery, child-room entry, search events, or related quest triggers, read:
+
+```text
+aidoc/LOOK_FIND_INTERACTION_AUTHORITY_V1.md
+```
+
+That file is the source of truth for these interactions and overrides legacy inline-perception behavior. Migration coverage is tracked in `aidoc/LOOK_FIND_MIGRATION_REPORT_V1.md`.

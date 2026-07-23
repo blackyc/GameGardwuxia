@@ -17,7 +17,7 @@ export class InputManager {
       this._bindTabButtons();
       this._bindCommandInput();
       this._bindModalButtons();
-      this._bindPerceptionPanel();
+      this._bindSceneInteraction();
       this._bindDocumentFocus();
       console.log('[Input] All event handlers initialized');
     } catch (e) {
@@ -31,7 +31,6 @@ export class InputManager {
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
       // 感知面板有自己的委托器，通用处理器不再重复消费。
-      if (btn.closest('#perception-panel')) return;
       const action = btn.dataset.action;
       switch (action) {
         case 'explore':
@@ -55,6 +54,15 @@ export class InputManager {
         case 'searchArea':
           this.game.closePerception();
           this.game.searchArea();
+          break;
+        case 'sceneClose':
+          this.game.sceneInteraction?.close();
+          break;
+        case 'sceneEnter':
+          this.game.sceneInteraction?.enter(btn.dataset.dir);
+          break;
+        case 'sceneReveal':
+          this.game.sceneInteraction?.reveal(btn.dataset.routeId);
           break;
         case 'talk':
           this.game.talk();
@@ -257,32 +265,11 @@ export class InputManager {
     });
   }
 
-  /** 感知面板事件委托（面板内容由 renderPerception 动态生成） */
-  _bindPerceptionPanel() {
-    const panel = document.getElementById('perception-panel');
-    if (!panel) return;
-    panel.addEventListener('click', (e) => {
-      const target = e.target.closest('[data-perc-action], .perc-path');
-      if (!target) return;
-
-      const revealRoute = target.closest('[data-perc-action="reveal-route"]');
-      if (revealRoute) {
-        this.game.revealPerceptionRoute(revealRoute.dataset.routeId);
-        return;
-      }
-
-      // 通路点击（探索）
-      if (target.closest('.perc-path')) {
-        const pathEl = target.closest('.perc-path');
-        const dir = pathEl.dataset.dir;
-        if (dir) {
-          this.game.closePerception();
-          // 微小延迟让面板关闭动效触发后再移动
-          setTimeout(() => this.game.explore(dir), 200);
-        }
-        return;
-      }
-
+  _bindSceneInteraction() {
+    const layer = document.getElementById('scene-interaction-modal');
+    if (!layer) return;
+    layer.addEventListener('click', event => {
+      if (event.target === layer) this.game.sceneInteraction?.close();
     });
   }
 

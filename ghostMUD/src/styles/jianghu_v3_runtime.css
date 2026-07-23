@@ -857,3 +857,13 @@ body[data-page="jianghu"] #input-wrap {
     transition: none !important;
   }
 }
+/* Final plaque text guard: legacy LocationBanner ellipsis must never truncate
+ * short room names inside the material plaque. */
+.page[data-page="jianghu"] .location-banner#vista #location-name {
+  width: 100% !important;
+  max-width: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  letter-spacing: 6px !important;
+  text-indent: 6px !important;
+}

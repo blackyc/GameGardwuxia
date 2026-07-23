@@ -3,9 +3,9 @@
  *
  * 从 game.js 拆出的感知相关方法：
  * - peek：快速窥探当前房间（文本输出）
- * - getRoomPerception：返回交互全景对象（由 renderer.renderPerception 渲染）
- * - openPerception：打开感知面板
- * - closePerception：关闭感知面板
+ * - getRoomPerception：保留旧数据查询兼容，不再直接渲染 UI
+ * - openPerception：代理 SceneInteractionService.openLook
+ * - closePerception：关闭场景交互浮层
  *
  * 设计原则：
  * - PerceptionService 持有 game 引用，通过 game.state / game.renderer / game.addLog() 访问宿主
@@ -197,47 +197,16 @@ export class PerceptionService {
   }
 
   openPerception() {
-    const g = this.game;
-    if (g.state.combat || g.state.npcEncounter) {
-      g.addLog('当前无法张望！', 'combat');
-      return;
-    }
-    const panel = document.getElementById('perception-panel');
-    if (panel?.classList.contains('open')) {
-      this.closePerception();
-      return { open: false };
-    }
-    const cultivate = document.getElementById('cultivate-submenu');
-    if (cultivate) cultivate.style.display = 'none';
-    const sensed = g.routes?.senseCurrentRoom() || [];
-    if (sensed.length > 0) {
-      sensed.forEach((route) => g.addLog(route.discovery.hint, 'event'));
-      g.showMomentFeedback?.('望见异处', 'discovery');
-      g.renderer.updateLocation();
-    }
-    const data = this.getRoomPerception();
-    g.renderer.renderPerception(data);
-    return { open: true };
+    return this.game.sceneInteraction?.openLook();
   }
 
   revealRoute(routeId) {
-    const g = this.game;
-    const result = g.routes?.revealRoute(routeId) || { ok: false, message: '此处没有可循的痕迹。' };
-    g.addLog(result.message, result.ok ? 'special' : 'system');
-    if (result.ok) {
-      g.showMomentFeedback?.('发现 · ' + (result.route?.label || '隐路'), 'discovery');
-      g.renderer.updateLocation();
-    }
-    g.renderer.renderPerception(this.getRoomPerception());
-    return result;
+    return this.game.sceneInteraction?.reveal(routeId);
   }
 
   /** 关闭感知面板 */
   closePerception() {
-    const panel = document.getElementById('perception-panel');
-    if (panel) panel.classList.remove('open');
-    const trigger = document.querySelector('[data-action="perceive"]');
-    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    this.game.sceneInteraction?.close();
   }
 }
 

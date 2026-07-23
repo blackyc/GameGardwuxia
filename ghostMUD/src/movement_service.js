@@ -25,7 +25,7 @@ export class MovementService {
    * 方向移动核心逻辑
    * @param {string} dir - 方向：'north'|'south'|'east'|'west'|'up'|'down'|'in'|'out' 或中文
    */
-  explore(dir) {
+  explore(dir, options = {}) {
     const g = this.game;
     if (g.state.combat || g.state.npcEncounter) { g.addLog('当前无法移动！请先结束当前互动。', 'combat'); return; }
     if (g.state.isCultivating) { g.addLog('你正在修炼，无法移动。输入「修炼」结束再行。', 'system'); return; }
@@ -46,6 +46,12 @@ export class MovementService {
     const cnDir = DIR_CN[dir] || dir;
     const connectionDir = loc.connections?.[cnDir] ? cnDir : dir;
     const target = loc.connections?.[connectionDir];
+    const currentLayer = g.routes?.getRoomLayer?.(s.location) || 'world';
+    const targetLayer = target ? (g.routes?.getRoomLayer?.(target) || currentLayer) : currentLayer;
+    if (target && currentLayer !== targetLayer && options.viaLook !== true) {
+      g.addLog('\u6b64\u5904\u95e8\u6237\u987b\u5148\u7ecf\u5f20\u671b\u5bfb\u5165\u3002', 'system');
+      return;
+    }
     if (!target) { g.addLog('前方的路不见了。也许从来就没有过。', 'system'); return; }
     if (!g.LOCATIONS[target]) { g.addLog('那个地方……你记不起是哪里了。明明刚刚还记得。', 'system'); return; }
     const access = g.routes?.getRouteAccess(connectionDir) || getEntryAccess(g, target);
@@ -152,6 +158,12 @@ export class MovementService {
       return;
     }
     if (!s.explored.includes(loc)) return;
+    const currentLayer = g.routes?.getRoomLayer?.(s.location) || 'world';
+    const targetLayer = g.routes?.getRoomLayer?.(loc) || currentLayer;
+    if (currentLayer !== targetLayer) {
+      g.addLog('\u8de8\u5c42\u95e8\u6237\u987b\u4eb2\u81ea\u5f20\u671b\u5bfb\u5165\u3002', 'system');
+      return;
+    }
     const access = getEntryAccess(g, loc);
     if (!access.allowed) {
       g.addLog(access.message, 'system');

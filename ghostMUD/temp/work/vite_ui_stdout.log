@@ -3,6 +3,10 @@
 > vite --host 127.0.0.1 --port 5198
 
 
-  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m205[22m[2m[0m ms[22m
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m177[22m[2m[0m ms[22m
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5198[22m/[39m
+[2m上午2:03:41[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/jianghu.css?direct[22m
+[2m上午2:27:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/jianghu.css?direct, /src/styles/jianghu.css[22m
+[2m上午2:41:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/jianghu.css?direct, /src/styles/jianghu.css[22m
+[2m上午2:41:56[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/npc_service.js[22m

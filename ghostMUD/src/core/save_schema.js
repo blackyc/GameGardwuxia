@@ -67,6 +67,7 @@ export const SAVE_SCHEMA = {
   questProgress:      { type: 'object',  default: {},          nullable: false },
   npcMemory:          { type: 'object',  default: {},          nullable: false },
   worldEvents:        { type: 'object',  default: {},          nullable: false },
+  searchEventAttempts:{ type: 'object',  default: {},          nullable: false },
   dialogueProgress:   { type: 'object',  default: {},          nullable: false },
 
   // ═══ 舆图路标 / 区域天气（V1.7 服务层）═══

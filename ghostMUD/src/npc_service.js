@@ -392,6 +392,11 @@ export class NpcService {
     this.ribbon = { ...payload, text };
     const ribbon = document.getElementById('dialogue-ribbon');
     if (!ribbon) return false;
+    const actionRow = document.querySelector('.page[data-page=jianghu] .diamond-row');
+    if (actionRow) {
+      const rect = actionRow.getBoundingClientRect();
+      ribbon.style.setProperty('--dialogue-ribbon-anchor-y', Math.round(rect.top + rect.height / 2) + 'px');
+    }
     const name = payload.speaker || payload.npc?.title || payload.npc?.name || '心声';
     document.getElementById('dialogue-ribbon-name').textContent = name;
     document.getElementById('dialogue-ribbon-text').textContent = text;
