@@ -4,6 +4,12 @@ function firstText(...values) {
   return values.find(value => typeof value === 'string' && value.trim()) || '';
 }
 
+function firstArt(game, ...values) {
+  const candidate = firstText(...values);
+  if (!candidate) return '';
+  return game.narrative?.getAsset(candidate)?.src || candidate;
+}
+
 /**
  * Owns the modal presentation shared by 张望 (look) and 探索 (find).
  * World mutation remains in RouteService/SearchService; this class only
@@ -29,7 +35,7 @@ export class SceneInteractionService {
     const model = this._lookModel();
     if (!model.hasAuthoredContent) {
       this.close();
-      g.showMomentFeedback?.('未有特别之处', 'muted');
+      g.showMomentFeedback?.('没有什么特别之处', 'muted');
       return { open: false, empty: true };
     }
 
@@ -38,20 +44,33 @@ export class SceneInteractionService {
   }
 
   openFind(result = {}) {
+    if (!result || result.empty === true || result.type === 'nothing') {
+      this.close();
+      this.game.showMomentFeedback?.('你什么也没发现', 'muted');
+      return { open: false, empty: true };
+    }
+
     const room = this.game.LOCATIONS?.[this.game.state.location] || {};
-    const illustration = firstText(
+    const narrativeEvent = this.game.narrative?.resolveEvent(result);
+    const eventContent = narrativeEvent?.content || {};
+    const illustration = firstArt(
+      this.game,
+      eventContent.assets?.illustration,
+      result.artId,
       result.illustration,
       result.art,
       result.image,
+      room.findArtId,
+      room.searchArtId,
       room.findIllustration,
       room.searchIllustration,
       room.sceneIllustration
     );
     const model = {
       mode: 'find',
-      title: result.title || '探索所得',
+      title: eventContent.title || result.title || '探索所得',
       prompt: '',
-      text: result.text || '你寻了一阵，未见所得。',
+      text: eventContent.description || result.text || result.desc || '你寻了一阵，未见所得。',
       illustration: illustration || FALLBACK_SCENE_ART,
       illustrationAlt: result.illustrationAlt || result.title || '探索所见',
       options: []
@@ -64,6 +83,11 @@ export class SceneInteractionService {
     if (!direction) return;
     this.close();
     window.setTimeout(() => this.game.explore(direction, { viaLook: true }), 120);
+  }
+
+  blocked(message) {
+    this.game.showMomentFeedback?.(message || '此处暂不可入。', 'muted');
+    return { open: true, blocked: true };
   }
 
   reveal(routeId) {
@@ -93,7 +117,11 @@ export class SceneInteractionService {
     const room = g.LOCATIONS?.[g.state.location] || {};
     const entrances = g.routes?.getLookEntrances?.() || [];
     const clues = g.routes?.getPerceptionClues?.() || [];
-    const illustration = firstText(
+    const illustration = firstArt(
+      g,
+      room.lookArtId,
+      room.sceneArtId,
+      room.artId,
       room.lookIllustration,
       room.sceneIllustration,
       room.illustration,
@@ -107,7 +135,7 @@ export class SceneInteractionService {
         id: route.id,
         direction: route.direction,
         label: route.label,
-        disabled: !route.clickable,
+        locked: !route.clickable,
         reason: route.blockedReason || ''
       });
     });
@@ -165,13 +193,14 @@ export class SceneInteractionService {
     if (fallback) fallback.hidden = Boolean(model.illustration);
     if (options) {
       options.innerHTML = model.options.map(option => {
-        const disabled = option.disabled ? ' disabled' : '';
         const attrs = option.action === 'reveal'
           ? `data-action="sceneReveal" data-route-id="${this._esc(option.id)}"`
-          : `data-action="sceneEnter" data-dir="${this._esc(option.direction)}"`;
+          : (option.locked
+              ? `data-action="sceneLocked" data-message="${this._esc(option.reason || '')}" aria-disabled="true"`
+              : `data-action="sceneEnter" data-dir="${this._esc(option.direction)}"`);
         const hint = option.hint ? `<small>${this._esc(option.hint)}</small>` : '';
-        const reason = option.disabled && option.reason ? `<small>${this._esc(option.reason)}</small>` : '';
-        return `<button type="button" class="scene-interaction-option" ${attrs}${disabled}><span>${this._esc(option.label)}</span>${hint}${reason}</button>`;
+        const stateClass = option.locked ? ' is-locked' : '';
+        return `<button type="button" class="scene-interaction-option${stateClass}" ${attrs}><span>${this._esc(option.label)}</span>${hint}</button>`;
       }).join('');
       options.hidden = model.options.length === 0;
     }

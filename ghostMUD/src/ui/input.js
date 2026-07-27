@@ -61,6 +61,9 @@ export class InputManager {
         case 'sceneEnter':
           this.game.sceneInteraction?.enter(btn.dataset.dir);
           break;
+        case 'sceneLocked':
+          this.game.sceneInteraction?.blocked(btn.dataset.message);
+          break;
         case 'sceneReveal':
           this.game.sceneInteraction?.reveal(btn.dataset.routeId);
           break;

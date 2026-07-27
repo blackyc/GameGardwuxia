@@ -8,7 +8,7 @@
  * 由运行时重新初始化。
  */
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 /**
  * SAVE_SCHEMA — 每个字段定义：
@@ -69,6 +69,11 @@ export const SAVE_SCHEMA = {
   worldEvents:        { type: 'object',  default: {},          nullable: false },
   searchEventAttempts:{ type: 'object',  default: {},          nullable: false },
   dialogueProgress:   { type: 'object',  default: {},          nullable: false },
+  narrativeFlags:    { type: 'object',  default: {},          nullable: false },
+  narrativeCommandLedger: { type: 'object', default: {},      nullable: false },
+  storyArc:           { type: 'string',  default: null,        nullable: true  },
+  storyChapter:       { type: 'string',  default: null,        nullable: true  },
+  storyPhase:         { type: 'string',  default: null,        nullable: true  },
 
   // ═══ 舆图路标 / 区域天气（V1.7 服务层）═══
   mapWaypoint:        { type: 'string',  default: null,        nullable: true  },

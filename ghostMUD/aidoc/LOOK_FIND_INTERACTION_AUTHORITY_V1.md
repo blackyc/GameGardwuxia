@@ -26,7 +26,8 @@
 1. 上方约 3/4：当前 room 立绘。
 2. 下方：固定引导文案“你观此处有”。
 3. 引导文案下：当前房间可见的跨地图门户选项。
-4. 点击门户后关闭画卷并执行跨层移动。
+4. 点击可进入的门户后关闭画卷并执行跨层移动。
+5. 点击锁定门户时，以无边框浮字显示该 room 的 `lock_message`；张望画卷保持打开，允许玩家继续尝试其他门户。
 
 进入子地图后必须一次性刷新顶部房间木匾、房间描述、在场 NPC、route-sketch 数据源与当前空间层级。子地图 route-sketch 只显示子地图内部连接，不显示进入前的主地图连接；返回主地图同理。视觉上是“换了一张地图”，不是把子房间节点追加在主地图旁边。
 
@@ -35,7 +36,7 @@
 room 没有子地图门户，也没有专属立绘时，不打开空画卷。在屏幕中部略偏上显示无边框浮字：
 
 ```text
-未有特别之处
+没有什么特别之处
 ```
 
 浮字不得写入最近日志，不要求玩家关闭。
@@ -84,24 +85,32 @@ room 没有子地图门户，也没有专属立绘时，不打开空画卷。在
 
 ```js
 {
-  sceneIllustration: '/ui/rooms/wenjianfeng-dorm-court.webp',
-  connections: { 内: '问剑峰·弟子房' },
+  sceneIllustration: '/ui/rooms/wenjianfeng-dorm-east.webp',
+  connections: {
+    入一: '问剑峰·弟子房',
+    入二: '问剑峰·苏小棠房'
+  },
   routeSketch: {
-    内: {
-      id: 'wjf_dorm_to_room',
-      label: '你的房间',
+    入一: {
+      id: 'wjf_dorm_east_to_player_room',
+      label: '我的住处',
       kind: 'interior',
-      layout: { anchor: 'DEEP', lane: 0 },
-      discovery: {
-        hint: '门后似有一间静室。',
-        revealLabel: '推门细看',
-        revealMessage: '你认出这是分给自己的房间。',
-        hintPrereq: {}
-      }
+      layout: { anchor: 'DEEP', lane: 0 }
+    },
+    入二: {
+      id: 'wjf_dorm_east_to_xiaotang_room',
+      label: '苏小棠的住处',
+      kind: 'interior',
+      layout: { anchor: 'DEEP', lane: 1 }
     }
   }
 }
-```
+
+// 目标 room 可声明永久或阶段性锁定反馈：
+{
+  locked: true,
+  lock_message: '虽然苏小棠是你邻居，但你也不能随便进去，这不礼貌。'
+}```
 
 `kind: 'interior' | 'dungeon'` 表示跨地图边界；`world | faction | maze` 表示同层路线。复杂区域应优先给 room 显式设置 `spaceLayer`，不要长期依赖运行时反向推断。
 
@@ -130,7 +139,7 @@ room 没有子地图门户，也没有专属立绘时，不打开空画卷。在
 | 层 | 权威职责 | 当前接口 |
 | --- | --- | --- |
 | `RouteService` | 空间层、同层路线、跨层门户、发现状态 | `getMapRoutes()`、`getLookEntrances()`、`senseCurrentRoom()`、`revealRoute()` |
-| `SceneInteractionService` | 张望/探索共享浮层与门户点击编排 | `openLook()`、`openFind()`、`enter()`、`reveal()`、`close()` |
+| `SceneInteractionService` | 张望/探索共享浮层与门户点击编排 | `openLook()`、`openFind()`、`enter()`、`blocked()`、`reveal()`、`close()` |
 | `SearchService` | 探索抽取、奖励、任务推进 | `searchArea()` |
 | `WorldContextService` | 地域/时辰/人物规模过滤、唯一事件和保底 | `get()`、`resolveSpecialSearch()`、`applySearchEvent()` |
 | `MovementService` | 实际移动与跨层门禁 | `explore(dir, { viaLook })`、`quickTravel()` |
@@ -148,8 +157,10 @@ room 没有子地图门户，也没有专属立绘时，不打开空画卷。在
 
 ## 7. 验收标准
 
-- 普通无内容 room 张望只出现“未有特别之处”。
+- 普通无内容 room 张望只出现临时浮字“没有什么特别之处”，不打开张望窗口。
+- 探索未触发任何事件时只出现临时浮字“你什么也没发现”，不写入最近日志，也不打开探索窗口。
 - 有子地图入口的 room 张望显示画卷与入口，route-sketch 不显示该入口。
+- 点击锁定入口只显示 `lock_message` 浮字，张望画卷保持打开且不写最近日志。
 - 进入子地图后木匾、描述、NPC 与路线图同步切换。
 - 直接输入方向或快速旅行不能跨层。
 - 同层隐藏路线发现后出现在当前路线图，room 不切换。

@@ -97,7 +97,7 @@ export class MovementService {
       g._pageManager.setScene(scene);
     }
     g.addLog('🚶 向' + this.dirName(dir) + '方行去…', 'info');
-    g.addLog('📍 抵达 <b>' + target + '</b> —— ' + g.getRoomDesc(target), 'info');
+    g.addLog('📍 抵达 <b>' + target + '</b>。', 'info');
 
     g.tutorial?.afterMove?.(target, s.location);
 

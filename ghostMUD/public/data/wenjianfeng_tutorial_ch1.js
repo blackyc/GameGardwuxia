@@ -47,8 +47,8 @@ var WENJIANFENG_TUTORIAL_CH1 = {
     '问剑峰·引泉坡',
     '问剑峰·后山石径',
     '问剑峰·剑坪',
-    '问剑峰·弟子院',
-    '问剑峰·弟子房',
+    '问剑峰·弟子居',
+    '问剑峰·弟子居东',
   ],
 
   // ============ 每个房间的剧情事件 ============
@@ -63,7 +63,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
         { speaker: '苏小棠', text: `「新来的？」一个声音从上面飘下来。一个女弟子坐在台阶之上，两条腿晃荡着看你。笑得很好看。` },
         { speaker: '苏小棠', text: `「太好了——这山上终于有比我晚来的了！」` },
         { speaker: '苏小棠', text: `「我叫苏小棠。来了两年半……你叫什么名字？」` },
-        { speaker: '苏小棠', text: `「名字还行。」她站起来，「走吧，我带你去见萧师叔——」` },
+        { speaker: '苏小棠', text: `「名字还行。」她站起来，「走吧，我带你去见柳师叔——」` },
         { speaker: '苏小棠', text: `「对了。山门口的弟子会问你口令。今天的口令是「残月」。」` },
         { speaker: '苏小棠', text: `「你可记住？」` },
       ],
@@ -101,7 +101,6 @@ var WENJIANFENG_TUTORIAL_CH1 = {
       },
       npcDialog: [
         { speaker: 'narrator', text: `石阶渐缓，上方传来木剑相撞的闷响。` },
-        { speaker: '苏小棠', text: `「到了。你看，剑坪就在前面——我说过吧，跟着我准没错。」` },
       ],
       moveHint: `继续往北走（剑坪方向）`,
       availableMoves: ['北'],
@@ -118,10 +117,10 @@ var WENJIANFENG_TUTORIAL_CH1 = {
         { speaker: '苏小棠', text: `「后山路要先过石径和引泉坡，才到洗剑池。剑用完了去洗，池子里有几把断剑，别碰，会被骂。」` },
         { speaker: '苏小棠', text: `「再往竹林里走，东边才是药圃。阿青认识很多草——呃，她觉得她认识。」` },
         { speaker: '苏小棠', text: `「最高处是剑冢，剑翁的地盘。他不下来吃饭，老蔡得送。以后可能轮到你送。」` },
-        { speaker: '苏小棠', text: `「我们住弟子院，等会儿带你认门。你住我隔壁，周碛住对面，阿满住对面隔壁。」` },
+        { speaker: '苏小棠', text: `「我们住弟子居，等会儿带你认门。你住我隔壁，周碛住对面，阿满住对面隔壁。」` },
         { speaker: '苏小棠', text: `「残剑师姐不用特地打招呼。她一定不会搭理你，不是讨厌你——她就是不爱说话。」` },
         { speaker: 'narrator', text: `走近时，残剑师姐微微点了一下头。` },
-        { speaker: '苏小棠', text: `苏小棠瞪大了眼睛：「她对你点头了？？？我来了大半年她才对我点头！！！」` },
+        { speaker: '苏小棠', text: `苏小棠瞪大了眼睛：「她对你点了下头？我来了大半年她才对我点头！！！」` },
       ],
       moveHint: `苏小棠先往藏剑阁前庭走去。`,
       availableMoves: ['西'],
@@ -143,9 +142,9 @@ var WENJIANFENG_TUTORIAL_CH1 = {
         36: {
           npcDialog: [
             { speaker: 'narrator', text: `回到剑坪时，剑冢方向已经被树影遮住。一路的水声、竹声忽然都远了。` },
-            { speaker: '苏小棠', text: `「好啦，最远的地方也认过了。现在回弟子院，给你看住处。可别一会儿又说自己记不得路。」` },
+            { speaker: '苏小棠', text: `「好啦，最远的地方也认过了。现在回弟子居，给你看住处。可别一会儿又说自己记不得路。」` },
           ],
-          moveHint: `苏小棠指向弟子院，等你跟上。`,
+          moveHint: `苏小棠指向弟子居，等你跟上。`,
           availableMoves: ['东南'],
         },
       },
@@ -459,25 +458,25 @@ var WENJIANFENG_TUTORIAL_CH1 = {
       availableMoves: ['南'],
     },
 
-    '问剑峰·弟子院': {
+    '问剑峰·弟子居': {
       onEnter: function(game) {
-        game.state.location = '问剑峰·弟子院';
+        game.state.location = '问剑峰·弟子居';
       },
       npcDialog: [
-        { speaker: 'narrator', text: `一方小院围着几排木屋，晒着洗净的练功服。墙根靠着木剑和水桶，窗纸里透出细碎的人声。` },
+        { speaker: 'narrator', text: `一方小院围着几排木屋，晒着洗净的练功服，墙根靠着木剑和水桶。` },
         { speaker: '苏小棠', text: `「这儿才算我们睡觉的地方。别看小，早晨谁起晚了，全院都能知道。」` },
       ],
-      moveHint: `她领你去你的弟子房。`,
-      availableMoves: ['内'],
+      moveHint: `她沿着院墙往东，领你去认住处。`,
+      availableMoves: ['东'],
     },
 
-    '问剑峰·弟子房': {
+    '问剑峰·弟子居东': {
       onEnter: function(game) {
-        game.state.location = '问剑峰·弟子房';
+        game.state.location = '问剑峰·弟子居东';
       },
       npcDialog: [
         { speaker: 'narrator', text: `一排木屋。苏小棠把你领到一间门前。` },
-        { speaker: '苏小棠', text: `「这是弟子房。你住这间——我住隔壁。周碛住对面。阿满住对面隔壁。」` },
+        { speaker: '苏小棠', text: `「这是弟子居东侧。你住这间——我住隔壁。周碛住对面。阿满住对面隔壁。」` },
         { speaker: '苏小棠', text: `「东西放好。晚饭还有半个时辰——你可以到处逛逛，也可以等着。」` },
         { speaker: '苏小棠', text: `她走了两步又回来。「对了——老蔡要是给你加菜，你得分我一半。」` },
         { speaker: '苏小棠', text: `她朝你摆摆手：「走累了，剩下的你自己转悠吧！」` },
@@ -493,28 +492,25 @@ var WENJIANFENG_TUTORIAL_CH1 = {
   // ============ 自由活动阶段的NPC额外对话 ============
   freeTimeDialogs: {
     '问剑峰·剑坪': [
-      { speaker: '残剑师姐', text: `残剑师姐依旧站在剑坪中央。剑未出鞘。` },
+      { speaker: '残剑', text: `她站在剑坪中央。` },
     ],
     '问剑峰·伙房': [
       { speaker: '老蔡', text: `「还没开饭。要帮忙就过来揉面，别添乱就行。」` },
     ],
     '问剑峰·洗剑池': [
-      { speaker: '盲眼老妪', text: `「你的剑鞘没擦干净。下次注意。」` },
+      { speaker: '盲眼老妪', text: `「你的剑鞘不干净，以后要注意。」` },
     ],
     '问剑峰·竹林': [
-      { speaker: '劳叔', text: `「又来了？那边——对，那根竹子也不好。别碰。」` },
+      { speaker: '劳叔', text: `「又来了？」` },
     ],
     '问剑峰·药圃': [
-      { speaker: '阿青', text: `「你要是没事做，帮我把那堆杂草清了。别碰那棵！那是我种的……大概。」` },
+      { speaker: '阿青', text: `「你要是没事做，帮我把那堆杂草清了。」` },
     ],
     '问剑峰·藏剑阁': [
-      { speaker: '藏剑阁老', text: `阁老在打盹。你从他面前经过。他忽然开口了：「不是那边。」——你不知道他在说什么。` },
+      { speaker: '藏剑阁老', text: `阁老在打盹。` },
     ],
     '问剑峰·剑冢': [
-      { speaker: '剑翁', text: `「你又来了。回去的时候注意脚下。」` },
-    ],
-    '问剑峰·弟子房': [
-      { speaker: 'narrator', text: `你的房间。木床、被褥、矮桌、油灯。窗子越过弟子院的屋檐，能望见剑坪方向。隔壁传来苏小棠哼歌声。` },
+      { speaker: '剑翁', text: `「......」` },
     ],
   },
 
@@ -541,7 +537,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
   // ============ 苏小棠：巡礼期间的随行 NPC 数据 ============
   companionProfiles: {
     '问剑峰·山门': {
-      desc: '问剑峰弟子，正引你熟悉山门。她说话很快，脚步却总会放慢半拍等你。',
+      desc: '问剑峰弟子，正引你熟悉山门。她似乎放慢脚步在等你。',
       gossip: [
         '苏小棠压低声音说，剑坪晨练千万别迟到；残剑师姐不会骂人，只会多看你一眼。',
         '她说值星弟子的口令每日换一次，忘了就老实认错，别装作自己记得。',
@@ -821,7 +817,7 @@ var WENJIANFENG_TUTORIAL_CH1 = {
       }
       // 路线包含多次回到剑坪、竹林等节点；只有“下一站”能准确表达当前进度。
       // 放行旧节点会让重复房间被 indexOf 错配，造成教程状态与玩家位置脱节。
-      var nextName = nextRoom ? this.shortRoomName(nextRoom) : '弟子房';
+      var nextName = nextRoom ? this.shortRoomName(nextRoom) : '弟子居东';
       var guideLine = `「这边这边！下一站是${nextName}。」`;
       if (typeof game.showDialogueRibbon === 'function') {
         game.showDialogueRibbon({ speaker: '苏小棠', text: guideLine });

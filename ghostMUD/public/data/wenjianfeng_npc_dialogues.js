@@ -15,15 +15,15 @@ var WENJIANFENG_NPC_DIALOGUES = {
       "lines": [
         {
           "speaker": "值星弟子",
-          "text": "「口令！」值星弟子把剑横在身前，声音绷得比剑还直。"
+          "text": "「口令！」"
         },
         {
           "speaker": "值星弟子",
-          "text": "他认出你，耳根红了一点：「哦，是新来的。今天的口令是『残月』，别在山上喊错。」"
+          "text": "「哦，是新来的。今天的口令是『残月』，别在山上喊错。」"
         },
         {
           "speaker": "值星弟子",
-          "text": "「问剑峰不拦肯问路的人，但会拦乱闯的人。上山先去剑坪，别直接往后山钻。」"
+          "text": "「问剑峰不拦肯问路的人，但会拦乱闯的人。」"
         }
       ],
       "choices": [
@@ -33,11 +33,11 @@ var WENJIANFENG_NPC_DIALOGUES = {
           "nextLines": [
             {
               "speaker": "值星弟子",
-              "text": "「对。记住了就好。」他把剑往旁边一收，给你让出石阶。"
+              "text": "「对。记住了就好。」"
             },
             {
               "speaker": "值星弟子",
-              "text": "「上去吧。苏小棠要是又带人走错路，你就说是我让你先去剑坪的。」"
+              "text": "「上去吧。」"
             }
           ],
           "relationship": {
@@ -59,7 +59,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
             },
             {
               "speaker": "值星弟子",
-              "text": "他想了想，又补了一句：「第四，苏小棠说自己认路的时候，你最好再问一次别人。」"
+              "text": "「......第四，苏小棠说自己认路的时候，你最好再问一次别人。」"
             }
           ],
           "relationship": {
@@ -104,7 +104,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
           "lines": [
             {
               "speaker": "值星弟子",
-              "text": "值星弟子看见苏小棠，剑尖往旁边让了半寸。"
+              "text": "值星弟子看见苏小棠，往后退缩了两步。"
             },
             {
               "speaker": "值星弟子",
@@ -122,11 +122,11 @@ var WENJIANFENG_NPC_DIALOGUES = {
               "nextLines": [
                 {
                   "speaker": "值星弟子",
-                  "text": "「残月。对。」他点头，把路让开。"
+                  "text": "「残月，对。」"
                 },
                 {
                   "speaker": "值星弟子",
-                  "text": "「上去吧，别在第十三级台阶坐太久。那是小棠姐的地方。」"
+                  "text": "「上去吧。」"
                 }
               ],
               "relationship": {
@@ -146,10 +146,6 @@ var WENJIANFENG_NPC_DIALOGUES = {
             "tutorialPhase": "ch1_free"
           },
           "lines": [
-            {
-              "speaker": "值星弟子",
-              "text": "值星弟子正把令牌换到另一侧腰间。"
-            },
             {
               "speaker": "值星弟子",
               "text": "「自由走动可以，出山门不行。新弟子第一日，山上认全再说。」"
@@ -193,20 +189,20 @@ var WENJIANFENG_NPC_DIALOGUES = {
       "ensure": {
         "id": "wenjianfeng_suxiaotang",
         "name": "苏小棠",
-        "desc": "一个眼睛很亮的少女，坐不住，话也停不住。腰间挂着一把保养得很认真的短剑。"
+        "desc": "一个少女，坐不住，话也停不住。腰间挂着一把保养得很认真的短剑。"
       },
       "lines": [
         {
           "speaker": "苏小棠",
-          "text": "「新来的！」苏小棠从石凳上跳下来，像早就等着你开口。"
+          "text": "「新来的！」"
         },
         {
           "speaker": "苏小棠",
-          "text": "「我叫苏小棠，来了一年半。暂时还打不过周碛——但是快了，真的快了。」"
+          "text": "「我叫苏小棠，来了一年半。」"
         },
         {
           "speaker": "苏小棠",
-          "text": "她压低声音：「你要是迷路，可以问我。虽然我偶尔也迷路，但我迷得比较有经验。」"
+          "text": "「你要是迷路，可以问我。」"
         }
       ],
       "choices": [
@@ -264,7 +260,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
             },
             {
               "speaker": "苏小棠",
-              "text": "她立刻补充：「这不是抢，这是同门之间的互相照应。」"
+              "text": "「......这不是抢，这是同门之间的互相照应。」"
             }
           ],
           "relationship": {
@@ -481,7 +477,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
               "nextLines": [
                 {
                   "speaker": "苏小棠",
-                  "text": "「他嘴坏，剑还行。」她把碗边擦了擦。"
+                  "text": "「他嘴坏，剑还行。」"
                 },
                 {
                   "speaker": "苏小棠",
@@ -798,7 +794,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
         },
         {
           "speaker": "小荷",
-          "text": "「你觉得他在骗我吗？算了，你别说，我不敢听。」"
+          "text": "「你觉得他说得是真的吗？算了，算了，你别说。」"
         }
       ],
       "choices": [
@@ -834,7 +830,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
         },
         {
           "speaker": "narrator",
-          "text": "整个伙房震了一下。老蔡头也不回：「轻点！」"
+          "text": "伙房一震。老蔡回头怒骂：「轻点！」"
         }
       ],
       "choices": [
@@ -862,21 +858,17 @@ var WENJIANFENG_NPC_DIALOGUES = {
       "lines": [
         {
           "speaker": "盲眼老妪",
-          "text": "盲眼老妪坐在洗剑池边，脸朝着水面。她的眼窝深陷，却像早已看见你。"
+          "text": "那位老妪坐在洗剑池旁，她的眼窝深陷，却像早已看见你。"
         },
         {
           "speaker": "盲眼老妪",
-          "text": "「你的剑鞘没擦干净。第三次了。」"
+          "text": "「你的剑鞘没擦干净。」"
         },
-        {
-          "speaker": "盲眼老妪",
-          "text": "水面上没有风，却起了一圈很细的涟漪。"
-        }
       ],
       "choices": [
         {
           "choice": "问她怎么知道",
-          "log": "你问盲眼老妪如何知道剑鞘未净。",
+          "log": "你问她如何知道剑鞘未净。",
           "nextLines": [
             {
               "speaker": "盲眼老妪",
@@ -1098,7 +1090,7 @@ var WENJIANFENG_NPC_DIALOGUES = {
                   "laoshu_spoke",
                   "choice_1"
                 ],
-                "note": "老舒记得你问过剑鞘竹丝。"
+                "note": "劳叔记得你问过剑鞘竹丝。"
               }
             }
           ]
@@ -1132,10 +1124,6 @@ var WENJIANFENG_NPC_DIALOGUES = {
               "speaker": "石头",
               "text": "石头也点头，顺手把一截柴递给你。"
             },
-            {
-              "speaker": "narrator",
-              "text": "那截柴很轻。或者说，他递得很稳。"
-            }
           ]
         }
       ],
@@ -1152,11 +1140,11 @@ var WENJIANFENG_NPC_DIALOGUES = {
         },
         {
           "speaker": "阿青",
-          "text": "「你认识蛇胆草吗？」她问得很认真。"
+          "text": "「你认识蛇胆草吗？」"
         },
         {
           "speaker": "阿青",
-          "text": "她没等你回答，自己摇头：「不是这种。上次我采错了，师兄拉了一天肚子。」"
+          "text": "「不是这种。上次我采错了，师兄拉了一天肚子。」"
         }
       ],
       "choices": [
@@ -1166,11 +1154,15 @@ var WENJIANFENG_NPC_DIALOGUES = {
           "nextLines": [
             {
               "speaker": "阿青",
-              "text": "「它也没走啊。」阿青想了想，终于把树枝收回来。"
+              "text": "「它也没走啊。」"
+            },
+                        {
+              "speaker": "阿青",
+              "text": "她想了想，把树枝收了回来，蛇呲溜钻进草丛。"
             },
             {
               "speaker": "阿青",
-              "text": "蛇慢慢钻进草丛。她小声说：「好吧，今天它赢了。」"
+              "text": "「好吧，今天它赢了。」"
             }
           ]
         },

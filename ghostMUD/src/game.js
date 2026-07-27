@@ -42,6 +42,7 @@ import { PerceptionService } from './perception_service.js';
 import { SceneInteractionService } from './scene_interaction_service.js';
 import { RouteService } from './route_service.js';
 import { WorldContextService } from './world_context.js';
+import { NarrativeService } from './narrative/narrative_service.js';
 import { MapService } from './map_service.js';
 import { WeatherService } from './weather_service.js';
 import { MomentFeedbackQueue } from './moment_feedback_queue.js';
@@ -104,6 +105,8 @@ export class Game {
     // getDesc：使用三层描述系统，fallback 到原始 getDesc（处理特殊对象）
     this._rawGetDesc = getDesc || ((obj) => obj?.desc || '');
     this.getDesc = (obj) => {
+      const narrativeDesc = this.narrative?.getDescription(obj);
+      if (narrativeDesc) return narrativeDesc;
       const desc = this.getDescByPath(obj);
       return desc || this._rawGetDesc(obj);
     };
@@ -183,6 +186,11 @@ export class Game {
       worldEvents: {},
       searchEventAttempts: {},
       dialogueProgress: {},
+      narrativeFlags: {},
+      narrativeCommandLedger: {},
+      storyArc: null,
+      storyChapter: null,
+      storyPhase: null,
       // 教程/引路状态
       tutorialPhase: null,
       tutorialStep: 0,
@@ -211,6 +219,7 @@ export class Game {
 
     // World rules remain independent from the renderer and can be queried by services.
     this.world = new WorldContextService(this);
+    this.narrative = new NarrativeService(this);
 
     // 尝试加载存档
     const saved = this.storage.load();
@@ -584,6 +593,9 @@ export class Game {
   getRoomDesc(roomId) {
     const room = this.LOCATIONS[roomId];
     if (!room) return '';
+
+    const narrativeDescription = this.narrative?.getRoomDescription(roomId);
+    if (narrativeDescription) return narrativeDescription;
 
     // 竹林深处迷宫房间不按时辰变化
     if (roomId.includes('竹林深处') || roomId.includes('青竹巷·尽头竹林')) {

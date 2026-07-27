@@ -21,6 +21,7 @@ export class NpcService {
     this.dialogueVariant = null;
     this.dialogueGraph = null;
     this.dialogueNodeId = null;
+    this.dialogueSession = null;
     // Runtime-only view state. It deliberately does not enter saves: authored
     // dialogue progress lives in state.dialogueProgress, while a currently
     // open sheet can always be safely reopened after a reload.
@@ -231,12 +232,23 @@ export class NpcService {
     this.dialogueHistoryOpen = false;
     this.dialogueSettled = false;
     this.dialogueVariant = this._selectDialogueVariant(enc);
-    this.dialogueGraph = enc.dialogueGraph || null;
+    const storyId = g.narrative?.getStoryId(enc);
+    const savedDialogue = storyId ? g.state.dialogueProgress?.[storyId] : null;
+    const savedSnapshot = savedDialogue?.engine === 'ink' && !savedDialogue.completed
+      ? savedDialogue.snapshot
+      : null;
+    this.dialogueSession = g.narrative?.createDialogueSession(enc, savedSnapshot) || null;
+    this.dialogueGraph = this.dialogueSession ? null : (enc.dialogueGraph || null);
     this.dialogueNodeId = this.dialogueGraph?.start || null;
-    this.dialogueLines = this.dialogueGraph ? [this._graphLine()] : this._openingLines(enc);
+    this.dialogueLines = this.dialogueSession ? [] : (this.dialogueGraph ? [this._graphLine()] : this._openingLines(enc));
     this.dialogueLineIndex = 0;
 
-    this._appendCurrentLine();
+    if (this.dialogueSession) {
+      this._appendInkFrame(this.dialogueSession.getView());
+      this._persistInkProgress();
+    } else {
+      this._appendCurrentLine();
+    }
     this._renderCurrentLine();
 
     this._showDialogueLayer('talk');
@@ -244,6 +256,14 @@ export class NpcService {
 
   nextDialogueLine() {
     if (!this.game.state.npcEncounter) return;
+    if (this.dialogueSession) {
+      const previous = this.dialogueSession.getView();
+      const frame = this.dialogueSession.continue();
+      if (frame?.text && frame !== previous) this._appendInkFrame(frame);
+      this._persistInkProgress();
+      this._renderCurrentLine();
+      return;
+    }
     if (this.dialogueGraph) {
       const node = this._graphNode();
       if (node?.next) this._advanceGraph(node.next);
@@ -262,59 +282,22 @@ export class NpcService {
     const results = this._dialogueResults(enc);
     const result = results && results[index];
     if (!result) return;
-    const s = g.state;
+
     const previousRelation = g.describeNpcRelation ? g.describeNpcRelation(enc) : '';
-    const memoryResult = applyNpcChoiceMemory(s, enc, result, { room: s.location, gameTime: s.gameTime });
+    const memoryResult = applyNpcChoiceMemory(g.state, enc, result, {
+      room: g.state.location,
+      gameTime: g.state.gameTime
+    });
     if (memoryResult.label && memoryResult.label !== previousRelation) {
       g.showMomentFeedback?.(this._title(enc) + ' · ' + memoryResult.label, 'relation');
     }
-    const title = this._title(enc);
 
+    const title = this._title(enc);
     this._appendLine('你', result.choice || '沉默片刻。', 'player');
     let outcome = result.log || result.successLog || result.failLog || '对方点了点头，没有再多说。';
-
-    if (enc.npc_type === 'faction_recruiter' && enc.faction) {
-      if (result.questStart) g.startQuest(result.questStart);
-      if (result.log) outcome = result.log;
-      this._settleDialogue(enc, title, outcome, result);
-      return;
-    }
-
-    if (result.effect) {
-      const parts = result.effect.split(';');
-      for (const part of parts) {
-        const [key, val] = part.split(':');
-        if (key === 'spend_gold') g.spendMoney(parseInt(val));
-        else if (key === 'lose_gold') {
-          const cur = g.getMoney();
-          g.addMoney(-Math.min(cur, parseInt(val)));
-        } else if (key === 'check_atk') {
-          if (s.attack >= parseInt(val)) {
-            outcome = result.successLog || outcome;
-            if (result.successReward) g.applyReward(result.successReward);
-          } else {
-            outcome = result.failLog || outcome;
-          }
-        } else if (key === 'check_agility') {
-          if (Math.random() < 0.6) {
-            outcome = result.successLog || outcome;
-            if (result.successReward) g.applyReward(result.successReward);
-          } else {
-            outcome = result.failLog || outcome;
-          }
-        } else if (['heal', 'hp', 'daoxin', 'gain_gold', 'gain_cultivation', 'random_item', 'random_technique'].indexOf(key) >= 0) {
-          g.applyReward(part);
-        }
-      }
-    }
-
-    if (result.reward) g.applyReward(result.reward);
-    if (result.failReward) g.applyReward(result.failReward);
-    if (result.questStart || enc.questTrigger) g.startQuest(result.questStart || enc.questTrigger);
-
+    outcome = this._applyLegacyChoiceGameEffects(enc, result, outcome);
     this._settleDialogue(enc, title, outcome, result);
   }
-
   dialogueChoice(choiceId) {
     const g = this.game;
     const enc = g.state.npcEncounter;
@@ -359,6 +342,7 @@ export class NpcService {
     this.dialogueVariant = null;
     this.dialogueGraph = null;
     this.dialogueNodeId = null;
+    this.dialogueSession = null;
     const modal = document.getElementById('npc-modal');
     if (modal) {
       modal.classList.remove('active');
@@ -400,7 +384,7 @@ export class NpcService {
     const name = payload.speaker || payload.npc?.title || payload.npc?.name || '心声';
     document.getElementById('dialogue-ribbon-name').textContent = name;
     document.getElementById('dialogue-ribbon-text').textContent = text;
-    const portrait = DIALOGUE_PORTRAITS[name] || null;
+    const portrait = this.game.narrative?.getPortrait({ id: payload.npcId, name, title: name }) || DIALOGUE_PORTRAITS[name] || null;
     const portraitImage = document.getElementById('dialogue-ribbon-portrait-image');
     const portraitInitial = document.getElementById('dialogue-ribbon-portrait-initial');
     if (portraitImage) {
@@ -439,6 +423,98 @@ export class NpcService {
     this._renderHistory();
   }
 
+  inkDialogueChoice(index) {
+    const enc = this.game.state.npcEncounter;
+    if (!enc || !this.dialogueSession) return false;
+    const previousRelation = this.game.describeNpcRelation?.(enc) || '';
+    const result = this.dialogueSession.choose(index);
+    if (!result) return false;
+    const selected = result.selected || {};
+    const effects = selected.effects || {};
+    this._appendLine('你', selected.playerLine || selected.label || '沉默片刻。', 'player');
+    const memoryResult = applyNpcChoiceMemory(this.game.state, enc, {
+      choice: selected.label || selected.id,
+      relationship: {
+        affinityDelta: Number(effects.affinity || 0),
+        flags: effects.flags,
+        note: effects.note
+      }
+    }, { room: this.game.state.location, gameTime: this.game.state.gameTime });
+    if (memoryResult.label && memoryResult.label !== previousRelation) {
+      this.game.showMomentFeedback?.(this._title(enc) + ' · ' + memoryResult.label, 'relation');
+    }
+    const legacyResult = effects.legacyResult;
+    if (legacyResult && typeof legacyResult === 'object') {
+      this._applyLegacyChoiceGameEffects(enc, legacyResult, legacyResult.log || '');
+    }
+    if (result.frame?.text) this._appendInkFrame(result.frame);
+    this._persistInkProgress(selected);
+    this._renderCurrentLine();
+    return true;
+  }
+
+  _appendInkFrame(frame) {
+    if (!frame?.text) return;
+    this.game.narrative?.executeFrameCommands(frame, {
+      storyId: this.dialogueSession?.id || null,
+      npc: this.game.state.npcEncounter || null
+    });
+    this._appendLine(frame.speaker || this._title(this.game.state.npcEncounter), frame.text, 'npc');
+  }
+
+  _persistInkProgress(selected = null) {
+    if (!this.dialogueSession) return;
+    const progress = (this.game.state.dialogueProgress ||= {});
+    const frame = this.dialogueSession.getView();
+    progress[this.dialogueSession.id] = {
+      engine: 'ink',
+      lastChoice: selected?.id || progress[this.dialogueSession.id]?.lastChoice || null,
+      lastNode: frame?.nodeId || null,
+      completed: Boolean(frame?.ended),
+      snapshot: this.dialogueSession.snapshot()
+    };
+    this.game.markDirty();
+  }
+
+  _applyLegacyChoiceGameEffects(enc, result, outcome = '') {
+    const g = this.game;
+    const s = g.state;
+    let resolvedOutcome = outcome || result.log || result.successLog || result.failLog || '';
+
+    if (result.effect) {
+      const parts = String(result.effect).split(';').filter(Boolean);
+      for (const part of parts) {
+        const [key, val] = part.split(':');
+        if (key === 'spend_gold') g.spendMoney(parseInt(val, 10));
+        else if (key === 'lose_gold') {
+          const current = g.getMoney();
+          g.addMoney(-Math.min(current, parseInt(val, 10)));
+        } else if (key === 'check_atk') {
+          if (s.attack >= parseInt(val, 10)) {
+            resolvedOutcome = result.successLog || resolvedOutcome;
+            if (result.successReward) g.applyReward(result.successReward);
+          } else {
+            resolvedOutcome = result.failLog || resolvedOutcome;
+          }
+        } else if (key === 'check_agility') {
+          if (Math.random() < 0.6) {
+            resolvedOutcome = result.successLog || resolvedOutcome;
+            if (result.successReward) g.applyReward(result.successReward);
+          } else {
+            resolvedOutcome = result.failLog || resolvedOutcome;
+          }
+        } else if (['heal', 'hp', 'daoxin', 'gain_gold', 'gain_cultivation', 'random_item', 'random_technique'].includes(key)) {
+          g.applyReward(part);
+        }
+      }
+    }
+
+    if (result.reward) g.applyReward(result.reward);
+    if (result.failReward) g.applyReward(result.failReward);
+    if (result.questStart || enc?.questTrigger) g.startQuest(result.questStart || enc.questTrigger);
+    return resolvedOutcome;
+  }
+
   _settleDialogue(enc, title, outcome, result) {
     const g = this.game;
     const followup = this._resultLines(result, title, outcome);
@@ -454,6 +530,14 @@ export class NpcService {
   _renderCurrentLine() {
     const enc = this.game.state.npcEncounter;
     if (!enc) return;
+    if (this.dialogueSession) {
+      const frame = this.dialogueSession.getView();
+      if (!frame?.text) return;
+      const line = this._line(frame.speaker || this._title(enc), frame.text, 'npc');
+      this._renderDialogue(enc, line, [], Boolean(frame.canContinue));
+      this._renderInkChoices(frame);
+      return;
+    }
     if (this.dialogueGraph) {
       const node = this._graphNode();
       if (!node) return;
@@ -495,8 +579,8 @@ export class NpcService {
     if (historyButton) historyButton.hidden = !history;
     if (closeButton) closeButton.textContent = closeLabel;
 
-    const portrait = DIALOGUE_PORTRAITS[title] || null;
-    if (portraitBox) portraitBox.dataset.portrait = portrait?.key || 'initial';
+    const portrait = this.game.narrative?.getPortrait(npc) || DIALOGUE_PORTRAITS[title] || null;
+    if (portraitBox) portraitBox.dataset.portrait = portrait?.key || portrait?.id?.split('.')[2] || 'initial';
     if (portraitImage) {
       portraitImage.hidden = !portrait;
       portraitImage.alt = portrait ? title + '头像' : '';
@@ -614,6 +698,24 @@ export class NpcService {
     ).join('');
     choicesDiv.querySelectorAll('[data-npc-choice]').forEach(btn => {
       btn.addEventListener('click', () => this.npcChoice(parseInt(btn.dataset.npcChoice, 10)));
+    });
+  }
+
+  _renderInkChoices(frame) {
+    const choicesDiv = document.getElementById('npc-choices');
+    if (!choicesDiv) return;
+    const choices = Array.isArray(frame?.choices) ? frame.choices.slice(0, 3) : [];
+    if (choices.length === 0) {
+      choicesDiv.innerHTML = frame?.canContinue
+        ? '<button type="button" class="modal-choice dialogue-next" data-dialogue-action="next">... ...</button>'
+        : '';
+      return;
+    }
+    choicesDiv.innerHTML = choices.map(choice =>
+      '<button type="button" class="modal-choice" data-ink-choice="' + choice.index + '">' + this._esc(choice.label || '??') + '</button>'
+    ).join('');
+    choicesDiv.querySelectorAll('[data-ink-choice]').forEach(button => {
+      button.addEventListener('click', () => this.inkDialogueChoice(Number(button.dataset.inkChoice)));
     });
   }
 

@@ -4,8 +4,8 @@
   "description": "诡仙归文字 MUD 重构版",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "npm run narrative:compile && vite",
+    "build": "npm run narrative:validate && vite build",
     "preview": "vite preview",
     "test": "node temp/run-all.cjs",
     "test:data": "node temp/data-validate.test.cjs",
@@ -13,7 +13,9 @@
     "test:entry": "node temp/entry-condition.test.cjs",
     "test:save": "node temp/save-schema.test.cjs",
     "test:ui": "node temp/ui-contract.test.cjs",
-    "test:npc-memory": "node temp/npc-memory.test.cjs"
+    "test:npc-memory": "node temp/npc-memory.test.cjs",
+    "narrative:compile": "node scripts/compile-content.mjs && node scripts/compile-narrative.mjs",
+    "narrative:validate": "npm run narrative:compile && node scripts/validate-narrative.mjs"
   },
   "keywords": [
     "mud",
@@ -25,5 +27,9 @@
   "license": "ISC",
   "devDependencies": {
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "inkjs": "2.4.0"
   }
 }

@@ -32,9 +32,7 @@ export class SearchService {
     const context = g.world?.get(roomId);
     const policy = context?.policy || g.world?.getZonePolicy(roomId);
     if (policy && !policy.allowSearch) {
-      const text = '此处并不适合贸然搜索。';
-      g.addLog(text, 'system');
-      this._presentFind({ title: '探索', text });
+      this._presentNoResult();
       return;
     }
 
@@ -82,6 +80,11 @@ export class SearchService {
         picked = result;
         break;
       }
+    }
+
+    if (picked.type === 'nothing') {
+      this._presentNoResult();
+      return;
     }
 
     const state = g.state;
@@ -134,9 +137,9 @@ export class SearchService {
   }
 
   _presentNoResult() {
-    const text = '你寻了一阵，未见所得。';
-    this.game.addLog('🔍 ' + text, 'system');
-    this._presentFind({ title: '探索', text });
+    this.game.sceneInteraction?.close();
+    this.game.showMomentFeedback?.('你什么也没发现', 'muted');
+    return { open: false, empty: true };
   }
 
   _presentFind(result) {

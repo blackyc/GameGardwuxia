@@ -1,3 +1,5 @@
+import { evaluateCondition } from './narrative/condition_resolver.js';
+
 /**
  * World-context policy.
  *
@@ -53,25 +55,27 @@ export function resolveTimePeriod(gameTime = 0) {
 
 export function isEligibleForContext(entry, context) {
   if (!entry || !context) return false;
+  const inventoryCounts = (context.state?.inventory || []).reduce((counts, item) => {
+    const id = item?.id || item?.item || item?.name;
+    if (id) counts[id] = (counts[id] || 0) + Number(item.count || item.quantity || 1);
+    return counts;
+  }, {});
+  const normalized = {
+    ...context,
+    player: { path: context.path, realm: context.realm, faction: context.state?.faction || '' },
+    room: { id: context.roomId, zoneKind: context.policy?.zoneKind, region: context.room?.region || '' },
+    time: { index: context.gameTime, period: context.timePeriod },
+    inventory: { counts: inventoryCounts },
+    quest: {
+      active: context.state?.activeQuests || [],
+      completed: context.state?.completedQuests || [],
+      stages: context.state?.questStages || {}
+    },
+    flags: { ...(context.state?.worldEvents || {}), ...(context.state?.narrativeFlags || {}) }
+  };
+  if (!evaluateCondition(entry.conditions || entry, normalized)) return false;
+
   const requirements = entry.conditions || entry;
-  const inventory = context.state?.inventory || [];
-  if (requirements.paths && !requirements.paths.includes(context.path)) return false;
-  if (requirements.zoneKinds && !requirements.zoneKinds.includes(context.policy.zoneKind)) return false;
-  if (requirements.roomIds && !requirements.roomIds.includes(context.roomId)) return false;
-  if (requirements.excludeRoomIds && requirements.excludeRoomIds.includes(context.roomId)) return false;
-  if (requirements.regions && !requirements.regions.some(prefix => context.roomId.startsWith(prefix))) return false;
-  if (Number.isFinite(requirements.realmMin) && context.realm < requirements.realmMin) return false;
-  if (Number.isFinite(requirements.realmMax) && context.realm > requirements.realmMax) return false;
-  if (requirements.gameTimes && !requirements.gameTimes.includes(context.gameTime)) return false;
-  if (requirements.timePeriods && !requirements.timePeriods.includes(context.timePeriod)) return false;
-  if (requirements.excludeTimePeriods?.includes(context.timePeriod)) return false;
-  if (requirements.requiresCompanion && context.state.guideCompanion !== requirements.requiresCompanion) return false;
-  if (requirements.requiresFlag && !context.state[requirements.requiresFlag]) return false;
-  if (requirements.excludesFlag && context.state[requirements.excludesFlag]) return false;
-  if (requirements.requiresItem && !inventory.some(item => item?.id === requirements.requiresItem)) return false;
-  if (requirements.excludesItem && inventory.some(item => item?.id === requirements.excludesItem)) return false;
-  // Multi-character scenes are opt-in at night; this blocks obviously implausible
-  // legacy/random events without trying to infer cast from prose.
   const castSize = Number(entry.castSize ?? requirements.castSize ?? 1);
   const multiActor = entry.multiActor === true || requirements.multiActor === true || castSize > 1;
   if (context.timePeriod === 'night' && multiActor && requirements.allowAtNight !== true) return false;

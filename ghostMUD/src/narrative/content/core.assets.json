@@ -1,0 +1,57 @@
+{
+  "entries": [
+    {
+      "id": "portrait.player.wu.default",
+      "type": "portrait",
+      "src": "/assets/portraits/player-wuxiu.png",
+      "alt": "武修主角立绘",
+      "aspect": "portrait",
+      "aliases": ["无名小辈"]
+    },
+    {
+      "id": "portrait.npc.suxiaotang.default",
+      "type": "portrait",
+      "src": "/assets/portraits/suxiaotang.jpg",
+      "alt": "苏小棠立绘",
+      "aspect": "portrait",
+      "focalPoint": { "x": 0.5, "y": 0.28 },
+      "aliases": ["苏小棠", "wenjianfeng_suxiaotang"]
+    },
+    {
+      "id": "portrait.npc.zhouqi.default",
+      "type": "portrait",
+      "src": "/assets/portraits/zhouqi.png",
+      "alt": "周碛立绘",
+      "aspect": "portrait",
+      "focalPoint": { "x": 0.5, "y": 0.3 },
+      "aliases": ["周碛"]
+    },
+    {
+      "id": "portrait.npc.canjian.default",
+      "type": "portrait",
+      "src": "/assets/portraits/canjian-shijie.jpg",
+      "alt": "残剑师姐立绘",
+      "aspect": "portrait",
+      "focalPoint": { "x": 0.5, "y": 0.24 },
+      "aliases": ["残剑师姐", "wenjianfeng_canjian"]
+    },
+    {
+      "id": "background.jianghu.mobile",
+      "type": "background",
+      "src": "/ui/jianghu-mobile-bg.jpg",
+      "alt": "江湖页水墨背景"
+    },
+    {
+      "id": "background.vista.far",
+      "type": "background",
+      "src": "/ui/vista-far.png",
+      "alt": "远景山水"
+    },
+    {
+      "id": "background.vista.near",
+      "type": "background",
+      "src": "/ui/vista-near.png",
+      "alt": "近景山水"
+    }
+  ]
+}

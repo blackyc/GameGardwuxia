@@ -121,13 +121,13 @@ const WENJIANFENG_ROOMS = {
     desc_dusk: '夕阳熔金，暮色四合。弟子们三三两两收剑归鞘，或去伙房，或返居舍，喧闹声渐行渐远。',
     desc_night: '月华如水，泻满剑坪。残剑师姐仍如白日一般，纹丝不动，若非衣袂被风微微吹动，你几乎要以为她已入定物化。',
     zoneKind: 'faction_hq',
-    connections: { '南': '问剑峰·剑阶·上段', '东': '问剑峰·伙房外院', '西': '问剑峰·藏剑阁前庭', '北': '问剑峰·后山石径', '东南': '问剑峰·弟子院' },
+    connections: { '南': '问剑峰·剑阶·上段', '东': '问剑峰·伙房外院', '西': '问剑峰·藏剑阁前庭', '北': '问剑峰·后山石径', '东南': '问剑峰·弟子居' },
     routeSketch: {
       南: { id: 'wjf_swordyard_to_stairs', label: '剑阶', kind: 'world', layout: { anchor: 'S', lane: 0 } },
       东: { id: 'wjf_swordyard_to_kitchen_court', label: '伙房外院', kind: 'world', layout: { anchor: 'E', lane: 0 } },
       西: { id: 'wjf_swordyard_to_archive_court', label: '藏剑阁前庭', kind: 'world', layout: { anchor: 'W', lane: 0 } },
       北: { id: 'wjf_swordyard_to_back_path', label: '后山石径', kind: 'world', layout: { anchor: 'N', lane: 0 } },
-      东南: { id: 'wjf_swordyard_to_dorm_court', label: '弟子院', kind: 'world', layout: { anchor: 'SE', lane: 0 } }
+      东南: { id: 'wjf_swordyard_to_dorm_court', label: '弟子居', kind: 'world', layout: { anchor: 'SE', lane: 0 } }
     },
     danger: 0,
     npcs: [
@@ -187,17 +187,43 @@ const WENJIANFENG_ROOMS = {
     items: []
   },
 
-  '问剑峰·弟子院': {
-    name: '问剑峰·弟子院',
-    displayName: '弟子院',
+  '问剑峰·弟子居': {
+    name: '问剑峰·弟子居',
+    displayName: '弟子居',
     zoneKind: 'faction_hq',
-    desc: '几排弟子房围出的小院。晾衣绳从东墙拉到西墙，角落里堆着练坏的木剑和几只空水桶。院门朝西北开，穿过去才回到剑坪。',
+    desc: '几排弟子居围出的小院。晾衣绳从东墙拉到西墙，角落里堆着练坏的木剑和几只空水桶。院门朝西北开，穿过去才回到剑坪。',
     desc_morning: '晨练前的院子乱而有序：有人绑护腕，有人抱着木剑往外跑，还有人蹲在井边胡乱洗脸。',
     desc_dusk: '晚风穿过晾衣绳，木屋里陆续亮灯。有人在院中争最后一桶热水。',
-    connections: { 西北: '问剑峰·剑坪', 内: '问剑峰·弟子房' },
+    connections: { 西北: '问剑峰·剑坪', 东: '问剑峰·弟子居东' },
     routeSketch: {
       西北: { id: 'wjf_dorm_court_to_swordyard', label: '剑坪', kind: 'world', layout: { anchor: 'NW', lane: 0 } },
-      内: { id: 'wjf_dorm_court_to_player_room', label: '你的房间', kind: 'interior', layout: { anchor: 'BELOW', lane: 0 } }
+      东: { id: 'wjf_dorm_court_to_east', label: '弟子居东', kind: 'world', layout: { anchor: 'E', lane: 0 } }
+    },
+    danger: 0,
+    npcs: [],
+    items: []
+  },
+
+  '问剑峰·弟子居东': {
+    name: '问剑峰·弟子居东',
+    displayName: '弟子居东',
+    zoneKind: 'faction_hq',
+    desc: '弟子居东侧的几间木屋挨着院墙排开。你的住处在这里，苏小棠与你相邻，周碛和阿满住在对面。',
+    desc_morning: '晨光越过屋檐，几扇木门先后开合。院里已有弟子提剑往剑坪去了。',
+    desc_dusk: '暮色落在屋瓦上，门缝里陆续透出灯火。有人收衣，有人倚门擦剑。',
+    connections: {
+      西: '问剑峰·弟子居',
+      入一: '问剑峰·弟子房',
+      入二: '问剑峰·苏小棠房',
+      入三: '问剑峰·周碛房',
+      入四: '问剑峰·阿满房'
+    },
+    routeSketch: {
+      西: { id: 'wjf_dorm_east_to_court', label: '弟子居', kind: 'world', layout: { anchor: 'W', lane: 0 } },
+      入一: { id: 'wjf_dorm_east_to_player_room', label: '我的住处', kind: 'interior', layout: { anchor: 'DEEP', lane: 0 } },
+      入二: { id: 'wjf_dorm_east_to_xiaotang_room', label: '苏小棠的住处', kind: 'interior', layout: { anchor: 'DEEP', lane: 1 } },
+      入三: { id: 'wjf_dorm_east_to_zhouqi_room', label: '周碛的住处', kind: 'interior', layout: { anchor: 'DEEP', lane: 2 } },
+      入四: { id: 'wjf_dorm_east_to_aman_room', label: '阿满的住处', kind: 'interior', layout: { anchor: 'DEEP', lane: 3 } }
     },
     danger: 0,
     npcs: [],
@@ -276,8 +302,8 @@ const WENJIANFENG_ROOMS = {
     displayName: '药圃田埂',
     zoneKind: 'faction_hq',
     desc: '一道窄窄的田埂。埂下是灌溉用的浅沟，积着些许清水。两旁的奇花异草有高有低，被门中弟子照料得极好。',
-    desc_morning: '露水沾满裤脚，田埂边插着阿青新换的木牌，「参王勿踩」。',
-    desc_dusk: '露水沾满裤脚，田埂边插着阿青新换的木牌，「参王勿踩」。',
+    desc_morning: '田埂边插着阿青新换的木牌，「参王勿踩」。',
+    desc_dusk: '田埂边插着阿青新换的木牌，「参王勿踩」。',
     connections: { 西: '问剑峰·竹林外缘', 东: '问剑峰·药圃' },
     routeSketch: {
       西: { id: 'wjf_herb_ridge_to_bamboo_edge', label: '竹林外缘', kind: 'world', layout: { anchor: 'W', lane: 0 } },
@@ -325,7 +351,7 @@ const WENJIANFENG_ROOMS = {
     desc: '一间不大灶房，青砖灶台占了半壁江山。灶台后面堆着柴火，墙上挂着几串干辣椒和一把锅铲。炊烟袅袅，顺着山势散入云里。',
     desc_morning: '老蔡生火，小荷揉面。灶台上的大锅咕嘟咕嘟响。',
     desc_noon: '铁牛扛米袋进来，搁墙角，闷头又出去。老蔡头也不抬：「不够，来了新人，再来一袋。」',
-    desc_dusk: '锅碗叮当，人声鼎沸。老蔡手持大勺，看谁敢插队便是一通大骂。小荷盛菜盛得手酸。',
+    desc_dusk: '锅碗叮当，人声鼎沸。老蔡手持大勺，看谁敢插队便是一通大骂。',
     desc_night: '灶台还温着，是留给守夜弟子的粥。',
     connections: { 西: '问剑峰·伙房外院' },
     routeSketch: {
@@ -343,7 +369,7 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_xiaohe',
         name: '小荷',
         desc: '一个十二三岁的小丫头，手上沾满面粉，一直在揉面。',
-        dialogue: '蔡师父说再揉两年就能出师了。你觉得他在骗我吗？'
+        dialogue: '蔡师父说再揉两年就能出师了。你觉得他说得对吗？'
       },
       {
         id: 'wenjianfeng_tieniu',
@@ -375,7 +401,7 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_laoyu',
         name: '盲眼老妪',
         desc: '一个白发老妪坐在池边石板上，眼窝深。',
-        dialogue: '你的剑鞘没擦干净。第三次了。……你问我怎么知道？我闻得到。'
+        dialogue: '你的剑鞘没擦干净……怎么，你问我如何知道的？'
       }
     ],
     items: []
@@ -419,7 +445,7 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_shitou',
         name: '石头',
         desc: '一个壮实哑巴，光着膀子在劈柴。一斧下去，木桩裂成两半。',
-        dialogue: '……（石头看了你一眼，咧嘴笑了笑，继续劈柴。他说不了话。）'
+        dialogue: '石头看了你一眼，咧嘴笑了笑，继续劈柴。他说不了话。'
       }
     ],
     items: [
@@ -446,7 +472,7 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_aqing',
         name: '阿青',
         desc: '一个扎着双髻的姑娘，蹲在地上拿树枝戳蛇。',
-        dialogue: '你认识蛇胆草吗？……不是这种。上次我采错了，师兄拉了一天肚子。'
+        dialogue: '你认识蛇胆草吗？上次我采错了，师兄拉了一天肚子。'
       }
     ],
     items: []
@@ -469,8 +495,8 @@ const WENJIANFENG_ROOMS = {
       {
         id: 'wenjianfeng_jianweng',
         name: '剑翁',
-        desc: '一个独眼老人，身形枯瘦，坐在断剑丛中。左眼半阖。手边一把扫帚。',
-        dialogue: '多了。……我知道。回去的时候注意脚下。'
+        desc: '一个独眼老人，身形枯瘦，坐在断剑丛中。左眼半阖。',
+        dialogue: '......'
       }
     ],
     items: [
@@ -497,7 +523,7 @@ const WENJIANFENG_ROOMS = {
         id: 'wenjianfeng_gelao',
         name: '藏剑阁老',
         desc: '一个干瘦的老人，坐在门口的竹椅上打盹。',
-        dialogue: '……（阁老没有睁眼。但你碰到右边书架时他立刻说了一声「回来！」。）'
+        dialogue: '阁老没有睁眼。但你碰到右边书架时他立刻说了一声「回来！」。）'
       },
       {
         id: 'wenjianfeng_muxiansheng',
@@ -507,48 +533,60 @@ const WENJIANFENG_ROOMS = {
       }
     ],
     items: [
-      { id: 'sword_manual', name: '剑谱残卷', desc: '一卷泛黄的竹简，上面画着剑招图解。几页模糊了，几页缺了角。', desc_awakened: '一卷泛黄的竹简，上面画着剑招图解。残缺处的断口是被人撕走的，像是不想让谁看到那一式。' }
+      { id: 'sword_manual', name: '剑谱残卷', desc: '一卷泛黄的竹简，上面画着剑招图解。几页模糊，几页缺了角。', desc_awakened: '一卷泛黄的竹简，上面画着剑招图解。残缺处的断口是被人撕走的，像是不想让谁看到那一式。' }
     ]
   },
 
-  // ============ 弟子房（4间）============
+  // ============ 弟子住处（4间）============
 
   '问剑峰·弟子房': {
     name: '问剑峰·弟子房',
+    displayName: '我的住处',
     desc: '一间不大的木屋，你住的地方，墙上挂着你来时背的包袱。',
     desc_morning: '清晨的阳光从窗子照进来，在床铺上画了一个方块。',
     desc_noon: '正午的阳光直射进来，屋里很亮。桌上的油灯没点，但屋里不暗。',
     desc_dusk: '黄昏的光从窗子斜进来，在墙上映出橙红一块。剑坪上有人在收剑。你听见隔壁苏小棠在唱歌，似乎有些跑调。',
     desc_night: '夜里很安静。油灯的光在墙上晃。远处剑坪方向好像有个人影。',
-    connections: { 外: '问剑峰·弟子院' },
+    connections: { 外: '问剑峰·弟子居东' },
     routeSketch: {
-      外: { id: 'wjf_player_room_to_dorm_court', label: '弟子院', kind: 'interior', layout: { anchor: 'ABOVE', lane: 0 } }
+      外: { id: 'wjf_player_room_to_dorm_east', label: '弟子居东', kind: 'interior', layout: { anchor: 'BACK', lane: 0 } }
     },
+    danger: 0,
+    npcs: [],
+    items: []
   },
 
   '问剑峰·苏小棠房': {
     name: '问剑峰·苏小棠房',
+    displayName: '苏小棠的住处',
     desc: '隔壁苏小棠的房间。门虚掩着。你推门看了一眼——和你的差不多大，但乱得多。桌上堆着零碎物件，墙角有一把没入鞘的剑。',
     desc_morning: '（门关着。里面有声音——苏小棠在哼歌。你最好不要进去。）',
     desc_noon: '（门关着。苏小棠不在。）',
     desc_dusk: '（门关着。苏小棠在里面。她说了声「谁？」）',
     desc_night: '（门关着。灯灭了。苏小棠睡了。）',
-    connections: {},
+    connections: { 外: '问剑峰·弟子居东' },
+    routeSketch: {
+      外: { id: 'wjf_xiaotang_room_to_dorm_east', label: '弟子居东', kind: 'interior', layout: { anchor: 'BACK', lane: 0 } }
+    },
     danger: 0,
     npcs: [],
     items: [],
     locked: true,
-    lock_message: '虽然苏小棠是你邻居，但你也不能随便进去，这不合理。'
+    lock_message: '虽然苏小棠是你邻居，但你也不能随便进去，这不礼貌。'
   },
 
   '问剑峰·周碛房': {
     name: '问剑峰·周碛房',
+    displayName: '周碛的住处',
     desc: '对面周碛的房间。门关着。你贴耳听了一下——没有声音。他大概不在。',
     desc_morning: '（门关着。周碛已经去剑坪了。）',
     desc_noon: '（门关着。周碛不在。）',
     desc_dusk: '（门关着。里面传来一声闷响——像是什么东西被扔在墙上。然后安静了。）',
     desc_night: '（门关着。周碛在里面。灯还亮着。你不好进去。）',
-    connections: {},
+    connections: { 外: '问剑峰·弟子居东' },
+    routeSketch: {
+      外: { id: 'wjf_zhouqi_room_to_dorm_east', label: '弟子居东', kind: 'interior', layout: { anchor: 'BACK', lane: 0 } }
+    },
     danger: 0,
     npcs: [],
     items: [],
@@ -558,17 +596,21 @@ const WENJIANFENG_ROOMS = {
 
   '问剑峰·阿满房': {
     name: '问剑峰·阿满房',
+    displayName: '阿满的住处',
     desc: '对面隔壁阿满的房间。门上挂着一根草绳，说是"门铃"。你碰一下草绳，里面传来一阵翻身动静。',
     desc_morning: '（门关着。阿满在里面穿衣服——他起得晚。）',
     desc_noon: '（门关着。阿满去挑水了。）',
     desc_dusk: '（门关着。阿满在里面——你听见他在数东西。「一、二、三……」数到几停了。然后从头数。）',
     desc_night: '（门关着。阿满睡了。呼吸均匀。他睡得比谁都早。）',
-    connections: {},
+    connections: { 外: '问剑峰·弟子居东' },
+    routeSketch: {
+      外: { id: 'wjf_aman_room_to_dorm_east', label: '弟子居东', kind: 'interior', layout: { anchor: 'BACK', lane: 0 } }
+    },
     danger: 0,
     npcs: [],
     items: [],
     locked: true,
-    lock_message: '这不礼貌。他才十二岁，你进他房间做什么？'
+    lock_message: '他还是个孩子呀，你进他房间做什么？'
   },
 
   // ============ 竹林深处·入口 + 迷宫（5间，环形拓扑）============

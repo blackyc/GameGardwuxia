@@ -1,3 +1,6 @@
+import { createNarrativeContext } from './narrative/context.js';
+import { evaluateCondition } from './narrative/condition_resolver.js';
+
 const TIME_NAMES = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时', '午时', '未时', '申时', '酉时', '戌时', '亥时'];
 
 function numericValue(value) {
@@ -40,47 +43,7 @@ function realmIndex(game, name) {
  * numeric skill, realm and daoxin requirements are minimum thresholds.
  */
 export function meetsEntryPrerequisite(game, rule) {
-  if (!rule) return true;
-  const state = game?.state || {};
-
-  if (rule.type === 'composite') {
-    if (Array.isArray(rule.and)) return rule.and.every(item => meetsEntryPrerequisite(game, item));
-    if (Array.isArray(rule.or)) return rule.or.some(item => meetsEntryPrerequisite(game, item));
-    if (rule.not) return !meetsEntryPrerequisite(game, rule.not);
-    return true;
-  }
-
-  switch (rule.type) {
-    case 'skill': {
-      const skillValue = state.skills?.[rule.skill] ?? state[rule.skill];
-      return compare(numericValue(skillValue), Number(rule.value || 0), rule.operator);
-    }
-    case 'realm': {
-      if (typeof rule.value === 'number') return compare(Number(state.realm || 0), rule.value, rule.operator);
-      const requiredIndex = realmIndex(game, rule.value);
-      return requiredIndex >= 0 && compare(Number(state.realm || 0), requiredIndex, rule.operator);
-    }
-    case 'daoxin':
-      return compare(Number(state.daoxin || 0), Number(rule.value || 0), rule.operator);
-    case 'max_daoxin':
-      return Number(state.daoxin || 0) <= Number(rule.value || 0);
-    case 'cultivation':
-      return compare(Number(state.cultivation || 0), Number(rule.value || 0), rule.operator);
-    case 'item':
-      return hasItem(state, rule);
-    case 'quest':
-      return (state.completedQuests || []).includes(rule.id);
-    case 'active_quest':
-      return (state.activeQuests || []).includes(rule.id);
-    case 'faction':
-      return [state.faction, state.factionId, state.sect].includes(rule.id);
-    case 'path':
-      return state.path === rule.value;
-    case 'time':
-      return TIME_NAMES[Number(state.gameTime || 0)] === rule.value;
-    default:
-      return false;
-  }
+  return evaluateCondition(rule, createNarrativeContext(game));
 }
 
 /**
@@ -92,6 +55,15 @@ export function getEntryAccess(game, targetName) {
   const room = game?.LOCATIONS?.[targetName];
   if (!room) {
     return { visible: false, allowed: false, message: '那个地方已经不在此世。', successMessage: '' };
+  }
+
+  if (room.locked === true) {
+    return {
+      visible: room.hiddenUntilEligible !== true,
+      allowed: false,
+      message: room.lock_message || room.fail_msg || '此处暂不可入。',
+      successMessage: ''
+    };
   }
 
   const allowed = meetsEntryPrerequisite(game, room.prereq);

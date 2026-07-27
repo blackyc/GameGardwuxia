@@ -895,7 +895,10 @@ export class Renderer {
 
   /** Brief, borderless feedback for gains, discoveries and relationship changes. */
   showMomentFeedback(text, type = 'info') {
-    const layer = document.getElementById('jianghu-moment-feedback');
+    const sceneLayer = document.getElementById('scene-interaction-modal');
+    const layer = sceneLayer?.classList.contains('active')
+      ? document.getElementById('scene-interaction-feedback')
+      : document.getElementById('jianghu-moment-feedback');
     if (!layer || !text) return;
     const item = document.createElement('div');
     item.className = 'jianghu-moment-feedback__item is-' + type;
