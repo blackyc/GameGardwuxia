@@ -518,6 +518,7 @@ export class Renderer {
 
   /** 渲染任务列表 */
   renderQuests() {
+    this.renderTutorialActionPanel();
     const body = document.getElementById('quest-body');
     const s = this.game.state;
     const data = getData();

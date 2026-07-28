@@ -66,6 +66,7 @@ export class Game {
   constructor() {
     window.game = this;
     console.log('[Game] Constructor started');
+    this.audio = audio;
 
     // 核心引擎
     this.timer = new Timer();

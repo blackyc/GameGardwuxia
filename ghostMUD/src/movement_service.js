@@ -30,6 +30,7 @@ export class MovementService {
     if (g.state.combat || g.state.npcEncounter) { g.addLog('当前无法移动！请先结束当前互动。', 'combat'); return; }
     if (g.state.isCultivating) { g.addLog('你正在修炼，无法移动。输入「修炼」结束再行。', 'system'); return; }
     const s = g.state;
+    const movementOrigin = s.location;
     // 移动打断修炼/休憩
     let interrupted = '';
     if (s.isResting) { s.isResting = false; interrupted = '休憩'; }
@@ -74,7 +75,10 @@ export class MovementService {
         const allowed = dl.WENJIANFENG_TUTORIAL_CH1.onMove(g, target);
         // false = 教程明确拦截；位置已改变 = 教程状态机已完成这次移动。
         if (allowed === false) return;
-        if (s.location !== locationBeforeTutorial) return;
+        if (s.location !== locationBeforeTutorial) {
+          this._playCommittedMovement(movementOrigin, s.location);
+          return;
+        }
       }
     }
     if (typeof s.tutorialPhase === 'string' && s.tutorialPhase.startsWith('ch2_')) {
@@ -85,6 +89,7 @@ export class MovementService {
 
     if (access.successMessage) g.addLog(access.successMessage, 'special');
     s.location = target;
+    this._playCommittedMovement(movementOrigin, target);
     g.focusedNpcIndex = null;
     g.focusedNpcType = null;
     g.focusedNpcGiftKey = null;
@@ -135,6 +140,18 @@ export class MovementService {
   /**
    * 方向代号 → 中文名
    */
+  _playCommittedMovement(fromRoomId, toRoomId) {
+    if (!fromRoomId || !toRoomId || fromRoomId === toRoomId) return false;
+    const fromRoom = this.game.LOCATIONS?.[fromRoomId] || {};
+    const toRoom = this.game.LOCATIONS?.[toRoomId] || {};
+    const surface = toRoom.movementSurface
+      || toRoom.audioProfile?.movementSurface
+      || fromRoom.movementSurface
+      || fromRoom.audioProfile?.movementSurface
+      || 'stone';
+    return this.game.audio?.playMovement(surface) ?? false;
+  }
+
   dirName(d) {
     return {
       north:'北', south:'南', east:'东', west:'西',
@@ -152,6 +169,7 @@ export class MovementService {
   quickTravel(loc) {
     const g = this.game;
     const s = g.state;
+    const movementOrigin = s.location;
     if (s.combat || s.npcEncounter) return;
     if (g.tutorial?.isChapter2Active?.()) {
       g.addLog('教程进行中，需亲自走完眼前这段路。', 'system');
@@ -170,6 +188,7 @@ export class MovementService {
       return;
     }
     s.location = loc;
+    this._playCommittedMovement(movementOrigin, loc);
     g.focusedNpcIndex = null;
     g.focusedNpcType = null;
     g.focusedNpcGiftKey = null;

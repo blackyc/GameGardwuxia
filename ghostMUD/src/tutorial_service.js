@@ -380,11 +380,22 @@ export class TutorialService {
   _emitNode(key) {
     const lines = this.data.nodes?.[key]?.lines || this.data.nodes?.[key] || [];
     const normalized = Array.isArray(lines) ? lines : [lines];
-    normalized.filter(Boolean).forEach(line => {
+    const callouts = [];
+    normalized.filter(Boolean).forEach((line) => {
       const text = typeof line === 'string' ? line : line.text;
       const speaker = typeof line === 'object' ? line.speaker : '';
-      this.game.addLog(speaker && speaker !== 'narrator' ? `${speaker}：${text}` : text, 'event');
+      if (!text) return;
+      if (speaker && speaker !== 'narrator') {
+        callouts.push({
+          speaker,
+          text,
+          npcId: typeof line === 'object' ? line.npcId : undefined,
+        });
+        return;
+      }
+      this.game.addLog(text, 'event');
     });
+    if (callouts.length > 0) this.game.showDialogueRibbon?.({ lines: callouts });
   }
 
   getViewModel() {

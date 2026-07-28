@@ -4,6 +4,13 @@
  * 统一通过 data-action 属性分发事件，替代 HTML 中的 onclick
  */
 
+const UI_CLICK_ACTIONS = new Set([
+  'perceive',
+  'searchArea',
+  'cultivate-menu',
+  'rest',
+]);
+
 export class InputManager {
   constructor(game) {
     this.game = game;
@@ -32,6 +39,7 @@ export class InputManager {
       if (!btn) return;
       // 感知面板有自己的委托器，通用处理器不再重复消费。
       const action = btn.dataset.action;
+      if (UI_CLICK_ACTIONS.has(action)) this.game.audio?.playUiClick();
       switch (action) {
         case 'explore':
           this.game.explore(btn.dataset.dir);
@@ -198,6 +206,7 @@ export class InputManager {
     // 底部 5 导航（临时绑定，PageManager 就绪后替代）
     document.querySelectorAll('#bottom-nav .nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        this.game.audio?.playUiClick();
         const page = btn.dataset.page;
         if (window.pageManager) {
           window.pageManager.switchTo(page);

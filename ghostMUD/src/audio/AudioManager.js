@@ -14,6 +14,11 @@ import {
   normalizeAudioPreferences,
   DEFAULT_AUDIO_PREFERENCES,
 } from './audio_preferences.js';
+import {
+  resolveAudioAsset,
+  resolveAudioCue,
+  resolveMovementCue,
+} from './audio_catalog.js';
 
 class AudioManager {
   constructor(storage) {
@@ -26,6 +31,9 @@ class AudioManager {
     this._queuedSounds = [];
     this._tempMuteReasons = new Set();
     this._bgStarted = false;
+    this._samplePools = new Map();
+    this._sampleTimers = new Set();
+    this._lastCueVariant = new Map();
 
     const prefs = loadAudioPreferences(this._storage);
     this._prefs = { ...prefs };
@@ -135,6 +143,14 @@ class AudioManager {
       const vol = this._sfxMuted ? 0 : this._prefs.sfxVolume;
       try { this._master.gain.value = vol; } catch (_) { /* ignore */ }
     }
+    this._samplePools.forEach((pool) => {
+      pool.items.forEach((sample) => {
+        sample.muted = this._sfxMuted;
+        sample.volume = this._sfxMuted
+          ? 0
+          : Math.min(1, this._prefs.sfxVolume * (sample._ghostmudGain || 1));
+      });
+    });
   }
 
   _applyBgmOutput() {
@@ -339,6 +355,93 @@ class AudioManager {
     n.stop(t + duration);
   }
 
+  _samplePool(assetId, size = 3) {
+    if (typeof Audio === 'undefined') return null;
+    const src = resolveAudioAsset(assetId);
+    if (!src) return null;
+
+    let pool = this._samplePools.get(assetId);
+    if (!pool) {
+      pool = { cursor: 0, items: [] };
+      this._samplePools.set(assetId, pool);
+    }
+    while (pool.items.length < size) {
+      const sample = new Audio(src);
+      sample.preload = 'auto';
+      sample.loop = false;
+      pool.items.push(sample);
+    }
+    return pool;
+  }
+
+  _playAsset(assetId, options = {}) {
+    if (this._sfxMuted) return false;
+    const pool = this._samplePool(assetId, options.poolSize || 3);
+    if (!pool) return false;
+
+    const reusable = pool.items.find(sample => sample.paused || sample.ended);
+    const sample = reusable || pool.items[pool.cursor++ % pool.items.length];
+    const gain = Number.isFinite(options.gain) ? options.gain : 1;
+    sample._ghostmudGain = gain;
+    sample.muted = false;
+    sample.volume = Math.min(1, this._prefs.sfxVolume * gain);
+    sample.playbackRate = Number.isFinite(options.rate) ? options.rate : 1;
+    try { sample.currentTime = 0; } catch (_) { /* ignore */ }
+    const result = sample.play();
+    if (result && typeof result.catch === 'function') result.catch(() => {});
+    return true;
+  }
+
+  playCue(cueId, options = {}) {
+    const cue = resolveAudioCue(cueId);
+    if (!cue || !cue.variants?.length) return false;
+
+    let candidates = cue.variants;
+    const previous = this._lastCueVariant.get(cueId);
+    if (candidates.length > 1 && previous) {
+      const filtered = candidates.filter(assetId => assetId !== previous);
+      if (filtered.length) candidates = filtered;
+    }
+    const assetId = options.assetId
+      || candidates[Math.floor(Math.random() * candidates.length)];
+    this._lastCueVariant.set(cueId, assetId);
+    return this._playAsset(assetId, {
+      gain: options.gain ?? cue.gain,
+      poolSize: options.poolSize ?? cue.poolSize,
+      rate: options.rate,
+    });
+  }
+
+  playUiClick() {
+    return this.playCue('cue.ui.click');
+  }
+
+  /**
+   * One committed room movement is represented by two footfalls. The four
+   * authored orders are equally likely and remain data-driven through the cue.
+   */
+  playMovement(surface = 'stone') {
+    const cueId = resolveMovementCue(surface);
+    const cue = resolveAudioCue(cueId);
+    if (!cue || cue.variants.length < 2 || this._sfxMuted) return false;
+
+    const [step1, step2] = cue.variants;
+    const sequences = [
+      [step1, step1],
+      [step2, step2],
+      [step1, step2],
+      [step2, step1],
+    ];
+    const sequence = sequences[Math.floor(Math.random() * sequences.length)];
+    this._playAsset(sequence[0], { gain: cue.gain, poolSize: cue.poolSize });
+    const timer = setTimeout(() => {
+      this._sampleTimers.delete(timer);
+      this._playAsset(sequence[1], { gain: cue.gain, poolSize: cue.poolSize });
+    }, 260);
+    this._sampleTimers.add(timer);
+    return true;
+  }
+
   startBanguLoop(bpm = 60) {
     this.stopBanguLoop();
     this._banguLoopBpm = bpm;
@@ -361,6 +464,14 @@ class AudioManager {
 
   stopAll() {
     this.stopBanguLoop();
+    this._sampleTimers.forEach(timer => clearTimeout(timer));
+    this._sampleTimers.clear();
+    this._samplePools.forEach(pool => pool.items.forEach((sample) => {
+      try {
+        sample.pause();
+        sample.currentTime = 0;
+      } catch (_) { /* ignore */ }
+    }));
   }
 }
 
